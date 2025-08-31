@@ -4,6 +4,15 @@ import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor, Activity, ManagementContact } from '../types/contractor';
 import {
+    containsForbiddenWords,
+    validateEmail,
+    validateIsraeliPhone,
+    formatIsraeliPhone,
+    validateHebrewName,
+    validateHebrewRole,
+    commonRoles
+} from '../data/forbiddenWords';
+import {
     Box,
     Tabs,
     Tab,
@@ -28,7 +37,15 @@ import {
     Alert,
     Autocomplete,
     Grid,
-    Snackbar
+    Snackbar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    CircularProgress
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -48,6 +65,7 @@ type Errors = {
     name?: string;
     nameEnglish?: string;
     company_id?: string;
+    contractor_id?: string;
     companyType?: string;
     numberOfEmployees?: string;
     foundationDate?: string;
@@ -106,6 +124,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         message: '',
         severity: 'success'
     });
+
+    // State for contacts dialog
+    const [isContactsDialogOpen, setIsContactsDialogOpen] = useState(false);
+    const [editingContact, setEditingContact] = useState<ManagementContact | null>(null);
+    const [editingContactIndex, setEditingContactIndex] = useState<number | null>(null);
+    const [isLoadingCompanyData, setIsLoadingCompanyData] = useState(false);
 
     // Load projects when contractor changes
     useEffect(() => {
@@ -284,6 +308,68 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     };
 
+    // Contact management functions
+    const handleAddContact = () => {
+        const newContact: ManagementContact = {
+            id: Date.now().toString(),
+            fullName: '',
+            role: '',
+            email: '',
+            mobile: '',
+            permissions: 'full'
+        };
+        setEditingContact(newContact);
+        setEditingContactIndex(null);
+        setIsContactsDialogOpen(true);
+    };
+
+    const handleEditContact = (contact: ManagementContact, index: number) => {
+        setEditingContact({ ...contact });
+        setEditingContactIndex(index);
+        setIsContactsDialogOpen(true);
+    };
+
+    const handleDeleteContact = (index: number) => {
+        if (window.confirm('האם אתה בטוח שברצונך למחוק איש קשר זה?')) {
+            setContractor(prev => ({
+                ...prev,
+                management_contacts: (prev.management_contacts || []).filter((_, i) => i !== index)
+            }));
+            setSnackbar({ open: true, message: 'איש קשר נמחק בהצלחה', severity: 'success' });
+        }
+    };
+
+    const handleSaveContact = () => {
+        if (!editingContact) return;
+
+        if (editingContactIndex !== null) {
+            // Update existing contact
+            setContractor(prev => ({
+                ...prev,
+                management_contacts: (prev.management_contacts || []).map((contact, index) =>
+                    index === editingContactIndex ? editingContact : contact
+                )
+            }));
+        } else {
+            // Add new contact
+            setContractor(prev => ({
+                ...prev,
+                management_contacts: [...(prev.management_contacts || []), editingContact]
+            }));
+        }
+
+        setIsContactsDialogOpen(false);
+        setEditingContact(null);
+        setEditingContactIndex(null);
+        setSnackbar({ open: true, message: 'איש קשר נשמר בהצלחה', severity: 'success' });
+    };
+
+    const handleCancelContact = () => {
+        setIsContactsDialogOpen(false);
+        setEditingContact(null);
+        setEditingContactIndex(null);
+    };
+
     const handleSaveProject = async () => {
         if (!editingProject) return;
 
@@ -400,76 +486,140 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
         if (contractor.company_id) {
             try {
+                setIsLoadingCompanyData(true);
                 setSnackbar({ open: true, message: 'טוען נתונים...', severity: 'success' });
+
+                console.log('Fetching data for company ID:', contractor.company_id);
 
                 // Fetch from Companies Registry
                 const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${contractor.company_id}`);
                 const companiesData = await companiesResponse.json();
+                console.log('Companies Registry response:', companiesData);
 
                 // Fetch from Contractors Registry
                 const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${contractor.company_id}`);
                 const contractorsData = await contractorsResponse.json();
+                console.log('Contractors Registry response:', contractorsData);
 
                 if (companiesData.success && companiesData.result.records.length > 0) {
                     const companyData = companiesData.result.records[0];
                     console.log('Company data from API:', companyData);
                     const newCompanyType = getCompanyTypeByCompanyId(contractor.company_id);
 
-                    setContractor(prev => ({
-                        ...prev,
-                        name: companyData['שם חברה'] || prev.name,
-                        nameEnglish: companyData['שם באנגלית'] || prev.nameEnglish,
-                        city: companyData['שם עיר'] || prev.city,
-                        address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || prev.address,
-                        phone: formatPhoneNumber(companyData['מספר טלפון'] || prev.phone),
-                        email: companyData['אימייל'] || prev.email,
-                        website: companyData['אתר אינטרנט'] || generateWebsiteFromEmail(companyData['אימייל']) || prev.website,
-                        companyType: newCompanyType || prev.companyType,
-                        foundationDate: companyData['תאריך התאגדות'] ? convertHebrewDate(companyData['תאריך התאגדות']) : prev.foundationDate
-                    }));
+                    console.log('Setting company data:', {
+                        name: companyData['שם חברה'],
+                        nameEnglish: companyData['שם באנגלית'],
+                        city: companyData['שם עיר'],
+                        email: companyData['אימייל']
+                    });
+
+                    setContractor(prev => {
+                        const newContractor = {
+                            ...prev,
+                            name: companyData['שם חברה'] || prev.name,
+                            nameEnglish: companyData['שם באנגלית'] || prev.nameEnglish,
+                            city: companyData['שם עיר'] || prev.city,
+                            address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || prev.address,
+                            phone: formatPhoneNumber(companyData['מספר טלפון'] || prev.phone),
+                            email: companyData['אימייל'] || prev.email,
+                            website: companyData['אתר אינטרנט'] || generateWebsiteFromEmail(companyData['אימייל']) || prev.website,
+                            companyType: newCompanyType || prev.companyType,
+                            foundationDate: companyData['תאריך התאגדות'] ? convertHebrewDate(companyData['תאריך התאגדות']) : prev.foundationDate
+                        };
+                        console.log('Updated contractor state after company data:', newContractor);
+                        return newContractor;
+                    });
 
                     setSnackbar({ open: true, message: 'פרטי החברה נטענו בהצלחה', severity: 'success' });
                 }
 
                 if (contractorsData.success && contractorsData.result.records.length > 0) {
-                    const contractorData = contractorsData.result.records[0];
-                    console.log('Contractor data from API:', contractorData);
+                    console.log('Contractor data from API:', contractorsData.result.records);
 
-                    // Create activities array from contractor data
+                    // Create activities array from all contractor records
                     const activities: Activity[] = [];
+                    let contractorId = '';
+                    let email = '';
 
-                    // Add main contractor activity
-                    if (contractorData['SIVUG'] || contractorData['TEUR_ANAF']) {
-                        activities.push({
-                            id: '1',
-                            activity_type: contractorData['TEUR_ANAF'] || '',
-                            classification: contractorData['SIVUG'] || '',
-                            sector: contractorData['TEUR_ANAF'] || '',
-                            field: contractorData['KVUTZA'] || '',
-                            contractor_license: contractorData['MISPAR_KABLAN'] || '',
-                            license_number: contractorData['MISPAR_KABLAN'] || '',
-                            license_expiry: contractorData['TARICH_SUG'] ? new Date(contractorData['TARICH_SUG']).toISOString().split('T')[0] : '',
-                            insurance_company: '',
-                            insurance_policy: '',
-                            insurance_expiry: ''
-                        });
-                    }
+                    // Process all records to create activities
+                    contractorsData.result.records.forEach((contractorData: any, index: number) => {
+                        // Use the first record for basic contractor info
+                        if (index === 0) {
+                            contractorId = contractorData['MISPAR_KABLAN'] || '';
+                            email = contractorData['EMAIL'] || '';
+                            // Add phone from contractors registry with leading 0
+                            const phoneFromRegistry = contractorData['TELEFON'] || '';
+                            if (phoneFromRegistry) {
+                                const formattedPhone = formatPhoneNumber(phoneFromRegistry);
+                                setContractor(prev => ({
+                                    ...prev,
+                                    phone: formattedPhone
+                                }));
+                            }
+                        }
 
-                    setContractor(prev => ({
-                        ...prev,
-                        contractor_id: contractorData['MISPAR_KABLAN'] || prev.contractor_id,
-                        sector: contractorData['TEUR_ANAF'] || prev.sector,
-                        activityType: contractorData['KVUTZA'] || prev.activityType,
-                        email: contractorData['EMAIL'] || prev.email, // Add email from contractors registry
-                        website: prev.website || generateWebsiteFromEmail(contractorData['EMAIL'] || ''), // Generate website from email if empty
-                        activities: activities
-                    }));
+                        // Add activity for each record
+                        if (contractorData['SIVUG'] || contractorData['TEUR_ANAF']) {
+                            // Safely handle date conversion
+                            let licenseExpiry = '';
+                            if (contractorData['TARICH_SUG']) {
+                                try {
+                                    const date = new Date(contractorData['TARICH_SUG']);
+                                    if (!isNaN(date.getTime())) {
+                                        licenseExpiry = date.toISOString().split('T')[0];
+                                    }
+                                } catch (error) {
+                                    console.warn('Invalid date format for TARICH_SUG:', contractorData['TARICH_SUG']);
+                                }
+                            }
 
-                    setSnackbar({ open: true, message: 'פרטי הקבלן נטענו בהצלחה', severity: 'success' });
+                            activities.push({
+                                id: (index + 1).toString(),
+                                activity_type: contractorData['TEUR_ANAF'] || '',
+                                classification: contractorData['SIVUG'] || '',
+                                sector: contractorData['TEUR_ANAF'] || '',
+                                field: contractorData['KVUTZA'] || '',
+                                contractor_license: contractorData['MISPAR_KABLAN'] || '',
+                                license_number: contractorData['MISPAR_KABLAN'] || '',
+                                license_expiry: licenseExpiry,
+                                insurance_company: '',
+                                insurance_policy: '',
+                                insurance_expiry: ''
+                            });
+                        }
+                    });
+
+                    console.log('Setting contractor data:', {
+                        contractor_id: contractorId,
+                        email: email,
+                        activities_count: activities.length
+                    });
+
+                    setContractor(prev => {
+                        const newContractor = {
+                            ...prev,
+                            contractor_id: contractorId || prev.contractor_id,
+                            sector: contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector,
+                            activityType: contractorsData.result.records[0]['KVUTZA'] || prev.activityType,
+                            email: email || prev.email, // Add email from contractors registry
+                            website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
+                            activities: activities
+                        };
+                        console.log('Updated contractor state:', newContractor);
+                        return newContractor;
+                    });
+
+                    setSnackbar({ open: true, message: `פרטי הקבלן נטענו בהצלחה (${activities.length} פעילויות)`, severity: 'success' });
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
                 setSnackbar({ open: true, message: 'שגיאה בטעינת הנתונים', severity: 'error' });
+            } finally {
+                setIsLoadingCompanyData(false);
+                // Always close the loading snackbar
+                setTimeout(() => {
+                    setSnackbar(prev => prev.open ? { ...prev, open: false } : prev);
+                }, 3000);
             }
         }
     };
@@ -557,39 +707,63 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             const contractorsData = await contractorsResponse.json();
 
             if (contractorsData.success && contractorsData.result.records.length > 0) {
-                const contractorData = contractorsData.result.records[0];
+                console.log('Contractor data from API:', contractorsData.result.records);
 
-                // Create activities array from contractor data
+                // Create activities array from all contractor records
                 const activities: Activity[] = [];
+                let contractorId = '';
+                let email = '';
 
-                // Add main contractor activity
-                if (contractorData['SIVUG'] || contractorData['TEUR_ANAF']) {
-                    activities.push({
-                        id: '1',
-                        activity_type: contractorData['TEUR_ANAF'] || '',
-                        classification: contractorData['SIVUG'] || '',
-                        sector: contractorData['TEUR_ANAF'] || '',
-                        field: contractorData['KVUTZA'] || '',
-                        contractor_license: contractorData['MISPAR_KABLAN'] || '',
-                        license_number: contractorData['MISPAR_KABLAN'] || '',
-                        license_expiry: contractorData['TARICH_SUG'] ? new Date(contractorData['TARICH_SUG']).toISOString().split('T')[0] : '',
-                        insurance_company: '',
-                        insurance_policy: '',
-                        insurance_expiry: ''
-                    });
-                }
+                // Process all records to create activities
+                contractorsData.result.records.forEach((contractorData: any, index: number) => {
+                    // Use the first record for basic contractor info
+                    if (index === 0) {
+                        contractorId = contractorData['MISPAR_KABLAN'] || '';
+                        email = contractorData['EMAIL'] || '';
+                    }
+
+                    // Add activity for each record
+                    if (contractorData['SIVUG'] || contractorData['TEUR_ANAF']) {
+                        // Safely handle date conversion
+                        let licenseExpiry = '';
+                        if (contractorData['TARICH_SUG']) {
+                            try {
+                                const date = new Date(contractorData['TARICH_SUG']);
+                                if (!isNaN(date.getTime())) {
+                                    licenseExpiry = date.toISOString().split('T')[0];
+                                }
+                            } catch (error) {
+                                console.warn('Invalid date format for TARICH_SUG:', contractorData['TARICH_SUG']);
+                            }
+                        }
+
+                        activities.push({
+                            id: (index + 1).toString(),
+                            activity_type: contractorData['TEUR_ANAF'] || '',
+                            classification: contractorData['SIVUG'] || '',
+                            sector: contractorData['TEUR_ANAF'] || '',
+                            field: contractorData['KVUTZA'] || '',
+                            contractor_license: contractorData['MISPAR_KABLAN'] || '',
+                            license_number: contractorData['MISPAR_KABLAN'] || '',
+                            license_expiry: licenseExpiry,
+                            insurance_company: '',
+                            insurance_policy: '',
+                            insurance_expiry: ''
+                        });
+                    }
+                });
 
                 setContractor(prev => ({
                     ...prev,
-                    contractor_id: contractorData['MISPAR_KABLAN'] || prev.contractor_id,
-                    sector: contractorData['TEUR_ANAF'] || prev.sector,
-                    activityType: contractorData['KVUTZA'] || prev.activityType,
-                    email: contractorData['EMAIL'] || prev.email, // Add email from contractors registry
-                    website: prev.website || generateWebsiteFromEmail(contractorData['EMAIL'] || ''), // Generate website from email if empty
+                    contractor_id: contractorId || prev.contractor_id,
+                    sector: contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector,
+                    activityType: contractorsData.result.records[0]['KVUTZA'] || prev.activityType,
+                    email: email || prev.email, // Add email from contractors registry
+                    website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
                     activities: activities
                 }));
 
-                setSnackbar({ open: true, message: 'הנתונים רועננו בהצלחה', severity: 'success' });
+                setSnackbar({ open: true, message: `הנתונים רועננו בהצלחה (${activities.length} פעילויות)`, severity: 'success' });
             } else {
                 setSnackbar({ open: true, message: 'לא נמצאו נתונים בפנקס הקבלנים', severity: 'error' });
             }
@@ -604,7 +778,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={activeTab} onChange={handleTabChange} aria-label="contractor tabs">
                     <Tab label="פרטי חברה" />
-                    <Tab label="סגמנטים" />
+                    <Tab label="מידע עסקי" />
                     <Tab label="אנשי קשר" />
                     <Tab label="פרויקטים" />
                     <Tab label="הערות" />
@@ -613,187 +787,218 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Company Details Tab */}
             {activeTab === 0 && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{ p: 3, pb: 6 }}>
                     {/* Company General Details Section */}
-                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי חברה כללים</Typography>
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="מספר חברה (ח״פ) *"
-                                value={contractor.company_id}
-                                onChange={(e) => handleChange('company_id', e.target.value)}
-                                onBlur={handleCompanyIdBlur}
-                                error={!!errors.company_id}
-                                helperText={errors.company_id}
-                                required
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="מספר קבלן"
-                                value={contractor.contractor_id || ''}
-                                onChange={(e) => handleChange('contractor_id', e.target.value)}
-                                error={!!errors.contractor_id}
-                                helperText={errors.contractor_id}
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="שם החברה *"
-                                value={contractor.name}
-                                onChange={(e) => handleChange('name', e.target.value)}
-                                error={!!errors.name}
-                                helperText={errors.name}
-                                required
-                                InputLabelProps={{
-                                    shrink: true,
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="שם באנגלית"
-                                value={contractor.nameEnglish}
-                                onChange={(e) => handleEnglishNameChange(e.target.value)}
-                                onBlur={handleEnglishNameBlur}
-                                error={!!errors.nameEnglish}
-                                helperText={errors.nameEnglish}
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel sx={{ backgroundColor: 'white', paddingRight: '4px' }}>סוג חברה</InputLabel>
-                                <Select
-                                    value={contractor.companyType}
-                                    onChange={(e) => handleChange('companyType', e.target.value)}
-                                    error={!!errors.companyType}
-                                >
-                                    <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
-                                    <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
-                                    <MenuItem value="חברה ממשלתית">חברה ממשלתית</MenuItem>
-                                    <MenuItem value="חברה זרה">חברה זרה</MenuItem>
-                                    <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
-                                    <MenuItem value="עמותה">עמותה</MenuItem>
-                                    <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
-                                    <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
-                                    <MenuItem value="שותפות">שותפות</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="מספר עובדים"
-                                type="number"
-                                value={contractor.numberOfEmployees}
-                                onChange={(e) => handleChange('numberOfEmployees', parseInt(e.target.value) || 0)}
-                                error={!!errors.numberOfEmployees}
-                                helperText={errors.numberOfEmployees}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="תאריך הקמה"
-                                type="date"
-                                value={contractor.foundationDate}
-                                onChange={(e) => handleFoundationDateChange(e.target.value)}
-                                onBlur={handleFoundationDateBlur}
-                                error={!!errors.foundationDate}
-                                helperText={errors.foundationDate}
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-                    </Grid>
+                    <Card sx={{ mb: 3, boxShadow: 2 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי חברה כללים</Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} md={6}>
+                                    <Box sx={{ position: 'relative' }}>
+                                        <TextField
+                                            fullWidth
+                                            label="מספר חברה (ח״פ)"
+                                            value={contractor.company_id}
+                                            onChange={(e) => handleChange('company_id', e.target.value)}
+                                            onBlur={handleCompanyIdBlur}
+                                            error={!!errors.company_id}
+                                            helperText={errors.company_id}
+                                            required
+                                            InputLabelProps={{
+                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                            }}
+                                        />
+                                        {isLoadingCompanyData && (
+                                            <CircularProgress
+                                                size={20}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    left: 7,
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    zIndex: 1
+                                                }}
+                                            />
+                                        )}
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="מספר קבלן"
+                                        value={contractor.contractor_id || ''}
+                                        onChange={(e) => handleChange('contractor_id', e.target.value)}
+                                        error={!!errors.contractor_id}
+                                        helperText={errors.contractor_id}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="שם החברה"
+                                        value={contractor.name}
+                                        onChange={(e) => handleChange('name', e.target.value)}
+                                        error={!!errors.name}
+                                        helperText={errors.name}
+                                        required
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="שם באנגלית"
+                                        value={contractor.nameEnglish}
+                                        onChange={(e) => handleEnglishNameChange(e.target.value)}
+                                        onBlur={handleEnglishNameBlur}
+                                        error={!!errors.nameEnglish}
+                                        helperText={errors.nameEnglish}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel sx={{ backgroundColor: 'white', paddingRight: '4px' }}>סוג חברה</InputLabel>
+                                        <Select
+                                            value={contractor.companyType}
+                                            onChange={(e) => handleChange('companyType', e.target.value)}
+                                            error={!!errors.companyType}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        maxHeight: 300
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
+                                            <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
+                                            <MenuItem value="חברה ממשלתית">חברה ממשלתית</MenuItem>
+                                            <MenuItem value="חברה זרה">חברה זרה</MenuItem>
+                                            <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
+                                            <MenuItem value="עמותה">עמותה</MenuItem>
+                                            <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
+                                            <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
+                                            <MenuItem value="שותפות">שותפות</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="מספר עובדים"
+                                        type="number"
+                                        value={contractor.numberOfEmployees}
+                                        onChange={(e) => handleChange('numberOfEmployees', parseInt(e.target.value) || 0)}
+                                        error={!!errors.numberOfEmployees}
+                                        helperText={errors.numberOfEmployees}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="תאריך הקמה"
+                                        type="date"
+                                        value={contractor.foundationDate}
+                                        onChange={(e) => handleFoundationDateChange(e.target.value)}
+                                        onBlur={handleFoundationDateBlur}
+                                        error={!!errors.foundationDate}
+                                        helperText={errors.foundationDate}
+                                        InputLabelProps={{ shrink: true }}
+                                        inputProps={{
+                                            style: { color: '#666' }
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
 
                     {/* Contact Information Section */}
-                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי קשר</Typography>
-                    <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="עיר *"
-                                value={contractor.city}
-                                onChange={(e) => handleChange('city', e.target.value)}
-                                error={!!errors.city}
-                                helperText={errors.city}
-                                required
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="כתובת"
-                                value={contractor.address}
-                                onChange={(e) => handleChange('address', e.target.value)}
-                                error={!!errors.address}
-                                helperText={errors.address}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="אימייל *"
-                                type="email"
-                                value={contractor.email}
-                                onChange={(e) => handleChange('email', e.target.value)}
-                                error={!!errors.email}
-                                helperText={errors.email}
-                                required
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="טלפון *"
-                                value={contractor.phone}
-                                onChange={(e) => handleChange('phone', e.target.value)}
-                                error={!!errors.phone}
-                                helperText={errors.phone}
-                                required
-                                InputLabelProps={{
-                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="אתר אינטרנט"
-                                value={contractor.website}
-                                onChange={(e) => handleChange('website', e.target.value)}
-                                error={!!errors.website}
-                                helperText={errors.website}
-                            />
-                        </Grid>
-                    </Grid>
+                    <Card sx={{ mb: 3, boxShadow: 2 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי קשר</Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="עיר"
+                                        value={contractor.city}
+                                        onChange={(e) => handleChange('city', e.target.value)}
+                                        error={!!errors.city}
+                                        helperText={errors.city}
+                                        required
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="כתובת"
+                                        value={contractor.address}
+                                        onChange={(e) => handleChange('address', e.target.value)}
+                                        error={!!errors.address}
+                                        helperText={errors.address}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="אימייל"
+                                        type="email"
+                                        value={contractor.email}
+                                        onChange={(e) => handleChange('email', e.target.value)}
+                                        error={!!errors.email}
+                                        helperText={errors.email}
+                                        required
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="טלפון"
+                                        value={contractor.phone}
+                                        onChange={(e) => handleChange('phone', e.target.value)}
+                                        error={!!errors.phone}
+                                        helperText={errors.phone}
+                                        required
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="אתר אינטרנט"
+                                        value={contractor.website}
+                                        onChange={(e) => handleChange('website', e.target.value)}
+                                        error={!!errors.website}
+                                        helperText={errors.website}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
                 </Box>
             )}
 
-            {/* Segments Tab */}
+            {/* Business Information Tab */}
             {activeTab === 1 && (
-                <Box sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom>סגמנטים ופעילויות</Typography>
+                <Box sx={{ p: 3, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="h6" gutterBottom>מידע עסקי ופעילויות</Typography>
 
                     {/* Safety Section */}
                     <Box sx={{ mb: 4 }}>
@@ -826,84 +1031,48 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     </Box>
 
                     {/* Activities Section */}
-                    <Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6" sx={{ color: 'primary.main' }}>פעילויות מפנקס הקבלנים</Typography>
-                            <Button
-                                variant="contained"
-                                startIcon={<RefreshIcon />}
-                                onClick={refreshContractorActivities}
-                            >
-                                רענן נתונים
-                            </Button>
-                        </Box>
-
-                        {contractor.activities.length === 0 ? (
-                            <Card sx={{ mb: 2 }}>
-                                <CardContent>
-                                    <Typography variant="body1" color="text.secondary" align="center">
-                                        אין פעילויות זמינות. לחץ על "רענן נתונים" כדי לטעון את הנתונים מפנקס הקבלנים.
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            contractor.activities.map((activity, index) => (
-                                <Card key={activity.id} sx={{ mb: 2 }}>
-                                    <CardContent>
-                                        <Typography variant="h6" gutterBottom>פעילות {index + 1}</Typography>
-
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="סיווג"
-                                                    value={activity.classification || ''}
-                                                    InputProps={{ readOnly: true }}
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="סקטור"
-                                                    value={activity.sector || ''}
-                                                    InputProps={{ readOnly: true }}
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="תחום"
-                                                    value={activity.field || ''}
-                                                    InputProps={{ readOnly: true }}
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="מספר רישיון קבלן"
-                                                    value={activity.contractor_license || ''}
-                                                    InputProps={{ readOnly: true }}
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="תוקף רישיון"
-                                                    value={activity.license_expiry || ''}
-                                                    InputProps={{ readOnly: true }}
-                                                    variant="outlined"
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </CardContent>
-                                </Card>
-                            ))
-                        )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6" sx={{ color: 'primary.main' }}>פעילויות מפנקס הקבלנים</Typography>
+                        <Button
+                            variant="contained"
+                            startIcon={<RefreshIcon />}
+                            onClick={refreshContractorActivities}
+                            sx={{ gap: 1 }}
+                        >
+                            רענן נתונים
+                        </Button>
                     </Box>
+
+                    {contractor.activities.length === 0 ? (
+                        <Card sx={{ mb: 2 }}>
+                            <CardContent>
+                                <Typography variant="body1" color="text.secondary" align="center">
+                                    אין פעילויות זמינות. לחץ על "רענן נתונים" כדי לטעון את הנתונים מפנקס הקבלנים.
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card sx={{ mt: 2, boxShadow: 'none', border: '1px solid #e0e0e0', flexGrow: 1 }}>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סקטור</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סיווג</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {contractor.activities.map((activity, index) => (
+                                            <TableRow key={activity.id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{activity.sector || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{`${activity.field || ''}${activity.classification || ''}`}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Card>
+                    )}
                 </Box>
             )}
 
@@ -915,114 +1084,53 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
-                            onClick={() => {
-                                const newContact: ManagementContact = {
-                                    id: Date.now().toString(),
-                                    fullName: '',
-                                    role: '',
-                                    email: '',
-                                    mobile: '',
-                                    permissions: 'full'
-                                };
-                                setContractor(prev => ({
-                                    ...prev,
-                                    management_contacts: [...prev.management_contacts, newContact]
-                                }));
-                            }}
+                            onClick={handleAddContact}
                         >
                             הוסף איש קשר
                         </Button>
                     </Box>
 
-                    {contractor.management_contacts.map((contact, index) => (
-                        <Card key={contact.id} sx={{ mb: 2 }}>
+                    {contractor.management_contacts?.length === 0 ? (
+                        <Card sx={{ mb: 2 }}>
                             <CardContent>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                                    <Typography variant="h6">איש קשר {index + 1}</Typography>
-                                    <IconButton
-                                        onClick={() => {
-                                            setContractor(prev => ({
-                                                ...prev,
-                                                management_contacts: prev.management_contacts.filter((_, i) => i !== index)
-                                            }));
-                                        }}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Box>
-
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="שם מלא"
-                                            value={contact.fullName}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...contractor.management_contacts];
-                                                updatedContacts[index] = { ...contact, fullName: e.target.value };
-                                                setContractor(prev => ({ ...prev, management_contacts: updatedContacts }));
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="תפקיד"
-                                            value={contact.role}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...contractor.management_contacts];
-                                                updatedContacts[index] = { ...contact, role: e.target.value };
-                                                setContractor(prev => ({ ...prev, management_contacts: updatedContacts }));
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="אימייל"
-                                            type="email"
-                                            value={contact.email}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...contractor.management_contacts];
-                                                updatedContacts[index] = { ...contact, email: e.target.value };
-                                                setContractor(prev => ({ ...prev, management_contacts: updatedContacts }));
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="טלפון נייד"
-                                            value={contact.mobile}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...contractor.management_contacts];
-                                                updatedContacts[index] = { ...contact, mobile: e.target.value };
-                                                setContractor(prev => ({ ...prev, management_contacts: updatedContacts }));
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>הרשאות</InputLabel>
-                                            <Select
-                                                value={contact.permissions}
-                                                onChange={(e) => {
-                                                    const updatedContacts = [...contractor.management_contacts];
-                                                    updatedContacts[index] = { ...contact, permissions: e.target.value as any };
-                                                    setContractor(prev => ({ ...prev, management_contacts: updatedContacts }));
-                                                }}
-                                            >
-                                                <MenuItem value="full">הרשאות מלאות</MenuItem>
-                                                <MenuItem value="project_manager">מנהל פרויקטים</MenuItem>
-                                                <MenuItem value="technical">טכני</MenuItem>
-                                                <MenuItem value="view_only">צפייה בלבד</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                </Grid>
+                                <Typography variant="body1" color="text.secondary" align="center">
+                                    אין אנשי קשר. לחץ על "הוסף איש קשר" כדי להוסיף איש קשר חדש.
+                                </Typography>
                             </CardContent>
                         </Card>
-                    ))}
+                    ) : (
+                        contractor.management_contacts?.map((contact, index) => (
+                            <Card key={contact.id} sx={{ mb: 2 }}>
+                                <CardContent>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Box>
+                                            <Typography variant="h6">{contact.fullName || `איש קשר ${index + 1}`}</Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {contact.role} • {contact.email} • {contact.mobile}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                הרשאות: {contact.permissions === 'manager' ? 'מנהל' : 'משתמש'}
+                                            </Typography>
+                                        </Box>
+                                        <Box>
+                                            <IconButton
+                                                onClick={() => handleEditContact(contact, index)}
+                                                color="primary"
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() => handleDeleteContact(index)}
+                                                color="error"
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
                 </Box>
             )}
 
@@ -1146,7 +1254,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
                     <Box sx={{ mt: 3 }}>
                         <Typography variant="h6" gutterBottom>סוגי פעילות</Typography>
-                        {contractor.activities.map((activity, index) => (
+                        {contractor.activities?.map((activity, index) => (
                             <Card key={activity.id} sx={{ mb: 2 }}>
                                 <CardContent>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -1242,6 +1350,146 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     שמור
                 </Button>
             </Box>
+
+            {/* Contacts Dialog */}
+            <Dialog open={isContactsDialogOpen} onClose={handleCancelContact} maxWidth="md" fullWidth>
+                <DialogTitle>
+                    {editingContactIndex !== null ? 'ערוך איש קשר' : 'הוסף איש קשר חדש'}
+                </DialogTitle>
+                <DialogContent>
+                    {editingContact && (
+                        <Grid container spacing={3} sx={{ mt: 1 }}>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="שם מלא"
+                                    value={editingContact.fullName}
+                                    required
+                                    error={editingContact.fullName && (containsForbiddenWords(editingContact.fullName) || !validateHebrewName(editingContact.fullName))}
+                                    helperText={
+                                        editingContact.fullName && containsForbiddenWords(editingContact.fullName) ? "השם מכיל מילים לא הולמות" :
+                                            editingContact.fullName && !validateHebrewName(editingContact.fullName) ? "השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים" : ""
+                                    }
+                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, fullName: e.target.value } : null)}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value) {
+                                            if (containsForbiddenWords(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'השם מכיל מילים לא הולמות',
+                                                    severity: 'error'
+                                                });
+                                            } else if (!validateHebrewName(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים',
+                                                    severity: 'error'
+                                                });
+                                            }
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="תפקיד"
+                                    value={editingContact.role}
+                                    required
+                                    error={editingContact.role && (containsForbiddenWords(editingContact.role) || !validateHebrewRole(editingContact.role))}
+                                    helperText={
+                                        editingContact.role && containsForbiddenWords(editingContact.role) ? "התפקיד מכיל מילים לא הולמות" :
+                                            editingContact.role && !validateHebrewRole(editingContact.role) ? "התפקיד יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים" : ""
+                                    }
+                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, role: e.target.value } : null)}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value) {
+                                            if (containsForbiddenWords(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'התפקיד מכיל מילים לא הולמות',
+                                                    severity: 'error'
+                                                });
+                                            } else if (!validateHebrewRole(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'התפקיד יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים',
+                                                    severity: 'error'
+                                                });
+                                            }
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="אימייל"
+                                    type="email"
+                                    value={editingContact.email}
+                                    required
+                                    error={editingContact.email && !validateEmail(editingContact.email)}
+                                    helperText={editingContact.email && !validateEmail(editingContact.email) ? "כתובת אימייל לא תקינה" : ""}
+                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value && !validateEmail(e.target.value)) {
+                                            setSnackbar({
+                                                open: true,
+                                                message: 'כתובת אימייל לא תקינה',
+                                                severity: 'error'
+                                            });
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="טלפון נייד"
+                                    value={editingContact.mobile}
+                                    placeholder="050-1234567 או 02-1234567"
+                                    required
+                                    error={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile)}
+                                    helperText={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile) ? "מספר טלפון לא תקין" : ""}
+                                    onChange={(e) => {
+                                        const formattedPhone = formatIsraeliPhone(e.target.value);
+                                        setEditingContact(prev => prev ? { ...prev, mobile: formattedPhone } : null);
+                                    }}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value && !validateIsraeliPhone(e.target.value)) {
+                                            setSnackbar({
+                                                open: true,
+                                                message: 'מספר טלפון לא תקין',
+                                                severity: 'error'
+                                            });
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth required>
+                                    <InputLabel>הרשאות</InputLabel>
+                                    <Select
+                                        value={editingContact.permissions}
+                                        onChange={(e) => setEditingContact(prev => prev ? { ...prev, permissions: e.target.value as any } : null)}
+                                    >
+                                        <MenuItem value="manager">מנהל</MenuItem>
+                                        <MenuItem value="user">משתמש</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelContact}>ביטול</Button>
+                    <Button onClick={handleSaveContact} variant="contained">שמור</Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Snackbar for notifications */}
             <Snackbar
