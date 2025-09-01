@@ -103,17 +103,123 @@ export const forbiddenWords = [
     'אלוהים'
 ];
 
+// מילים אסורות באנגלית
+export const forbiddenEnglishWords = [
+    'fuck',
+    'fucking',
+    'fucker',
+    'asshole',
+    'shit',
+    'bullshit',
+    'motherfucker',
+    'son of a bitch',
+    'bitch',
+    'slut',
+    'whore',
+    'bastard',
+    'dick',
+    'pussy',
+    'cunt',
+    'jerk',
+    'fag',
+    'faggot',
+    'gay',
+    'queer',
+    'retard',
+    'moron',
+    'idiot',
+    'dumbass',
+    'stupid',
+    'loser',
+    'wanker',
+    'prick',
+    'cock',
+    'blowjob',
+    'suck my dick',
+    'tits',
+    'boobs',
+    'bollocks',
+    'piss off',
+    'crap',
+    'jackass',
+    'twat',
+    'dickhead',
+    'butthead',
+    'fuck you',
+    'go to hell',
+    'hell',
+    'damn',
+    'damn you',
+    'curse',
+    'bitchy',
+    'slutty',
+    'skank',
+    'hoe',
+    'tramp',
+    'hooker',
+    'prostitute',
+    'scumbag',
+    'dirtbag',
+    'junkie',
+    'crackhead',
+    'alcoholic',
+    'addict',
+    'nazi',
+    'hitler',
+    'himmler',
+    'goebbels',
+    'terrorist',
+    'bomber',
+    'murderer',
+    'killer',
+    'rapist',
+    'pedophile',
+    'pervert',
+    'molester',
+    'incest',
+    'necrophile',
+    'zoophile',
+    'racist',
+    'nigger',
+    'nigga',
+    'negro',
+    'chink',
+    'jap',
+    'gook',
+    'kike',
+    'spic',
+    'wetback',
+    'paki',
+    'sandnigger',
+    'towelhead',
+    'islamist',
+    'jewboy',
+    'gypsy',
+    'cripple',
+    'lame',
+    'fatso',
+    'ugly',
+    'disgusting',
+    'filthy',
+    'worthless',
+    'trash',
+    'scum',
+    'failure',
+    'God'
+];
+
 // תפקידים נפוצים לאוטוקומפליט
 export const commonRoles = [
     'מנכ"ל',
     'סמנכ"ל כספים',
-    'סמנכ"ל תפעול',
-    'ממונה בטיחות',
-    'יועץ בטיחות',
+    'גזבר',
     'ממונה ביטוח',
-    'יועץ משפטי',
-    'מזכיר חברה',
+    'יועץ ביטוח',
+    'ממונה בטיחות',
+    'סמנכ"ל תפעול',
     'סמנכ"ל הנדסה',
+    'מזכיר חברה',
+    'יועץ משפטי',
     'מנהל פרויקטים',
     'מהנדס ראשי',
     'מהנדס אזרחי',
@@ -159,9 +265,6 @@ export const commonRoles = [
     'יועץ מערכות קיימות',
     'יועץ מערכות אנרגיה מתחדשת',
     'יועץ מערכות אנרגיה ירוקה',
-    'יועץ מערכות אנרגיה נקייה',
-    'יועץ מערכות אנרגיה מתחדשת',
-    'יועץ מערכות אנרגיה ירוקה',
     'יועץ מערכות אנרגיה נקייה'
 ];
 
@@ -174,19 +277,28 @@ export const containsForbiddenWords = (text: string): boolean => {
     );
 };
 
+// פונקציה לבדיקת מילים אסורות באנגלית
+export const containsForbiddenEnglishWords = (text: string): boolean => {
+    if (!text) return false;
+    const normalizedText = text.toLowerCase().trim();
+    return forbiddenEnglishWords.some(word =>
+        normalizedText.includes(word.toLowerCase())
+    );
+};
+
 // פונקציה לוולידציית שם מלא בעברית
 export const validateHebrewName = (name: string): boolean => {
     if (!name) return false;
-    // מותרות אותיות בעברית, מקף, גרש, גרשיים ורווחים
-    const hebrewNameRegex = /^[\u0590-\u05FF\s\-'״]+$/;
+    // מותרות אותיות בעברית, מקף, גרש, גרשיים, רווחים, מספרים וסימנים
+    const hebrewNameRegex = /^[\u0590-\u05FF\s\-'״0-9&.()]+$/;
     return hebrewNameRegex.test(name.trim());
 };
 
 // פונקציה לוולידציית תפקיד בעברית
 export const validateHebrewRole = (role: string): boolean => {
     if (!role) return false;
-    // מותרות אותיות בעברית, מקף, גרש, גרשיים ורווחים
-    const hebrewRoleRegex = /^[\u0590-\u05FF\s\-'״]+$/;
+    // מותרות אותיות בעברית ואנגלית, מקף, גרש, גרשיים, רווחים, מספרים וסימנים
+    const hebrewRoleRegex = /^[\u0590-\u05FFa-zA-Z\s\-'״0-9&.(),]+$/;
     return hebrewRoleRegex.test(role.trim());
 };
 

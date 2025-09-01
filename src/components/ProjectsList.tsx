@@ -6,7 +6,14 @@ import {
     IconButton,
     Card,
     CardContent,
-    Divider
+    Divider,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper
 } from '@mui/material';
 import {
     Edit as EditIcon,
@@ -72,24 +79,30 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
     };
 
     const ProjectCard = ({ project, index }: { project: Project; index: number }) => (
-        <Card sx={{ mb: 2, border: '1px solid', borderColor: 'grey.200' }}>
-            <CardContent>
+        <Card sx={{
+            mb: 2,
+            backgroundColor: '#fafafa',
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            borderRadius: 2
+        }}>
+            <CardContent sx={{ padding: '16px' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    <Typography variant="h6" sx={{ color: '#666', fontWeight: 500 }}>
                         {project.projectName}
                     </Typography>
                     <Box>
                         <IconButton
                             size="small"
                             onClick={() => onEditProject(project, index)}
-                            sx={{ mr: 1 }}
+                            sx={{ color: '#666', mr: 1 }}
                         >
                             <EditIcon />
                         </IconButton>
                         <IconButton
                             size="small"
                             onClick={() => onDeleteProject(project._id || '')}
-                            color="error"
+                            sx={{ color: '#666' }}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -99,16 +112,16 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                     <Box sx={{ flex: '1 1 300px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: '#888' }} />
+                            <Typography variant="body2" sx={{ color: '#888' }}>
                                 תאריך עליה לקרקע: {formatDate(project.startDate)}
                             </Typography>
                         </Box>
                     </Box>
                     <Box sx={{ flex: '1 1 300px' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                            <MoneyIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <MoneyIcon sx={{ mr: 1, fontSize: 'small', color: '#888' }} />
+                            <Typography variant="body2" sx={{ color: '#888' }}>
                                 שווי: ₪{formatValue(project.value)}
                             </Typography>
                         </Box>
@@ -116,8 +129,8 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <DescriptionIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary">
+                    <DescriptionIcon sx={{ mr: 1, fontSize: 'small', color: '#888' }} />
+                    <Typography variant="body2" sx={{ color: '#888' }}>
                         תאור: {project.description}
                     </Typography>
                 </Box>
@@ -125,9 +138,13 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 {project.isClosed && (
                     <Chip
                         label="פרויקט סגור"
-                        color="error"
+                        sx={{
+                            mt: 1,
+                            backgroundColor: '#ffebee',
+                            color: '#c62828',
+                            border: '1px solid #ffcdd2'
+                        }}
                         size="small"
-                        sx={{ mt: 1 }}
                     />
                 )}
             </CardContent>
@@ -145,19 +162,34 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Chip
                     label={`${title} (${projects.length})`}
-                    color={color}
+                    sx={{
+                        mr: 2,
+                        backgroundColor: '#f5f5f5',
+                        color: '#666',
+                        border: '1px solid #e0e0e0',
+                        fontWeight: 500
+                    }}
                     variant="outlined"
-                    sx={{ mr: 2 }}
                 />
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{ color: '#888' }}>
                     {description}
                 </Typography>
             </Box>
 
             {projects.length === 0 ? (
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                    {emptyMessage}
-                </Typography>
+                <Card sx={{
+                    mb: 2,
+                    backgroundColor: '#fafafa',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ padding: '16px' }}>
+                        <Typography variant="body1" sx={{ color: '#888', textAlign: 'center' }}>
+                            {emptyMessage}
+                        </Typography>
+                    </CardContent>
+                </Card>
             ) : (
                 projects.map((project, index) => (
                     <ProjectCard
@@ -180,7 +212,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 description="פרויקטים שעדיין לא התחילו (תאריך עליה לקרקע עתידי)"
             />
 
-            <Divider sx={{ my: 3 }} />
+            <Divider sx={{ my: 3, borderColor: '#e0e0e0' }} />
 
             <ProjectSection
                 title="פרויקטים פעילים"
@@ -190,7 +222,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 description="פרויקטים שהתחילו אבל לא מסומנים כסגורים"
             />
 
-            <Divider sx={{ my: 3 }} />
+            <Divider sx={{ my: 3, borderColor: '#e0e0e0' }} />
 
             <ProjectSection
                 title="פרויקטים סגורים"

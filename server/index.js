@@ -44,190 +44,20 @@ async function connectDB() {
     console.log('✅ Connected to MongoDB Memory Server');
     console.log('📊 Database URI:', mongoUri);
 
-    // Create some sample data
-    await createSampleData();
+    // Create unique index on company_id to prevent duplicates
+    const db = client.db('contractor-crm');
+    await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
+    console.log('✅ Created unique index on company_id');
+
+    // No automatic sample data creation - contractors must be added manually
+    console.log('📝 No automatic sample data creation - contractors must be added manually');
 
   } catch (error) {
     console.error('❌ MongoDB connection error:', error);
   }
 }
 
-async function createSampleData() {
-  try {
-    const db = client.db('contractor-crm');
-
-    // Create sample contractors if collection is empty
-    const existingContractors = await db.collection('contractors').countDocuments();
-    if (existingContractors === 0) {
-      const sampleContractors = [
-        {
-          contractor_id: 'sample-contractor-1',
-          company_id: '123456789',
-          name: 'קבלן בנייה איכותי בע"מ',
-          nameEnglish: 'Quality Construction Contractor Ltd',
-          companyType: 'בע"מ',
-          numberOfEmployees: 150,
-          foundationDate: '2010-01-15',
-          city: 'תל אביב',
-          address: 'רחוב הרצל 123, תל אביב',
-          email: 'info@quality-construction.co.il',
-          phone: '03-1234567',
-          website: 'www.quality-construction.co.il',
-          sector: 'בנייה',
-          segment: 'קבלן ראשי',
-          activityType: 'בנייה והנדסה',
-          description: 'חברת בנייה מובילה המתמחה בבניית מבני מגורים ומסחר',
-          safetyStars: 4,
-          iso45001: true,
-          activities: [
-            { id: '1', activity_type: 'בנייה', classification: 'קבלן ראשי' },
-            { id: '2', activity_type: 'הנדסה', classification: 'תכנון' }
-          ],
-          management_contacts: [
-            {
-              id: '1',
-              fullName: 'דוד כהן',
-              role: 'מנכ"ל',
-              email: 'david@quality-construction.co.il',
-              mobile: '050-1234567',
-              permissions: 'full'
-            }
-          ],
-          projects: [],
-          notes: 'קבלן אמין עם ניסיון רב',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          contractor_id: 'sample-contractor-2',
-          company_id: '987654321',
-          name: 'קבלן חשמל מתקדם בע"מ',
-          nameEnglish: 'Advanced Electrical Contractor Ltd',
-          companyType: 'בע"מ',
-          numberOfEmployees: 75,
-          foundationDate: '2015-03-20',
-          city: 'חיפה',
-          address: 'רחוב אלנבי 456, חיפה',
-          email: 'info@advanced-electrical.co.il',
-          phone: '04-7654321',
-          website: 'www.advanced-electrical.co.il',
-          sector: 'חשמל',
-          segment: 'קבלן משנה',
-          activityType: 'חשמל ואלקטרוניקה',
-          description: 'חברת חשמל מתמחה בהתקנות חשמל מתקדמות',
-          safetyStars: 5,
-          iso45001: true,
-          activities: [
-            { id: '1', activity_type: 'חשמל', classification: 'קבלן משנה' }
-          ],
-          management_contacts: [
-            {
-              id: '1',
-              fullName: 'שרה לוי',
-              role: 'מנהלת פרויקטים',
-              email: 'sarah@advanced-electrical.co.il',
-              mobile: '050-7654321',
-              permissions: 'project_manager'
-            }
-          ],
-          projects: [],
-          notes: 'מומחים בחשמל תעשייתי',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          contractor_id: 'sample-contractor-3',
-          company_id: '555666777',
-          name: 'קבלן אינסטלציה מהיר בע"מ',
-          nameEnglish: 'Quick Plumbing Contractor Ltd',
-          companyType: 'בע"מ',
-          numberOfEmployees: 45,
-          foundationDate: '2018-07-10',
-          city: 'ירושלים',
-          address: 'רחוב יפו 789, ירושלים',
-          email: 'info@quick-plumbing.co.il',
-          phone: '02-9876543',
-          website: 'www.quick-plumbing.co.il',
-          sector: 'אינסטלציה',
-          segment: 'קבלן משנה',
-          activityType: 'אינסטלציה ומים',
-          description: 'חברת אינסטלציה המתמחה בעבודות מים וביוב',
-          safetyStars: 3,
-          iso45001: false,
-          activities: [
-            { id: '1', activity_type: 'אינסטלציה', classification: 'קבלן משנה' }
-          ],
-          management_contacts: [
-            {
-              id: '1',
-              fullName: 'משה גולדברג',
-              role: 'מנהל טכני',
-              email: 'moshe@quick-plumbing.co.il',
-              mobile: '050-9876543',
-              permissions: 'technical'
-            }
-          ],
-          projects: [],
-          notes: 'מהירים ואמינים בעבודות אינסטלציה',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-
-      await db.collection('contractors').insertMany(sampleContractors);
-      console.log('✅ Created sample contractors data');
-    }
-
-    // Create sample projects if collection is empty
-    const existingProjects = await db.collection('projects').countDocuments();
-    if (existingProjects === 0) {
-      // Create sample projects
-      const sampleProjects = [
-        {
-          contractorId: 'sample-contractor-1',
-          startDate: '2024-01-15',
-          projectName: 'בניית מגדל מגורים',
-          description: 'בניית מגדל מגורים בן 15 קומות עם 120 דירות',
-          value: 50000000,
-          isClosed: false,
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          contractorId: 'sample-contractor-1',
-          startDate: '2024-06-01',
-          projectName: 'פרויקט עתידי',
-          description: 'פרויקט שעדיין לא התחיל - בניית מרכז מסחרי',
-          value: 30000000,
-          isClosed: false,
-          status: 'future',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          contractorId: 'sample-contractor-1',
-          startDate: '2023-03-15',
-          projectName: 'פרויקט שהושלם',
-          description: 'בניית בית ספר יסודי - פרויקט שהושלם בהצלחה',
-          value: 15000000,
-          isClosed: true,
-          status: 'closed',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
-
-      await db.collection('projects').insertMany(sampleProjects);
-      console.log('✅ Sample data created successfully');
-      console.log('📋 Created', sampleProjects.length, 'sample projects');
-    } else {
-      console.log('📋 Database already contains', existingProjects, 'projects');
-    }
-  } catch (error) {
-    console.error('❌ Error creating sample data:', error);
-  }
-}
+// Sample data creation removed - contractors must be added manually through the interface
 
 // API Routes
 app.get('/api/health', (req, res) => {
@@ -287,19 +117,27 @@ app.post('/api/contractors', async (req, res) => {
 app.put('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const updateData = {
-      ...req.body,
+
+    // Remove immutable fields from update data
+    const { _id, createdAt, ...updateData } = req.body;
+
+    const finalUpdateData = {
+      ...updateData,
       updatedAt: new Date()
     };
+
     const result = await db.collection('contractors').updateOne(
       { contractor_id: req.params.id },
-      { $set: updateData }
+      { $set: finalUpdateData }
     );
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
     console.log('✅ Updated contractor:', req.params.id);
-    res.json(updateData);
+
+    // Return the updated contractor data
+    const updatedContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    res.json(updatedContractor);
   } catch (error) {
     console.error('❌ Error updating contractor:', error);
     res.status(500).json({ error: 'Failed to update contractor' });
@@ -309,7 +147,11 @@ app.put('/api/contractors/:id', async (req, res) => {
 app.delete('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const result = await db.collection('contractors').deleteOne({ contractor_id: req.params.id });
+    // Try to delete by _id first, then by contractor_id
+    let result = await db.collection('contractors').deleteOne({ _id: req.params.id });
+    if (result.deletedCount === 0) {
+      result = await db.collection('contractors').deleteOne({ contractor_id: req.params.id });
+    }
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Contractor not found' });
     }

@@ -3,6 +3,7 @@ import ProjectsList from './ProjectsList';
 import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor, Activity, ManagementContact } from '../types/contractor';
+import { ContractorService } from '../services/contractorService';
 import {
     containsForbiddenWords,
     validateEmail,
@@ -10,7 +11,8 @@ import {
     formatIsraeliPhone,
     validateHebrewName,
     validateHebrewRole,
-    commonRoles
+    commonRoles,
+    containsForbiddenEnglishWords
 } from '../data/forbiddenWords';
 import {
     Box,
@@ -241,8 +243,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
 
         // Validate company name for inappropriate words
-        if (field === 'name' && value && containsInappropriateWords(value)) {
+        if (field === 'name' && value && containsForbiddenWords(value)) {
             setErrors(prev => ({ ...prev, name: "שם החברה מכיל מילים לא הולמות" }));
+        }
+
+        // Validate English name for inappropriate words
+        if (field === 'nameEnglish' && value && containsForbiddenEnglishWords(value)) {
+            setErrors(prev => ({ ...prev, nameEnglish: "שם באנגלית מכיל מילים לא הולמות" }));
         }
     };
 
@@ -254,9 +261,17 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     };
 
+    const handleNameBlur = () => {
+        if (contractor.name && !validateHebrewName(contractor.name)) {
+            setErrors(prev => ({ ...prev, name: containsForbiddenWords(contractor.name) ? "השם מכיל מילים לא הולמות" : "השם אינו תקין" }));
+        }
+    };
+
     const handleEnglishNameBlur = () => {
         if (contractor.nameEnglish && !validateEnglishName(contractor.nameEnglish)) {
-            setErrors(prev => ({ ...prev, nameEnglish: containsInappropriateWords(contractor.nameEnglish) ? "השם מכיל מילים לא הולמות" : "שם לא תקני" }));
+            setErrors(prev => ({ ...prev, nameEnglish: "שם לא תקני" }));
+        } else if (contractor.nameEnglish && containsForbiddenEnglishWords(contractor.nameEnglish)) {
+            setErrors(prev => ({ ...prev, nameEnglish: "השם מכיל מילים לא הולמות" }));
         }
     };
 
@@ -397,7 +412,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         setEditingProjectIndex(null);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const newErrors: Errors = {};
 
         // Validate required fields
@@ -440,8 +455,63 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             return;
         }
 
-        if (onSave) {
-            onSave(contractor);
+        try {
+            console.log('Saving contractor to MongoDB:', contractor);
+
+            // Generate unique ID if not exists
+            const contractorToSave = {
+                ...contractor,
+                contractor_id: contractor.contractor_id || `contractor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+            };
+
+            // Save to MongoDB
+            let savedContractor;
+
+            // Check if contractor exists by company_id (ח"פ) first
+            if (contractor.company_id && contractor.company_id !== '') {
+                const existingContractor = await ContractorService.getByCompanyId(contractor.company_id);
+                if (existingContractor) {
+                    // Update existing contractor by company_id
+                    savedContractor = await ContractorService.update(existingContractor.contractor_id, contractorToSave);
+                    console.log('Updated existing contractor by company_id:', savedContractor);
+                } else {
+                    // Create new contractor
+                    savedContractor = await ContractorService.create(contractorToSave);
+                    console.log('Created new contractor:', savedContractor);
+                }
+            } else if (contractor.contractor_id && contractor.contractor_id !== '') {
+                // Check if contractor exists by contractor_id
+                const existingContractor = await ContractorService.getById(contractor.contractor_id);
+                if (existingContractor) {
+                    // Update existing contractor
+                    savedContractor = await ContractorService.update(contractor.contractor_id, contractorToSave);
+                    console.log('Updated existing contractor by contractor_id:', savedContractor);
+                } else {
+                    // Create new contractor if not found
+                    savedContractor = await ContractorService.create(contractorToSave);
+                    console.log('Created new contractor (was trying to update):', savedContractor);
+                }
+            } else {
+                // Create new contractor
+                savedContractor = await ContractorService.create(contractorToSave);
+                console.log('Created new contractor:', savedContractor);
+            }
+
+            console.log('Contractor saved successfully to MongoDB!', savedContractor);
+            setSnackbar({ open: true, message: 'הקבלן נשמר בהצלחה!', severity: 'success' });
+
+            // Call parent onSave if provided
+            if (onSave) {
+                onSave(savedContractor || contractorToSave);
+            }
+
+            // Close window after successful save
+            setTimeout(() => {
+                window.close();
+            }, 1500); // Wait 1.5 seconds for user to see success message
+        } catch (error) {
+            console.error('Error saving contractor to MongoDB:', error);
+            setSnackbar({ open: true, message: 'שגיאה בשמירת הקבלן', severity: 'error' });
         }
     };
 
@@ -456,17 +526,18 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     };
 
     const validateEnglishName = (name: string): boolean => {
-        return /^[a-zA-Z\s\-'&.()]+$/.test(name);
+        return /^[a-zA-Z\s\-'&.()0-9,]+$/.test(name);
     };
 
     const validateFoundationDate = (date: string): boolean => {
         const inputDate = new Date(date);
-        const minDate = new Date('1990-01-01');
+        const minDate = new Date('1900-01-01');
         const maxDate = new Date();
         return inputDate >= minDate && inputDate <= maxDate;
     };
 
     const containsInappropriateWords = (text: string): boolean => {
+        if (!text) return false;
         const inappropriateWords = [
             'bad', 'inappropriate', 'offensive', 'shit', 'fuck', 'bitch', 'ass', 'dick', 'pussy',
             'שרמוטה', 'זונה', 'כלב', 'בן זונה', 'בת זונה', 'מזדיין', 'זין', 'כוס', 'תחת'
@@ -487,7 +558,27 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         if (contractor.company_id) {
             try {
                 setIsLoadingCompanyData(true);
-                setSnackbar({ open: true, message: 'טוען נתונים...', severity: 'success' });
+                setSnackbar({ open: true, message: 'בודק אם הח"פ קיים במערכת...', severity: 'success' });
+
+                console.log('Checking if company ID exists in database:', contractor.company_id);
+
+                // First, check if the company ID already exists in our database
+                const existingContractors = await ContractorService.getAll();
+                const existingContractor = existingContractors.find(c => c.company_id === contractor.company_id);
+
+                if (existingContractor) {
+                    console.log('Company ID found in database:', existingContractor);
+
+                    // Load existing contractor data from MongoDB
+                    setContractor(existingContractor);
+
+                    setSnackbar({ open: true, message: 'הקבלן נמצא במערכת - נטענים נתונים קיימים', severity: 'success' });
+                    setIsLoadingCompanyData(false);
+                    return;
+                }
+
+                // If not found in database, proceed with API calls
+                setSnackbar({ open: true, message: 'טוען נתונים מה-APIs...', severity: 'success' });
 
                 console.log('Fetching data for company ID:', contractor.company_id);
 
@@ -504,26 +595,44 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 if (companiesData.success && companiesData.result.records.length > 0) {
                     const companyData = companiesData.result.records[0];
                     console.log('Company data from API:', companyData);
-                    const newCompanyType = getCompanyTypeByCompanyId(contractor.company_id);
+
+                    // Get company type from companies registry
+                    const companyTypeFromRegistry = companyData['סוג תאגיד'] || '';
+                    let newCompanyType = 'בע"מ'; // default
+
+                    if (companyTypeFromRegistry.includes('ציבורית')) {
+                        newCompanyType = 'חברה ציבורית';
+                    } else if (companyTypeFromRegistry.includes('פרטית')) {
+                        newCompanyType = 'חברה פרטית';
+                    } else if (companyTypeFromRegistry.includes('ממשלתית')) {
+                        newCompanyType = 'חברה ממשלתית';
+                    } else if (companyTypeFromRegistry.includes('זרה')) {
+                        newCompanyType = 'חברה זרה';
+                    } else if (companyTypeFromRegistry.includes('אגודה')) {
+                        newCompanyType = 'אגודה שיתופית';
+                    } else if (companyTypeFromRegistry.includes('עמותה')) {
+                        newCompanyType = 'עמותה';
+                    }
 
                     console.log('Setting company data:', {
                         name: companyData['שם חברה'],
                         nameEnglish: companyData['שם באנגלית'],
                         city: companyData['שם עיר'],
-                        email: companyData['אימייל']
+                        email: companyData['אימייל'],
+                        companyType: newCompanyType
                     });
 
                     setContractor(prev => {
                         const newContractor = {
                             ...prev,
-                            name: companyData['שם חברה'] || prev.name,
+                            name: (companyData['שם חברה'] || prev.name).replace(/בע~מ/g, 'בע״מ'),
                             nameEnglish: companyData['שם באנגלית'] || prev.nameEnglish,
                             city: companyData['שם עיר'] || prev.city,
                             address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || prev.address,
                             phone: formatPhoneNumber(companyData['מספר טלפון'] || prev.phone),
                             email: companyData['אימייל'] || prev.email,
                             website: companyData['אתר אינטרנט'] || generateWebsiteFromEmail(companyData['אימייל']) || prev.website,
-                            companyType: newCompanyType || prev.companyType,
+                            companyType: newCompanyType,
                             foundationDate: companyData['תאריך התאגדות'] ? convertHebrewDate(companyData['תאריך התאגדות']) : prev.foundationDate
                         };
                         console.log('Updated contractor state after company data:', newContractor);
@@ -545,15 +654,31 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     contractorsData.result.records.forEach((contractorData: any, index: number) => {
                         // Use the first record for basic contractor info
                         if (index === 0) {
-                            contractorId = contractorData['MISPAR_KABLAN'] || '';
                             email = contractorData['EMAIL'] || '';
+                            contractorId = contractorData['MISPAR_KABLAN'] || '';
+
+                            // Debug: Log all available fields from the API
+                            console.log('All contractor data fields:', Object.keys(contractorData));
+                            console.log('Full contractor data:', contractorData);
+
                             // Add phone from contractors registry with leading 0
-                            const phoneFromRegistry = contractorData['TELEFON'] || '';
+                            const phoneFromRegistry = contractorData['MISPAR_TEL'] || contractorData['TELEFON'] || contractorData['טלפון'] || contractorData['PHONE'] || '';
+                            console.log('Phone from contractors registry:', phoneFromRegistry);
                             if (phoneFromRegistry) {
                                 const formattedPhone = formatPhoneNumber(phoneFromRegistry);
+                                console.log('Formatted phone:', formattedPhone);
                                 setContractor(prev => ({
                                     ...prev,
                                     phone: formattedPhone
+                                }));
+                            }
+
+                            // Add contractor ID from contractors registry
+                            if (contractorId) {
+                                console.log('Contractor ID from registry:', contractorId);
+                                setContractor(prev => ({
+                                    ...prev,
+                                    contractor_id: contractorId
                                 }));
                             }
                         }
@@ -590,7 +715,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     });
 
                     console.log('Setting contractor data:', {
-                        contractor_id: contractorId,
                         email: email,
                         activities_count: activities.length
                     });
@@ -598,7 +722,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     setContractor(prev => {
                         const newContractor = {
                             ...prev,
-                            contractor_id: contractorId || prev.contractor_id,
+                            contractor_id: contractorId || prev.contractor_id, // Add contractor ID from contractors registry
                             sector: contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector,
                             activityType: contractorsData.result.records[0]['KVUTZA'] || prev.activityType,
                             email: email || prev.email, // Add email from contractors registry
@@ -672,7 +796,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         if (!domain) return '';
 
         const freeEmailProviders = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'walla.co.il', 'nana10.co.il'];
-        if (freeEmailProviders.includes(domain.toLowerCase())) {
+        if (freeEmailProviders.includes(domain?.toLowerCase() || '')) {
             return '';
         }
 
@@ -720,6 +844,17 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     if (index === 0) {
                         contractorId = contractorData['MISPAR_KABLAN'] || '';
                         email = contractorData['EMAIL'] || '';
+                        // Add phone from contractors registry with leading 0
+                        const phoneFromRegistry = contractorData['MISPAR_TEL'] || contractorData['TELEFON'] || '';
+                        console.log('Phone from contractors registry (refresh):', phoneFromRegistry);
+                        if (phoneFromRegistry) {
+                            const formattedPhone = formatPhoneNumber(phoneFromRegistry);
+                            console.log('Formatted phone (refresh):', formattedPhone);
+                            setContractor(prev => ({
+                                ...prev,
+                                phone: formattedPhone
+                            }));
+                        }
                     }
 
                     // Add activity for each record
@@ -814,7 +949,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                 sx={{
                                                     position: 'absolute',
                                                     left: 7,
-                                                    top: '50%',
+                                                    top: 'calc(50% - 5px)',
                                                     transform: 'translateY(-50%)',
                                                     zIndex: 1
                                                 }}
@@ -841,10 +976,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         label="שם החברה"
                                         value={contractor.name}
                                         onChange={(e) => handleChange('name', e.target.value)}
+                                        onBlur={handleNameBlur}
                                         error={!!errors.name}
                                         helperText={errors.name}
                                         required
                                         InputLabelProps={{
+                                            shrink: true,
                                             sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
                                     />
@@ -992,6 +1129,18 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             </Grid>
                         </CardContent>
                     </Card>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        <Button onClick={handleSave} variant="contained">
+                            שמור
+                        </Button>
+                    </Box>
                 </Box>
             )}
 
@@ -1005,16 +1154,26 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>בטיחות ואיכות</Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label="דירוג בטיחות (1-5)"
-                                    type="number"
-                                    inputProps={{ min: 1, max: 5 }}
-                                    value={contractor.safetyStars}
-                                    onChange={(e) => handleChange('safetyStars', parseInt(e.target.value) || 0)}
-                                    error={!!errors.safetyStars}
-                                    helperText={errors.safetyStars}
-                                />
+                                <FormControl sx={{ minWidth: 200 }}>
+                                    <InputLabel>דירוג כוכבי בטיחות</InputLabel>
+                                    <Select
+                                        value={contractor.safetyRating || 0}
+                                        onChange={(e) => handleChange('safetyRating', e.target.value)}
+                                        error={!!errors.safetyRating}
+                                        label="דירוג כוכבי בטיחות"
+                                    >
+                                        <MenuItem value={0}>0 כוכבים</MenuItem>
+                                        <MenuItem value={1}>1 כוכב</MenuItem>
+                                        <MenuItem value={2}>2 כוכבים</MenuItem>
+                                        <MenuItem value={3}>3 כוכבים</MenuItem>
+                                        <MenuItem value={4}>4 כוכבים</MenuItem>
+                                        <MenuItem value={5}>5 כוכבים</MenuItem>
+                                        <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
+                                    </Select>
+                                    {errors.safetyRating && (
+                                        <FormHelperText error>{errors.safetyRating}</FormHelperText>
+                                    )}
+                                </FormControl>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <FormControlLabel
@@ -1080,57 +1239,144 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             {activeTab === 2 && (
                 <Box sx={{ p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">אנשי קשר ניהוליים</Typography>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={handleAddContact}
+                            sx={{
+                                backgroundColor: '#f5f5f5',
+                                color: '#666',
+                                border: '1px solid #e0e0e0',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                '&:hover': {
+                                    backgroundColor: '#e8e8e8'
+                                }
+                            }}
                         >
-                            הוסף איש קשר
+                            הוסף
                         </Button>
                     </Box>
 
                     {contractor.management_contacts?.length === 0 ? (
-                        <Card sx={{ mb: 2 }}>
-                            <CardContent>
-                                <Typography variant="body1" color="text.secondary" align="center">
-                                    אין אנשי קשר. לחץ על "הוסף איש קשר" כדי להוסיף איש קשר חדש.
+                        <Card sx={{
+                            mb: 2,
+                            backgroundColor: '#fafafa',
+                            border: '1px solid #e0e0e0',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                            borderRadius: 2
+                        }}>
+                            <CardContent sx={{ padding: '16px' }}>
+                                <Typography variant="body1" sx={{ color: '#888', textAlign: 'center' }}>
+                                    אין אנשי קשר. לחץ על "הוסף" כדי להוסיף איש קשר חדש.
                                 </Typography>
                             </CardContent>
                         </Card>
                     ) : (
-                        contractor.management_contacts?.map((contact, index) => (
-                            <Card key={contact.id} sx={{ mb: 2 }}>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Box>
-                                            <Typography variant="h6">{contact.fullName || `איש קשר ${index + 1}`}</Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {contact.role} • {contact.email} • {contact.mobile}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                הרשאות: {contact.permissions === 'manager' ? 'מנהל' : 'משתמש'}
-                                            </Typography>
-                                        </Box>
-                                        <Box>
-                                            <IconButton
-                                                onClick={() => handleEditContact(contact, index)}
-                                                color="primary"
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                onClick={() => handleDeleteContact(index)}
-                                                color="error"
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Box>
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        ))
+                        <TableContainer component={Paper} sx={{
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            borderRadius: 2,
+                            backgroundColor: '#fafafa'
+                        }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {contractor.management_contacts?.map((contact, index) => (
+                                        <TableRow key={contact.id} sx={{
+                                            backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafafa',
+                                            '&:hover': { backgroundColor: '#f0f0f0' }
+                                        }}>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
+                                                    {contact.fullName || `איש קשר ${index + 1}`}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#888' }}>
+                                                    {contact.role}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: '#888',
+                                                        cursor: 'pointer',
+                                                        textDecoration: 'underline',
+                                                        '&:hover': { color: 'primary.main' }
+                                                    }}
+                                                    onClick={() => {
+                                                        if (contact.email) {
+                                                            window.open(`mailto:${contact.email}`, '_blank');
+                                                        }
+                                                    }}
+                                                >
+                                                    {contact.email}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: '#888',
+                                                        cursor: 'pointer',
+                                                        textDecoration: 'underline',
+                                                        '&:hover': { color: 'primary.main' }
+                                                    }}
+                                                    onClick={() => {
+                                                        if (contact.mobile) {
+                                                            window.open(`callto://${contact.mobile.replace(/\D/g, '')}`, '_blank');
+                                                        }
+                                                    }}
+                                                >
+                                                    {contact.mobile}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#888' }}>
+                                                    {contact.permissions === 'manager' ? 'מנהל' : 'משתמש'}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
+                                                <IconButton
+                                                    onClick={() => handleEditContact(contact, index)}
+                                                    sx={{ color: '#666', mr: 1 }}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={() => handleDeleteContact(index)}
+                                                    sx={{ color: '#666' }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     )}
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        <Button onClick={handleSave} variant="contained">
+                            שמור
+                        </Button>
+                    </Box>
                 </Box>
             )}
 
@@ -1155,19 +1401,20 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     />
 
                     {/* Project Dialog */}
-                    <Dialog open={isProjectDialogOpen} onClose={handleCancelProject} maxWidth="md" fullWidth>
+                    <Dialog open={isProjectDialogOpen} onClose={handleCancelProject} maxWidth="lg" fullWidth>
                         <DialogTitle>
                             {editingProjectIndex !== null ? 'ערוך פרויקט' : 'הוסף פרויקט חדש'}
                         </DialogTitle>
                         <DialogContent>
                             {editingProject && (
-                                <Grid container spacing={2} sx={{ mt: 1 }}>
+                                <Grid container spacing={3} sx={{ mt: 1 }}>
                                     <Grid item xs={12} md={6}>
                                         <TextField
                                             fullWidth
                                             label="שם הפרויקט"
                                             value={editingProject.projectName}
                                             onChange={(e) => setEditingProject(prev => prev ? { ...prev, projectName: e.target.value } : null)}
+                                            sx={{ minWidth: 300 }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -1178,6 +1425,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             value={editingProject.startDate}
                                             onChange={(e) => setEditingProject(prev => prev ? { ...prev, startDate: e.target.value } : null)}
                                             InputLabelProps={{ shrink: true }}
+                                            sx={{ minWidth: 300 }}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -1185,18 +1433,24 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             fullWidth
                                             label="תיאור הפרויקט"
                                             multiline
-                                            rows={3}
+                                            rows={6}
                                             value={editingProject.description}
                                             onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                            sx={{ minWidth: 400 }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
                                         <TextField
                                             fullWidth
-                                            label="שווי הפרויקט (₪)"
-                                            type="number"
-                                            value={editingProject.value}
-                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, value: parseInt(e.target.value) || 0 } : null)}
+                                            label="שווי הפרויקט"
+                                            type="text"
+                                            value={editingProject.value ? `${editingProject.value.toLocaleString('he-IL')} ₪` : ''}
+                                            onChange={(e) => {
+                                                const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                setEditingProject(prev => prev ? { ...prev, value: parseInt(numericValue) || 0 } : null);
+                                            }}
+                                            sx={{ minWidth: 300 }}
+                                            placeholder="לדוגמה: 1,000,000 ₪"
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -1218,105 +1472,16 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             <Button onClick={handleSaveProject} variant="contained">שמור</Button>
                         </DialogActions>
                     </Dialog>
-                </Box>
-            )}
 
-            {/* Safety Tab */}
-            {activeTab === 3 && (
-                <Box sx={{ p: 3 }}>
-                    <Typography variant="h6" gutterBottom>בטיחות ואיכות</Typography>
-
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                label="דירוג בטיחות (1-5)"
-                                type="number"
-                                inputProps={{ min: 1, max: 5 }}
-                                value={contractor.safetyStars}
-                                onChange={(e) => handleChange('safetyStars', parseInt(e.target.value) || 0)}
-                                error={!!errors.safetyStars}
-                                helperText={errors.safetyStars}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={contractor.iso45001}
-                                        onChange={(e) => handleChange('iso45001', e.target.checked)}
-                                    />
-                                }
-                                label="תקן ISO 45001"
-                            />
-                        </Grid>
-                    </Grid>
-
-                    <Box sx={{ mt: 3 }}>
-                        <Typography variant="h6" gutterBottom>סוגי פעילות</Typography>
-                        {contractor.activities?.map((activity, index) => (
-                            <Card key={activity.id} sx={{ mb: 2 }}>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                                        <Typography variant="h6">פעילות {index + 1}</Typography>
-                                        <IconButton
-                                            onClick={() => {
-                                                setContractor(prev => ({
-                                                    ...prev,
-                                                    activities: prev.activities.filter((_, i) => i !== index)
-                                                }));
-                                            }}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Box>
-
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} md={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="סוג פעילות"
-                                                value={activity.activity_type}
-                                                onChange={(e) => {
-                                                    const updatedActivities = [...contractor.activities];
-                                                    updatedActivities[index] = { ...activity, activity_type: e.target.value };
-                                                    setContractor(prev => ({ ...prev, activities: updatedActivities }));
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="סיווג"
-                                                value={activity.classification}
-                                                onChange={(e) => {
-                                                    const updatedActivities = [...contractor.activities];
-                                                    updatedActivities[index] = { ...activity, classification: e.target.value };
-                                                    setContractor(prev => ({ ...prev, activities: updatedActivities }));
-                                                }}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                </CardContent>
-                            </Card>
-                        ))}
-
-                        <Button
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={() => {
-                                const newActivity: Activity = {
-                                    id: Date.now().toString(),
-                                    activity_type: '',
-                                    classification: ''
-                                };
-                                setContractor(prev => ({
-                                    ...prev,
-                                    activities: [...prev.activities, newActivity]
-                                }));
-                            }}
-                        >
-                            הוסף פעילות
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        <Button onClick={handleSave} variant="contained">
+                            שמור
                         </Button>
                     </Box>
                 </Box>
@@ -1336,20 +1501,20 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         error={!!errors.notes}
                         helperText={errors.notes}
                     />
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        <Button onClick={handleSave} variant="contained">
+                            שמור
+                        </Button>
+                    </Box>
                 </Box>
             )}
-
-            {/* Action Buttons */}
-            <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                {onClose && (
-                    <Button onClick={onClose} variant="outlined">
-                        ביטול
-                    </Button>
-                )}
-                <Button onClick={handleSave} variant="contained">
-                    שמור
-                </Button>
-            </Box>
 
             {/* Contacts Dialog */}
             <Dialog open={isContactsDialogOpen} onClose={handleCancelContact} maxWidth="md" fullWidth>
@@ -1365,6 +1530,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                     label="שם מלא"
                                     value={editingContact.fullName}
                                     required
+                                    sx={{ minWidth: 300 }}
                                     error={editingContact.fullName && (containsForbiddenWords(editingContact.fullName) || !validateHebrewName(editingContact.fullName))}
                                     helperText={
                                         editingContact.fullName && containsForbiddenWords(editingContact.fullName) ? "השם מכיל מילים לא הולמות" :
@@ -1392,35 +1558,40 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label="תפקיד"
+                                <Autocomplete
+                                    freeSolo
+                                    options={commonRoles}
                                     value={editingContact.role}
-                                    required
-                                    error={editingContact.role && (containsForbiddenWords(editingContact.role) || !validateHebrewRole(editingContact.role))}
-                                    helperText={
-                                        editingContact.role && containsForbiddenWords(editingContact.role) ? "התפקיד מכיל מילים לא הולמות" :
-                                            editingContact.role && !validateHebrewRole(editingContact.role) ? "התפקיד יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים" : ""
-                                    }
-                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, role: e.target.value } : null)}
-                                    onBlur={(e) => {
-                                        // ולידציה רק אחרי עזיבת השדה
-                                        if (e.target.value) {
-                                            if (containsForbiddenWords(e.target.value)) {
-                                                setSnackbar({
-                                                    open: true,
-                                                    message: 'התפקיד מכיל מילים לא הולמות',
-                                                    severity: 'error'
-                                                });
-                                            } else if (!validateHebrewRole(e.target.value)) {
-                                                setSnackbar({
-                                                    open: true,
-                                                    message: 'התפקיד יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים',
-                                                    severity: 'error'
-                                                });
-                                            }
-                                        }
+                                    onChange={(event, newValue) => {
+                                        setEditingContact(prev => prev ? { ...prev, role: newValue || '' } : null);
                                     }}
+                                    onInputChange={(event, newInputValue) => {
+                                        setEditingContact(prev => prev ? { ...prev, role: newInputValue } : null);
+                                    }}
+                                    sx={{ minWidth: 300 }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="תפקיד"
+                                            required
+                                            fullWidth
+                                            sx={{ minWidth: 300 }}
+                                            error={editingContact.role && containsForbiddenWords(editingContact.role)}
+                                            helperText={
+                                                editingContact.role && containsForbiddenWords(editingContact.role) ? "התפקיד מכיל מילים לא הולמות" : ""
+                                            }
+                                            onBlur={(e) => {
+                                                // ולידציה רק אחרי עזיבת השדה
+                                                if (e.target.value && containsForbiddenWords(e.target.value)) {
+                                                    setSnackbar({
+                                                        open: true,
+                                                        message: 'התפקיד מכיל מילים לא הולמות',
+                                                        severity: 'error'
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    )}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
@@ -1429,7 +1600,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                     label="אימייל"
                                     type="email"
                                     value={editingContact.email}
-                                    required
+                                    sx={{ minWidth: 300 }}
                                     error={editingContact.email && !validateEmail(editingContact.email)}
                                     helperText={editingContact.email && !validateEmail(editingContact.email) ? "כתובת אימייל לא תקינה" : ""}
                                     onChange={(e) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
@@ -1451,7 +1622,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                     label="טלפון נייד"
                                     value={editingContact.mobile}
                                     placeholder="050-1234567 או 02-1234567"
-                                    required
+                                    sx={{ minWidth: 300 }}
                                     error={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile)}
                                     helperText={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile) ? "מספר טלפון לא תקין" : ""}
                                     onChange={(e) => {
@@ -1471,11 +1642,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <FormControl fullWidth required>
-                                    <InputLabel>הרשאות</InputLabel>
+                                <FormControl sx={{ minWidth: 200 }} required>
+                                    <InputLabel sx={{ backgroundColor: 'white', px: 1 }}>הרשאות</InputLabel>
                                     <Select
                                         value={editingContact.permissions}
                                         onChange={(e) => setEditingContact(prev => prev ? { ...prev, permissions: e.target.value as any } : null)}
+                                        label="הרשאות"
                                     >
                                         <MenuItem value="manager">מנהל</MenuItem>
                                         <MenuItem value="user">משתמש</MenuItem>

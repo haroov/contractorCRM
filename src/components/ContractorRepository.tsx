@@ -15,20 +15,25 @@ import {
     InputAdornment,
     Card,
     CardContent,
-    Button
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import {
     Search as SearchIcon,
     Edit as EditIcon,
-    Visibility as ViewIcon,
+    Delete as DeleteIcon,
     Add as AddIcon,
+    Refresh as RefreshIcon,
     Business as BusinessIcon,
     LocationOn as LocationIcon,
     Phone as PhoneIcon,
     Email as EmailIcon
 } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
-import { contractorsAPI } from '../services/api';
+import { ContractorService } from '../services/contractorService';
 
 interface ContractorRepositoryProps {
     onContractorSelect?: (contractor: Contractor) => void;
@@ -38,138 +43,75 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     const [contractors, setContractors] = useState<Contractor[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
 
-    // Load contractors from API
+    // Load contractors from MongoDB
     useEffect(() => {
         const loadContractors = async () => {
             try {
-                const data = await contractorsAPI.getAll();
+                console.log('Loading contractors from localStorage...');
+
+                // Initialize sample data if needed
+                await ContractorService.initializeSampleData();
+
+                const data = await ContractorService.getAll();
+                console.log('Contractors from localStorage:', data);
                 setContractors(data);
             } catch (error) {
-                console.error('❌ Error loading contractors:', error);
-                // Fallback to sample data if API fails
-                const sampleContractors: Contractor[] = [
-                    {
-                        contractor_id: 'sample-contractor-1',
-                        company_id: '123456789',
-                        name: 'קבלן בנייה איכותי בע"מ',
-                        nameEnglish: 'Quality Construction Contractor Ltd',
-                        companyType: 'בע"מ',
-                        numberOfEmployees: 150,
-                        foundationDate: '2010-01-15',
-                        city: 'תל אביב',
-                        address: 'רחוב הרצל 123, תל אביב',
-                        email: 'info@quality-construction.co.il',
-                        phone: '03-1234567',
-                        website: 'www.quality-construction.co.il',
-                        sector: 'בנייה',
-                        segment: 'קבלן ראשי',
-                        activityType: 'בנייה והנדסה',
-                        description: 'חברת בנייה מובילה המתמחה בבניית מבני מגורים ומסחר',
-                        safetyStars: 4,
-                        iso45001: true,
-                        activities: [
-                            { id: '1', activity_type: 'בנייה', classification: 'קבלן ראשי' },
-                            { id: '2', activity_type: 'הנדסה', classification: 'תכנון' }
-                        ],
-                        management_contacts: [
-                            {
-                                id: '1',
-                                fullName: 'דוד כהן',
-                                role: 'מנכ"ל',
-                                email: 'david@quality-construction.co.il',
-                                mobile: '050-1234567',
-                                permissions: 'full'
-                            }
-                        ],
-                        projects: [],
-                        notes: 'קבלן אמין עם ניסיון רב'
-                    },
-                    {
-                        contractor_id: 'sample-contractor-2',
-                        company_id: '987654321',
-                        name: 'קבלן חשמל מתקדם בע"מ',
-                        nameEnglish: 'Advanced Electrical Contractor Ltd',
-                        companyType: 'בע"מ',
-                        numberOfEmployees: 75,
-                        foundationDate: '2015-03-20',
-                        city: 'חיפה',
-                        address: 'רחוב אלנבי 456, חיפה',
-                        email: 'info@advanced-electrical.co.il',
-                        phone: '04-7654321',
-                        website: 'www.advanced-electrical.co.il',
-                        sector: 'חשמל',
-                        segment: 'קבלן משנה',
-                        activityType: 'חשמל ואלקטרוניקה',
-                        description: 'חברת חשמל מתמחה בהתקנות חשמל מתקדמות',
-                        safetyStars: 5,
-                        iso45001: true,
-                        activities: [
-                            { id: '1', activity_type: 'חשמל', classification: 'קבלן משנה' }
-                        ],
-                        management_contacts: [
-                            {
-                                id: '1',
-                                fullName: 'שרה לוי',
-                                role: 'מנהלת פרויקטים',
-                                email: 'sarah@advanced-electrical.co.il',
-                                mobile: '050-7654321',
-                                permissions: 'project_manager'
-                            }
-                        ],
-                        projects: [],
-                        notes: 'מומחים בחשמל תעשייתי'
-                    },
-                    {
-                        contractor_id: 'sample-contractor-3',
-                        company_id: '555666777',
-                        name: 'קבלן אינסטלציה מהיר בע"מ',
-                        nameEnglish: 'Quick Plumbing Contractor Ltd',
-                        companyType: 'בע"מ',
-                        numberOfEmployees: 45,
-                        foundationDate: '2018-07-10',
-                        city: 'ירושלים',
-                        address: 'רחוב יפו 789, ירושלים',
-                        email: 'info@quick-plumbing.co.il',
-                        phone: '02-9876543',
-                        website: 'www.quick-plumbing.co.il',
-                        sector: 'אינסטלציה',
-                        segment: 'קבלן משנה',
-                        activityType: 'אינסטלציה ומים',
-                        description: 'חברת אינסטלציה המתמחה בעבודות מים וביוב',
-                        safetyStars: 3,
-                        iso45001: false,
-                        activities: [
-                            { id: '1', activity_type: 'אינסטלציה', classification: 'קבלן משנה' }
-                        ],
-                        management_contacts: [
-                            {
-                                id: '1',
-                                fullName: 'משה גולדברג',
-                                role: 'מנהל טכני',
-                                email: 'moshe@quick-plumbing.co.il',
-                                mobile: '050-9876543',
-                                permissions: 'technical'
-                            }
-                        ],
-                        projects: [],
-                        notes: 'מהירים ואמינים בעבודות אינסטלציה'
-                    }
-                ];
-
-                setContractors(sampleContractors);
+                console.error('❌ Error loading contractors from localStorage:', error);
+                // Fallback to empty array if localStorage fails
+                setContractors([]);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         loadContractors();
     }, []);
 
+    // Auto-refresh when page gains focus
+    useEffect(() => {
+        const handleFocus = async () => {
+            try {
+                console.log('Page gained focus - refreshing contractors list...');
+                const data = await ContractorService.getAll();
+                console.log('Refreshed contractors from MongoDB:', data);
+                setContractors(data);
+            } catch (error) {
+                console.error('❌ Error refreshing contractors from MongoDB:', error);
+            }
+        };
+
+        const handleVisibilityChange = async () => {
+            if (!document.hidden) {
+                try {
+                    console.log('Page became visible - refreshing contractors list...');
+                    const data = await ContractorService.getAll();
+                    console.log('Refreshed contractors from MongoDB:', data);
+                    setContractors(data);
+                } catch (error) {
+                    console.error('❌ Error refreshing contractors from MongoDB:', error);
+                }
+            }
+        };
+
+        // Add event listeners for focus and visibility change
+        window.addEventListener('focus', handleFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Cleanup event listeners on unmount
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+
     const filteredContractors = contractors.filter(contractor =>
-        contractor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contractor.company_id.includes(searchTerm) ||
-        contractor.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contractor.sector.toLowerCase().includes(searchTerm.toLowerCase())
+        (contractor.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (contractor.company_id || '').includes(searchTerm) ||
+        (contractor.city?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (contractor.sector?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
 
     const openContractorInNewWindow = (contractor: Contractor, mode: 'view' | 'edit' | 'new') => {
@@ -197,12 +139,43 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         }
     };
 
-    const handleViewContractor = (contractor: Contractor) => {
-        openContractorInNewWindow(contractor, 'view');
-    };
-
     const handleEditContractor = (contractor: Contractor) => {
         openContractorInNewWindow(contractor, 'edit');
+    };
+
+    const handleDeleteContractor = (contractor: Contractor) => {
+        setContractorToDelete(contractor);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (contractorToDelete) {
+            try {
+                await ContractorService.delete(contractorToDelete.contractor_id);
+                setContractors(prev => prev.filter(c => c.contractor_id !== contractorToDelete.contractor_id));
+                setDeleteDialogOpen(false);
+                setContractorToDelete(null);
+            } catch (error) {
+                console.error('❌ Error deleting contractor:', error);
+            }
+        }
+    };
+
+    const cancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setContractorToDelete(null);
+    };
+
+    // Function to refresh contractors list
+    const refreshContractorsList = async () => {
+        try {
+            console.log('Refreshing contractors list from MongoDB...');
+            const data = await ContractorService.getAll();
+            console.log('Refreshed contractors from MongoDB:', data);
+            setContractors(data);
+        } catch (error) {
+            console.error('❌ Error refreshing contractors from MongoDB:', error);
+        }
     };
 
     const handleAddNewContractor = () => {
@@ -246,7 +219,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     return (
         <Box sx={{ p: 3, direction: 'rtl' }}>
             {/* Header */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 3, textAlign: 'right' }}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
                     מאגר קבלנים
                 </Typography>
@@ -268,6 +241,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 <SearchIcon />
                             </InputAdornment>
                         ),
+                        style: { textAlign: 'right' }
                     }}
                 />
                 <Button
@@ -281,42 +255,62 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
             {/* Statistics Cards */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" color="primary">
+                <Card sx={{
+                    backgroundColor: '#fafafa',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
                             {contractors.length}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             סך הכל קבלנים
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" color="success.main">
-                            {contractors.filter(c => c.safetyStars && c.safetyStars >= 4).length}
+                <Card sx={{
+                    backgroundColor: '#fafafa',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
+                            {contractors.filter(c => c.safetyRating && c.safetyRating >= 4).length}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             קבלנים עם דירוג גבוה
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" color="info.main">
-                            {contractors.filter(c => c.iso45001).length}
+                <Card sx={{
+                    backgroundColor: '#fafafa',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
+                            0
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             עם תקן ISO 45001
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" color="warning.main">
-                            {contractors.filter(c => c.safetyStars && c.safetyStars < 3).length}
+                <Card sx={{
+                    backgroundColor: '#fafafa',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
+                            {contractors.filter(c => c.safetyRating && c.safetyRating < 3).length}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             דורש שיפור בטיחות
                         </Typography>
                     </CardContent>
@@ -324,103 +318,184 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             </Box>
 
             {/* Contractors Table */}
-            <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+            <TableContainer component={Paper} sx={{
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                borderRadius: 2,
+                backgroundColor: '#fafafa'
+            }}>
                 <Table>
                     <TableHead>
-                        <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>קבלן</TableCell>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>ח״פ</TableCell>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>כתובת</TableCell>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>סקטור</TableCell>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>דירוג בטיחות</TableCell>
-                            <TableCell sx={{ color: 'white', fontWeight: 600 }}>פעולות</TableCell>
+                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>קבלן</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ח״פ</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>כתובת</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סקטור</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>דירוג בטיחות</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {filteredContractors.map((contractor) => (
-                            <TableRow key={contractor.contractor_id} hover>
-                                <TableCell>
+                            <TableRow key={contractor.contractor_id} hover sx={{
+                                '&:hover': { backgroundColor: '#f8f9fa' },
+                                borderBottom: '1px solid #f0f0f0'
+                            }}>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box>
-                                        <Typography variant="subtitle1" fontWeight={600}>
+                                        <Typography variant="subtitle1" fontWeight={500} sx={{ color: '#333', mb: 0.5 }}>
                                             {contractor.name}
                                         </Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-                                            <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                            <Typography variant="body2" color="text.secondary">
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                            <PhoneIcon sx={{ fontSize: 14, color: '#999' }} />
+                                            <Typography
+                                                variant="body2"
+                                                color="#666"
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
+                                                    '&:hover': { color: '#333', textDecoration: 'underline' }
+                                                }}
+                                                onClick={() => {
+                                                    if (contractor.phone) {
+                                                        window.open(`callto://${contractor.phone.replace(/\D/g, '')}`, '_blank');
+                                                    }
+                                                }}
+                                            >
                                                 {contractor.phone}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                            <Typography variant="body2" color="text.secondary">
+                                            <EmailIcon sx={{ fontSize: 14, color: '#999' }} />
+                                            <Typography
+                                                variant="body2"
+                                                color="#666"
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
+                                                    '&:hover': { color: '#333', textDecoration: 'underline' }
+                                                }}
+                                                onClick={() => {
+                                                    if (contractor.email) {
+                                                        window.open(`mailto:${contractor.email}`, '_blank');
+                                                    }
+                                                }}
+                                            >
                                                 {contractor.email}
                                             </Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" fontWeight={500}>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
+                                    <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
                                         {contractor.company_id}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <LocationIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                        <LocationIcon sx={{ fontSize: 14, color: '#999' }} />
                                         <Box>
-                                            <Typography variant="body2">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
+                                                    color: '#666',
+                                                    '&:hover': { color: '#333', textDecoration: 'underline' }
+                                                }}
+                                                onClick={() => {
+                                                    if (contractor.address && contractor.city) {
+                                                        const address = `${contractor.address}, ${contractor.city}, ישראל`;
+                                                        const encodedAddress = encodeURIComponent(address);
+                                                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+                                                    }
+                                                }}
+                                            >
                                                 {contractor.address}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
+                                                    color: '#999',
+                                                    '&:hover': { color: '#666', textDecoration: 'underline' }
+                                                }}
+                                                onClick={() => {
+                                                    if (contractor.city) {
+                                                        const encodedCity = encodeURIComponent(`${contractor.city}, ישראל`);
+                                                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedCity}`, '_blank');
+                                                    }
+                                                }}
+                                            >
                                                 {contractor.city}
                                             </Typography>
                                         </Box>
                                     </Box>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Chip
                                         label={contractor.sector}
                                         size="small"
-                                        color="primary"
-                                        variant="outlined"
+                                        sx={{
+                                            backgroundColor: '#f0f0f0',
+                                            color: '#666',
+                                            border: '1px solid #e0e0e0',
+                                            fontWeight: 400,
+                                            fontSize: '0.75rem'
+                                        }}
                                     />
-                                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                    <Typography variant="body2" sx={{ color: '#999', mt: 0.5, fontSize: '0.75rem' }}>
                                         {contractor.segment}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Chip
-                                            label={`${contractor.safetyStars} כוכבים`}
+                                            label={`${contractor.safetyRating || 0} כוכבים`}
                                             size="small"
-                                            color={getSafetyStarsColor(contractor.safetyStars || 0) as any}
+                                            sx={{
+                                                backgroundColor: contractor.safetyRating && contractor.safetyRating >= 4 ? '#e8f5e8' :
+                                                    contractor.safetyRating && contractor.safetyRating >= 3 ? '#fff3cd' : '#ffe6e6',
+                                                color: contractor.safetyRating && contractor.safetyRating >= 4 ? '#2e7d32' :
+                                                    contractor.safetyRating && contractor.safetyRating >= 3 ? '#856404' : '#d32f2f',
+                                                border: '1px solid #e0e0e0',
+                                                fontWeight: 400,
+                                                fontSize: '0.75rem'
+                                            }}
                                         />
-                                        {contractor.iso45001 && (
-                                            <Chip
-                                                label="ISO 45001"
-                                                size="small"
-                                                color="success"
-                                                variant="outlined"
-                                            />
-                                        )}
                                     </Box>
                                 </TableCell>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
+                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
                                         <IconButton
                                             size="small"
-                                            color="primary"
-                                            onClick={() => handleViewContractor(contractor)}
-                                            title="צפייה בפרטים"
-                                        >
-                                            <ViewIcon />
-                                        </IconButton>
-                                        <IconButton
-                                            size="small"
-                                            color="secondary"
+                                            sx={{
+                                                color: '#999',
+                                                '&:hover': {
+                                                    color: '#666',
+                                                    backgroundColor: '#f5f5f5'
+                                                },
+                                                padding: '4px'
+                                            }}
                                             onClick={() => handleEditContractor(contractor)}
                                             title="עריכת פרטים"
                                         >
-                                            <EditIcon />
+                                            <EditIcon sx={{ fontSize: 18 }} />
+                                        </IconButton>
+                                        <IconButton
+                                            size="small"
+                                            sx={{
+                                                color: '#999',
+                                                '&:hover': {
+                                                    color: '#d32f2f',
+                                                    backgroundColor: '#fff5f5'
+                                                },
+                                                padding: '4px'
+                                            }}
+                                            onClick={() => handleDeleteContractor(contractor)}
+                                            title="מחיקת קבלן"
+                                        >
+                                            <DeleteIcon sx={{ fontSize: 18 }} />
                                         </IconButton>
                                     </Box>
                                 </TableCell>
@@ -429,6 +504,46 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={cancelDelete}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle sx={{ textAlign: 'center', color: 'error.main' }}>
+                    אישור מחיקה
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1" sx={{ textAlign: 'center', mb: 2 }}>
+                        האם אתה בטוח שברצונך למחוק את הקבלן:
+                    </Typography>
+                    <Typography variant="h6" sx={{ textAlign: 'center', fontWeight: 600, color: 'primary.main' }}>
+                        {contractorToDelete?.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ textAlign: 'center', mt: 1, color: 'text.secondary' }}>
+                        פעולה זו אינה הפיכה!
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 3 }}>
+                    <Button
+                        variant="outlined"
+                        onClick={cancelDelete}
+                        sx={{ minWidth: 100 }}
+                    >
+                        ביטול
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={confirmDelete}
+                        sx={{ minWidth: 100 }}
+                    >
+                        מחק
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

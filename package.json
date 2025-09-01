@@ -38,6 +38,7 @@
     "lucide-react": "^0.542.0",
     "mongodb": "^6.19.0",
     "mongodb-memory-server": "^10.2.0",
+    "mongoose": "^8.18.0",
     "nanoid": "^5.1.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

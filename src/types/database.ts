@@ -1,3 +1,5 @@
+import { Activity, ManagementContact } from './contractor';
+
 // Database document interfaces
 export interface ProjectDocument {
   _id?: string;
@@ -38,21 +40,6 @@ export interface ContractorDocument {
   notes?: string;
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface Activity {
-  id: string;
-  activity_type: string;
-  classification: string;
-}
-
-export interface ManagementContact {
-  id: string;
-  fullName: string;
-  role: string;
-  email: string;
-  mobile: string;
-  permissions: string;
 }
 
 // API Response interfaces

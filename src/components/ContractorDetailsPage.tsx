@@ -15,6 +15,7 @@ import {
     Close as CloseIcon
 } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
+import { ContractorService } from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
 
 export default function ContractorDetailsPage() {
@@ -35,19 +36,28 @@ export default function ContractorDetailsPage() {
                 const newContractor: Contractor = {
                     contractor_id: '',
                     company_id: '',
-                    companyname: '',
+                    name: '',
                     nameEnglish: '',
-                    companyType: '',
-                    foundationDate: Date,
+                    companyType: 'בע"מ',
+                    numberOfEmployees: 0,
+                    foundationDate: '',
                     city: '',
                     address: '',
                     email: '',
                     phone: '',
                     website: '',
+                    sector: '',
+                    segment: '',
+                    activityType: '',
+                    description: '',
                     activities: [],
-                    contacts: [],
+                    management_contacts: [],
                     projects: [],
-                    notes: ''
+                    notes: '',
+                    safetyRating: 0,
+                    isActive: true,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
                 };
                 setContractor(newContractor);
             } else if (contractorId && contractorId !== 'new') {
@@ -69,11 +79,9 @@ export default function ContractorDetailsPage() {
         loadContractorData();
     }, [searchParams]);
 
-    const handleSave = () => {
-        // TODO: Implement save functionality
-        console.log('Saving contractor:', contractor);
-        // Close window after save
-        window.close();
+    const handleSave = async () => {
+        // This function is now handled by ContractorTabs
+        console.log('Save function called from ContractorDetailsPage - delegating to ContractorTabs');
     };
 
     const handleClose = () => {
@@ -111,16 +119,6 @@ export default function ContractorDetailsPage() {
                     </Typography>
 
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                        {mode === 'edit' && (
-                            <Button
-                                variant="contained"
-                                startIcon={<SaveIcon />}
-                                onClick={handleSave}
-                                color="success"
-                            >
-                                שמור
-                            </Button>
-                        )}
                         <IconButton
                             color="inherit"
                             onClick={handleClose}
@@ -137,8 +135,8 @@ export default function ContractorDetailsPage() {
                     {contractor && (
                         <ContractorTabs
                             contractor={contractor}
-                            setContractor={setContractor}
-                            mode={mode}
+                            onSave={handleSave}
+                            onClose={handleClose}
                         />
                     )}
                 </Paper>
