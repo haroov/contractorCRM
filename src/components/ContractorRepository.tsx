@@ -32,7 +32,7 @@ import {
     Phone as PhoneIcon,
     Email as EmailIcon
 } from '@mui/icons-material';
-import type { Contractor } from '../types/contractor';
+import type { ContractorDocument as Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
 
 interface ContractorRepositoryProps {
@@ -107,12 +107,105 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         };
     }, []);
 
-    const filteredContractors = contractors.filter(contractor =>
-        (contractor.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (contractor.company_id || '').includes(searchTerm) ||
-        (contractor.city?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (contractor.sector?.toLowerCase() || '').includes(searchTerm.toLowerCase())
-    );
+    const filteredContractors = contractors.filter(contractor => {
+        const searchLower = searchTerm.toLowerCase();
+
+        // 1. חיפוש בשם החברה (עדיפות ראשונה)
+        const nameMatch = (contractor.name?.toLowerCase() || '').includes(searchLower);
+
+        // 2. חיפוש בעיר (עדיפות שנייה)
+        const cityMatch = (contractor.city?.toLowerCase() || '').includes(searchLower);
+
+        // 3. חיפוש בשמות אנשי קשר (עדיפות שלישית)
+        const contactMatch = contractor.contacts?.some(contact =>
+            (contact.fullName?.toLowerCase() || '').includes(searchLower) ||
+            (contact.role?.toLowerCase() || '').includes(searchLower)
+        ) || false;
+
+        // 4. חיפוש בח"פ (עדיפות רביעית)
+        const companyIdMatch = (contractor.company_id || '').includes(searchTerm);
+
+        // 5. חיפוש בסקטור (עדיפות חמישית)
+        const sectorMatch = (contractor.sector?.toLowerCase() || '').includes(searchLower);
+
+        // לוג לדיבוג
+        if (searchTerm && (nameMatch || cityMatch || contactMatch || companyIdMatch || sectorMatch)) {
+            console.log('🔍 Found match for:', searchTerm, 'in contractor:', contractor.name);
+            console.log('  - nameMatch (1st priority):', nameMatch);
+            console.log('  - cityMatch (2nd priority):', cityMatch);
+            console.log('  - contactMatch (3rd priority):', contactMatch);
+            console.log('  - companyIdMatch (4th priority):', companyIdMatch);
+            console.log('  - sectorMatch (5th priority):', sectorMatch);
+            if (contactMatch) {
+                console.log('  - contacts:', contractor.contacts);
+            }
+        }
+
+        // לוג ספציפי לפרשקובסקי
+        if (searchTerm.toLowerCase().includes('פרשקובסקי')) {
+            console.log('🔍 Searching for Prashkovski in contractor:', contractor.name);
+            console.log('  - contractor name:', contractor.name);
+            console.log('  - contacts:', contractor.contacts);
+        }
+
+        return nameMatch || cityMatch || contactMatch || companyIdMatch || sectorMatch;
+    }).sort((a, b) => {
+        // מיון לפי סדר העדיפויות
+        const searchLower = searchTerm.toLowerCase();
+
+        const getPriority = (contractor: any) => {
+            const nameMatch = (contractor.name?.toLowerCase() || '').includes(searchLower);
+            const cityMatch = (contractor.city?.toLowerCase() || '').includes(searchLower);
+            const contactMatch = contractor.contacts?.some((contact: any) =>
+                (contact.fullName?.toLowerCase() || '').includes(searchLower) ||
+                (contact.role?.toLowerCase() || '').includes(searchLower)
+            ) || false;
+            const companyIdMatch = (contractor.company_id || '').includes(searchTerm);
+            const sectorMatch = (contractor.sector?.toLowerCase() || '').includes(searchLower);
+
+            if (nameMatch) return 1; // עדיפות ראשונה
+            if (cityMatch) return 2; // עדיפות שנייה
+            if (contactMatch) return 3; // עדיפות שלישית
+            if (companyIdMatch) return 4; // עדיפות רביעית
+            if (sectorMatch) return 5; // עדיפות חמישית
+            return 6; // ללא התאמה
+        };
+
+        const priorityA = getPriority(a);
+        const priorityB = getPriority(b);
+
+        // לוג למיון
+        if (searchTerm && priorityA !== 6 && priorityB !== 6) {
+            console.log(`📊 Sorting: ${a.name} (priority ${priorityA}) vs ${b.name} (priority ${priorityB})`);
+        }
+
+        return priorityA - priorityB;
+    });
+
+    // לוג כל הקבלנים לדיבוג
+    useEffect(() => {
+        if (contractors.length > 0) {
+            console.log('📋 All contractors in system:', contractors.map(c => ({
+                name: c.name,
+                company_id: c.company_id,
+                contacts: c.contacts?.map(contact => contact.fullName) || []
+            })));
+
+            // חיפוש ספציפי לפרשקובסקי
+            const prashkovski = contractors.find(c =>
+                c.name?.toLowerCase().includes('פרשקובסקי') ||
+                c.contacts?.some(contact =>
+                    contact.fullName?.toLowerCase().includes('פרשקובסקי')
+                )
+            );
+
+            if (prashkovski) {
+                console.log('✅ Found Prashkovski contractor:', prashkovski);
+            } else {
+                console.log('❌ Prashkovski contractor not found in system');
+            }
+        }
+    }, [contractors]);
 
     const openContractorInNewWindow = (contractor: Contractor, mode: 'view' | 'edit' | 'new') => {
         // Create URL parameters for the contractor data
@@ -179,7 +272,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     };
 
     const handleAddNewContractor = () => {
-        const newContractor: Contractor = {
+        const newContractor: Partial<Contractor> = {
             contractor_id: '',
             company_id: '',
             name: '',
@@ -192,14 +285,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             website: '',
             sector: '',
             segment: '',
-            activityType: '',
-            description: '',
-            activities: [],
-            management_contacts: [],
+            classifications: [],
+            contacts: [],
             projects: [],
             notes: ''
         };
-        openContractorInNewWindow(newContractor, 'new');
+        openContractorInNewWindow(newContractor as Contractor, 'new');
     };
 
     const getSafetyStarsColor = (stars: number) => {
@@ -231,7 +322,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             {/* Search and Actions */}
             <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
                 <TextField
-                    placeholder="חיפוש לפי שם, ח״פ, עיר או סקטור..."
+                    placeholder="חיפוש לפי שם קבלן, עיר או שם איש קשר..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ flexGrow: 1 }}
@@ -248,6 +339,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={handleAddNewContractor}
+                    sx={{ gap: 1 }}
                 >
                     הוסף קבלן חדש
                 </Button>
@@ -386,9 +478,22 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
-                                    <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
-                                        {contractor.company_id}
-                                    </Typography>
+                                    <Box>
+                                        <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
+                                            {contractor.company_id}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            sx={{
+                                                color: '#999',
+                                                fontSize: '0.7rem',
+                                                display: 'block',
+                                                mt: 0.5
+                                            }}
+                                        >
+                                            {contractor.contractor_id ? `קבלן ${contractor.contractor_id}` : 'אינו קבלן רשום'}
+                                        </Typography>
+                                    </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

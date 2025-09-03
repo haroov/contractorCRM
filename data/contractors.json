@@ -1,0 +1,159 @@
+[
+  {
+    "_id": "68b5f243ca250c967a9a3d81",
+    "contractor_id": "15439",
+    "company_id": "510617194",
+    "name": "אלקטרה בניה בע״מ",
+    "nameEnglish": "Electra Construction Ltd.",
+    "companyType": "חברה פרטית",
+    "numberOfEmployees": 500,
+    "foundationDate": "1972-08-01",
+    "city": "רמת גן",
+    "address": "ז'בוטינסקי 7",
+    "email": "nirgi@electra.co.il",
+    "phone": "054-8145015",
+    "website": "www.electra.co.il",
+    "sector": "בניה",
+    "segment": "בניה כללית",
+    "activities": [
+      {
+        "id": "1",
+        "activity_type": "בניה",
+        "classification": "5",
+        "sector": "בניה",
+        "field": "ג",
+        "contractor_license": "15439",
+        "license_number": "15439",
+        "license_expiry": "2025-12-31",
+        "insurance_company": "הפניקס",
+        "insurance_policy": "POL-123456",
+        "insurance_expiry": "2025-12-31"
+      }
+    ],
+    "management_contacts": [
+      {
+        "full_name": "ניר גיל",
+        "role": "סמנכ\"ל כספים",
+        "phone": "054-8145015",
+        "email": "nirgi@electra.co.il",
+        "permissions": "manager",
+        "fullName": "ניר גבעתי",
+        "mobile": "054-8145015"
+      },
+      {
+        "id": "1756756306133",
+        "fullName": "מירון ענבר",
+        "role": "ממונה בטיחות",
+        "email": "",
+        "mobile": "054-9765267",
+        "permissions": "user"
+      },
+      {
+        "id": "1756756335272",
+        "fullName": "יאיר אהרון",
+        "role": "מנכ\"ל",
+        "email": "",
+        "mobile": "",
+        "permissions": "manager"
+      }
+    ],
+    "projects": [
+      {
+        "acknowledged": true,
+        "modifiedCount": 0,
+        "upsertedId": null,
+        "upsertedCount": 0,
+        "matchedCount": 0
+      }
+    ],
+    "notes": "נקבעה פגישה עם ניר גבעתי וצוותו",
+    "safetyRating": 5,
+    "fullAddress": "ז'בוטינסקי 7, רמת גן"
+  },
+  {
+    "_id": "68b5f6e53e88b9d3ea32cba2",
+    "contractor_id": "13995",
+    "company_id": "511532293",
+    "name": "אלקטרה דנקו בע״מ",
+    "nameEnglish": "ELECTRA DANKO LTD",
+    "companyType": "חברה פרטית",
+    "numberOfEmployees": 144,
+    "foundationDate": "1990-12-28",
+    "city": "רמת גן",
+    "address": "ז'בוטינסקי 7",
+    "email": "EinatF@electra.co.il",
+    "phone": "054-6850207",
+    "website": "www.electra.co.il",
+    "sector": "בניה",
+    "segment": "",
+    "activities": [
+      {
+        "id": "1",
+        "activity_type": "בניה",
+        "classification": "5",
+        "sector": "בניה",
+        "field": "ג",
+        "contractor_license": "13995",
+        "license_number": "13995",
+        "license_expiry": "",
+        "insurance_company": "",
+        "insurance_policy": "",
+        "insurance_expiry": ""
+      }
+    ],
+    "management_contacts": [
+      {
+        "id": "1756755724285",
+        "fullName": "יחיאל ויל",
+        "role": "מנכ\"ל",
+        "email": "",
+        "mobile": "",
+        "permissions": "manager"
+      },
+      {
+        "id": "1756755758077",
+        "fullName": "זרינה שפיץ",
+        "role": "סמנכ\"ל כספים",
+        "email": "",
+        "mobile": "",
+        "permissions": "manager"
+      },
+      {
+        "id": "1756755771344",
+        "fullName": "יוסי לביא",
+        "role": "ממונה בטיחות",
+        "email": "",
+        "mobile": "052-6180054",
+        "permissions": "user"
+      }
+    ],
+    "projects": [],
+    "notes": "",
+    "safetyRating": 5,
+    "fullAddress": "ז'בוטינסקי 7, רמת גן"
+  },
+  {
+    "_id": "68b5fb093e88b9d3ea32cba4",
+    "name": "קבלן בדיקה",
+    "company_id": "99999",
+    "city": "תל אביב",
+    "address": "רחוב בדיקה 123",
+    "email": "test@test.co.il",
+    "phone": "03-1234567",
+    "contractor_id": "contractor-1756756745026",
+    "createdAt": "2025-09-01T19:59:05.026Z",
+    "updatedAt": "2025-09-01T19:59:05.026Z"
+  },
+  {
+    "_id": "68b5fbd93e88b9d3ea32cba5",
+    "name": "קבלן בדיקה 2",
+    "company_id": "88888",
+    "city": "חיפה",
+    "address": "רחוב בדיקה 456",
+    "email": "test2@test.co.il",
+    "phone": "04-1234567",
+    "contractor_id": "contractor-1756756953320",
+    "createdAt": "2025-09-01T20:02:33.320Z",
+    "updatedAt": "2025-09-01T20:02:33.320Z"
+  }
+]

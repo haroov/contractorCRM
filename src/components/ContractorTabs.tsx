@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import ProjectsList from './ProjectsList';
+import RiskIndicator from './RiskIndicator';
 import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
-import type { Contractor, Activity, ManagementContact } from '../types/contractor';
+import type { Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
 import {
     containsForbiddenWords,
@@ -78,8 +79,6 @@ type Errors = {
     website?: string;
     sector?: string;
     segment?: string;
-    activityType?: string;
-    description?: string;
     safetyStars?: string;
     notes?: string;
 };
@@ -106,8 +105,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         website: '',
         sector: '',
         segment: '',
-        activityType: '',
-        description: '',
         safetyStars: 0,
         iso45001: false,
         activities: [],
@@ -121,6 +118,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     const [editingProject, setEditingProject] = useState<ProjectDocument | null>(null);
     const [editingProjectIndex, setEditingProjectIndex] = useState<number | null>(null);
     const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+    const [activeProjectTab, setActiveProjectTab] = useState<'all' | 'future' | 'active' | 'closed'>('all');
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
         open: false,
         message: '',
@@ -129,9 +127,20 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     // State for contacts dialog
     const [isContactsDialogOpen, setIsContactsDialogOpen] = useState(false);
-    const [editingContact, setEditingContact] = useState<ManagementContact | null>(null);
+    const [editingContact, setEditingContact] = useState<Contact | null>(null);
     const [editingContactIndex, setEditingContactIndex] = useState<number | null>(null);
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState(false);
+    const [validationLoading, setValidationLoading] = useState(false);
+    const [validationMessage, setValidationMessage] = useState<string>('');
+    const [statusValidated, setStatusValidated] = useState(false);
+
+    // Update contractor state when initialContractor changes
+    useEffect(() => {
+        if (initialContractor) {
+            setContractor(initialContractor);
+            setStatusValidated(false); // Reset validation status for new contractor
+        }
+    }, [initialContractor]);
 
     // Load projects when contractor changes
     useEffect(() => {
@@ -140,66 +149,84 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     }, [contractor.contractor_id]);
 
-    // Load sample data for testing
+    // Auto-validate contractor status when contractor is loaded
+    useEffect(() => {
+        if (contractor.contractor_id && contractor.company_id && !statusValidated) {
+            // Auto-validate status if not already validated and not currently validating
+            if ((contractor.status === null || contractor.violator === null || contractor.restrictions === null) && !validationLoading) {
+                // Use setTimeout to avoid calling during render
+                setTimeout(() => {
+                    if ((contractor.status === null || contractor.violator === null || contractor.restrictions === null) && !statusValidated) {
+                        handleValidateStatus();
+                    }
+                }, 100);
+            }
+        }
+    }, [contractor.contractor_id, contractor.company_id, statusValidated]);
+
+    // Load sample data for testing - REMOVED
+    // System now only accepts manually entered data
     useEffect(() => {
         if (!initialContractor) {
-            // Load sample data for testing
-            const sampleContractor: Contractor = {
-                contractor_id: 'sample-contractor-1',
-                company_id: '123456789',
-                name: 'קבלן בנייה איכותי בע"מ',
-                nameEnglish: 'Quality Construction Contractor Ltd',
+            // Initialize empty contractor for new entries
+            const emptyContractor: Contractor = {
+                contractor_id: '',
+                company_id: '',
+                name: '',
+                nameEnglish: '',
                 companyType: 'בע"מ',
-                numberOfEmployees: 150,
-                foundationDate: '2010-01-15',
-                city: 'תל אביב',
-                address: 'רחוב הרצל 123, תל אביב',
-                email: 'info@quality-construction.co.il',
-                phone: '03-1234567',
-                website: 'www.quality-construction.co.il',
-                sector: 'בנייה',
-                segment: 'קבלן ראשי',
-                activityType: 'בנייה והנדסה',
-                description: 'חברת בנייה מובילה המתמחה בבניית מבני מגורים ומסחר',
-                safetyStars: 4,
-                iso45001: true,
-                activities: [
-                    { id: '1', activity_type: 'בנייה', classification: 'קבלן ראשי' },
-                    { id: '2', activity_type: 'הנדסה', classification: 'תכנון' }
-                ],
-                management_contacts: [
-                    {
-                        id: '1',
-                        fullName: 'דוד כהן',
-                        role: 'מנכ"ל',
-                        email: 'david@quality-construction.co.il',
-                        mobile: '050-1234567',
-                        permissions: 'full'
-                    }
-                ],
+                numberOfEmployees: 0,
+                foundationDate: '',
+                city: '',
+                address: '',
+                email: '',
+                phone: '',
+                website: '',
+                sector: '',
+                segment: '',
+                safetyRating: 0,
+                iso45001: false,
+                classifications: [],
+                contacts: [],
                 projects: [],
-                notes: 'קבלן אמין עם ניסיון רב'
+                notes: '',
+                activityType: '',
+                description: '',
+                isActive: true,
+                createdAt: new Date(),
+                updatedAt: new Date()
             };
-            setContractor(sampleContractor);
+            setContractor(emptyContractor);
         }
     }, [initialContractor]);
 
     const loadProjects = async () => {
         try {
-            const projects = await projectsAPI.getByContractor(contractor.contractor_id);
-            setContractor(prev => ({ ...prev, projects }));
+            // Projects are now loaded with the contractor from the server
+            // No need to make a separate API call
+            console.log('Projects already loaded with contractor:', contractor.projects?.length || 0);
         } catch (error) {
             console.error('Error loading projects:', error);
         }
     };
 
-    const saveProject = async (project: ProjectDocument) => {
+    const saveProject = async (project: Project) => {
         try {
-            const savedProject = await projectsAPI.create(project);
-            setContractor(prev => ({
-                ...prev,
-                projects: [...prev.projects, savedProject]
-            }));
+            // Determine project status based on dates
+            const projectStatus = getProjectStatus(project.startDate, project.duration || 0, project.isClosed);
+
+            // Add contractor_id and status to the project before saving
+            const projectToSave = {
+                ...project,
+                contractorId: contractor.contractor_id,
+                status: projectStatus
+            };
+
+            const savedProject = await projectsAPI.create(projectToSave);
+
+            // Refresh contractor data from server to get the complete project details
+            await refreshProjectsData();
+
             return savedProject;
         } catch (error) {
             console.error('Error saving project:', error);
@@ -207,14 +234,15 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     };
 
-    const updateProject = async (project: ProjectDocument) => {
+    const updateProject = async (project: Project) => {
         try {
-            const updatedProject = await projectsAPI.update(project._id!, project);
-            setContractor(prev => ({
-                ...prev,
-                projects: prev.projects.map(p => p._id === project._id ? updatedProject : p)
-            }));
-            return updatedProject;
+            // Update project via API
+            await projectsAPI.update(project.id, project);
+
+            // Refresh contractor data from server to get the updated project details
+            await refreshProjectsData();
+
+            return project;
         } catch (error) {
             console.error('Error updating project:', error);
             throw error;
@@ -223,14 +251,52 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     const deleteProject = async (projectId: string) => {
         try {
+            // Check if project exists in local state
+            const projectExists = contractor.projects?.some(p => p._id === projectId || p.id === projectId);
+
+            if (!projectExists) {
+                setSnackbar({ open: true, message: 'הפרויקט כבר נמחק', severity: 'success' });
+                return;
+            }
+
             await projectsAPI.delete(projectId);
+
+            // Show success message
+            setSnackbar({ open: true, message: 'פרויקט נמחק בהצלחה', severity: 'success' });
+
+            // Remove project from local state
             setContractor(prev => ({
                 ...prev,
-                projects: prev.projects.filter(p => p._id !== projectId)
+                projects: (prev.projects || []).filter(p => p._id !== projectId && p.id !== projectId)
             }));
-        } catch (error) {
+
+        } catch (error: any) {
             console.error('Error deleting project:', error);
-            throw error;
+            setSnackbar({ open: true, message: 'שגיאה במחיקת הפרויקט', severity: 'error' });
+        }
+    };
+
+    // Function to refresh projects data from server
+    const refreshProjectsData = async () => {
+        try {
+            if (contractor?.contractor_id) {
+                setSnackbar({ open: true, message: 'מרענן נתוני פרויקטים...', severity: 'success' });
+
+                const response = await fetch(`http://localhost:3001/api/contractors/${contractor.contractor_id}`);
+                if (response.ok) {
+                    const updatedContractor = await response.json();
+                    setContractor(updatedContractor);
+                    // Update sessionStorage
+                    sessionStorage.setItem('contractor_data', JSON.stringify(updatedContractor));
+
+                    setSnackbar({ open: true, message: 'נתוני פרויקטים רועננו בהצלחה', severity: 'success' });
+                } else {
+                    setSnackbar({ open: true, message: 'שגיאה ברענון נתוני פרויקטים', severity: 'error' });
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing projects data:', error);
+            setSnackbar({ open: true, message: 'שגיאה ברענון נתוני פרויקטים', severity: 'error' });
         }
     };
 
@@ -290,24 +356,51 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     };
 
     const handleAddProject = () => {
-        const newProject: ProjectDocument = {
-            contractorId: contractor.contractor_id,
-            startDate: '',
+        const newProject: Project = {
+            id: Date.now().toString(),
             projectName: '',
+            startDate: '',
             description: '',
+            durationMonths: 0,
             value: 0,
-            isClosed: false,
-            status: 'future',
-            createdAt: new Date(),
-            updatedAt: new Date()
+            city: '',
+            isClosed: false
         };
         setEditingProject(newProject);
         setEditingProjectIndex(null);
         setIsProjectDialogOpen(true);
     };
 
-    const handleEditProject = (project: ProjectDocument, index: number) => {
-        setEditingProject({ ...project });
+    // Function to determine project status based on dates
+    const getProjectStatus = (startDate: string, durationMonths: number, isClosed: boolean): string => {
+        if (isClosed) return 'completed';
+
+        if (!startDate) return 'future';
+
+        const start = new Date(startDate);
+        const now = new Date();
+        const endDate = new Date(start);
+        endDate.setMonth(start.getMonth() + duration);
+
+        if (now < start) return 'future';
+        if (now >= start && now <= endDate) return 'current';
+        return 'completed';
+    };
+
+    const handleEditProject = (project: any, index: number) => {
+        // Convert ProjectDocument to Project format
+        const projectToEdit: Project = {
+            id: project.id || project._id || Date.now().toString(),
+            projectName: project.projectName || project.name || '',
+            startDate: project.startDate || project.start_date || '',
+            description: project.description || '',
+            durationMonths: project.durationMonths || 0,
+            value: project.value || project.budget || 0,
+            city: project.city || '',
+            isClosed: project.isClosed || project.status === 'completed' || false
+        };
+
+        setEditingProject(projectToEdit);
         setEditingProjectIndex(index);
         setIsProjectDialogOpen(true);
     };
@@ -724,7 +817,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             ...prev,
                             contractor_id: contractorId || prev.contractor_id, // Add contractor ID from contractors registry
                             sector: contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector,
-                            activityType: contractorsData.result.records[0]['KVUTZA'] || prev.activityType,
                             email: email || prev.email, // Add email from contractors registry
                             website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
                             activities: activities
@@ -892,7 +984,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     ...prev,
                     contractor_id: contractorId || prev.contractor_id,
                     sector: contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector,
-                    activityType: contractorsData.result.records[0]['KVUTZA'] || prev.activityType,
                     email: email || prev.email, // Add email from contractors registry
                     website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
                     activities: activities
@@ -905,6 +996,51 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         } catch (error) {
             console.error('Error refreshing contractor data:', error);
             setSnackbar({ open: true, message: 'שגיאה ברענון הנתונים', severity: 'error' });
+        }
+    };
+
+    const handleValidateStatus = async () => {
+        if (!contractor.company_id) {
+            setSnackbar({ open: true, message: 'נא להזין מספר חברה תחילה', severity: 'error' });
+            return;
+        }
+
+        try {
+            setValidationLoading(true);
+            setValidationMessage('מאמת סטטוס מרשום החברות...');
+
+            const response = await fetch(`http://localhost:3001/api/contractors/validate-status/${contractor.contractor_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.updated) {
+                // Refresh contractor data to get updated status
+                await refreshProjectsData();
+
+                setValidationMessage(`סטטוס עודכן בהצלחה: ${result.message}`);
+                setSnackbar({ open: true, message: 'סטטוס החברה עודכן בהצלחה מרשום החברות', severity: 'success' });
+                setStatusValidated(true);
+            } else {
+                setValidationMessage(`לא נדרש עדכון: ${result.message}`);
+                setStatusValidated(true);
+            }
+        } catch (error) {
+            console.error('Error validating status:', error);
+            setValidationMessage('שגיאה בעדכון הסטטוס');
+            setSnackbar({ open: true, message: 'שגיאה בעדכון הסטטוס מרשום החברות', severity: 'error' });
+        } finally {
+            setValidationLoading(false);
+            // Clear validation message after 5 seconds
+            setTimeout(() => setValidationMessage(''), 5000);
         }
     };
 
@@ -923,6 +1059,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             {/* Company Details Tab */}
             {activeTab === 0 && (
                 <Box sx={{ p: 3, pb: 6 }}>
+                    {/* Risk Indicator */}
+                    <RiskIndicator
+                        status={contractor.status}
+                        violator={contractor.violator}
+                        restrictions={contractor.restrictions}
+                    />
+
                     {/* Company General Details Section */}
                     <Card sx={{ mb: 3, boxShadow: 2 }}>
                         <CardContent>
@@ -1202,7 +1345,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </Button>
                     </Box>
 
-                    {contractor.activities.length === 0 ? (
+                    {(!contractor.classifications || contractor.classifications.length === 0) ? (
                         <Card sx={{ mb: 2 }}>
                             <CardContent>
                                 <Typography variant="body1" color="text.secondary" align="center">
@@ -1216,15 +1359,15 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סקטור</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>תיאור ענף</TableCell>
                                             <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סיווג</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {contractor.activities.map((activity, index) => (
-                                            <TableRow key={activity.id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{activity.sector || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{`${activity.field || ''}${activity.classification || ''}`}</TableCell>
+                                        {contractor.classifications.map((classification, index) => (
+                                            <TableRow key={classification.id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification_type || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification || ''}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -1248,6 +1391,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 color: '#666',
                                 border: '1px solid #e0e0e0',
                                 boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                gap: 1,
                                 '&:hover': {
                                     backgroundColor: '#e8e8e8'
                                 }
@@ -1257,7 +1401,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </Button>
                     </Box>
 
-                    {contractor.management_contacts?.length === 0 ? (
+                    {(!contractor.contacts || contractor.contacts.length === 0) ? (
                         <Card sx={{
                             mb: 2,
                             backgroundColor: '#fafafa',
@@ -1289,7 +1433,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {contractor.management_contacts?.map((contact, index) => (
+                                    {contractor.contacts?.map((contact, index) => (
                                         <TableRow key={contact.id} sx={{
                                             backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafafa',
                                             '&:hover': { backgroundColor: '#f0f0f0' }
@@ -1383,12 +1527,50 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             {/* Projects Tab */}
             {activeTab === 3 && (
                 <Box sx={{ p: 3 }}>
+                    {/* Project Sub-tabs */}
+                    <Box sx={{ mb: 3 }}>
+                        <Tabs
+                            value={activeProjectTab}
+                            onChange={(e, newValue) => setActiveProjectTab(newValue)}
+                            sx={{
+                                '& .MuiTab-root': {
+                                    color: '#666',
+                                    fontWeight: 500,
+                                    textTransform: 'none',
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    '&.Mui-selected': {
+                                        color: 'primary.main',
+                                        fontWeight: 600
+                                    }
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: 'primary.main'
+                                }
+                            }}
+                        >
+                            <Tab label="הכל" value="all" />
+                            <Tab label="עתידיים" value="future" />
+                            <Tab label="פעילים" value="active" />
+                            <Tab label="סגורים" value="closed" />
+                        </Tabs>
+                    </Box>
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">פרויקטים</Typography>
+                        <Button
+                            variant="outlined"
+                            startIcon={<RefreshIcon />}
+                            onClick={refreshProjectsData}
+                            sx={{ gap: 1 }}
+                        >
+                            רענן פרויקטים
+                        </Button>
+
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={handleAddProject}
+                            sx={{ gap: 1 }}
                         >
                             הוסף פרויקט
                         </Button>
@@ -1398,6 +1580,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         projects={contractor.projects as any}
                         onEditProject={handleEditProject}
                         onDeleteProject={handleDeleteProject}
+                        activeTab={activeProjectTab}
                     />
 
                     {/* Project Dialog */}
@@ -1408,13 +1591,18 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         <DialogContent>
                             {editingProject && (
                                 <Grid container spacing={3} sx={{ mt: 1 }}>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid item xs={12}>
                                         <TextField
                                             fullWidth
                                             label="שם הפרויקט"
                                             value={editingProject.projectName}
                                             onChange={(e) => setEditingProject(prev => prev ? { ...prev, projectName: e.target.value } : null)}
-                                            sx={{ minWidth: 300 }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: בניית מבנה מסחרי"
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -1425,18 +1613,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             value={editingProject.startDate}
                                             onChange={(e) => setEditingProject(prev => prev ? { ...prev, startDate: e.target.value } : null)}
                                             InputLabelProps={{ shrink: true }}
-                                            sx={{ minWidth: 300 }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="תיאור הפרויקט"
-                                            multiline
-                                            rows={6}
-                                            value={editingProject.description}
-                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
-                                            sx={{ minWidth: 400 }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -1449,11 +1630,61 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                 const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                 setEditingProject(prev => prev ? { ...prev, value: parseInt(numericValue) || 0 } : null);
                                             }}
-                                            sx={{ minWidth: 300 }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
                                             placeholder="לדוגמה: 1,000,000 ₪"
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="משך הפרויקט בחודשים"
+                                            type="number"
+                                            value={editingProject.durationMonths || ''}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, durationMonths: parseInt(e.target.value) || 0 } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: 12"
+                                            inputProps={{ min: 1, max: 120 }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="תיאור הפרויקט"
+                                            multiline
+                                            rows={6}
+                                            value={editingProject.description}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="תאר את הפרויקט בפירוט..."
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="עיר הפרויקט"
+                                            value={editingProject.city || ''}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, city: e.target.value } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: תל אביב"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
                                         <FormControlLabel
                                             control={
                                                 <Checkbox
@@ -1462,6 +1693,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                 />
                                             }
                                             label="פרויקט סגור"
+                                            sx={{ mt: 1 }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -1490,6 +1722,34 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             {/* Notes Tab */}
             {activeTab === 4 && (
                 <Box sx={{ p: 3 }}>
+                    {/* Risk Indicator */}
+                    <RiskIndicator
+                        status={contractor.status}
+                        violator={contractor.violator}
+                        restrictions={contractor.restrictions}
+                    />
+
+                    {/* Validation Button */}
+                    <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleValidateStatus}
+                            disabled={!contractor.company_id}
+                            startIcon={<RefreshIcon />}
+                        >
+                            עדכן סטטוס מרשום החברות
+                        </Button>
+                        {validationLoading && (
+                            <CircularProgress size={20} />
+                        )}
+                        {validationMessage && (
+                            <Alert severity="info" sx={{ flex: 1 }}>
+                                {validationMessage}
+                            </Alert>
+                        )}
+                    </Box>
+
                     <Typography variant="h6" gutterBottom>הערות</Typography>
                     <TextField
                         fullWidth

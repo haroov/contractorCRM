@@ -1,37 +1,30 @@
 import { Document } from 'mongoose';
 
-export interface Activity {
+export interface Classification {
     id: string;
-    activity_type: string;
+    classification_type: string;
     classification: string;
-    sector: string;
-    field: string;
-    contractor_license: string;
-    license_number: string;
-    license_expiry: string;
-    insurance_company: string;
-    insurance_policy: string;
-    insurance_expiry: string;
 }
 
-export interface ManagementContact {
+export interface Contact {
     id: string;
-    full_name: string;
+    fullName: string;
     role: string;
     email: string;
     mobile: string;
-    permissions: 'manager' | 'user';
+    permissions: 'user' | 'manager';
 }
 
 export interface Project {
     id: string;
-    name: string;
+    projectName: string;
     description: string;
-    start_date: string;
-    end_date: string;
-    status: 'active' | 'completed' | 'pending';
-    budget: number;
-    location: string;
+    startDate: string;
+    durationMonths?: number;
+    valueNis?: number;
+    city?: string;
+    isClosed: boolean;
+    status?: 'future' | 'current' | 'completed';
 }
 
 export interface Contractor extends Document {
@@ -51,12 +44,17 @@ export interface Contractor extends Document {
     segment: string;
     activityType: string;
     description: string;
-    activities: Activity[];
-    management_contacts: ManagementContact[];
-    projects: Project[];
+    classifications: Classification[];
+    contacts: Contact[];
+    projectIds?: string[];
+    projects?: Project[];
     notes: string;
     safetyRating?: number;
+    iso45001?: boolean;
     isActive: boolean;
+    status?: string;
+    violator?: boolean;
+    restrictions?: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -79,12 +77,17 @@ export interface ContractorDocument extends Document {
     segment: string;
     activityType: string;
     description: string;
-    activities: Activity[];
-    management_contacts: ManagementContact[];
-    projects: Project[];
+    classifications: Classification[];
+    contacts: Contact[];
+    projectIds?: string[];
+    projects?: Project[];
     notes: string;
     safetyRating?: number;
+    iso45001?: boolean;
     isActive: boolean;
+    status?: string;
+    violator?: boolean;
+    restrictions?: string[];
     createdAt: Date;
     updatedAt: Date;
 }

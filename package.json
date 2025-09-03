@@ -9,7 +9,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t contractor-crm .",
+    "docker:run": "docker run -p 3001:3001 -p 5173:5173 contractor-crm",
+    "docker:compose:up": "docker-compose up -d",
+    "docker:compose:down": "docker-compose down",
+    "docker:compose:logs": "docker-compose logs -f",
+    "docker:compose:restart": "docker-compose restart"
   },
   "dependencies": {
     "@date-io/dayjs": "^3.2.0",

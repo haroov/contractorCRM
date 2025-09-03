@@ -50,15 +50,20 @@ export default function ContractorDetailsPage() {
                     segment: '',
                     activityType: '',
                     description: '',
-                    activities: [],
-                    management_contacts: [],
+                    classifications: [],
+                    contacts: [],
+                    projectIds: [],
                     projects: [],
                     notes: '',
                     safetyRating: 0,
+                    iso45001: false,
                     isActive: true,
+                    status: null,
+                    violator: null,
+                    restrictions: null,
                     createdAt: new Date(),
                     updatedAt: new Date()
-                };
+                } as Contractor;
                 setContractor(newContractor);
             } else if (contractorId && contractorId !== 'new') {
                 // Load existing contractor from sessionStorage

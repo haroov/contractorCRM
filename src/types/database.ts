@@ -1,4 +1,4 @@
-import { Activity, ManagementContact } from './contractor';
+import type { Classification, Contact } from './contractor';
 
 // Database document interfaces
 export interface ProjectDocument {
@@ -34,8 +34,8 @@ export interface ContractorDocument {
   description: string;
   safetyStars?: number;
   iso45001?: boolean;
-  activities: Activity[];
-  managementContacts: ManagementContact[];
+  classifications: Classification[];
+  contacts: Contact[];
   projects: ProjectDocument[];
   notes?: string;
   createdAt?: Date;

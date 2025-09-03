@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: contractor-crm-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: contractor-crm
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - contractor-crm-network
+
+  # Contractor CRM Application
+  contractor-crm:
+    build: .
+    container_name: contractor-crm-app
+    restart: unless-stopped
+    ports:
+      - "3001:3001"  # Backend API
+      - "5173:5173"  # Frontend Dev Server
+    environment:
+      - NODE_ENV=development
+      - USE_MEMORY_SERVER=false
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/contractor-crm?authSource=admin
+      - PORT=3001
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - contractor-crm-network
+    command: sh -c "npm install && npm run server & npm run dev"
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  contractor-crm-network:
+    driver: bridge

@@ -30,7 +30,7 @@ import {
     Cancel as CancelIcon,
 } from "@mui/icons-material";
 
-type ManagementContact = {
+type Contact = {
     id: string;
     role: string;
     fullName: string;
@@ -84,7 +84,7 @@ type Contractor = {
     forcast_projects_value_nis: number;
 
     // Management Contacts
-    management_contacts: ManagementContact[];
+    contacts: Contact[];
 
     notes: string;
 };
@@ -145,13 +145,13 @@ const ContactDialog = ({
 }: {
     open: boolean;
     onClose: () => void;
-    contact: ManagementContact;
-    onSave: (contact: ManagementContact) => void;
+    contact: Contact;
+    onSave: (contact: Contact) => void;
     isEdit?: boolean;
 }) => {
-    const [formData, setFormData] = useState<ManagementContact>(contact);
+    const [formData, setFormData] = useState<Contact>(contact);
 
-    const handleChange = (field: keyof ManagementContact, value: string) => {
+    const handleChange = (field: keyof Contact, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -375,13 +375,13 @@ export default function ContractorForm() {
         premium_estimation_nis: 0,
         forcast_projects: 0,
         forcast_projects_value_nis: 0,
-        management_contacts: [],
+        contacts: [],
         notes: "",
     });
 
     const [errors, setErrors] = useState<Errors>({});
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
-    const [editingContact, setEditingContact] = useState<ManagementContact | null>(null);
+    const [editingContact, setEditingContact] = useState<Contact | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [activityDialogOpen, setActivityDialogOpen] = useState(false);
     const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -414,7 +414,7 @@ export default function ContractorForm() {
         setContactDialogOpen(true);
     };
 
-    const editContact = (contact: ManagementContact) => {
+    const editContact = (contact: Contact) => {
         setEditingContact(contact);
         setIsEditMode(true);
         setContactDialogOpen(true);
@@ -429,24 +429,24 @@ export default function ContractorForm() {
         if (contactToDelete) {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: prev.management_contacts.filter(c => c.id !== contactToDelete)
+                contacts: prev.contacts.filter(c => c.id !== contactToDelete)
             }));
             setContactToDelete(null);
         }
     };
 
-    const saveContact = (contact: ManagementContact) => {
+    const saveContact = (contact: Contact) => {
         if (isEditMode) {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: prev.management_contacts.map(c =>
+                contacts: prev.contacts.map(c =>
                     c.id === contact.id ? contact : c
                 )
             }));
         } else {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: [...prev.management_contacts, contact]
+                contacts: [...prev.contacts, contact]
             }));
         }
     };
@@ -513,7 +513,7 @@ export default function ContractorForm() {
             newErrors.phone = "מספר טלפון לא תקין. אנא הכנס מספר בפורמט 05XXXXXXXX.";
         }
 
-        contractor.management_contacts.forEach((contact, index) => {
+        contractor.contacts.forEach((contact, index) => {
             if (contact.email && !validateEmail(contact.email)) {
                 newErrors[`contact_${index}_email`] = "כתובת אימייל לא תקינה.";
             }
@@ -1106,7 +1106,7 @@ export default function ContractorForm() {
                     </Box>
                 </Box>
 
-                {contractor.management_contacts.map((contact, index) => (
+                {contractor.contacts.map((contact, index) => (
                     <Box key={contact.id} sx={{ gridColumn: '1 / -1' }}>
                         <Card variant="outlined">
                             <CardContent>

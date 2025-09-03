@@ -1,4 +1,4 @@
-import type { Contractor } from '../types/contractor';
+import type { ContractorDocument as Contractor } from '../types/contractor';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 

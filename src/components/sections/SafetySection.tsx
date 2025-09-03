@@ -28,9 +28,9 @@ type Activity = {
 };
 
 type Contractor = {
-    saftey_stars: number;
+    safetyRating: number;
     iso45001: boolean;
-    number_employees: number;
+    numberOfEmployees: number;
     activities: Activity[];
     [key: string]: any;
 };
@@ -110,12 +110,12 @@ export function SafetySection({ contractor, handleChange, errors, setContractor 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Safety Stars */}
                     <div className="space-y-2">
-                        <Label htmlFor="saftey_stars" className="text-right block">
+                        <Label htmlFor="safetyRating" className="text-right block">
                             כוכבי בטיחות
                         </Label>
                         <Select
-                            value={contractor.saftey_stars.toString()}
-                            onValueChange={(value) => handleChange('saftey_stars', parseInt(value))}
+                            value={contractor.safetyRating.toString()}
+                            onValueChange={(value) => handleChange('safetyRating', parseInt(value))}
                         >
                             <SelectTrigger>
                                 <SelectValue placeholder="בחר מספר כוכבים" />
@@ -150,14 +150,14 @@ export function SafetySection({ contractor, handleChange, errors, setContractor 
 
                     {/* Number of Employees */}
                     <div className="space-y-2">
-                        <Label htmlFor="number_employees" className="text-right block">
+                        <Label htmlFor="numberOfEmployees" className="text-right block">
                             מספר מועסקים *
                         </Label>
                         <Input
-                            id="number_employees"
+                            id="numberOfEmployees"
                             type="number"
-                            value={contractor.number_employees}
-                            onChange={(e) => handleChange('number_employees', parseInt(e.target.value) || 0)}
+                            value={contractor.numberOfEmployees}
+                            onChange={(e) => handleChange('numberOfEmployees', parseInt(e.target.value) || 0)}
                             placeholder="מספר מועסקים"
                             required
                         />

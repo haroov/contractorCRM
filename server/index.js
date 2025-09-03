@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import dotenv from 'dotenv';
 
@@ -34,20 +34,39 @@ let mongoServer;
 
 async function connectDB() {
   try {
-    // Use MongoDB Memory Server for local development
-    mongoServer = await MongoMemoryServer.create();
-    const mongoUri = mongoServer.getUri();
+    let mongoUri;
+
+    // Check if we should use persistent MongoDB or Memory Server
+    const useMemoryServer = process.env.USE_MEMORY_SERVER !== 'false';
+
+    if (useMemoryServer) {
+      // Use MongoDB Memory Server for local development
+      mongoServer = await MongoMemoryServer.create();
+      mongoUri = mongoServer.getUri();
+      console.log('✅ Connected to MongoDB Memory Server');
+    } else {
+      // Use persistent MongoDB
+      mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm';
+      console.log('✅ Connected to persistent MongoDB');
+    }
+
+    console.log('📊 Database URI:', mongoUri);
 
     client = new MongoClient(mongoUri);
     await client.connect();
 
-    console.log('✅ Connected to MongoDB Memory Server');
-    console.log('📊 Database URI:', mongoUri);
-
     // Create unique index on company_id to prevent duplicates
     const db = client.db('contractor-crm');
-    await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
-    console.log('✅ Created unique index on company_id');
+    try {
+      await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
+      console.log('✅ Created unique index on company_id');
+    } catch (error) {
+      if (error.code === 86) {
+        console.log('✅ Index already exists on company_id');
+      } else {
+        console.error('❌ Error creating index:', error);
+      }
+    }
 
     // No automatic sample data creation - contractors must be added manually
     console.log('📝 No automatic sample data creation - contractors must be added manually');
@@ -57,16 +76,264 @@ async function connectDB() {
   }
 }
 
-// Sample data creation removed - contractors must be added manually through the interface
+// Sample data creation function - REMOVED
+// System now only accepts manually entered data
+
+// Data persistence functions
+
+// Companies Register validation service
+async function validateContractorStatus(companyId) {
+  try {
+    const companiesRegisterUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`;
+
+    const response = await fetch(companiesRegisterUrl);
+    if (!response.ok) {
+      console.log(`⚠️ Failed to fetch from Companies Register for company ${companyId}:`, response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.success || !data.result || !data.result.records || data.result.records.length === 0) {
+      console.log(`ℹ️ No data found in Companies Register for company ${companyId}`);
+      return null;
+    }
+
+    const companyRecord = data.result.records[0];
+
+    // Extract relevant status information from Hebrew field names
+    const status = companyRecord['סטטוס חברה'] || null;
+    const isViolator = companyRecord['מפרה'] && companyRecord['מפרה'].trim() !== '' ? true : false;
+    const restrictions = [];
+
+    // Check for restrictions - ignore "מוגבלת" as it's a normal status for Ltd companies
+    if (companyRecord['מגבלות'] && companyRecord['מגבלות'].trim() !== '' && companyRecord['מגבלות'] !== 'מוגבלת') {
+      restrictions.push(companyRecord['מגבלות']);
+    }
+
+    console.log(`✅ Validated company ${companyId}: status=${status}, violator=${isViolator}, restrictions=${restrictions.length}`);
+
+    return {
+      status,
+      violator: isViolator,
+      restrictions: restrictions.length > 0 ? restrictions : null
+    };
+  } catch (error) {
+    console.error(`❌ Error validating company ${companyId}:`, error);
+    return null;
+  }
+}
 
 // API Routes
 app.get('/api/health', (req, res) => {
+  const dbType = process.env.USE_MEMORY_SERVER !== 'false' ? 'MongoDB Memory Server' : 'Persistent MongoDB';
   res.json({
     status: 'OK',
     message: 'Contractor CRM API is running',
-    database: 'MongoDB Memory Server',
+    database: dbType,
     timestamp: new Date().toISOString()
   });
+});
+
+// Validate and update contractor status from Companies Register
+app.post('/api/contractors/validate-status/:contractorId', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
+
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    if (!contractor.company_id) {
+      return res.status(400).json({ error: 'Contractor has no company_id for validation' });
+    }
+
+    console.log(`🔍 Validating contractor ${contractor.name} (${contractor.company_id})`);
+
+    // Validate status from Companies Register
+    const validationResult = await validateContractorStatus(contractor.company_id);
+
+    if (validationResult) {
+      // Update contractor with validated status
+      const updateResult = await db.collection('contractors').updateOne(
+        { contractor_id: req.params.contractorId },
+        {
+          $set: {
+            status: validationResult.status,
+            violator: validationResult.violator,
+            restrictions: validationResult.restrictions,
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      console.log(`✅ Updated contractor ${contractor.name} with validated status`);
+
+      res.json({
+        message: 'Contractor status validated and updated',
+        contractor: contractor.name,
+        validation: validationResult,
+        updated: updateResult.modifiedCount > 0
+      });
+    } else {
+      // Clear status fields if no validation data
+      const updateResult = await db.collection('contractors').updateOne(
+        { contractor_id: req.params.contractorId },
+        {
+          $set: {
+            status: null,
+            violator: null,
+            restrictions: null,
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      console.log(`ℹ️ Cleared status fields for contractor ${contractor.name} (no validation data)`);
+
+      res.json({
+        message: 'No validation data available, status fields cleared',
+        contractor: contractor.name,
+        updated: updateResult.modifiedCount > 0
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error validating contractor status:', error);
+    res.status(500).json({ error: 'Failed to validate contractor status' });
+  }
+});
+
+// Bulk validate all contractors from Companies Register
+app.post('/api/contractors/validate-all-status', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractors = await db.collection('contractors').find({}).toArray();
+
+    console.log(`🔍 Starting bulk validation for ${contractors.length} contractors`);
+
+    const results = [];
+    let updatedCount = 0;
+    let errorCount = 0;
+
+    for (const contractor of contractors) {
+      try {
+        if (!contractor.company_id) {
+          results.push({
+            contractor: contractor.name,
+            status: 'skipped',
+            reason: 'No company_id'
+          });
+          continue;
+        }
+
+        console.log(`🔍 Validating ${contractor.name} (${contractor.company_id})`);
+
+        // Validate status from Companies Register
+        const validationResult = await validateContractorStatus(contractor.company_id);
+
+        if (validationResult) {
+          // Update contractor with validated status
+          await db.collection('contractors').updateOne(
+            { contractor_id: contractor.contractor_id },
+            {
+              $set: {
+                status: validationResult.status,
+                violator: validationResult.violator,
+                restrictions: validationResult.restrictions,
+                updatedAt: new Date()
+              }
+            }
+          );
+
+          results.push({
+            contractor: contractor.name,
+            status: 'updated',
+            validation: validationResult
+          });
+          updatedCount++;
+        } else {
+          // Clear status fields if no validation data
+          await db.collection('contractors').updateOne(
+            { contractor_id: contractor.contractor_id },
+            {
+              $set: {
+                status: null,
+                violator: null,
+                restrictions: null,
+                updatedAt: new Date()
+              }
+            }
+          );
+
+          results.push({
+            contractor: contractor.name,
+            status: 'cleared',
+            reason: 'No validation data'
+          });
+          updatedCount++;
+        }
+
+        // Add a small delay to avoid overwhelming the external API
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+      } catch (error) {
+        console.error(`❌ Error validating ${contractor.name}:`, error);
+        results.push({
+          contractor: contractor.name,
+          status: 'error',
+          error: error.message
+        });
+        errorCount++;
+      }
+    }
+
+    console.log(`✅ Bulk validation completed: ${updatedCount} updated, ${errorCount} errors`);
+
+    res.json({
+      message: 'Bulk validation completed',
+      total: contractors.length,
+      updated: updatedCount,
+      errors: errorCount,
+      results
+    });
+  } catch (error) {
+    console.error('❌ Error in bulk validation:', error);
+    res.status(500).json({ error: 'Failed to perform bulk validation' });
+  }
+});
+
+// Update fullAddress for all existing contractors
+app.post('/api/contractors/update-full-address', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractors = await db.collection('contractors').find({}).toArray();
+
+    let updatedCount = 0;
+    for (const contractor of contractors) {
+      if (contractor.address && contractor.city) {
+        const fullAddress = `${contractor.address}, ${contractor.city}`;
+        await db.collection('contractors').updateOne(
+          { _id: contractor._id },
+          { $set: { fullAddress: fullAddress } }
+        );
+        updatedCount++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Updated fullAddress for ${updatedCount} contractors`,
+      updatedCount
+    });
+  } catch (error) {
+    console.error('❌ Error updating fullAddress:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating fullAddress',
+      error: error.message
+    });
+  }
 });
 
 // Contractors API
@@ -74,8 +341,31 @@ app.get('/api/contractors', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractors = await db.collection('contractors').find({}).toArray();
-    console.log('📋 Fetched', contractors.length, 'contractors');
-    res.json(contractors);
+
+    // Get projects for each contractor
+    const contractorsWithProjects = [];
+
+    for (const contractor of contractors) {
+      const { temp, ...contractorWithoutTemp } = contractor;
+      const projectIds = contractor.projectIds || [];
+      let projects = [];
+
+      if (projectIds.length > 0) {
+        // Convert string IDs to ObjectIds and fetch projects
+        const objectIds = projectIds.map(id => new ObjectId(id));
+        projects = await db.collection('projects').find({
+          _id: { $in: objectIds }
+        }).toArray();
+      }
+
+      contractorsWithProjects.push({
+        ...contractorWithoutTemp,
+        projects: projects
+      });
+    }
+
+    console.log('📋 Fetched', contractorsWithProjects.length, 'contractors');
+    res.json(contractorsWithProjects);
   } catch (error) {
     console.error('❌ Error fetching contractors:', error);
     res.status(500).json({ error: 'Failed to fetch contractors' });
@@ -89,7 +379,27 @@ app.get('/api/contractors/:id', async (req, res) => {
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
-    res.json(contractor);
+
+    // Get projects for this contractor
+    const projectIds = contractor.projectIds || [];
+    let projects = [];
+
+    if (projectIds.length > 0) {
+      // Convert string IDs to ObjectIds and fetch projects
+      const objectIds = projectIds.map(id => new ObjectId(id));
+      projects = await db.collection('projects').find({
+        _id: { $in: objectIds }
+      }).toArray();
+    }
+
+    // Return contractor with projects populated
+    const { temp, ...contractorWithoutTemp } = contractor;
+    const contractorWithProjects = {
+      ...contractorWithoutTemp,
+      projects: projects
+    };
+
+    res.json(contractorWithProjects);
   } catch (error) {
     console.error('❌ Error fetching contractor:', error);
     res.status(500).json({ error: 'Failed to fetch contractor' });
@@ -102,8 +412,10 @@ app.post('/api/contractors', async (req, res) => {
     const contractorData = {
       ...req.body,
       contractor_id: req.body.contractor_id || `contractor-${Date.now()}`,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      // הוספת שדה fullAddress אוטומטית
+      fullAddress: (req.body.address && req.body.address.trim() && req.body.city && req.body.city.trim()) ? `${req.body.address.trim()}, ${req.body.city.trim()}` : '',
+      // וידוא שדה iso45001 תמיד קיים עם ערך ברירת מחדל
+      iso45001: req.body.iso45001 === true ? true : false
     };
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
@@ -121,9 +433,23 @@ app.put('/api/contractors/:id', async (req, res) => {
     // Remove immutable fields from update data
     const { _id, createdAt, ...updateData } = req.body;
 
+    // קבלת הנתונים הקיימים בדאטה בייס
+    const existingContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    if (!existingContractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    // עדכון שדה fullAddress - שימוש בערכים החדשים או הקיימים
+    const address = updateData.address || existingContractor.address;
+    const city = updateData.city || existingContractor.city;
+    const fullAddress = (address && address.trim() && city && city.trim()) ? `${address.trim()}, ${city.trim()}` : '';
+
     const finalUpdateData = {
       ...updateData,
-      updatedAt: new Date()
+      // עדכון שדה fullAddress
+      fullAddress: fullAddress,
+      // וידוא שדה iso45001 תמיד קיים עם ערך ברירת מחדל
+      iso45001: updateData.iso45001 === true ? true : false
     };
 
     const result = await db.collection('contractors').updateOne(
@@ -135,9 +461,14 @@ app.put('/api/contractors/:id', async (req, res) => {
     }
     console.log('✅ Updated contractor:', req.params.id);
 
-    // Return the updated contractor data
+    // Return the updated contractor data without projects field
     const updatedContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
-    res.json(updatedContractor);
+    const { projects, temp, ...contractorWithoutProjects } = updatedContractor;
+    const contractorWithProjectIds = {
+      ...contractorWithoutProjects,
+      projectIds: updatedContractor.projectIds || []
+    };
+    res.json(contractorWithProjectIds);
   } catch (error) {
     console.error('❌ Error updating contractor:', error);
     res.status(500).json({ error: 'Failed to update contractor' });
@@ -163,6 +494,90 @@ app.delete('/api/contractors/:id', async (req, res) => {
   }
 });
 
+// נתיב לעדכון שמות שדות בקולקציה contractors
+app.post('/api/contractors/update-field-names', async (req, res) => {
+  try {
+    const { oldField, newField } = req.body;
+
+    if (!oldField || !newField) {
+      return res.status(400).json({ error: 'oldField and newField are required' });
+    }
+
+    const db = client.db('contractor-crm');
+    const collection = db.collection('contractors');
+
+    // עדכון שם השדה
+    const result = await collection.updateMany(
+      { [oldField]: { $exists: true } },
+      [
+        {
+          $addFields: {
+            [newField]: '$' + oldField
+          }
+        },
+        {
+          $unset: oldField
+        }
+      ]
+    );
+
+    console.log('✅ Updated', result.modifiedCount, 'documents');
+    console.log('Field name changed from', oldField, 'to', newField);
+
+    res.json({
+      message: 'Field names updated successfully',
+      modifiedCount: result.modifiedCount,
+      oldField,
+      newField
+    });
+  } catch (error) {
+    console.error('❌ Error updating field names:', error);
+    res.status(500).json({ error: 'Failed to update field names' });
+  }
+});
+
+// נתיב לעדכון שמות שדות בקולקציה projects
+app.post('/api/projects/update-field-names', async (req, res) => {
+  try {
+    const { oldField, newField } = req.body;
+
+    if (!oldField || !newField) {
+      return res.status(400).json({ error: 'oldField and newField are required' });
+    }
+
+    const db = client.db('contractor-crm');
+    const collection = db.collection('projects');
+
+    // עדכון שם השדה
+    const result = await collection.updateMany(
+      { [oldField]: { $exists: true } },
+      [
+        {
+          $addFields: {
+            [newField]: '$' + oldField
+          }
+        },
+        {
+          $unset: oldField
+        }
+      ]
+    );
+
+    console.log('✅ Updated', result.modifiedCount, 'documents');
+    console.log('Field name changed from', oldField, 'to', newField);
+
+    res.json({
+      message: 'Field names updated successfully',
+      modifiedCount: result.modifiedCount,
+      oldField,
+      newField
+    });
+  } catch (error) {
+    console.error('❌ Error updating field names:', error);
+    res.status(500).json({ error: 'Failed to update field names' });
+  }
+});
+
 // Projects API
 app.get('/api/projects', async (req, res) => {
   try {
@@ -183,6 +598,32 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
+// Get projects by contractor with population
+app.get('/api/contractors/:id/projects', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { id } = req.params;
+
+    // Get contractor with project IDs
+    const contractor = await db.collection('contractors').findOne({ contractor_id: id });
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    // Get projects by IDs
+    const projectIds = contractor.projectIds || [];
+    const projects = await db.collection('projects').find({
+      _id: { $in: projectIds.map(id => new ObjectId(id)) }
+    }).toArray();
+
+    console.log('📋 Fetched', projects.length, 'projects for contractor:', id);
+    res.json(projects);
+  } catch (error) {
+    console.error('❌ Error fetching contractor projects:', error);
+    res.status(500).json({ error: 'Failed to fetch contractor projects' });
+  }
+});
+
 app.post('/api/projects', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
@@ -191,8 +632,20 @@ app.post('/api/projects', async (req, res) => {
       createdAt: new Date(),
       updatedAt: new Date()
     };
+
+    // Create the project
     const result = await db.collection('projects').insertOne(projectData);
     console.log('✅ Created new project:', result.insertedId);
+
+    // Add project ID to contractor's projectIds array
+    if (req.body.contractorId) {
+      await db.collection('contractors').updateOne(
+        { contractor_id: req.body.contractorId },
+        { $push: { projectIds: result.insertedId.toString() } }
+      );
+      console.log('✅ Added project ID to contractor:', req.body.contractorId);
+    }
+
     res.json(result);
   } catch (error) {
     console.error('❌ Error creating project:', error);
@@ -222,8 +675,26 @@ app.put('/api/projects/:id', async (req, res) => {
 app.delete('/api/projects/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const result = await db.collection('projects').deleteOne({ _id: req.params.id });
+
+    // First, get the project to find its contractorId
+    const project = await db.collection('projects').findOne({ _id: new ObjectId(req.params.id) });
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Delete the project
+    const result = await db.collection('projects').deleteOne({ _id: new ObjectId(req.params.id) });
     console.log('✅ Deleted project:', req.params.id);
+
+    // Since we're using embedded projects, we need to remove the project from the contractor
+    if (project.contractorId) {
+      await db.collection('contractors').updateOne(
+        { contractor_id: project.contractorId },
+        { $pull: { projects: { _id: new ObjectId(req.params.id) } } }
+      );
+      console.log('✅ Removed project from contractor:', project.contractorId);
+    }
+
     res.json(result);
   } catch (error) {
     console.error('❌ Error deleting project:', error);

@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash } from "lucide-react";
 
-type ManagementContact = {
+type Contact = {
     id: string;
     role: string;
     fullName: string;
@@ -29,7 +29,7 @@ type ManagementContact = {
 };
 
 type Contractor = {
-    management_contacts: ManagementContact[];
+    contacts: Contact[];
     [key: string]: any;
 };
 
@@ -50,7 +50,7 @@ const generateId = (): string => {
 export function ManagementSection({ contractor, setContractor, errors }: ManagementSectionProps) {
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [contactForm, setContactForm] = useState<ManagementContact>({
+    const [contactForm, setContactForm] = useState<Contact>({
         id: "",
         role: "",
         fullName: "",
@@ -72,7 +72,7 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
         setContactDialogOpen(true);
     };
 
-    const editContact = (contact: ManagementContact) => {
+    const editContact = (contact: Contact) => {
         setContactForm(contact);
         setIsEditMode(true);
         setContactDialogOpen(true);
@@ -81,7 +81,7 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
     const deleteContact = (id: string) => {
         setContractor(prev => ({
             ...prev,
-            management_contacts: prev.management_contacts.filter(c => c.id !== id)
+            contacts: prev.contacts.filter(c => c.id !== id)
         }));
     };
 
@@ -89,14 +89,14 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
         if (isEditMode) {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: prev.management_contacts.map(c =>
+                contacts: prev.contacts.map(c =>
                     c.id === contactForm.id ? contactForm : c
                 )
             }));
         } else {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: [...prev.management_contacts, contactForm]
+                contacts: [...prev.contacts, contactForm]
             }));
         }
         setContactDialogOpen(false);
@@ -117,7 +117,7 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
                 </div>
 
                 <div className="space-y-4">
-                    {contractor.management_contacts.map((contact, index) => (
+                    {contractor.contacts.map((contact, index) => (
                         <Card key={contact.id} className="p-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-4 space-x-reverse">
@@ -152,7 +152,7 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
                         </Card>
                     ))}
 
-                    {contractor.management_contacts.length === 0 && (
+                    {contractor.contacts.length === 0 && (
                         <div className="text-center py-8 text-gray-500">
                             <p>לא נוספו אנשי קשר עדיין</p>
                             <p className="text-sm">לחץ על "הוסף איש קשר" כדי להתחיל</p>
