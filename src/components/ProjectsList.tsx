@@ -34,6 +34,7 @@ export interface Project {
     durationMonths?: number;
     isClosed: boolean;
     city?: string;
+    contractorName?: string;
 }
 
 interface ProjectsListProps {
@@ -102,6 +103,27 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
         return new Intl.NumberFormat('he-IL').format(value);
     };
 
+    const openProjectInNewWindow = (project: Project, mode: 'view' | 'edit' | 'new') => {
+        // Create URL parameters for the project data
+        const params = new URLSearchParams();
+        params.set('mode', mode);
+
+        if (mode === 'new') {
+            params.set('project_id', 'new');
+        } else {
+            params.set('project_id', project._id || project.id || '');
+            // Store project data in sessionStorage for the new window to access
+            sessionStorage.setItem('project_data', JSON.stringify(project));
+        }
+
+        // Open new window with project details
+        const newWindow = window.open(
+            `/project?${params.toString()}`,
+            '_blank',
+            'width=1200,height=800,scrollbars=yes,resizable=yes'
+        );
+    };
+
     const ProjectCard = ({ project, index }: { project: Project; index: number }) => (
         <Card sx={{
             mb: 2,
@@ -128,7 +150,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                     <Box>
                         <IconButton
                             size="small"
-                            onClick={() => onEditProject(project, index)}
+                            onClick={() => openProjectInNewWindow(project, 'edit')}
                             sx={{ color: '#666', mr: 1 }}
                         >
                             <EditIcon />

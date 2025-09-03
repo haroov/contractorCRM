@@ -25,6 +25,8 @@ export interface Project {
     city?: string;
     isClosed: boolean;
     status?: 'future' | 'current' | 'completed';
+    contractorId?: string;
+    contractorName?: string;
 }
 
 export interface Contractor extends Document {

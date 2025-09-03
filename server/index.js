@@ -356,6 +356,13 @@ app.get('/api/contractors', async (req, res) => {
         projects = await db.collection('projects').find({
           _id: { $in: objectIds }
         }).toArray();
+
+        // Add contractor information to each project
+        projects = projects.map(project => ({
+          ...project,
+          contractorId: contractor.contractor_id,
+          contractorName: contractor.name
+        }));
       }
 
       contractorsWithProjects.push({
@@ -390,6 +397,13 @@ app.get('/api/contractors/:id', async (req, res) => {
       projects = await db.collection('projects').find({
         _id: { $in: objectIds }
       }).toArray();
+
+      // Add contractor information to each project
+      projects = projects.map(project => ({
+        ...project,
+        contractorId: contractor.contractor_id,
+        contractorName: contractor.name
+      }));
     }
 
     // Return contractor with projects populated
