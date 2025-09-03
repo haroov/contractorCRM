@@ -722,6 +722,26 @@ app.delete('/api/projects/:id', async (req, res) => {
   }
 });
 
+// Add a default route for the root path
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Contractor CRM API is running!',
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      contractors: '/api/contractors',
+      projects: '/api/projects'
+    }
+  });
+});
+
+// Add Content Security Policy headers
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self' data:; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval';");
+  next();
+});
+
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('🛑 Shutting down gracefully...');

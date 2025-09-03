@@ -7,8 +7,10 @@ services:
     startCommand: node server/index.js
     envVars:
       - key: MONGODB_URI
-        value: mongodb+srv://choco_db_user:g4gDnTJh7GO2DHpY@cluster0.rtburip.mongodb.net/contractor-crm?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://choco_db_user:g4gDnTJh7GO2DHpY@cluster0.rtburip.mongodb.net/contractor-crm?retryWrites=true&w=majority&appName=Cluster0&ssl=true&tls=true&tlsAllowInvalidCertificates=false
       - key: USE_MEMORY_SERVER
         value: false
       - key: PORT
         value: "10000"
+      - key: NODE_ENV
+        value: production
