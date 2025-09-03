@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
     // Base URL for API calls - use import.meta.env for Vite/Vercel
-    BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+    BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com/api',
 
     // Specific endpoints
     CONTRACTORS: '/contractors',
