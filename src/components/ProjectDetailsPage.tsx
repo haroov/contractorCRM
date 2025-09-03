@@ -11,7 +11,6 @@ import {
     Tabs,
     Tab,
     TextField,
-    Grid,
     MenuItem
 } from '@mui/material';
 import {
@@ -70,7 +69,7 @@ export default function ProjectDetailsPage() {
         loadProjectData();
     }, [searchParams]);
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
     };
 
@@ -168,8 +167,8 @@ export default function ProjectDetailsPage() {
                                         פרטי פרויקט
                                     </Typography>
 
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} md={6}>
+                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="שם הפרויקט"
@@ -178,9 +177,9 @@ export default function ProjectDetailsPage() {
                                                 variant="outlined"
                                                 size="small"
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="עיר"
@@ -189,9 +188,9 @@ export default function ProjectDetailsPage() {
                                                 variant="outlined"
                                                 size="small"
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="תאריך התחלת הפרויקט"
@@ -202,9 +201,9 @@ export default function ProjectDetailsPage() {
                                                 size="small"
                                                 InputLabelProps={{ shrink: true }}
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="משך הפרויקט (חודשים)"
@@ -214,9 +213,9 @@ export default function ProjectDetailsPage() {
                                                 variant="outlined"
                                                 size="small"
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="שווי (₪)"
@@ -226,9 +225,9 @@ export default function ProjectDetailsPage() {
                                                 variant="outlined"
                                                 size="small"
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="סטטוס"
@@ -242,9 +241,9 @@ export default function ProjectDetailsPage() {
                                                 <MenuItem value="current">פעיל</MenuItem>
                                                 <MenuItem value="completed">הושלם</MenuItem>
                                             </TextField>
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="שם הקבלן הראשי"
@@ -255,9 +254,9 @@ export default function ProjectDetailsPage() {
                                                 InputProps={{ readOnly: true }}
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12} md={6}>
+                                        </Box>
+                                        
+                                        <Box>
                                             <TextField
                                                 fullWidth
                                                 label="מזהה קבלן ראשי"
@@ -268,9 +267,9 @@ export default function ProjectDetailsPage() {
                                                 InputProps={{ readOnly: true }}
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
-                                        </Grid>
-
-                                        <Grid item xs={12}>
+                                        </Box>
+                                        
+                                        <Box sx={{ gridColumn: '1 / -1' }}>
                                             <TextField
                                                 fullWidth
                                                 label="תיאור הפרויקט"
@@ -280,8 +279,8 @@ export default function ProjectDetailsPage() {
                                                 multiline
                                                 rows={4}
                                             />
-                                        </Grid>
-                                    </Grid>
+                                        </Box>
+                                    </Box>
                                 </Box>
                             </Box>
                         )}
