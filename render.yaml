@@ -2,6 +2,7 @@ services:
   - type: web
     name: contractorCRM
     runtime: node
+    nodeVersion: "20.19.0"
     buildCommand: npm install
     startCommand: node server/index.js
     envVars:
