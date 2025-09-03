@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: contractor-crm-api
+    name: contractorCRM
     runtime: node
     buildCommand: npm install
     startCommand: npm run server
