@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: contractor-crm-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm run server
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://choco_db_user:g4gDnTJh7GO2DHpY@cluster0.rtburip.mongodb.net/contractor-crm?retryWrites=true&w=majority&appName=Cluster0
+      - key: USE_MEMORY_SERVER
+        value: false
+      - key: PORT
+        value: "10000"

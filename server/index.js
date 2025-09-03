@@ -16,7 +16,13 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://contractor-crm-liav-geffens-projects.vercel.app',
+    'https://contractor-crm.vercel.app',
+    'https://contractor-ox9okh9qd-choco-insurance.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json());

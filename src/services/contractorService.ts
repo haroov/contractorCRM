@@ -1,12 +1,11 @@
 import type { ContractorDocument as Contractor } from '../types/contractor';
-
-const API_BASE_URL = 'http://localhost:3001/api';
+import { API_CONFIG } from '../config/api';
 
 export class ContractorService {
     // Get all contractors
     static async getAll(): Promise<Contractor[]> {
         try {
-            const response = await fetch(`${API_BASE_URL}/contractors`);
+            const response = await fetch(API_CONFIG.CONTRACTORS_URL());
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -22,7 +21,7 @@ export class ContractorService {
     // Get contractor by ID
     static async getById(contractorId: string): Promise<Contractor | null> {
         try {
-            const response = await fetch(`${API_BASE_URL}/contractors/${contractorId}`);
+            const response = await fetch(API_CONFIG.CONTRACTOR_URL(contractorId));
             if (!response.ok) {
                 if (response.status === 404) {
                     return null;
@@ -52,7 +51,7 @@ export class ContractorService {
     // Create new contractor
     static async create(contractorData: Partial<Contractor>): Promise<Contractor> {
         try {
-            const response = await fetch(`${API_BASE_URL}/contractors`, {
+            const response = await fetch(API_CONFIG.CONTRACTORS_URL(), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +76,7 @@ export class ContractorService {
     // Update contractor
     static async update(contractorId: string, updateData: Partial<Contractor>): Promise<Contractor | null> {
         try {
-            const response = await fetch(`${API_BASE_URL}/contractors/${contractorId}`, {
+            const response = await fetch(API_CONFIG.CONTRACTOR_URL(contractorId), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

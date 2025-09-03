@@ -6,6 +6,7 @@ import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
+import { API_CONFIG } from '../config/api';
 import {
     containsForbiddenWords,
     validateEmail,
@@ -283,7 +284,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             if (contractor?.contractor_id) {
                 setSnackbar({ open: true, message: 'מרענן נתוני פרויקטים...', severity: 'success' });
 
-                const response = await fetch(`http://localhost:3001/api/contractors/${contractor.contractor_id}`);
+                const response = await fetch(API_CONFIG.CONTRACTOR_URL(contractor.contractor_id));
                 if (response.ok) {
                     const updatedContractor = await response.json();
                     setContractor(updatedContractor);
@@ -1010,7 +1011,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             setValidationLoading(true);
             setValidationMessage('מאמת סטטוס מרשום החברות...');
 
-            const response = await fetch(`http://localhost:3001/api/contractors/validate-status/${contractor.contractor_id}`, {
+            const response = await fetch(API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
