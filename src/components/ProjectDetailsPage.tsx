@@ -146,6 +146,7 @@ export default function ProjectDetailsPage() {
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} aria-label="project tabs">
+                            <Tab label="דשבורד" />
                             <Tab label="מידע כללי" />
                             <Tab label="טכני" />
                             <Tab label="מסמכים" />
@@ -156,6 +157,59 @@ export default function ProjectDetailsPage() {
                     {/* Tab Content */}
                     <Box sx={{ p: 3, pb: 6 }}>
                         {activeTab === 0 && (
+                            <Box>
+                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+                                    דשבורד פרויקט
+                                </Typography>
+
+                                {/* Project Dashboard */}
+                                <Box sx={{ mb: 3 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                        סקירה כללית
+                                    </Typography>
+
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 4 }}>
+                                        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'white' }}>
+                                            <Typography variant="h4" fontWeight="bold">
+                                                {project.valueNis ? `${(project.valueNis / 1000000).toFixed(1)}M` : '0'}
+                                            </Typography>
+                                            <Typography variant="body2">שווי פרויקט (₪)</Typography>
+                                        </Paper>
+                                        
+                                        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'white' }}>
+                                            <Typography variant="h4" fontWeight="bold">
+                                                {project.durationMonths || 0}
+                                            </Typography>
+                                            <Typography variant="body2">משך (חודשים)</Typography>
+                                        </Paper>
+                                        
+                                        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'info.light', color: 'white' }}>
+                                            <Typography variant="h4" fontWeight="bold">
+                                                {project.city || 'לא מוגדר'}
+                                            </Typography>
+                                            <Typography variant="body2">עיר</Typography>
+                                        </Paper>
+                                        
+                                        <Paper sx={{ p: 2, textAlign: 'center', bgcolor: project.isClosed ? 'error.light' : 'warning.light', color: 'white' }}>
+                                            <Typography variant="h4" fontWeight="bold">
+                                                {project.isClosed ? 'סגור' : 'פתוח'}
+                                            </Typography>
+                                            <Typography variant="body2">סטטוס</Typography>
+                                        </Paper>
+                                    </Box>
+
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+                                        <Box>
+                                            <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                                פרטי פרויקט
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+
+                        {activeTab === 1 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     מידע כללי
@@ -285,7 +339,7 @@ export default function ProjectDetailsPage() {
                             </Box>
                         )}
 
-                        {activeTab === 1 && (
+                        {activeTab === 2 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     מידע טכני
@@ -296,7 +350,7 @@ export default function ProjectDetailsPage() {
                             </Box>
                         )}
 
-                        {activeTab === 2 && (
+                        {activeTab === 3 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     מסמכים
@@ -307,7 +361,7 @@ export default function ProjectDetailsPage() {
                             </Box>
                         )}
 
-                        {activeTab === 3 && (
+                        {activeTab === 4 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     ביטוח
