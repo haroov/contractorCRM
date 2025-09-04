@@ -7,12 +7,13 @@ import {
   Alert,
   CircularProgress,
   Container,
-  Card,
-  CardContent,
   Avatar,
-  Divider
+  Divider,
+  TextField,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
-import { Google as GoogleIcon } from '@mui/icons-material';
+import { Google as GoogleIcon, Microsoft as MicrosoftIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { API_CONFIG } from '../config/api';
 
 interface User {
@@ -27,6 +28,9 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Check if user is already logged in
   useEffect(() => {
@@ -48,6 +52,21 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       console.error('Error checking auth status:', error);
     }
+  };
+
+  const handleEmailLogin = async () => {
+    setLoading(true);
+    setError(null);
+    
+    if (!email || !password) {
+      setError('אנא מלא את כל השדות');
+      setLoading(false);
+      return;
+    }
+    
+    // TODO: Implement email/password login
+    setError('התחברות עם אימייל וסיסמה עדיין לא זמינה');
+    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
@@ -76,6 +95,15 @@ const LoginPage: React.FC = () => {
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
       setLoading(false);
     }
+  };
+
+  const handleMicrosoftLogin = async () => {
+    setLoading(true);
+    setError(null);
+    
+    // TODO: Implement Microsoft OAuth
+    setError('התחברות עם Microsoft עדיין לא זמינה');
+    setLoading(false);
   };
 
   const handleLogout = async () => {
@@ -152,10 +180,6 @@ const LoginPage: React.FC = () => {
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           התחברות למערכת
         </Typography>
-        
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-          התחבר באמצעות חשבון Google שלך
-        </Typography>
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
@@ -163,30 +187,103 @@ const LoginPage: React.FC = () => {
           </Alert>
         )}
 
-        <Button
-          variant="contained"
-          size="large"
-          fullWidth
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GoogleIcon />}
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          sx={{ 
-            py: 1.5,
-            bgcolor: '#4285f4',
-            '&:hover': {
-              bgcolor: '#357ae8'
-            },
-            '& .MuiButton-startIcon': {
-              marginRight: '8px'
-            }
-          }}
-        >
-          {loading ? 'מתחבר...' : 'התחבר עם Google'}
-        </Button>
+        {/* Email and Password Fields */}
+        <Box sx={{ mb: 3, textAlign: 'right' }}>
+          <TextField
+            fullWidth
+            label="אימייל"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ mb: 2 }}
+            dir="ltr"
+          />
+          
+          <TextField
+            fullWidth
+            label="סיסמה"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            sx={{ mb: 2 }}
+            dir="ltr"
+          />
+          
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleEmailLogin}
+            disabled={loading}
+            sx={{ mb: 3 }}
+          >
+            התחבר
+          </Button>
+        </Box>
 
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-          התחבר באמצעות חשבון Google שלך
-        </Typography>
+        {/* Divider */}
+        <Divider sx={{ my: 3 }}>
+          <Typography variant="body2" color="text.secondary">
+            או
+          </Typography>
+        </Divider>
+
+        {/* Social Login Buttons */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GoogleIcon />}
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            sx={{ 
+              py: 1.5,
+              bgcolor: '#4285f4',
+              '&:hover': {
+                bgcolor: '#357ae8'
+              },
+              '& .MuiButton-startIcon': {
+                marginRight: '14px' // 6px more than before (8px + 6px = 14px)
+              }
+            }}
+          >
+            {loading ? 'מתחבר...' : 'התחבר עם Google'}
+          </Button>
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            startIcon={<MicrosoftIcon />}
+            onClick={handleMicrosoftLogin}
+            disabled={loading}
+            sx={{ 
+              py: 1.5,
+              bgcolor: '#00a1f1',
+              '&:hover': {
+                bgcolor: '#0088cc'
+              },
+              '& .MuiButton-startIcon': {
+                marginRight: '8px'
+              }
+            }}
+          >
+            התחבר עם Microsoft
+          </Button>
+        </Box>
       </Paper>
     </Container>
   );
