@@ -169,6 +169,75 @@ const authRoutes = require('./routes/auth.js');
 app.use('/auth', authRoutes);
 console.log('✅ Auth routes configured');
 
+// Validate and update contractor status from Companies Register
+app.post('/api/contractors/validate-status/:contractorId', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
+
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    if (!contractor.company_id) {
+      return res.status(400).json({ error: 'Contractor has no company_id for validation' });
+    }
+
+    console.log(`🔍 Validating contractor ${contractor.name} (${contractor.company_id})`);
+
+    // Validate status from Companies Register
+    const validationResult = await validateContractorStatus(contractor.company_id);
+
+    if (validationResult) {
+      // Update contractor with validated status
+      const updateResult = await db.collection('contractors').updateOne(
+        { contractor_id: req.params.contractorId },
+        {
+          $set: {
+            status: validationResult.status,
+            violator: validationResult.violator,
+            restrictions: validationResult.restrictions,
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      console.log(`✅ Updated contractor ${contractor.name} with validated status`);
+
+      res.json({
+        message: 'Contractor status validated and updated',
+        contractor: contractor.name,
+        validation: validationResult,
+        updated: updateResult.modifiedCount > 0
+      });
+    } else {
+      // Clear status fields if no validation data
+      const updateResult = await db.collection('contractors').updateOne(
+        { contractor_id: req.params.contractorId },
+        {
+          $set: {
+            status: null,
+            violator: null,
+            restrictions: null,
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      console.log(`ℹ️ Cleared status fields for contractor ${contractor.name} (no validation data)`);
+
+      res.json({
+        message: 'No validation data available, status fields cleared',
+        contractor: contractor.name,
+        updated: updateResult.modifiedCount > 0
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error validating contractor status:', error);
+    res.status(500).json({ error: 'Failed to validate contractor status' });
+  }
+});
+
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 // Apply authentication to protected routes
@@ -260,74 +329,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Validate and update contractor status from Companies Register
-app.post('/api/contractors/validate-status/:contractorId', async (req, res) => {
-  try {
-    const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
-
-    if (!contractor) {
-      return res.status(404).json({ error: 'Contractor not found' });
-    }
-
-    if (!contractor.company_id) {
-      return res.status(400).json({ error: 'Contractor has no company_id for validation' });
-    }
-
-    console.log(`🔍 Validating contractor ${contractor.name} (${contractor.company_id})`);
-
-    // Validate status from Companies Register
-    const validationResult = await validateContractorStatus(contractor.company_id);
-
-    if (validationResult) {
-      // Update contractor with validated status
-      const updateResult = await db.collection('contractors').updateOne(
-        { contractor_id: req.params.contractorId },
-        {
-          $set: {
-            status: validationResult.status,
-            violator: validationResult.violator,
-            restrictions: validationResult.restrictions,
-            updatedAt: new Date()
-          }
-        }
-      );
-
-      console.log(`✅ Updated contractor ${contractor.name} with validated status`);
-
-      res.json({
-        message: 'Contractor status validated and updated',
-        contractor: contractor.name,
-        validation: validationResult,
-        updated: updateResult.modifiedCount > 0
-      });
-    } else {
-      // Clear status fields if no validation data
-      const updateResult = await db.collection('contractors').updateOne(
-        { contractor_id: req.params.contractorId },
-        {
-          $set: {
-            status: null,
-            violator: null,
-            restrictions: null,
-            updatedAt: new Date()
-          }
-        }
-      );
-
-      console.log(`ℹ️ Cleared status fields for contractor ${contractor.name} (no validation data)`);
-
-      res.json({
-        message: 'No validation data available, status fields cleared',
-        contractor: contractor.name,
-        updated: updateResult.modifiedCount > 0
-      });
-    }
-  } catch (error) {
-    console.error('❌ Error validating contractor status:', error);
-    res.status(500).json({ error: 'Failed to validate contractor status' });
-  }
-});
 
 // Bulk validate all contractors from Companies Register
 app.post('/api/contractors/validate-all-status', async (req, res) => {
