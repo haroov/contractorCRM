@@ -40,9 +40,9 @@ app.use(session({
   resave: true, // Changed to true
   saveUninitialized: true, // Changed to true
   cookie: {
-    secure: false, // Set to false for now to test
-    httpOnly: false, // Set to false for now to test
-    sameSite: 'lax', // Back to lax
+    secure: true, // Set to true for HTTPS
+    httpOnly: true, // Set to true for security
+    sameSite: 'none', // Set to none for cross-origin
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
