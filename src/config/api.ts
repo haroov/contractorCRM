@@ -28,3 +28,46 @@ export const API_CONFIG = {
     PROJECT_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.PROJECTS}/${id}`,
     VALIDATE_STATUS_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.CONTRACTORS}/validate-status/${id}`,
 };
+
+// Helper function to get session ID from URL
+export const getSessionId = (): string | null => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('sessionId');
+};
+
+// Helper function to create authenticated fetch options
+export const getAuthHeaders = (): HeadersInit => {
+    const sessionId = getSessionId();
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+    
+    if (sessionId) {
+        headers['X-Session-ID'] = sessionId;
+    }
+    
+    return headers;
+};
+
+// Helper function for authenticated API calls
+export const authenticatedFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
+    const sessionId = getSessionId();
+    const fetchOptions: RequestInit = {
+        ...options,
+        headers: {
+            ...getAuthHeaders(),
+            ...options.headers,
+        },
+        credentials: 'include',
+    };
+    
+    if (sessionId) {
+        // Add session ID as query parameter as well
+        const urlWithSession = url.includes('?') 
+            ? `${url}&sessionId=${sessionId}`
+            : `${url}?sessionId=${sessionId}`;
+        return fetch(urlWithSession, fetchOptions);
+    }
+    
+    return fetch(url, fetchOptions);
+};
