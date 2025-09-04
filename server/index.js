@@ -43,9 +43,10 @@ app.use(session({
   saveUninitialized: true, // Changed to true
   cookie: {
     secure: true, // Set to true for HTTPS
-    httpOnly: true, // Set to true for security
+    httpOnly: false, // Set to false for debugging
     sameSite: 'none', // Set to none for cross-origin
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    domain: '.onrender.com' // Set domain for cross-origin
   }
 }));
 
@@ -189,6 +190,7 @@ app.get('/auth/status', (req, res) => {
   console.log('🔍 User:', req.user);
   console.log('🔍 Request headers:', req.headers);
   console.log('🔍 Request cookies:', req.cookies);
+  console.log('🔍 Response headers before:', res.getHeaders());
   
   // Force session save to ensure cookie is sent
   req.session.save((err) => {
@@ -215,6 +217,8 @@ app.get('/auth/status', (req, res) => {
     console.log('❌ User is not authenticated');
     res.json({ authenticated: false });
   }
+  
+  console.log('🔍 Response headers after:', res.getHeaders());
 });
 
 // Dashboard route (redirect to frontend)
