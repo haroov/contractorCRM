@@ -77,3 +77,9 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
+
+# Environment Variables and Credentials (DO NOT COMMIT)
+RENDER_ENV_VARS.txt
+*_ENV_VARS.txt
+*_CREDENTIALS.txt
+*_SECRETS.txt
