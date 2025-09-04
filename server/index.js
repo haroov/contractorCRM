@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const dotenv = require('dotenv');
@@ -33,6 +34,7 @@ app.use(cors({
   exposedHeaders: ['Set-Cookie']
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Session configuration
 app.use(session({
@@ -185,6 +187,17 @@ app.get('/auth/status', (req, res) => {
   console.log('🔍 Session ID:', req.sessionID);
   console.log('🔍 Session data:', req.session);
   console.log('🔍 User:', req.user);
+  console.log('🔍 Request headers:', req.headers);
+  console.log('🔍 Request cookies:', req.cookies);
+  
+  // Force session save to ensure cookie is sent
+  req.session.save((err) => {
+    if (err) {
+      console.error('❌ Error saving session:', err);
+    } else {
+      console.log('✅ Session saved for auth status check');
+    }
+  });
   
   if (req.isAuthenticated()) {
     console.log('✅ User is authenticated:', req.user.email);
