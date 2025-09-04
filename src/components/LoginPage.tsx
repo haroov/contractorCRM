@@ -173,9 +173,43 @@ const LoginPage: React.FC = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-          מערכת ניהול קבלנים
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+          <Typography variant="h4" sx={{ color: 'primary.main', mr: 2 }}>
+            מערכת ניהול קבלנים
+          </Typography>
+          <Box
+            component="img"
+            src="/choco-logo.png"
+            alt="שוקו לוגו"
+            sx={{
+              height: 40,
+              width: 'auto',
+              objectFit: 'contain'
+            }}
+            onError={(e) => {
+              // Fallback to text if image not found
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling.style.display = 'block';
+            }}
+          />
+          <Box
+            sx={{
+              display: 'none',
+              height: 40,
+              width: 40,
+              borderRadius: '50%',
+              bgcolor: '#8B4513',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+              fontWeight: 'bold'
+            }}
+          >
+            ש
+          </Box>
+        </Box>
         
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           התחברות למערכת
@@ -256,7 +290,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#357ae8'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '14px' // 6px more than before (8px + 6px = 14px)
+                marginRight: '12px' // Increased spacing between icon and text
               }
             }}
           >
@@ -277,7 +311,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#0088cc'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '8px'
+                marginRight: '12px' // Increased spacing between icon and text
               }
             }}
           >
