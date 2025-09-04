@@ -169,8 +169,11 @@ const authRoutes = require('./routes/auth.js');
 app.use('/auth', authRoutes);
 console.log('✅ Auth routes configured');
 
+// Import auth middleware
+const { requireAuth } = require('./middleware/auth.js');
+
 // Validate and update contractor status from Companies Register
-app.post('/api/contractors/validate-status/:contractorId', async (req, res) => {
+app.post('/api/contractors/validate-status/:contractorId', requireAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
@@ -238,8 +241,6 @@ app.post('/api/contractors/validate-status/:contractorId', async (req, res) => {
   }
 });
 
-// Import auth middleware
-const { requireAuth } = require('./middleware/auth.js');
 // Apply authentication to protected routes
 app.use('/api/contractors', requireAuth);
 app.use('/api/projects', requireAuth);
