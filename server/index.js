@@ -42,8 +42,7 @@ app.use(session({
   cookie: {
     secure: false, // Set to false for now to test
     httpOnly: false, // Set to false for now to test
-    sameSite: 'none', // Changed to none for cross-origin
-    domain: '.onrender.com', // Set domain for cross-origin
+    sameSite: 'lax', // Back to lax
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
