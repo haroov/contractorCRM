@@ -172,8 +172,39 @@ console.log('✅ Auth routes configured');
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 
+// Handle OPTIONS request for validate-status endpoint
+app.options('/api/contractors/validate-status/:contractorId', cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://contractor-crm-liav-geffens-projects.vercel.app',
+    'https://contractor-crm.vercel.app',
+    'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://accounts.google.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  exposedHeaders: ['Set-Cookie']
+}), (req, res) => {
+  res.status(200).end();
+});
+
 // Validate and update contractor status from Companies Register
-app.post('/api/contractors/validate-status/:contractorId', requireAuth, async (req, res) => {
+app.post('/api/contractors/validate-status/:contractorId', cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://contractor-crm-liav-geffens-projects.vercel.app',
+    'https://contractor-crm.vercel.app',
+    'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://accounts.google.com'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  exposedHeaders: ['Set-Cookie']
+}), requireAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
