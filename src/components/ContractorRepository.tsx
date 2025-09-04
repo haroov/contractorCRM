@@ -208,9 +208,18 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     }, [contractors]);
 
     const openContractorInNewWindow = (contractor: Contractor, mode: 'view' | 'edit' | 'new') => {
+        // Get session ID from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        
         // Create URL parameters for the contractor data
         const params = new URLSearchParams();
         params.set('mode', mode);
+        
+        // Add session ID to the new window URL
+        if (sessionId) {
+            params.set('sessionId', sessionId);
+        }
 
         if (mode === 'new') {
             params.set('contractor_id', 'new');
