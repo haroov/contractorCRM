@@ -1,5 +1,5 @@
-import express from 'express';
-import passport from 'passport';
+const express = require('express');
+const passport = require('passport');
 const router = express.Router();
 
 // Google OAuth login
@@ -86,4 +86,4 @@ router.get('/me', (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

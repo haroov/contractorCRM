@@ -34,7 +34,7 @@ const requireEmail = (allowedEmails) => {
   };
 };
 
-export {
+module.exports = {
   requireAuth,
   requireAdmin,
   requireEmail
