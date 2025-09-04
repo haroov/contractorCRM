@@ -6,7 +6,7 @@ import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
-import { API_CONFIG } from '../config/api';
+import { API_CONFIG, authenticatedFetch } from '../config/api';
 import {
     containsForbiddenWords,
     validateEmail,
@@ -1011,7 +1011,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             setValidationLoading(true);
             setValidationMessage('מאמת סטטוס מרשום החברות...');
 
-            const response = await fetch(API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id), {
+            const response = await authenticatedFetch(API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
