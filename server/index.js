@@ -24,7 +24,8 @@ app.use(cors({
     'http://localhost:3000',
     'https://contractor-crm-liav-geffens-projects.vercel.app',
     'https://contractor-crm.vercel.app',
-    'https://contractor-ox9okh9qd-choco-insurance.vercel.app'
+    'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://accounts.google.com'
   ],
   credentials: true
 }));
