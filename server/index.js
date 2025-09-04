@@ -1,13 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const session = require('express-session');
-const passport = require('passport');
-const { MongoClient, ObjectId } = require('mongodb');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import session from 'express-session';
+import passport from 'passport';
+import { MongoClient, ObjectId } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -163,12 +163,12 @@ async function validateContractorStatus(companyId) {
 }
 
 // Import auth routes
-const authRoutes = require('./routes/auth.js');
+import authRoutes from './routes/auth.js';
 app.use('/auth', authRoutes);
 console.log('✅ Auth routes configured');
 
 // Import auth middleware
-const { requireAuth } = require('./middleware/auth.js');
+import { requireAuth } from './middleware/auth.js';
 // Apply authentication to protected routes
 app.use('/api/contractors', requireAuth);
 app.use('/api/projects', requireAuth);

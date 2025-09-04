@@ -1,6 +1,6 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/User');
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import User from '../models/User.js';
 
 // Allowed emails for the system
 const ALLOWED_EMAILS = [
