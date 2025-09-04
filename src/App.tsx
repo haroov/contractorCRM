@@ -23,20 +23,39 @@ export default function App() {
     checkAuthStatus();
   }, []);
 
+  // Check auth status when URL changes (e.g., after OAuth redirect)
+  useEffect(() => {
+    const handleAuthCheck = () => {
+      if (window.location.pathname === '/' && !user) {
+        checkAuthStatus();
+      }
+    };
+    
+    handleAuthCheck();
+  }, [user]);
+
   const checkAuthStatus = async () => {
+    console.log('🔍 Checking auth status...');
     try {
       const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
         credentials: 'include'
       });
       
+      console.log('📡 Auth status response:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Auth data:', data);
         if (data.authenticated) {
+          console.log('✅ User authenticated:', data.user);
           setUser(data.user);
+        } else {
+          console.log('❌ User not authenticated');
+          setUser(null);
         }
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error('❌ Error checking auth status:', error);
     } finally {
       setLoading(false);
     }
@@ -44,14 +63,18 @@ export default function App() {
 
   // Protected Route Component
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    console.log('🛡️ ProtectedRoute - loading:', loading, 'user:', user);
+    
     if (loading) {
       return <div>Loading...</div>;
     }
     
     if (!user) {
+      console.log('🚫 No user, redirecting to login');
       return <Navigate to="/login" replace />;
     }
     
+    console.log('✅ User authenticated, rendering children');
     return <>{children}</>;
   };
 

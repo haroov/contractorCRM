@@ -15,8 +15,8 @@ router.get('/google/callback',
     failureRedirect: '/login?error=auth_failed' 
   }),
   (req, res) => {
-    // Successful authentication, redirect to dashboard
-    res.redirect('/dashboard');
+    // Successful authentication, redirect to main CRM page
+    res.redirect('https://contractor-crm.vercel.app/');
   }
 );
 
