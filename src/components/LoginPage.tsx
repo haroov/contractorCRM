@@ -74,24 +74,10 @@ const LoginPage: React.FC = () => {
     setError(null);
     
     try {
-      // First check if Google OAuth is configured
-      const response = await fetch(API_CONFIG.AUTH_GOOGLE_URL(), {
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.status === 'not_configured') {
-          setError('Google OAuth לא מוגדר עדיין. אנא פנה למנהל המערכת.');
-          setLoading(false);
-          return;
-        }
-      }
-      
-      // If configured, redirect to Google OAuth
+      // Direct redirect to Google OAuth without checking
       window.location.href = API_CONFIG.AUTH_GOOGLE_URL();
     } catch (error) {
-      console.error('Error checking Google OAuth:', error);
+      console.error('Error with Google OAuth:', error);
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
       setLoading(false);
     }
