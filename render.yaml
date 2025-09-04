@@ -14,3 +14,11 @@ services:
         value: "10000"
       - key: NODE_ENV
         value: production
+      - key: GOOGLE_CLIENT_ID
+        value: your_google_client_id_here
+      - key: GOOGLE_CLIENT_SECRET
+        value: your_google_client_secret_here
+      - key: GOOGLE_CALLBACK_URL
+        value: https://contractorcrm-api.onrender.com/auth/google/callback
+      - key: SESSION_SECRET
+        value: contractor-crm-super-secret-session-key-2024

@@ -2,9 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import session from 'express-session';
+import passport from 'passport';
 import { MongoClient, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -26,6 +29,26 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'contractor-crm-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Import and configure passport
+import('./config/passport.js').then(() => {
+  console.log('✅ Passport configured');
+});
 
 // Rate limiting
 const limiter = rateLimit({
@@ -57,6 +80,10 @@ async function connectDB() {
     }
 
     console.log('📊 Database URI:', mongoUri);
+
+    // Connect with Mongoose for User model
+    await mongoose.connect(mongoUri);
+    console.log('✅ Mongoose connected');
 
     client = new MongoClient(mongoUri);
     await client.connect();
@@ -129,6 +156,20 @@ async function validateContractorStatus(companyId) {
     return null;
   }
 }
+
+// Import auth routes
+import('./routes/auth.js').then((authRoutes) => {
+  app.use('/auth', authRoutes.default);
+  console.log('✅ Auth routes configured');
+});
+
+// Import auth middleware
+import('./middleware/auth.js').then((authMiddleware) => {
+  // Apply authentication to protected routes
+  app.use('/api/contractors', authMiddleware.requireAuth);
+  app.use('/api/projects', authMiddleware.requireAuth);
+  console.log('✅ Auth middleware configured');
+});
 
 // API Routes
 app.get('/api/health', (req, res) => {
@@ -747,6 +788,9 @@ process.on('SIGINT', async () => {
   console.log('🛑 Shutting down gracefully...');
   if (client) {
     await client.close();
+  }
+  if (mongoose.connection.readyState === 1) {
+    await mongoose.connection.close();
   }
   if (mongoServer) {
     await mongoServer.stop();

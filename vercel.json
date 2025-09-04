@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/auth/(.*)",
+      "destination": "https://contractorcrm-api.onrender.com/auth/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
