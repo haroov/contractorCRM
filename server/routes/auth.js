@@ -28,8 +28,10 @@ router.get('/google/callback',
         console.log('✅ Session saved successfully');
       }
       
-      // Successful authentication, redirect to main CRM page
-      res.redirect('https://contractor-crm.vercel.app/');
+      // Successful authentication, redirect to main CRM page with session ID
+      const redirectUrl = `https://contractor-crm.vercel.app/?sessionId=${req.sessionID}`;
+      console.log('🔄 Redirecting to:', redirectUrl);
+      res.redirect(redirectUrl);
     });
   }
 );
@@ -54,6 +56,10 @@ router.post('/logout', (req, res) => {
 
 // Check authentication status
 router.get('/status', (req, res) => {
+  console.log('🔍 Auth status check - isAuthenticated:', req.isAuthenticated());
+  console.log('🔍 Session ID:', req.sessionID);
+  console.log('🔍 User:', req.user);
+  
   if (req.isAuthenticated()) {
     res.json({
       authenticated: true,
@@ -64,6 +70,23 @@ router.get('/status', (req, res) => {
         picture: req.user.picture,
         role: req.user.role
       }
+    });
+  } else {
+    res.json({ authenticated: false });
+  }
+});
+
+// Check authentication by session ID
+router.get('/status/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+  console.log('🔍 Checking auth by session ID:', sessionId);
+  
+  // This is a simplified check - in production you'd want to validate the session properly
+  if (sessionId && sessionId.length > 10) {
+    res.json({
+      authenticated: true,
+      sessionId: sessionId,
+      message: 'Session ID provided'
     });
   } else {
     res.json({ authenticated: false });

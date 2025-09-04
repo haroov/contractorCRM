@@ -45,8 +45,7 @@ app.use(session({
     secure: true, // Set to true for HTTPS
     httpOnly: false, // Set to false for debugging
     sameSite: 'none', // Set to none for cross-origin
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    domain: '.onrender.com' // Set domain for cross-origin
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 

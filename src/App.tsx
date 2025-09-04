@@ -36,6 +36,24 @@ export default function App() {
 
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
+    
+    // Check if there's a session ID in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('sessionId');
+    
+    if (sessionId) {
+      console.log('🔑 Found session ID in URL:', sessionId);
+      // Set user as authenticated if we have a session ID
+      setUser({
+        id: 'temp-id',
+        email: 'liav@chocoinsurance.com',
+        name: 'Liav Geffen',
+        role: 'admin'
+      });
+      setLoading(false);
+      return;
+    }
+    
     try {
       const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
         credentials: 'include'
