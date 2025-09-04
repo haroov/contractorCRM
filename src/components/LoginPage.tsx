@@ -50,12 +50,32 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     setError(null);
     
-    // Redirect to Google OAuth
-    window.location.href = API_CONFIG.AUTH_GOOGLE_URL();
+    try {
+      // First check if Google OAuth is configured
+      const response = await fetch(API_CONFIG.AUTH_GOOGLE_URL(), {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'not_configured') {
+          setError('Google OAuth לא מוגדר עדיין. אנא פנה למנהל המערכת.');
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // If configured, redirect to Google OAuth
+      window.location.href = API_CONFIG.AUTH_GOOGLE_URL();
+    } catch (error) {
+      console.error('Error checking Google OAuth:', error);
+      setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
+      setLoading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -143,23 +163,6 @@ const LoginPage: React.FC = () => {
           </Alert>
         )}
 
-        <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
-          <CardContent>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              מיילים מורשים:
-            </Typography>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-              • liav@chocoinsurance.com
-            </Typography>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-              • roey@chocoinsurance.com
-            </Typography>
-            <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
-              • uriel@chocoinsurance.com
-            </Typography>
-          </CardContent>
-        </Card>
-
         <Button
           variant="contained"
           size="large"
@@ -172,6 +175,9 @@ const LoginPage: React.FC = () => {
             bgcolor: '#4285f4',
             '&:hover': {
               bgcolor: '#357ae8'
+            },
+            '& .MuiButton-startIcon': {
+              marginRight: '8px'
             }
           }}
         >
@@ -179,7 +185,7 @@ const LoginPage: React.FC = () => {
         </Button>
 
         <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-          רק משתמשים עם מיילים מורשים יכולים להתחבר למערכת
+          התחבר באמצעות חשבון Google שלך
         </Typography>
       </Paper>
     </Container>

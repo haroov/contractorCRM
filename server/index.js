@@ -173,6 +173,48 @@ app.get('/auth/test', (req, res) => {
   res.json({ message: 'Auth routes are working!', timestamp: new Date().toISOString() });
 });
 
+// Auth status route (for frontend to check authentication)
+app.get('/auth/status', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({
+      authenticated: true,
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+        picture: req.user.picture,
+        role: req.user.role
+      }
+    });
+  } else {
+    res.json({ authenticated: false });
+  }
+});
+
+// Google OAuth routes (temporary until auth routes are properly loaded)
+app.get('/auth/google', (req, res) => {
+  res.json({ 
+    message: 'Google OAuth not configured yet. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in environment variables.',
+    status: 'not_configured'
+  });
+});
+
+app.get('/auth/google/callback', (req, res) => {
+  res.json({ 
+    message: 'Google OAuth callback not configured yet.',
+    status: 'not_configured'
+  });
+});
+
+app.post('/auth/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    res.json({ message: 'Logged out successfully' });
+  });
+});
+
 // API Routes
 app.get('/api/health', (req, res) => {
   const dbType = process.env.USE_MEMORY_SERVER !== 'false' ? 'MongoDB Memory Server' : 'Persistent MongoDB';
