@@ -15,6 +15,11 @@ router.get('/google/callback',
     failureRedirect: '/login?error=auth_failed' 
   }),
   (req, res) => {
+    console.log('🎉 Google OAuth callback successful!');
+    console.log('👤 User:', req.user);
+    console.log('🔐 Session ID:', req.sessionID);
+    console.log('🔐 Session data:', req.session);
+    
     // Successful authentication, redirect to main CRM page
     res.redirect('https://contractor-crm.vercel.app/');
   }

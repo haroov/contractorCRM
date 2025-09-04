@@ -38,6 +38,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -176,7 +178,13 @@ app.get('/auth/test', (req, res) => {
 
 // Auth status route (for frontend to check authentication)
 app.get('/auth/status', (req, res) => {
+  console.log('🔍 Auth status check - isAuthenticated:', req.isAuthenticated());
+  console.log('🔍 Session ID:', req.sessionID);
+  console.log('🔍 Session data:', req.session);
+  console.log('🔍 User:', req.user);
+  
   if (req.isAuthenticated()) {
+    console.log('✅ User is authenticated:', req.user.email);
     res.json({
       authenticated: true,
       user: {
@@ -188,6 +196,7 @@ app.get('/auth/status', (req, res) => {
       }
     });
   } else {
+    console.log('❌ User is not authenticated');
     res.json({ authenticated: false });
   }
 });
