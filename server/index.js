@@ -37,8 +37,8 @@ app.use(express.json());
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'contractor-crm-secret-key',
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Changed to true
+  saveUninitialized: true, // Changed to true
   cookie: {
     secure: false, // Set to false for now to test
     httpOnly: false, // Set to false for now to test

@@ -20,8 +20,17 @@ router.get('/google/callback',
     console.log('🔐 Session ID:', req.sessionID);
     console.log('🔐 Session data:', req.session);
     
-    // Successful authentication, redirect to main CRM page
-    res.redirect('https://contractor-crm.vercel.app/');
+    // Force session save
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+      } else {
+        console.log('✅ Session saved successfully');
+      }
+      
+      // Successful authentication, redirect to main CRM page
+      res.redirect('https://contractor-crm.vercel.app/');
+    });
   }
 );
 
