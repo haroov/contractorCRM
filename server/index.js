@@ -191,6 +191,11 @@ app.get('/auth/status', (req, res) => {
   }
 });
 
+// Dashboard route (redirect to frontend)
+app.get('/dashboard', (req, res) => {
+  res.redirect('https://contractor-crm.vercel.app/');
+});
+
 // Google OAuth routes (temporary until auth routes are properly loaded)
 app.get('/auth/google', (req, res) => {
   res.json({ 
