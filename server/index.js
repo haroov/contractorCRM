@@ -52,7 +52,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Import and configure passport
-require('./config/passport.js');
+import './config/passport.js';
 console.log('✅ Passport configured');
 
 // Rate limiting
