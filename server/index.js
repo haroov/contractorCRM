@@ -27,7 +27,10 @@ app.use(cors({
     'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
     'https://accounts.google.com'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie']
 }));
 app.use(express.json());
 
@@ -37,9 +40,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: false, // Set to false for now to test
+    httpOnly: false, // Set to false for now to test
+    sameSite: 'lax', // Set to lax for now to test
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
