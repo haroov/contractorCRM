@@ -12,7 +12,7 @@ router.get('/google',
 // Google OAuth callback
 router.get('/google/callback', 
   passport.authenticate('google', { 
-    failureRedirect: '/login?error=auth_failed' 
+    failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed' 
   }),
   (req, res) => {
     console.log('🎉 Google OAuth callback successful!');

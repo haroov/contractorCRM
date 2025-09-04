@@ -12,7 +12,7 @@ const ALLOWED_EMAILS = [
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "/auth/google/callback"
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     console.log('🔐 Google OAuth Profile:', profile.emails[0].value);
