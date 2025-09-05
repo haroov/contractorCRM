@@ -44,6 +44,7 @@ interface User {
     googleId: string;
     email: string;
     name: string;
+    phone?: string;
     picture?: string;
     role: 'admin' | 'user';
     isActive: boolean;
@@ -269,6 +270,7 @@ const UserManagement: React.FC = () => {
                             <TableRow>
                                 <TableCell>משתמש</TableCell>
                                 <TableCell>אימייל</TableCell>
+                                <TableCell>טלפון</TableCell>
                                 <TableCell>תפקיד</TableCell>
                                 <TableCell>סטטוס</TableCell>
                                 <TableCell>התחברות אחרונה</TableCell>
@@ -305,6 +307,9 @@ const UserManagement: React.FC = () => {
                                             </Box>
                                         </TableCell>
                                         <TableCell>
+                                            {user.phone || '-'}
+                                        </TableCell>
+                                        <TableCell>
                                             <Chip
                                                 label={getRoleLabel(user.role)}
                                                 color={getRoleColor(user.role)}
@@ -337,7 +342,7 @@ const UserManagement: React.FC = () => {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
+                                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4 }}>
                                         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                                             אין משתמשים פעילים
                                         </Typography>
@@ -360,6 +365,7 @@ const UserManagement: React.FC = () => {
                             <TableRow>
                                 <TableCell>משתמש</TableCell>
                                 <TableCell>אימייל</TableCell>
+                                <TableCell>טלפון</TableCell>
                                 <TableCell>תפקיד</TableCell>
                                 <TableCell>סטטוס</TableCell>
                                 <TableCell>התחברות אחרונה</TableCell>
@@ -396,6 +402,9 @@ const UserManagement: React.FC = () => {
                                             </Box>
                                         </TableCell>
                                         <TableCell>
+                                            {user.phone || '-'}
+                                        </TableCell>
+                                        <TableCell>
                                             <Chip
                                                 label={getRoleLabel(user.role)}
                                                 color={getRoleColor(user.role)}
@@ -430,7 +439,7 @@ const UserManagement: React.FC = () => {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
+                                    <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4 }}>
                                         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                                             אין משתמשים ממתינים
                                         </Typography>
@@ -523,13 +532,90 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
+        phone: user?.phone || '',
         role: user?.role || 'user',
         isActive: user?.isActive ?? true
     });
 
+    const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+    // Forbidden words list
+    const forbiddenWords = [
+        'היטלר', 'זונה', 'אלוהים', 'שרמוטה', 'כלבה', 'מזדיין', 'זין', 'כוס', 'חמור',
+        'hitler', 'bitch', 'whore', 'fuck', 'shit', 'damn', 'hell'
+    ];
+
+    const validateName = (name: string): string => {
+        if (!name.trim()) return 'שם מלא הוא שדה חובה';
+        
+        // Check for forbidden words
+        const lowerName = name.toLowerCase();
+        for (const word of forbiddenWords) {
+            if (lowerName.includes(word.toLowerCase())) {
+                return 'השם מכיל מילים אסורות לשימוש';
+            }
+        }
+        
+        // Check for valid characters (Hebrew, English, spaces, and specific symbols)
+        const validNameRegex = /^[\u0590-\u05FF\u0020\u0027\u0022a-zA-Z\s'-]+$/;
+        if (!validNameRegex.test(name)) {
+            return 'השם יכול להכיל רק אותיות בעברית, באנגלית, רווחים והסימנים ״ ׳';
+        }
+        
+        return '';
+    };
+
+    const validateEmail = (email: string): string => {
+        if (!email.trim()) return 'אימייל הוא שדה חובה';
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return 'אנא הזן כתובת מייל תקינה';
+        }
+        
+        return '';
+    };
+
+    const validatePhone = (phone: string): string => {
+        if (!phone.trim()) return ''; // Phone is optional
+        
+        const phoneRegex = /^05[0-9]-[0-9]{7}$/;
+        if (!phoneRegex.test(phone)) {
+            return 'מספר הטלפון חייב להיות בפורמט 05x-xxxxxxx';
+        }
+        
+        return '';
+    };
+
+    const handleInputChange = (field: string, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        
+        // Clear error when user starts typing
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(formData);
+        
+        // Validate all fields
+        const nameError = validateName(formData.name);
+        const emailError = validateEmail(formData.email);
+        const phoneError = validatePhone(formData.phone);
+        
+        const newErrors = {
+            name: nameError,
+            email: emailError,
+            phone: phoneError
+        };
+        
+        setErrors(newErrors);
+        
+        // If no errors, submit the form
+        if (!nameError && !emailError && !phoneError) {
+            onSave(formData);
+        }
     };
 
     return (
@@ -538,18 +624,37 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
                 fullWidth
                 label="שם מלא"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleInputChange('name', e.target.value)}
                 margin="normal"
                 required
+                error={!!errors.name}
+                helperText={errors.name}
+                placeholder="הזן שם מלא בעברית או באנגלית"
             />
             <TextField
                 fullWidth
                 label="אימייל"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 margin="normal"
                 required
+                error={!!errors.email}
+                helperText={errors.email}
+                placeholder="example@domain.com"
+            />
+            <TextField
+                fullWidth
+                label="טלפון נייד"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                margin="normal"
+                error={!!errors.phone}
+                helperText={errors.phone || 'פורמט: 05x-xxxxxxx (אופציונלי)'}
+                placeholder="050-1234567"
+                inputProps={{
+                    maxLength: 11
+                }}
             />
             <TextField
                 fullWidth
