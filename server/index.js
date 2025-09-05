@@ -337,19 +337,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 // Google OAuth routes (temporary until auth routes are properly loaded)
-app.get('/auth/google', (req, res) => {
-  res.json({
-    message: 'Google OAuth not configured yet. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in environment variables.',
-    status: 'not_configured'
-  });
-});
-
-app.get('/auth/google/callback', (req, res) => {
-  res.json({
-    message: 'Google OAuth callback not configured yet.',
-    status: 'not_configured'
-  });
-});
+// Google OAuth routes are handled by auth.js router
 
 app.post('/auth/logout', (req, res) => {
   req.logout((err) => {

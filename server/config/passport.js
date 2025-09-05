@@ -18,9 +18,13 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
+  console.log('🔐 Google Strategy called');
+  console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
+  console.log('🔐 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
+  console.log('🔐 Callback URL:', process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback");
   try {
     console.log('🔐 Google OAuth Profile:', profile.emails[0].value);
-    
+
     // Check if email is allowed (from database)
     const email = profile.emails[0].value.toLowerCase();
     const emailAllowed = await isEmailAllowed(email);
