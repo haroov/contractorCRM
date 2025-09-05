@@ -1320,6 +1320,54 @@ app.get('/force-add-users', async (req, res) => {
   }
 });
 
+// Simple direct add users endpoint
+app.get('/add-users-now', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    // Add users one by one with error handling
+    const emails = [
+      'finkelmanyael@gmail.com',
+      'Shifra.sankewitz@gmail.com', 
+      'mor@cns-law.co.il',
+      'uriel@chocoinsurance.com',
+      'shlomo@chocoinsurance.com',
+      'steven.kostyn@gmail.com'
+    ];
+    
+    let added = 0;
+    let errors = 0;
+    
+    for (const email of emails) {
+      try {
+        const user = {
+          email: email.toLowerCase(),
+          name: email.split('@')[0],
+          role: 'user',
+          isActive: false,
+          createdAt: new Date(),
+          lastLogin: null
+        };
+        
+        await db.collection('users').insertOne(user);
+        added++;
+        console.log(`✅ Added: ${email}`);
+      } catch (err) {
+        errors++;
+        console.log(`⚠️ Skipped ${email}: ${err.message}`);
+      }
+    }
+    
+    res.json({ 
+      message: `Added ${added} users, ${errors} errors`,
+      added: added,
+      errors: errors
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Direct endpoint to add all missing users
 app.get('/add-all-missing-users', async (req, res) => {
   try {

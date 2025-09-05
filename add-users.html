@@ -16,8 +16,13 @@
             resultDiv.innerHTML = 'Adding users...';
 
             try {
-                // Try the new endpoint first
-                let response = await fetch('https://contractorcrm-api.onrender.com/add-all-missing-users');
+                // Try the force add endpoint first
+                let response = await fetch('https://contractorcrm-api.onrender.com/force-add-users');
+
+                if (!response.ok) {
+                    // If that fails, try the new endpoint
+                    response = await fetch('https://contractorcrm-api.onrender.com/add-all-missing-users');
+                }
 
                 if (!response.ok) {
                     // If that fails, try the specific users endpoint
@@ -37,6 +42,7 @@
                                 'finkelmanyael@gmail.com',
                                 'Shifra.sankewitz@gmail.com',
                                 'mor@cns-law.co.il',
+                                'uriel@chocoinsurance.com',
                                 'shlomo@chocoinsurance.com',
                                 'steven.kostyn@gmail.com'
                             ]
