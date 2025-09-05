@@ -386,8 +386,20 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     return (
         <Box sx={{ p: 3, direction: 'rtl' }}>
-            {/* Top Bar with User Info */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            {/* Top Bar with Logo, Title and User Info */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                {/* Logo and Title */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <img 
+                        src={logo} 
+                        alt="Logo" 
+                        style={{ width: 48, height: 48 }}
+                    />
+                    <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                        מאגר קבלנים ויזמים
+                    </Typography>
+                </Box>
+
                 {/* User Info */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <IconButton
@@ -427,18 +439,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 </Box>
             </Box>
 
-            {/* Header */}
+            {/* Subtitle */}
             <Box sx={{ mb: 3, textAlign: 'right' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 2 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                        מאגר קבלנים ויזמים
-                    </Typography>
-                    <img 
-                        src={logo} 
-                        alt="Logo" 
-                        style={{ width: 48, height: 48 }}
-                    />
-                </Box>
                 <Typography variant="body1" color="text.secondary">
                     ניהול וצפייה בכל הקבלנים במערכת
                 </Typography>
