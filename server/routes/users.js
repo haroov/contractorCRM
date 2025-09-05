@@ -176,6 +176,24 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Alternative delete endpoint for testing
+router.delete('/delete/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    console.log('Alternative delete - User ID:', req.params.id);
+    
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    console.log('User deleted successfully via alternative endpoint:', user.email);
+    res.json({ message: 'User deleted successfully', user: { email: user.email, name: user.name } });
+  } catch (error) {
+    console.error('Error deleting user via alternative endpoint:', error);
+    res.status(500).json({ error: 'Failed to delete user', details: error.message });
+  }
+});
+
 // Toggle user active status (admin only)
 router.patch('/:id/toggle-active', requireAuth, requireAdmin, async (req, res) => {
   try {
