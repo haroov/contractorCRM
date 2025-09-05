@@ -107,6 +107,22 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         };
     }, []);
 
+    // Function to get company status indicator color
+    const getCompanyStatusColor = (contractor: any) => {
+        // Check if company is active
+        if (contractor.isActive === false) {
+            return '#ff4444'; // Red - company not active
+        }
+        
+        // Check if company is a violator
+        if (contractor.violator === true) {
+            return '#ffaa00'; // Yellow - company is violator
+        }
+        
+        // Default - company is valid
+        return '#00aa44'; // Green - company is valid
+    };
+
     const filteredContractors = contractors.filter(contractor => {
         const searchLower = searchTerm.toLowerCase();
 
@@ -326,6 +342,9 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 <Typography variant="body1" color="text.secondary">
                     ניהול וצפייה בכל הקבלנים במערכת
                 </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontSize: '0.8rem' }}>
+                    💡 אינדיקציות תקינות החברה מתעדכנות פעם ביום בלילה
+                </Typography>
             </Box>
 
             {/* Search and Actions */}
@@ -428,7 +447,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>קבלן</TableCell>
-                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ח״פ</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                ח״פ
+                                <Typography variant="caption" sx={{ display: 'block', fontSize: '0.7rem', color: '#999', mt: 0.5 }}>
+                                    🟢 תקין 🟡 מפרה 🔴 לא פעיל
+                                </Typography>
+                            </TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>כתובת</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סקטור</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>דירוג בטיחות</TableCell>
@@ -487,21 +511,41 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
-                                    <Box>
-                                        <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
-                                            {contractor.company_id}
-                                        </Typography>
-                                        <Typography
-                                            variant="caption"
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Box>
+                                            <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
+                                                {contractor.company_id}
+                                            </Typography>
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: '#999',
+                                                    fontSize: '0.7rem',
+                                                    display: 'block',
+                                                    mt: 0.5
+                                                }}
+                                            >
+                                                {contractor.contractor_id ? `קבלן ${contractor.contractor_id}` : 'אינו קבלן רשום'}
+                                            </Typography>
+                                        </Box>
+                                        {/* Company Status Indicator */}
+                                        <Box
                                             sx={{
-                                                color: '#999',
-                                                fontSize: '0.7rem',
-                                                display: 'block',
-                                                mt: 0.5
+                                                width: 12,
+                                                height: 12,
+                                                borderRadius: '50%',
+                                                backgroundColor: getCompanyStatusColor(contractor),
+                                                border: '1px solid rgba(0,0,0,0.1)',
+                                                flexShrink: 0
                                             }}
-                                        >
-                                            {contractor.contractor_id ? `קבלן ${contractor.contractor_id}` : 'אינו קבלן רשום'}
-                                        </Typography>
+                                            title={
+                                                contractor.isActive === false 
+                                                    ? 'חברה לא פעילה' 
+                                                    : contractor.violator === true 
+                                                        ? 'חברה מפרה' 
+                                                        : 'חברה תקינה'
+                                            }
+                                        />
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
