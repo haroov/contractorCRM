@@ -374,6 +374,11 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             // Clear session storage
             sessionStorage.clear();
             
+            // Clear all cookies (more aggressive approach)
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
             // Try to logout from server
             try {
                 await authenticatedFetch('/auth/logout', {
@@ -386,32 +391,28 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             // Dispatch logout event
             window.dispatchEvent(new CustomEvent('userLogout'));
             
-            // Logout from Google (revoke access and clear Google session)
+            // More aggressive Google logout - open in new window then close
             try {
-                // Open Google logout URL in a hidden iframe to clear Google session
                 const googleLogoutUrl = 'https://accounts.google.com/logout';
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = googleLogoutUrl;
-                document.body.appendChild(iframe);
-                
-                // Remove iframe after a short delay
-                setTimeout(() => {
-                    document.body.removeChild(iframe);
-                }, 2000);
+                const logoutWindow = window.open(googleLogoutUrl, '_blank', 'width=1,height=1');
+                if (logoutWindow) {
+                    setTimeout(() => {
+                        logoutWindow.close();
+                    }, 3000);
+                }
             } catch (googleLogoutError) {
                 console.log('Google logout failed, but continuing with local cleanup');
             }
             
-            // Force redirect to login with cache busting and force account selection
-            window.location.href = '/login?t=' + Date.now() + '&prompt=select_account';
+            // Force complete page reload to clear all state
+            window.location.replace('/login?t=' + Date.now() + '&prompt=select_account&force_logout=true');
         } catch (error) {
             console.error('Error logging out:', error);
             // Even if there's an error, clear local data and redirect
             localStorage.clear();
             sessionStorage.clear();
             window.dispatchEvent(new CustomEvent('userLogout'));
-            window.location.href = '/login?t=' + Date.now() + '&prompt=select_account';
+            window.location.replace('/login?t=' + Date.now() + '&prompt=select_account&force_logout=true');
         }
         handleUserMenuClose();
     };

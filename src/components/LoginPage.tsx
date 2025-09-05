@@ -34,22 +34,22 @@ const LoginPage: React.FC = () => {
     // Clear localStorage and sessionStorage
     localStorage.clear();
     sessionStorage.clear();
-    
+
     // Remove sessionId and other parameters from URL if present
     const urlParams = new URLSearchParams(window.location.search);
     let shouldUpdateUrl = false;
-    
+
     if (urlParams.has('sessionId')) {
       urlParams.delete('sessionId');
       shouldUpdateUrl = true;
     }
-    
+
     // Keep prompt parameter for account selection
     // if (urlParams.has('prompt')) {
     //   urlParams.delete('prompt');
     //   shouldUpdateUrl = true;
     // }
-    
+
     if (shouldUpdateUrl) {
       const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
       window.history.replaceState({}, document.title, newUrl);
@@ -125,11 +125,19 @@ const LoginPage: React.FC = () => {
       // Check if we should force account selection (from logout)
       const urlParams = new URLSearchParams(window.location.search);
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
+      const forceLogout = urlParams.get('force_logout') === 'true';
       
       // Direct redirect to Google OAuth with account selection if needed
       let googleUrl = API_CONFIG.AUTH_GOOGLE_URL();
-      if (forceAccountSelection) {
-        googleUrl += '?prompt=select_account';
+      const params = new URLSearchParams();
+      
+      if (forceAccountSelection || forceLogout) {
+        params.append('prompt', 'select_account');
+        params.append('approval_prompt', 'force');
+      }
+      
+      if (params.toString()) {
+        googleUrl += '?' + params.toString();
       }
       
       window.location.href = googleUrl;

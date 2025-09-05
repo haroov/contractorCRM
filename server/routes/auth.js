@@ -5,6 +5,7 @@ const router = express.Router();
 // Google OAuth login
 router.get('/google', (req, res, next) => {
   const prompt = req.query.prompt;
+  const approvalPrompt = req.query.approval_prompt;
   const authOptions = {
     scope: ['profile', 'email']
   };
@@ -12,6 +13,11 @@ router.get('/google', (req, res, next) => {
   // Add prompt parameter if provided (for account selection)
   if (prompt === 'select_account') {
     authOptions.prompt = 'select_account';
+  }
+  
+  // Add approval_prompt parameter if provided (force consent screen)
+  if (approvalPrompt === 'force') {
+    authOptions.approval_prompt = 'force';
   }
   
   passport.authenticate('google', authOptions)(req, res, next);
