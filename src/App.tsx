@@ -21,8 +21,38 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Function to clear user state
+  const clearUserState = () => {
+    setUser(null);
+    setLoading(true);
+  };
+
   useEffect(() => {
     checkAuthStatus();
+  }, []);
+
+  // Listen for logout events
+  useEffect(() => {
+    const handleLogout = () => {
+      clearUserState();
+    };
+
+    // Listen for storage changes (when localStorage is cleared)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'sessionId' && e.newValue === null) {
+        clearUserState();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Listen for custom logout event
+    window.addEventListener('userLogout', handleLogout);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLogout', handleLogout);
+    };
   }, []);
 
   // Check auth status when URL changes (e.g., after OAuth redirect)

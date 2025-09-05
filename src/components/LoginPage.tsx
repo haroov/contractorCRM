@@ -28,6 +28,21 @@ interface User {
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Clear any session data when arriving at login page
+  useEffect(() => {
+    // Clear localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Remove sessionId from URL if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('sessionId')) {
+      urlParams.delete('sessionId');
+      const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');

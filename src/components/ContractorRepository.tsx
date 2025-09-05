@@ -368,14 +368,33 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     const handleLogout = async () => {
         try {
-            await authenticatedFetch('/auth/logout', {
-                method: 'POST'
-            });
-            // Clear session ID from localStorage
-            localStorage.removeItem('sessionId');
-            window.location.href = '/login';
+            // Clear all localStorage data
+            localStorage.clear();
+            
+            // Clear session storage
+            sessionStorage.clear();
+            
+            // Try to logout from server
+            try {
+                await authenticatedFetch('/auth/logout', {
+                    method: 'POST'
+                });
+            } catch (serverError) {
+                console.log('Server logout failed, but continuing with local cleanup');
+            }
+            
+            // Dispatch logout event
+            window.dispatchEvent(new CustomEvent('userLogout'));
+            
+            // Force redirect to login with cache busting
+            window.location.href = '/login?t=' + Date.now();
         } catch (error) {
             console.error('Error logging out:', error);
+            // Even if there's an error, clear local data and redirect
+            localStorage.clear();
+            sessionStorage.clear();
+            window.dispatchEvent(new CustomEvent('userLogout'));
+            window.location.href = '/login?t=' + Date.now();
         }
         handleUserMenuClose();
     };
