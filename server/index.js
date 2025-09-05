@@ -965,6 +965,46 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
+// Endpoint to create pending users
+app.post('/api/users/create-pending', requireAuth, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const { emails } = req.body;
+    
+    if (!emails || !Array.isArray(emails)) {
+      return res.status(400).json({ error: 'Emails array is required' });
+    }
+    
+    const users = [];
+    for (const email of emails) {
+      // Check if user already exists
+      const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+      if (!existingUser) {
+        const user = {
+          email: email.toLowerCase(),
+          name: email.split('@')[0], // Use email prefix as name
+          role: 'user',
+          isActive: false, // Pending users are inactive
+          createdAt: new Date(),
+          lastLogin: null
+        };
+        
+        const result = await db.collection('users').insertOne(user);
+        users.push({ ...user, _id: result.insertedId });
+      }
+    }
+    
+    res.json({ 
+      message: 'Pending users created successfully',
+      users: users,
+      total: users.length
+    });
+  } catch (error) {
+    console.error('❌ Error creating pending users:', error);
+    res.status(500).json({ error: 'Failed to create pending users' });
+  }
+});
+
 // Fix project contractor linkage and add mainContractor field
 app.get('/fix', async (req, res) => {
   try {
