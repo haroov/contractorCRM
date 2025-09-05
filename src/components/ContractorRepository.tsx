@@ -386,15 +386,32 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             // Dispatch logout event
             window.dispatchEvent(new CustomEvent('userLogout'));
             
-            // Force redirect to login with cache busting
-            window.location.href = '/login?t=' + Date.now();
+            // Logout from Google (revoke access and clear Google session)
+            try {
+                // Open Google logout URL in a hidden iframe to clear Google session
+                const googleLogoutUrl = 'https://accounts.google.com/logout';
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = googleLogoutUrl;
+                document.body.appendChild(iframe);
+                
+                // Remove iframe after a short delay
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 2000);
+            } catch (googleLogoutError) {
+                console.log('Google logout failed, but continuing with local cleanup');
+            }
+            
+            // Force redirect to login with cache busting and force account selection
+            window.location.href = '/login?t=' + Date.now() + '&prompt=select_account';
         } catch (error) {
             console.error('Error logging out:', error);
             // Even if there's an error, clear local data and redirect
             localStorage.clear();
             sessionStorage.clear();
             window.dispatchEvent(new CustomEvent('userLogout'));
-            window.location.href = '/login?t=' + Date.now();
+            window.location.href = '/login?t=' + Date.now() + '&prompt=select_account';
         }
         handleUserMenuClose();
     };

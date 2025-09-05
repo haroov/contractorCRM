@@ -3,23 +3,31 @@ const passport = require('passport');
 const router = express.Router();
 
 // Google OAuth login
-router.get('/google', 
-  passport.authenticate('google', { 
-    scope: ['profile', 'email'] 
-  })
-);
+router.get('/google', (req, res, next) => {
+  const prompt = req.query.prompt;
+  const authOptions = {
+    scope: ['profile', 'email']
+  };
+  
+  // Add prompt parameter if provided (for account selection)
+  if (prompt === 'select_account') {
+    authOptions.prompt = 'select_account';
+  }
+  
+  passport.authenticate('google', authOptions)(req, res, next);
+});
 
 // Google OAuth callback
-router.get('/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed' 
+router.get('/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed'
   }),
   (req, res) => {
     console.log('🎉 Google OAuth callback successful!');
     console.log('👤 User:', req.user);
     console.log('🔐 Session ID:', req.sessionID);
     console.log('🔐 Session data:', req.session);
-    
+
     // Force session save
     req.session.save((err) => {
       if (err) {
@@ -27,7 +35,7 @@ router.get('/google/callback',
       } else {
         console.log('✅ Session saved successfully');
       }
-      
+
       // Successful authentication, redirect to main CRM page with session ID
       const redirectUrl = `https://contractor-crm.vercel.app/?sessionId=${req.sessionID}`;
       console.log('🔄 Redirecting to:', redirectUrl);
@@ -59,7 +67,7 @@ router.get('/status', (req, res) => {
   console.log('🔍 Auth status check - isAuthenticated:', req.isAuthenticated());
   console.log('🔍 Session ID:', req.sessionID);
   console.log('🔍 User:', req.user);
-  
+
   if (req.isAuthenticated()) {
     res.json({
       authenticated: true,
@@ -80,7 +88,7 @@ router.get('/status', (req, res) => {
 router.get('/status/:sessionId', (req, res) => {
   const { sessionId } = req.params;
   console.log('🔍 Checking auth by session ID:', sessionId);
-  
+
   // This is a simplified check - in production you'd want to validate the session properly
   if (sessionId && sessionId.length > 10) {
     res.json({
@@ -100,7 +108,7 @@ router.get('/me', (req, res) => {
   console.log('🔍 /auth/me - User:', req.user);
   console.log('🔍 /auth/me - X-Session-ID header:', req.headers['x-session-id']);
   console.log('🔍 /auth/me - sessionId query param:', req.query.sessionId);
-  
+
   if (req.isAuthenticated()) {
     console.log('✅ /auth/me - User authenticated, returning user data');
     res.json({
@@ -138,12 +146,12 @@ router.get('/check-email/:email', async (req, res) => {
   try {
     const email = req.params.email.toLowerCase();
     const User = require('../models/User');
-    
+
     const user = await User.findOne({ email: email });
     const isAllowed = !!user;
-    
-    res.json({ 
-      email: email, 
+
+    res.json({
+      email: email,
       allowed: isAllowed,
       user: user ? {
         id: user._id,
@@ -163,10 +171,10 @@ router.get('/check-email/:email', async (req, res) => {
 router.get('/allowed-emails', requireAuth, requireAdmin, async (req, res) => {
   try {
     const User = require('../models/User');
-    
+
     const users = await User.find({}, { email: 1, name: 1, role: 1, isActive: 1, lastLogin: 1 });
-    
-    res.json({ 
+
+    res.json({
       allowedEmails: users.map(user => ({
         email: user.email,
         name: user.name,

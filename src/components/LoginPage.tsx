@@ -35,10 +35,22 @@ const LoginPage: React.FC = () => {
     localStorage.clear();
     sessionStorage.clear();
     
-    // Remove sessionId from URL if present
+    // Remove sessionId and other parameters from URL if present
     const urlParams = new URLSearchParams(window.location.search);
+    let shouldUpdateUrl = false;
+    
     if (urlParams.has('sessionId')) {
       urlParams.delete('sessionId');
+      shouldUpdateUrl = true;
+    }
+    
+    // Keep prompt parameter for account selection
+    // if (urlParams.has('prompt')) {
+    //   urlParams.delete('prompt');
+    //   shouldUpdateUrl = true;
+    // }
+    
+    if (shouldUpdateUrl) {
       const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
       window.history.replaceState({}, document.title, newUrl);
     }
@@ -57,7 +69,7 @@ const LoginPage: React.FC = () => {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    
+
     if (value && !validateEmail(value)) {
       setEmailError('אנא הזן כתובת מייל תקינה');
     } else {
@@ -78,7 +90,7 @@ const LoginPage: React.FC = () => {
       const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated) {
@@ -93,13 +105,13 @@ const LoginPage: React.FC = () => {
   const handleEmailLogin = async () => {
     setLoading(true);
     setError(null);
-    
+
     if (!isEmailValid) {
       setError('אנא הזן כתובת מייל תקינה');
       setLoading(false);
       return;
     }
-    
+
     // TODO: Send styled email with one-time password
     setError('שליחת מייל עם סיסמה חד פעמית עדיין לא זמינה. אנא השתמש בגוגל קונקט');
     setLoading(false);
@@ -108,10 +120,19 @@ const LoginPage: React.FC = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Direct redirect to Google OAuth without checking
-      window.location.href = API_CONFIG.AUTH_GOOGLE_URL();
+      // Check if we should force account selection (from logout)
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceAccountSelection = urlParams.get('prompt') === 'select_account';
+      
+      // Direct redirect to Google OAuth with account selection if needed
+      let googleUrl = API_CONFIG.AUTH_GOOGLE_URL();
+      if (forceAccountSelection) {
+        googleUrl += '?prompt=select_account';
+      }
+      
+      window.location.href = googleUrl;
     } catch (error) {
       console.error('Error with Google OAuth:', error);
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
@@ -122,7 +143,7 @@ const LoginPage: React.FC = () => {
   const handleMicrosoftLogin = async () => {
     setLoading(true);
     setError(null);
-    
+
     // TODO: Implement Microsoft OAuth
     setError('התחברות עם Microsoft עדיין לא זמינה');
     setLoading(false);
@@ -134,7 +155,7 @@ const LoginPage: React.FC = () => {
         method: 'POST',
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         setUser(null);
         setError(null);
@@ -165,9 +186,9 @@ const LoginPage: React.FC = () => {
           <Typography variant="body2" color="text.secondary" gutterBottom>
             תפקיד: {user.role === 'admin' ? 'מנהל' : 'משתמש'}
           </Typography>
-          
+
           <Divider sx={{ my: 3 }} />
-          
+
           <Button
             variant="contained"
             color="primary"
@@ -178,7 +199,7 @@ const LoginPage: React.FC = () => {
           >
             כניסה למערכת
           </Button>
-          
+
           <Button
             variant="outlined"
             color="secondary"
@@ -210,7 +231,7 @@ const LoginPage: React.FC = () => {
             }}
           />
         </Box>
-        
+
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           התחברות למערכת
         </Typography>
@@ -234,14 +255,14 @@ const LoginPage: React.FC = () => {
             sx={{ mb: 2 }}
             dir="ltr"
           />
-          
+
           <Button
             variant="contained"
             size="large"
             fullWidth
             onClick={handleEmailLogin}
             disabled={loading || !isEmailValid}
-            sx={{ 
+            sx={{
               mb: 3,
               bgcolor: isEmailValid ? 'primary.main' : 'grey.400',
               '&:hover': {
@@ -269,7 +290,7 @@ const LoginPage: React.FC = () => {
             startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GoogleIcon />}
             onClick={handleGoogleLogin}
             disabled={loading}
-            sx={{ 
+            sx={{
               py: 1.5,
               bgcolor: '#4285f4',
               '&:hover': {
@@ -290,7 +311,7 @@ const LoginPage: React.FC = () => {
             startIcon={<MicrosoftIcon />}
             onClick={handleMicrosoftLogin}
             disabled={loading}
-            sx={{ 
+            sx={{
               py: 1.5,
               bgcolor: '#00a1f1',
               '&:hover': {
