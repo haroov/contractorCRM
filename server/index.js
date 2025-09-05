@@ -816,6 +816,9 @@ app.post('/api/projects', async (req, res) => {
         { $push: { projectIds: result.insertedId.toString() } }
       );
       console.log('✅ Added project ID to contractor:', req.body.contractorId);
+      
+      // Update contractor statistics automatically
+      await updateContractorStats(db, req.body.contractorId);
     }
 
     res.json(result);
@@ -837,6 +840,12 @@ app.put('/api/projects/:id', async (req, res) => {
       { $set: updateData }
     );
     console.log('✅ Updated project:', req.params.id);
+    
+    // Update contractor statistics automatically
+    if (req.body.contractorId) {
+      await updateContractorStats(db, req.body.contractorId);
+    }
+    
     res.json(result);
   } catch (error) {
     console.error('❌ Error updating project:', error);
@@ -865,6 +874,9 @@ app.delete('/api/projects/:id', async (req, res) => {
         { $pull: { projects: { _id: new ObjectId(req.params.id) } } }
       );
       console.log('✅ Removed project from contractor:', project.contractorId);
+      
+      // Update contractor statistics automatically
+      await updateContractorStats(db, project.contractorId);
     }
 
     res.json(result);
@@ -874,12 +886,9 @@ app.delete('/api/projects/:id', async (req, res) => {
   }
 });
 
-// Update contractor project statistics
-app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
+// Helper function to update contractor statistics
+async function updateContractorStats(db, contractorId) {
   try {
-    const db = client.db('contractor-crm');
-    const contractorId = req.params.contractorId;
-    
     // Get all projects for this contractor
     const projects = await db.collection('projects').find({ contractorId: contractorId }).toArray();
     
@@ -919,14 +928,24 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
       futureProjectsValue
     });
     
+    return { currentProjects, currentProjectsValue, futureProjects, futureProjectsValue };
+  } catch (error) {
+    console.error('❌ Error updating contractor stats:', error);
+    throw error;
+  }
+}
+
+// Update contractor project statistics
+app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.params.contractorId;
+    
+    const stats = await updateContractorStats(db, contractorId);
+    
     res.json({ 
       success: true, 
-      stats: {
-        currentProjects,
-        currentProjectsValue,
-        futureProjects,
-        futureProjectsValue
-      }
+      stats
     });
   } catch (error) {
     console.error('❌ Error updating contractor stats:', error);

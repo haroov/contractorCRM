@@ -226,8 +226,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             const savedProject = await projectsAPI.create(projectToSave);
 
-            // Refresh contractor data from server to get the complete project details
-            await refreshProjectsData();
+            // Update contractor statistics automatically
+            await updateContractorStats();
 
             return savedProject;
         } catch (error) {
@@ -241,8 +241,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             // Update project via API
             await projectsAPI.update(project.id, project);
 
-            // Refresh contractor data from server to get the updated project details
-            await refreshProjectsData();
+            // Update contractor statistics automatically
+            await updateContractorStats();
 
             return project;
         } catch (error) {
@@ -263,14 +263,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             await projectsAPI.delete(projectId);
 
+            // Update contractor statistics automatically
+            await updateContractorStats();
+
             // Show success message
             setSnackbar({ open: true, message: 'פרויקט נמחק בהצלחה', severity: 'success' });
-
-            // Remove project from local state
-            setContractor(prev => ({
-                ...prev,
-                projects: (prev.projects || []).filter(p => p._id !== projectId && p.id !== projectId)
-            }));
 
         } catch (error: any) {
             console.error('Error deleting project:', error);
@@ -282,8 +279,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     const updateContractorStats = async () => {
         try {
             if (contractor?.contractor_id) {
-                setSnackbar({ open: true, message: 'מעדכן סטטיסטיקות פרויקטים...', severity: 'info' });
-
                 const response = await authenticatedFetch(`/api/contractors/${contractor.contractor_id}/update-stats`, {
                     method: 'POST'
                 });
@@ -294,15 +289,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     
                     // Refresh contractor data to get updated statistics
                     await refreshProjectsData();
-                    
-                    setSnackbar({ open: true, message: 'סטטיסטיקות פרויקטים עודכנו בהצלחה', severity: 'success' });
                 } else {
-                    setSnackbar({ open: true, message: 'שגיאה בעדכון סטטיסטיקות פרויקטים', severity: 'error' });
+                    console.error('Failed to update contractor stats');
                 }
             }
         } catch (error) {
             console.error('Error updating contractor stats:', error);
-            setSnackbar({ open: true, message: 'שגיאה בעדכון סטטיסטיקות פרויקטים', severity: 'error' });
         }
     };
 
@@ -1587,26 +1579,14 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <Button
-                                variant="outlined"
-                                startIcon={<RefreshIcon />}
-                                onClick={refreshProjectsData}
-                                sx={{ gap: 1 }}
-                            >
-                                רענן פרויקטים
-                            </Button>
-                            
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                startIcon={<RefreshIcon />}
-                                onClick={updateContractorStats}
-                                sx={{ gap: 1 }}
-                            >
-                                עדכן סטטיסטיקות
-                            </Button>
-                        </Box>
+                        <Button
+                            variant="outlined"
+                            startIcon={<RefreshIcon />}
+                            onClick={refreshProjectsData}
+                            sx={{ gap: 1 }}
+                        >
+                            רענן פרויקטים
+                        </Button>
 
                         <Button
                             variant="contained"
