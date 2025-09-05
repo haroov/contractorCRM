@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
-    required: true,
-    unique: true
+    required: false,
+    unique: true,
+    sparse: true // Allows multiple null values
   },
   email: {
     type: String,

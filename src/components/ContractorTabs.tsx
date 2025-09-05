@@ -57,7 +57,6 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Save as SaveIcon,
-    Refresh as RefreshIcon,
     Add as NewIcon,
     Close as CloseIcon
 } from "@mui/icons-material";
@@ -287,8 +286,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     const result = await response.json();
                     console.log('✅ Updated contractor stats:', result.stats);
                     
-                    // Refresh contractor data to get updated statistics
-                    await refreshProjectsData();
+                    // Contractor stats updated successfully
                 } else {
                     console.error('Failed to update contractor stats');
                 }
@@ -299,28 +297,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     };
 
     // Function to refresh projects data from server
-    const refreshProjectsData = async () => {
-        try {
-            if (contractor?.contractor_id) {
-                setSnackbar({ open: true, message: 'מרענן נתוני פרויקטים...', severity: 'success' });
-
-                const response = await fetch(API_CONFIG.CONTRACTOR_URL(contractor.contractor_id));
-                if (response.ok) {
-                    const updatedContractor = await response.json();
-                    setContractor(updatedContractor);
-                    // Update sessionStorage
-                    sessionStorage.setItem('contractor_data', JSON.stringify(updatedContractor));
-
-                    setSnackbar({ open: true, message: 'נתוני פרויקטים רועננו בהצלחה', severity: 'success' });
-                } else {
-                    setSnackbar({ open: true, message: 'שגיאה ברענון נתוני פרויקטים', severity: 'error' });
-                }
-            }
-        } catch (error) {
-            console.error('Error refreshing projects data:', error);
-            setSnackbar({ open: true, message: 'שגיאה ברענון נתוני פרויקטים', severity: 'error' });
-        }
-    };
 
     const handleChange = (field: keyof Contractor, value: any) => {
         setContractor(prev => ({ ...prev, [field]: value }));
@@ -1045,8 +1021,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             const result = await response.json();
 
             if (result.updated) {
-                // Refresh contractor data to get updated status
-                await refreshProjectsData();
+                // Company status updated successfully
 
                 setValidationMessage(`סטטוס עודכן בהצלחה: ${result.message}`);
                 setSnackbar({ open: true, message: 'סטטוס החברה עודכן בהצלחה מרשום החברות', severity: 'success' });
@@ -1578,16 +1553,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </Tabs>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<RefreshIcon />}
-                            onClick={refreshProjectsData}
-                            sx={{ gap: 1 }}
-                        >
-                            רענן פרויקטים
-                        </Button>
-
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
