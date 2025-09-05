@@ -5,6 +5,10 @@
       "destination": "https://contractorcrm-api.onrender.com/auth/$1"
     },
     {
+      "source": "/api/(.*)",
+      "destination": "https://contractorcrm-api.onrender.com/api/$1"
+    },
+    {
       "source": "/dashboard",
       "destination": "/"
     },
