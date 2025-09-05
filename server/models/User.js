@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: function(v) {
         // Israeli mobile phone format: 05x-xxxxxxx
-        return !v || /^05[0-9]-[0-9]{7}$/.test(v);
+        // Allow empty strings and null values
+        return !v || v === '' || /^05[0-9]-[0-9]{7}$/.test(v);
       },
       message: 'Phone number must be in format 05x-xxxxxxx'
     }
