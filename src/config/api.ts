@@ -29,10 +29,12 @@ export const API_CONFIG = {
     VALIDATE_STATUS_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.CONTRACTORS}/validate-status/${id}`,
 };
 
-// Helper function to get session ID from URL
+// Helper function to get session ID from URL or localStorage
 export const getSessionId = (): string | null => {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('sessionId');
+    const urlSessionId = urlParams.get('sessionId');
+    const localSessionId = localStorage.getItem('sessionId');
+    return urlSessionId || localSessionId;
 };
 
 // Helper function to create authenticated fetch options
