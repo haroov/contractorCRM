@@ -38,6 +38,7 @@ import {
 } from '@mui/icons-material';
 import type { ContractorDocument as Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
+import { API_CONFIG, authenticatedFetch } from '../config/api';
 import logo from '../assets/logo.svg';
 
 interface ContractorRepositoryProps {
@@ -81,9 +82,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     useEffect(() => {
         const loadUserData = async () => {
             try {
-                const response = await fetch('/auth/me', {
-                    credentials: 'include'
-                });
+                // Use relative path for Vercel rewrite
+                const response = await authenticatedFetch('/auth/me');
                 if (response.ok) {
                     const userData = await response.json();
                     console.log('User data loaded:', userData);
@@ -366,9 +366,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     const handleLogout = async () => {
         try {
-            await fetch('/auth/logout', { 
-                method: 'POST',
-                credentials: 'include'
+            await authenticatedFetch('/auth/logout', { 
+                method: 'POST'
             });
             window.location.href = '/login';
         } catch (error) {
