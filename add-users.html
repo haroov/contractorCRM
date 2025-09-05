@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Add Pending Users</title>
 </head>
+
 <body>
     <h1>Add Pending Users</h1>
     <button onclick="addUsers()">Add Pending Users</button>
@@ -12,26 +14,32 @@
         async function addUsers() {
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = 'Adding users...';
-            
+
             try {
-                const response = await fetch('https://contractorcrm-api.onrender.com/api/users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        emails: [
-                            'idan@yozmot.net',
-                            'finkelmanyael@gmail.com',
-                            'Shifra.sankewitz@gmail.com',
-                            'mor@cns-law.co.il',
-                            'uriel@chocoinsurance.com',
-                            'shlomo@chocoinsurance.com',
-                            'steven.kostyn@gmail.com'
-                        ]
-                    })
-                });
-                
+                // Try the simple endpoint first
+                let response = await fetch('https://contractorcrm-api.onrender.com/add-pending-users-simple');
+
+                if (!response.ok) {
+                    // If that fails, try the original endpoint
+                    response = await fetch('https://contractorcrm-api.onrender.com/api/users/create-pending', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            emails: [
+                                'idan@yozmot.net',
+                                'finkelmanyael@gmail.com',
+                                'Shifra.sankewitz@gmail.com',
+                                'mor@cns-law.co.il',
+                                'uriel@chocoinsurance.com',
+                                'shlomo@chocoinsurance.com',
+                                'steven.kostyn@gmail.com'
+                            ]
+                        })
+                    });
+                }
+
                 const data = await response.json();
                 resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
@@ -40,4 +48,5 @@
         }
     </script>
 </body>
+
 </html>
