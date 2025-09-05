@@ -1274,6 +1274,52 @@ app.get('/add-specific-users', async (req, res) => {
   }
 });
 
+// Force add users endpoint
+app.get('/force-add-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    const emails = [
+      'finkelmanyael@gmail.com',
+      'Shifra.sankewitz@gmail.com',
+      'mor@cns-law.co.il',
+      'uriel@chocoinsurance.com',
+      'shlomo@chocoinsurance.com',
+      'steven.kostyn@gmail.com'
+    ];
+    
+    const users = [];
+    for (const email of emails) {
+      try {
+        // Force insert without checking if exists
+        const user = {
+          email: email.toLowerCase(),
+          name: email.split('@')[0],
+          role: 'user',
+          isActive: false,
+          createdAt: new Date(),
+          lastLogin: null
+        };
+        
+        const result = await db.collection('users').insertOne(user);
+        users.push({ ...user, _id: result.insertedId });
+        console.log(`✅ Force created user: ${email}`);
+      } catch (userError) {
+        console.error(`❌ Error with user ${email}:`, userError);
+      }
+    }
+    
+    res.json({ 
+      message: 'Users force added successfully',
+      createdUsers: users.length,
+      users: users
+    });
+  } catch (error) {
+    console.error('❌ Error force adding users:', error);
+    res.status(500).json({ error: 'Failed to force add users', details: error.message });
+  }
+});
+
 // Direct endpoint to add all missing users
 app.get('/add-all-missing-users', async (req, res) => {
   try {
