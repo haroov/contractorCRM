@@ -378,7 +378,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         const start = new Date(startDate);
         const now = new Date();
         const endDate = new Date(start);
-        endDate.setMonth(start.getMonth() + duration);
+        endDate.setMonth(start.getMonth() + durationMonths);
 
         if (now < start) return 'future';
         if (now >= start && now <= endDate) return 'current';

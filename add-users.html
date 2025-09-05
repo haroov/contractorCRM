@@ -16,8 +16,13 @@
             resultDiv.innerHTML = 'Adding users...';
 
             try {
-                // Try the force add endpoint first
-                let response = await fetch('https://contractorcrm-api.onrender.com/force-add-users');
+                // Try the new direct endpoint first
+                let response = await fetch('https://contractorcrm-api.onrender.com/add-users-now');
+
+                if (!response.ok) {
+                    // If that fails, try the force add endpoint
+                    response = await fetch('https://contractorcrm-api.onrender.com/force-add-users');
+                }
 
                 if (!response.ok) {
                     // If that fails, try the new endpoint

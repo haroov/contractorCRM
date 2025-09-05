@@ -1337,9 +1337,17 @@ app.get('/add-users-now', async (req, res) => {
     
     let added = 0;
     let errors = 0;
+    let details = [];
     
     for (const email of emails) {
       try {
+        // Check if user already exists
+        const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+          details.push(`User ${email} already exists`);
+          continue;
+        }
+        
         const user = {
           email: email.toLowerCase(),
           name: email.split('@')[0],
@@ -1351,9 +1359,11 @@ app.get('/add-users-now', async (req, res) => {
         
         await db.collection('users').insertOne(user);
         added++;
+        details.push(`✅ Added: ${email}`);
         console.log(`✅ Added: ${email}`);
       } catch (err) {
         errors++;
+        details.push(`⚠️ Error with ${email}: ${err.message}`);
         console.log(`⚠️ Skipped ${email}: ${err.message}`);
       }
     }
@@ -1361,7 +1371,8 @@ app.get('/add-users-now', async (req, res) => {
     res.json({ 
       message: `Added ${added} users, ${errors} errors`,
       added: added,
-      errors: errors
+      errors: errors,
+      details: details
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
