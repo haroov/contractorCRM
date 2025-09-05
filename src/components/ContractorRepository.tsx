@@ -19,7 +19,8 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Tooltip
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -342,9 +343,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 <Typography variant="body1" color="text.secondary">
                     ניהול וצפייה בכל הקבלנים במערכת
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, fontSize: '0.8rem' }}>
-                    💡 אינדיקציות תקינות החברה מתעדכנות פעם ביום בלילה
-                </Typography>
             </Box>
 
             {/* Search and Actions */}
@@ -437,51 +435,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card sx={{
-                    backgroundColor: '#fafafa',
-                    border: '1px solid #e0e0e0',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    borderRadius: 2
-                }}>
-                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
-                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            {filteredContractors.filter(c => c.safetyRating && c.safetyRating >= 4).length}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
-                            קבלנים עם דירוג גבוה
-                        </Typography>
-                    </CardContent>
-                </Card>
-                <Card sx={{
-                    backgroundColor: '#fafafa',
-                    border: '1px solid #e0e0e0',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    borderRadius: 2
-                }}>
-                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
-                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            0
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
-                            עם תקן ISO 45001
-                        </Typography>
-                    </CardContent>
-                </Card>
-                <Card sx={{
-                    backgroundColor: '#fafafa',
-                    border: '1px solid #e0e0e0',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                    borderRadius: 2
-                }}>
-                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
-                        <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            {filteredContractors.filter(c => c.safetyRating && c.safetyRating < 3).length}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
-                            דורש שיפור בטיחות
-                        </Typography>
-                    </CardContent>
-                </Card>
             </Box>
 
             {/* Contractors Table */}
@@ -496,7 +449,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>קבלן</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ח״פ</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>כתובת</TableCell>
-                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סקטור</TableCell>
+                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>פרויקטים</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>דירוג בטיחות</TableCell>
                             <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
                         </TableRow>
@@ -554,7 +507,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box
+                                        <Tooltip 
                                             title={
                                                 contractor.isActive === false 
                                                     ? 'חברה לא פעילה' 
@@ -562,41 +515,48 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                                         ? 'חברה מפרה' 
                                                         : 'חברה תקינה'
                                             }
+                                            arrow
                                         >
-                                            <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
-                                                {contractor.company_id}
-                                            </Typography>
-                                            <Typography
-                                                variant="caption"
+                                            <Box>
+                                                <Typography variant="body2" fontWeight={400} sx={{ color: '#666' }}>
+                                                    {contractor.company_id}
+                                                </Typography>
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{
+                                                        color: '#999',
+                                                        fontSize: '0.7rem',
+                                                        display: 'block',
+                                                        mt: 0.5
+                                                    }}
+                                                >
+                                                    {contractor.contractor_id ? `קבלן ${contractor.contractor_id}` : 'אינו קבלן רשום'}
+                                                </Typography>
+                                            </Box>
+                                        </Tooltip>
+                                        {/* Company Status Indicator */}
+                                        <Tooltip 
+                                            title={
+                                                contractor.isActive === false 
+                                                    ? 'חברה לא פעילה' 
+                                                    : contractor.violator === true 
+                                                        ? 'חברה מפרה' 
+                                                        : 'חברה תקינה'
+                                            }
+                                            arrow
+                                        >
+                                            <Box
                                                 sx={{
-                                                    color: '#999',
-                                                    fontSize: '0.7rem',
-                                                    display: 'block',
+                                                    width: 12,
+                                                    height: 12,
+                                                    borderRadius: '50%',
+                                                    backgroundColor: getCompanyStatusColor(contractor),
+                                                    border: '1px solid rgba(0,0,0,0.1)',
+                                                    flexShrink: 0,
                                                     mt: 0.5
                                                 }}
-                                            >
-                                                {contractor.contractor_id ? `קבלן ${contractor.contractor_id}` : 'אינו קבלן רשום'}
-                                            </Typography>
-                                        </Box>
-                                        {/* Company Status Indicator */}
-                                        <Box
-                                            sx={{
-                                                width: 12,
-                                                height: 12,
-                                                borderRadius: '50%',
-                                                backgroundColor: getCompanyStatusColor(contractor),
-                                                border: '1px solid rgba(0,0,0,0.1)',
-                                                flexShrink: 0,
-                                                mt: 0.5
-                                            }}
-                                            title={
-                                                contractor.isActive === false 
-                                                    ? 'חברה לא פעילה' 
-                                                    : contractor.violator === true 
-                                                        ? 'חברה מפרה' 
-                                                        : 'חברה תקינה'
-                                            }
-                                        />
+                                            />
+                                        </Tooltip>
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
@@ -643,20 +603,38 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                     </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
-                                    <Chip
-                                        label={contractor.sector}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: '#f0f0f0',
-                                            color: '#666',
-                                            border: '1px solid #e0e0e0',
-                                            fontWeight: 400,
-                                            fontSize: '0.75rem'
-                                        }}
-                                    />
-                                    <Typography variant="body2" sx={{ color: '#999', mt: 0.5, fontSize: '0.75rem' }}>
-                                        {contractor.segment}
-                                    </Typography>
+                                    <Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                            <Chip
+                                                label={`${contractor.current_projects || 0} פעילים`}
+                                                size="small"
+                                                sx={{
+                                                    backgroundColor: '#e8f5e8',
+                                                    color: '#2e7d32',
+                                                    fontWeight: 500,
+                                                    fontSize: '0.7rem'
+                                                }}
+                                            />
+                                            <Typography variant="caption" sx={{ color: '#2e7d32', fontWeight: 500 }}>
+                                                ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Chip
+                                                label={`${contractor.forcast_projects || 0} עתידיים`}
+                                                size="small"
+                                                sx={{
+                                                    backgroundColor: '#e3f2fd',
+                                                    color: '#1976d2',
+                                                    fontWeight: 500,
+                                                    fontSize: '0.7rem'
+                                                }}
+                                            />
+                                            <Typography variant="caption" sx={{ color: '#1976d2', fontWeight: 500 }}>
+                                                ₪{(contractor.forcast_projects_value_nis || 0).toLocaleString()}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
