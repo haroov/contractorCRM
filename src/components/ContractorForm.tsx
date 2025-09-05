@@ -191,11 +191,22 @@ const ContactDialog = ({
                     />
                     <TextField
                         label="טלפון נייד"
+                        type="tel"
                         value={formData.mobile}
-                        onChange={(e) => handleChange('mobile', e.target.value)}
+                        onChange={(e) => {
+                            // הגבלה על תווים מותרים - רק ספרות ומקף
+                            const inputValue = e.target.value;
+                            const allowedChars = /^[0-9\-]*$/;
+                            
+                            if (!allowedChars.test(inputValue)) {
+                                return; // לא לעדכן אם יש תווים לא מותרים
+                            }
+                            
+                            handleChange('mobile', inputValue);
+                        }}
                         fullWidth
                         required
-                        helperText="פורמט: 05XXXXXXXX"
+                        helperText="פורמט: 050-1234567"
                     />
                     <FormControl fullWidth>
                         <InputLabel>הרשאות</InputLabel>
@@ -713,12 +724,23 @@ export default function ContractorForm() {
 
                 <TextField
                     label="טלפון"
+                    type="tel"
                     value={contractor.phone}
-                    onChange={(e) => handleChange('phone', e.target.value)}
+                    onChange={(e) => {
+                        // הגבלה על תווים מותרים - רק ספרות ומקף
+                        const inputValue = e.target.value;
+                        const allowedChars = /^[0-9\-]*$/;
+                        
+                        if (!allowedChars.test(inputValue)) {
+                            return; // לא לעדכן אם יש תווים לא מותרים
+                        }
+                        
+                        handleChange('phone', inputValue);
+                    }}
                     fullWidth
                     required
                     error={!!errors.phone}
-                    helperText={errors.phone || "פורמט: 05XXXXXXXX"}
+                    helperText={errors.phone || "פורמט: 050-1234567"}
                     sx={{
                         '& .MuiInputBase-input': {
                             textAlign: 'right',

@@ -333,16 +333,27 @@ export const formatIsraeliPhone = (phone: string): string => {
     // הסרת רווחים, מקפים וסוגריים
     const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
 
+    // אם אין ספרות, החזר מחרוזת ריקה
+    if (!cleanPhone) return '';
+
     // הוספת 0 בהתחלה אם חסר
     const phoneWithZero = cleanPhone.startsWith('0') ? cleanPhone : `0${cleanPhone}`;
 
     // פורמט לפי סוג הטלפון
     if (/^05[0-9]|058/.test(phoneWithZero)) {
         // טלפון נייד: 050-1234567
-        return `${phoneWithZero.slice(0, 3)}-${phoneWithZero.slice(3)}`;
+        if (phoneWithZero.length >= 4) {
+            return `${phoneWithZero.slice(0, 3)}-${phoneWithZero.slice(3)}`;
+        } else {
+            return phoneWithZero;
+        }
     } else if (/^0[2-9]|07[0-9]/.test(phoneWithZero)) {
         // טלפון נייח: 02-1234567
-        return `${phoneWithZero.slice(0, 2)}-${phoneWithZero.slice(2)}`;
+        if (phoneWithZero.length >= 3) {
+            return `${phoneWithZero.slice(0, 2)}-${phoneWithZero.slice(2)}`;
+        } else {
+            return phoneWithZero;
+        }
     }
 
     return phoneWithZero;

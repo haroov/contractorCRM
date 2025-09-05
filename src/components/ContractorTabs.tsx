@@ -1884,11 +1884,20 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                     label="טלפון נייד"
                                     value={editingContact.mobile}
                                     placeholder="050-1234567 או 02-1234567"
+                                    inputMode="tel"
                                     sx={{ minWidth: 300 }}
                                     error={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile)}
                                     helperText={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile) ? "מספר טלפון לא תקין" : ""}
                                     onChange={(e) => {
-                                        const formattedPhone = formatIsraeliPhone(e.target.value);
+                                        // הגבלה על תווים מותרים - רק ספרות ומקף
+                                        const inputValue = e.target.value;
+                                        const allowedChars = /^[0-9\-]*$/;
+                                        
+                                        if (!allowedChars.test(inputValue)) {
+                                            return; // לא לעדכן אם יש תווים לא מותרים
+                                        }
+                                        
+                                        const formattedPhone = formatIsraeliPhone(inputValue);
                                         setEditingContact(prev => prev ? { ...prev, mobile: formattedPhone } : null);
                                     }}
                                     onBlur={(e) => {

@@ -212,9 +212,20 @@ export function ManagementSection({ contractor, setContractor, errors }: Managem
                                 </Label>
                                 <Input
                                     id="mobile"
+                                    type="tel"
                                     value={contactForm.mobile}
-                                    onChange={(e) => setContactForm(prev => ({ ...prev, mobile: e.target.value }))}
-                                    placeholder="05XXXXXXXX"
+                                    onChange={(e) => {
+                                        // הגבלה על תווים מותרים - רק ספרות ומקף
+                                        const inputValue = e.target.value;
+                                        const allowedChars = /^[0-9\-]*$/;
+                                        
+                                        if (!allowedChars.test(inputValue)) {
+                                            return; // לא לעדכן אם יש תווים לא מותרים
+                                        }
+                                        
+                                        setContactForm(prev => ({ ...prev, mobile: inputValue }));
+                                    }}
+                                    placeholder="050-1234567"
                                     required
                                 />
                                 <p className="text-right text-gray-500 text-xs mt-1">פורמט: 05XXXXXXXX</p>
