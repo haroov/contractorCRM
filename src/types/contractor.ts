@@ -57,6 +57,11 @@ export interface Contractor extends Document {
     status?: string;
     violator?: boolean;
     restrictions?: string[];
+    // Project statistics
+    current_projects?: number;
+    current_projects_value_nis?: number;
+    forcast_projects?: number;
+    forcast_projects_value_nis?: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -90,6 +95,11 @@ export interface ContractorDocument extends Document {
     status?: string;
     violator?: boolean;
     restrictions?: string[];
+    // Project statistics
+    current_projects?: number;
+    current_projects_value_nis?: number;
+    forcast_projects?: number;
+    forcast_projects_value_nis?: number;
     createdAt: Date;
     updatedAt: Date;
 }

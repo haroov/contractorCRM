@@ -375,6 +375,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
             {/* Statistics Cards */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
+                {/* סך הכל קבלנים */}
                 <Card sx={{
                     backgroundColor: '#fafafa',
                     border: '1px solid #e0e0e0',
@@ -387,6 +388,52 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             {searchTerm ? 'תוצאות חיפוש' : 'סך הכל קבלנים'}
+                        </Typography>
+                    </CardContent>
+                </Card>
+
+                {/* פרויקטים פעילים */}
+                <Card sx={{
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #e9ecef',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#28a745', fontWeight: 500, mb: 0.5 }}>
+                            {filteredContractors.reduce((sum, contractor) => sum + (contractor.current_projects || 0), 0)}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem', mb: 1 }}>
+                            פרויקטים פעילים
+                        </Typography>
+                        <Typography variant="h6" sx={{ color: '#28a745', fontWeight: 500, fontSize: '1rem' }}>
+                            ₪{filteredContractors.reduce((sum, contractor) => sum + (contractor.current_projects_value_nis || 0), 0).toLocaleString()}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.75rem' }}>
+                            שווי מצרפי
+                        </Typography>
+                    </CardContent>
+                </Card>
+
+                {/* פרויקטים עתידיים */}
+                <Card sx={{
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #e9ecef',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    borderRadius: 2
+                }}>
+                    <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
+                        <Typography variant="h6" sx={{ color: '#007bff', fontWeight: 500, mb: 0.5 }}>
+                            {filteredContractors.reduce((sum, contractor) => sum + (contractor.forcast_projects || 0), 0)}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem', mb: 1 }}>
+                            פרויקטים עתידיים
+                        </Typography>
+                        <Typography variant="h6" sx={{ color: '#007bff', fontWeight: 500, fontSize: '1rem' }}>
+                            ₪{filteredContractors.reduce((sum, contractor) => sum + (contractor.forcast_projects_value_nis || 0), 0).toLocaleString()}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#999', fontSize: '0.75rem' }}>
+                            שווי מצרפי
                         </Typography>
                     </CardContent>
                 </Card>
