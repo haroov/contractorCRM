@@ -11,7 +11,8 @@ const ALLOWED_EMAILS = [
   'finkelmanyael@gmail.com',
   'shifra.sankewitz@gmail.com',
   'mor@cns-law.co.il',
-  'idan@yozmot.net'
+  'idan@yozmot.net',
+  'liav@facio.io'
 ];
 
 passport.use(new GoogleStrategy({
@@ -29,14 +30,18 @@ passport.use(new GoogleStrategy({
       return done(null, false, { message: 'Email not authorized for this system' });
     }
 
-    // Check if user already exists
-    let user = await User.findOne({ googleId: profile.id });
+    // Check if user already exists by email first (for users with temporary googleId)
+    let user = await User.findOne({ email: email });
     
     if (user) {
-      // Update last login
+      // Update existing user with real Google data
+      user.googleId = profile.id;
+      user.name = profile.displayName;
+      user.picture = profile.photos[0]?.value;
       user.lastLogin = new Date();
+      user.isActive = true; // Activate user when they first log in
       await user.save();
-      console.log('✅ Existing user logged in:', user.email);
+      console.log('✅ Existing user updated and logged in:', user.email);
       return done(null, user);
     } else {
       // Create new user
@@ -45,7 +50,9 @@ passport.use(new GoogleStrategy({
         email: email,
         name: profile.displayName,
         picture: profile.photos[0]?.value,
-        role: email === 'liav@chocoinsurance.com' ? 'admin' : 'user'
+        role: email === 'liav@chocoinsurance.com' ? 'admin' : 'user',
+        isActive: true,
+        lastLogin: new Date()
       });
       
       await user.save();
