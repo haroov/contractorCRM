@@ -1224,6 +1224,90 @@ app.get('/add-all-missing-users', async (req, res) => {
   }
 });
 
+// Simple endpoint to add specific users
+app.get('/add-specific-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    const usersToAdd = [
+      {
+        email: 'finkelmanyael@gmail.com',
+        name: 'finkelmanyael',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'Shifra.sankewitz@gmail.com',
+        name: 'Shifra.sankewitz',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'mor@cns-law.co.il',
+        name: 'mor',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'uriel@chocoinsurance.com',
+        name: 'uriel',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'shlomo@chocoinsurance.com',
+        name: 'shlomo',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'steven.kostyn@gmail.com',
+        name: 'steven.kostyn',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      }
+    ];
+    
+    const users = [];
+    for (const user of usersToAdd) {
+      try {
+        // Check if user already exists
+        const existingUser = await db.collection('users').findOne({ email: user.email.toLowerCase() });
+        if (!existingUser) {
+          const result = await db.collection('users').insertOne(user);
+          users.push({ ...user, _id: result.insertedId });
+          console.log(`✅ Created user: ${user.email}`);
+        } else {
+          console.log(`⚠️ User already exists: ${user.email}`);
+        }
+      } catch (userError) {
+        console.error(`❌ Error with user ${user.email}:`, userError);
+      }
+    }
+    
+    res.json({ 
+      message: 'Users added successfully',
+      addedUsers: users.length,
+      users: users
+    });
+  } catch (error) {
+    console.error('❌ Error adding users:', error);
+    res.status(500).json({ error: 'Failed to add users', details: error.message });
+  }
+});
+
 // Fix project contractor linkage and add mainContractor field
 app.get('/fix', async (req, res) => {
   try {
