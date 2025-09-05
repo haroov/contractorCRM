@@ -30,8 +30,28 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState('');
+
+  // Email validation function
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Handle email change with validation
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    
+    if (value && !validateEmail(value)) {
+      setEmailError('אנא הזן כתובת מייל תקינה');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  // Check if email is valid
+  const isEmailValid = email && validateEmail(email) && !emailError;
 
   // Check if user is already logged in
   useEffect(() => {
@@ -59,14 +79,14 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     setError(null);
     
-    if (!email || !password) {
-      setError('אנא מלא את כל השדות');
+    if (!isEmailValid) {
+      setError('אנא הזן כתובת מייל תקינה');
       setLoading(false);
       return;
     }
     
-    // TODO: Implement email/password login
-    setError('התחברות עם אימייל וסיסמה עדיין לא זמינה');
+    // TODO: Send styled email with one-time password
+    setError('שליחת מייל עם סיסמה חד פעמית עדיין לא זמינה. אנא השתמש בגוגל קונקט');
     setLoading(false);
   };
 
@@ -161,7 +181,7 @@ const LoginPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ color: 'primary.main', mr: 2 }}>
+          <Typography variant="h4" sx={{ color: 'primary.main', ml: 2 }}>
             מערכת ניהול קבלנים
           </Typography>
           <Box
@@ -186,36 +206,16 @@ const LoginPage: React.FC = () => {
           </Alert>
         )}
 
-        {/* Email and Password Fields */}
+        {/* Email Field */}
         <Box sx={{ mb: 3, textAlign: 'right' }}>
           <TextField
             fullWidth
             label="אימייל"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ mb: 2 }}
-            dir="ltr"
-          />
-          
-          <TextField
-            fullWidth
-            label="סיסמה"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
+            onChange={handleEmailChange}
+            error={!!emailError}
+            helperText={emailError}
             sx={{ mb: 2 }}
             dir="ltr"
           />
@@ -225,8 +225,14 @@ const LoginPage: React.FC = () => {
             size="large"
             fullWidth
             onClick={handleEmailLogin}
-            disabled={loading}
-            sx={{ mb: 3 }}
+            disabled={loading || !isEmailValid}
+            sx={{ 
+              mb: 3,
+              bgcolor: isEmailValid ? 'primary.main' : 'grey.400',
+              '&:hover': {
+                bgcolor: isEmailValid ? 'primary.dark' : 'grey.500'
+              }
+            }}
           >
             התחבר
           </Button>
