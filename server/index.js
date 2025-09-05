@@ -1355,7 +1355,7 @@ app.get('/add-users-now', async (req, res) => {
           isActive: false,
           createdAt: new Date(),
           lastLogin: null,
-          googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+          googleId: `pending_${email.replace('@', '_').replace('.', '_')}_${Date.now()}`
         };
         
         await db.collection('users').insertOne(user);
