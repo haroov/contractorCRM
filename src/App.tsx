@@ -5,6 +5,7 @@ import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import LoginPage from './components/LoginPage';
+import SkeletonLoader from './components/SkeletonLoader';
 import { API_CONFIG } from './config/api';
 
 interface User {
@@ -31,39 +32,34 @@ export default function App() {
         checkAuthStatus();
       }
     };
-    
+
     handleAuthCheck();
   }, [user]);
 
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
-    
+
     // Check if there's a session ID in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('sessionId');
-    
+
     if (sessionId) {
       console.log('🔑 Found session ID in URL:', sessionId);
       // Save sessionId to localStorage for future use
       localStorage.setItem('sessionId', sessionId);
-      // Set user as authenticated if we have a session ID
-      setUser({
-        id: 'temp-id',
-        email: 'liav@chocoinsurance.com',
-        name: 'Liav Geffen',
-        role: 'admin'
-      });
-      setLoading(false);
-      return;
+      // Remove sessionId from URL to clean it up
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      // Continue with normal auth check
     }
-    
+
     try {
       const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
         credentials: 'include'
       });
-      
+
       console.log('📡 Auth status response:', response.status);
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log('📊 Auth data:', data);
@@ -85,16 +81,16 @@ export default function App() {
   // Protected Route Component
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     console.log('🛡️ ProtectedRoute - loading:', loading, 'user:', user);
-    
+
     if (loading) {
-      return <div>Loading...</div>;
+      return <SkeletonLoader />;
     }
-    
+
     if (!user) {
       console.log('🚫 No user, redirecting to login');
       return <Navigate to="/login" replace />;
     }
-    
+
     console.log('✅ User authenticated, rendering children');
     return <>{children}</>;
   };
@@ -104,37 +100,37 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <ProtectedRoute>
                 <ContractorRepository />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/contractor" 
+          <Route
+            path="/contractor"
             element={
               <ProtectedRoute>
                 <ContractorDetailsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/project" 
+          <Route
+            path="/project"
             element={
               <ProtectedRoute>
                 <ProjectDetailsPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/users" 
+          <Route
+            path="/users"
             element={
               <ProtectedRoute>
                 <UserManagement />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </Router>

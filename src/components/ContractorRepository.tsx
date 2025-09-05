@@ -371,6 +371,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             await authenticatedFetch('/auth/logout', {
                 method: 'POST'
             });
+            // Clear session ID from localStorage
+            localStorage.removeItem('sessionId');
             window.location.href = '/login';
         } catch (error) {
             console.error('Error logging out:', error);
