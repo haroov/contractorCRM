@@ -371,6 +371,33 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Temporary endpoint to delete test users
+app.delete('/api/delete-test-users', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    
+    // Delete test users
+    const result = await User.deleteMany({
+      email: {
+        $in: [
+          'david@zhg.co.il',
+          'newuser@test.com',
+          'newuser2@test.com',
+          'pending@test.com'
+        ]
+      }
+    });
+    
+    res.json({
+      message: 'Test users deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Error deleting test users:', error);
+    res.status(500).json({ error: 'Failed to delete test users' });
+  }
+});
+
 
 // Bulk validate all contractors from Companies Register
 app.post('/api/contractors/validate-all-status', async (req, res) => {
