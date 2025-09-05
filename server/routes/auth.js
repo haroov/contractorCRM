@@ -13,17 +13,17 @@ router.get('/google', (req, res, next) => {
     scope: ['profile', 'email']
   };
   
-  // Add prompt parameter if provided (for account selection)
-  if (prompt === 'select_account') {
-    authOptions.prompt = 'select_account';
-    console.log('🔐 Added prompt=select_account');
+  // Add prompt parameter if provided (for account selection and consent)
+  if (prompt) {
+    authOptions.prompt = prompt;
+    console.log('🔐 Added prompt:', prompt);
   }
   
-  // Add approval_prompt parameter if provided (force consent screen)
-  if (approvalPrompt === 'force') {
-    authOptions.approval_prompt = 'force';
-    console.log('🔐 Added approval_prompt=force');
-  }
+  // approval_prompt is deprecated, use prompt=consent instead
+  // if (approvalPrompt === 'force') {
+  //   authOptions.approval_prompt = 'force';
+  //   console.log('🔐 Added approval_prompt=force');
+  // }
   
   console.log('🔐 Auth options:', authOptions);
   passport.authenticate('google', authOptions)(req, res, next);

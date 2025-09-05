@@ -126,20 +126,20 @@ const LoginPage: React.FC = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
-      
+
       // Direct redirect to Google OAuth with account selection if needed
       let googleUrl = API_CONFIG.AUTH_GOOGLE_URL();
       const params = new URLSearchParams();
-      
+
       if (forceAccountSelection || forceLogout) {
-        params.append('prompt', 'select_account');
-        params.append('approval_prompt', 'force');
+        // Use both select_account and consent to force account selection and consent screen
+        params.append('prompt', 'select_account consent');
       }
-      
+
       if (params.toString()) {
         googleUrl += '?' + params.toString();
       }
-      
+
       window.location.href = googleUrl;
     } catch (error) {
       console.error('Error with Google OAuth:', error);
