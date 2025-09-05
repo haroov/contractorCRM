@@ -122,7 +122,7 @@ router.get('/me', (req, res) => {
         id: 'temp-id',
         email: 'liav@chocoinsurance.com',
         name: 'Liav Geffen',
-        picture: 'https://via.placeholder.com/40x40/4285f4/ffffff?text=LG', // Placeholder image
+        picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c', // Real Google profile picture
         role: 'admin',
         lastLogin: new Date()
       });

@@ -404,10 +404,22 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                     borderRadius: '50%',
                                     objectFit: 'cover'
                                 }}
+                                onError={(e) => {
+                                    // Fallback to icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const icon = target.nextElementSibling as HTMLElement;
+                                    if (icon) icon.style.display = 'block';
+                                }}
                             />
-                        ) : (
-                            <AccountCircleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-                        )}
+                        ) : null}
+                        <AccountCircleIcon 
+                            sx={{ 
+                                fontSize: 40, 
+                                color: 'primary.main',
+                                display: user?.picture ? 'none' : 'block'
+                            }} 
+                        />
                     </IconButton>
                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
                         {user?.name || 'משתמש'}
@@ -846,10 +858,22 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                     borderRadius: '50%',
                                     objectFit: 'cover'
                                 }}
+                                onError={(e) => {
+                                    // Fallback to icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const icon = target.nextElementSibling as HTMLElement;
+                                    if (icon) icon.style.display = 'block';
+                                }}
                             />
-                        ) : (
-                            <AccountCircleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
-                        )}
+                        ) : null}
+                        <AccountCircleIcon 
+                            sx={{ 
+                                fontSize: 40, 
+                                color: 'primary.main',
+                                display: user?.picture ? 'none' : 'block'
+                            }} 
+                        />
                         <Box>
                             <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
                                 {user?.name || 'משתמש'}
