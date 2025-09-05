@@ -954,7 +954,7 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
 });
 
 // Debug endpoint to check contractor and project data
-app.get('/api/debug/contractor-stats', async (req, res) => {
+app.get('/debug', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     
