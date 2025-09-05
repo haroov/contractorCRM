@@ -1224,6 +1224,56 @@ app.get('/add-all-missing-users', async (req, res) => {
   }
 });
 
+// Simple endpoint to add specific users
+app.get('/add-specific-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    const specificEmails = [
+      'finkelmanyael@gmail.com',
+      'Shifra.sankewitz@gmail.com',
+      'mor@cns-law.co.il',
+      'uriel@chocoinsurance.com',
+      'shlomo@chocoinsurance.com',
+      'steven.kostyn@gmail.com'
+    ];
+    
+    const users = [];
+    for (const email of specificEmails) {
+      try {
+        const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+        if (!existingUser) {
+          const user = {
+            email: email.toLowerCase(),
+            name: email.split('@')[0],
+            role: 'user',
+            isActive: false,
+            createdAt: new Date(),
+            lastLogin: null
+          };
+          
+          const result = await db.collection('users').insertOne(user);
+          users.push({ ...user, _id: result.insertedId });
+          console.log(`✅ Created user: ${email}`);
+        } else {
+          console.log(`⚠️ User already exists: ${email}`);
+        }
+      } catch (userError) {
+        console.error(`❌ Error with user ${email}:`, userError);
+      }
+    }
+    
+    res.json({ 
+      message: 'Specific users processed successfully',
+      createdUsers: users.length,
+      users: users
+    });
+  } catch (error) {
+    console.error('❌ Error adding specific users:', error);
+    res.status(500).json({ error: 'Failed to add specific users', details: error.message });
+  }
+});
+
 // Simple endpoint to add all missing users
 app.get('/add-all-missing-users', async (req, res) => {
   try {
