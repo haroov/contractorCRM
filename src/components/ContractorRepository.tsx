@@ -513,6 +513,24 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                                 sx={{
                                                     cursor: 'pointer',
                                                     textDecoration: 'none',
+                                                    color: '#333',
+                                                    fontWeight: 500,
+                                                    '&:hover': { color: '#000', textDecoration: 'underline' }
+                                                }}
+                                                onClick={() => {
+                                                    if (contractor.city) {
+                                                        const encodedCity = encodeURIComponent(`${contractor.city}, ישראל`);
+                                                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedCity}`, '_blank');
+                                                    }
+                                                }}
+                                            >
+                                                {contractor.city}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    textDecoration: 'none',
                                                     color: '#666',
                                                     '&:hover': { color: '#333', textDecoration: 'underline' }
                                                 }}
@@ -525,23 +543,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                                 }}
                                             >
                                                 {contractor.address}
-                                            </Typography>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    cursor: 'pointer',
-                                                    textDecoration: 'none',
-                                                    color: '#999',
-                                                    '&:hover': { color: '#666', textDecoration: 'underline' }
-                                                }}
-                                                onClick={() => {
-                                                    if (contractor.city) {
-                                                        const encodedCity = encodeURIComponent(`${contractor.city}, ישראל`);
-                                                        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedCity}`, '_blank');
-                                                    }
-                                                }}
-                                            >
-                                                {contractor.city}
                                             </Typography>
                                         </Box>
                                     </Box>
