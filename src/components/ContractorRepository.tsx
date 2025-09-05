@@ -20,7 +20,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Tooltip
+    Tooltip,
+    Skeleton
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -40,6 +41,7 @@ import type { ContractorDocument as Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
 import { API_CONFIG, authenticatedFetch } from '../config/api';
 import logo from '../assets/logo.svg';
+import SkeletonLoader from './SkeletonLoader';
 
 interface ContractorRepositoryProps {
     onContractorSelect?: (contractor: Contractor) => void;
@@ -52,7 +54,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
     const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<{name: string, picture: string} | null>(null);
+    const [user, setUser] = useState<{ name: string, picture: string } | null>(null);
 
     // Load contractors from MongoDB
     useEffect(() => {
@@ -144,12 +146,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         if (contractor.isActive === false) {
             return '#ff4444'; // Red - company not active
         }
-        
+
         // Check if company is a violator
         if (contractor.violator === true) {
             return '#ffaa00'; // Yellow - company is violator
         }
-        
+
         // Default - company is valid
         return '#00aa44'; // Green - company is valid
     };
@@ -258,11 +260,11 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         // Get session ID from current URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
-        
+
         // Create URL parameters for the contractor data
         const params = new URLSearchParams();
         params.set('mode', mode);
-        
+
         // Add session ID to the new window URL
         if (sessionId) {
             params.set('sessionId', sessionId);
@@ -366,7 +368,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     const handleLogout = async () => {
         try {
-            await authenticatedFetch('/auth/logout', { 
+            await authenticatedFetch('/auth/logout', {
                 method: 'POST'
             });
             window.location.href = '/login';
@@ -377,11 +379,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     };
 
     if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                <Typography>טוען קבלנים...</Typography>
-            </Box>
-        );
+        return <SkeletonLoader />;
     }
 
     return (
@@ -390,9 +388,9 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 {/* Logo and Title */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <img 
-                        src={logo} 
-                        alt="Logo" 
+                    <img
+                        src={logo}
+                        alt="Logo"
                         style={{ width: 48, height: 48 }}
                     />
                     <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
@@ -407,12 +405,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         sx={{ p: 0 }}
                     >
                         {user?.picture ? (
-                            <img 
-                                src={user.picture} 
+                            <img
+                                src={user.picture}
                                 alt={user.name}
-                                style={{ 
-                                    width: 40, 
-                                    height: 40, 
+                                style={{
+                                    width: 40,
+                                    height: 40,
                                     borderRadius: '50%',
                                     objectFit: 'cover'
                                 }}
@@ -425,12 +423,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 }}
                             />
                         ) : null}
-                        <AccountCircleIcon 
-                            sx={{ 
-                                fontSize: 40, 
+                        <AccountCircleIcon
+                            sx={{
+                                fontSize: 40,
                                 color: 'primary.main',
                                 display: user?.picture ? 'none' : 'block'
-                            }} 
+                            }}
                         />
                     </IconButton>
                     <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -602,12 +600,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right', padding: '16px 8px' }}>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Tooltip 
+                                        <Tooltip
                                             title={
-                                                contractor.isActive === false 
-                                                    ? 'חברה לא פעילה' 
-                                                    : contractor.violator === true 
-                                                        ? 'חברה מפרה' 
+                                                contractor.isActive === false
+                                                    ? 'חברה לא פעילה'
+                                                    : contractor.violator === true
+                                                        ? 'חברה מפרה'
                                                         : 'חברה תקינה'
                                             }
                                             arrow
@@ -630,12 +628,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                             </Box>
                                         </Tooltip>
                                         {/* Company Status Indicator */}
-                                        <Tooltip 
+                                        <Tooltip
                                             title={
-                                                contractor.isActive === false 
-                                                    ? 'חברה לא פעילה' 
-                                                    : contractor.violator === true 
-                                                        ? 'חברה מפרה' 
+                                                contractor.isActive === false
+                                                    ? 'חברה לא פעילה'
+                                                    : contractor.violator === true
+                                                        ? 'חברה מפרה'
                                                         : 'חברה תקינה'
                                             }
                                             arrow
@@ -845,12 +843,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 <Box sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, pb: 2, borderBottom: '1px solid #e0e0e0' }}>
                         {user?.picture ? (
-                            <img 
-                                src={user.picture} 
+                            <img
+                                src={user.picture}
                                 alt={user.name}
-                                style={{ 
-                                    width: 40, 
-                                    height: 40, 
+                                style={{
+                                    width: 40,
+                                    height: 40,
                                     borderRadius: '50%',
                                     objectFit: 'cover'
                                 }}
@@ -863,12 +861,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 }}
                             />
                         ) : null}
-                        <AccountCircleIcon 
-                            sx={{ 
-                                fontSize: 40, 
+                        <AccountCircleIcon
+                            sx={{
+                                fontSize: 40,
                                 color: 'primary.main',
                                 display: user?.picture ? 'none' : 'block'
-                            }} 
+                            }}
                         />
                         <Box>
                             <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
@@ -879,7 +877,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             </Typography>
                         </Box>
                     </Box>
-                    
+
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <Button
                             startIcon={<SettingsIcon />}
@@ -891,7 +889,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 window.open(userManagementUrl, '_blank');
                                 handleUserMenuClose();
                             }}
-                            sx={{ 
+                            sx={{
                                 justifyContent: 'flex-start',
                                 color: '#1976d2',
                                 gap: 1.5,
@@ -903,7 +901,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         <Button
                             startIcon={<LogoutIcon />}
                             onClick={handleLogout}
-                            sx={{ 
+                            sx={{
                                 justifyContent: 'flex-start',
                                 color: '#d32f2f',
                                 gap: 1.5,
