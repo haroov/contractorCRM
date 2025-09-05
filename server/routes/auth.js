@@ -8,33 +8,27 @@ router.get('/google', (req, res, next) => {
   console.log('🔐 Query params:', req.query);
   
   const prompt = req.query.prompt;
-  const authOptions = {
-    scope: ['profile', 'email']
-  };
   
-  // Add prompt parameter if provided (for account selection and consent)
+  // Build Google OAuth URL manually to include prompt parameter
+  const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+  const params = new URLSearchParams({
+    response_type: 'code',
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://contractorcrm-api.onrender.com/auth/google/callback',
+    scope: 'profile email',
+    access_type: 'offline'
+  });
+  
+  // Add prompt parameter if provided
   if (prompt) {
-    authOptions.prompt = prompt;
+    params.append('prompt', prompt);
     console.log('🔐 Added prompt:', prompt);
   }
   
-  console.log('🔐 Auth options:', authOptions);
+  const fullUrl = `${googleAuthUrl}?${params.toString()}`;
+  console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
   
-  // Create custom authenticate function that passes prompt to Google
-  const authenticate = passport.authenticate('google', authOptions);
-  
-  // Override the redirect to include prompt parameter
-  const originalRedirect = res.redirect;
-  res.redirect = function(url) {
-    if (prompt && url.includes('accounts.google.com')) {
-      const separator = url.includes('?') ? '&' : '?';
-      url += separator + 'prompt=' + encodeURIComponent(prompt);
-      console.log('🔐 Modified redirect URL with prompt:', url);
-    }
-    originalRedirect.call(this, url);
-  };
-  
-  authenticate(req, res, next);
+  res.redirect(fullUrl);
 });
 
 // Google OAuth callback
