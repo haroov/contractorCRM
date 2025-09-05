@@ -104,9 +104,18 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
     };
 
     const openProjectInNewWindow = (project: Project, mode: 'view' | 'edit' | 'new') => {
+        // Get session ID from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        
         // Create URL parameters for the project data
         const params = new URLSearchParams();
         params.set('mode', mode);
+        
+        // Add session ID to the new window URL
+        if (sessionId) {
+            params.set('sessionId', sessionId);
+        }
 
         if (mode === 'new') {
             params.set('project_id', 'new');
