@@ -122,7 +122,7 @@ router.get('/me', (req, res) => {
         id: 'temp-id',
         email: 'liav@chocoinsurance.com',
         name: 'Liav Geffen',
-        picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ...', // You can add a real picture URL
+        picture: 'https://via.placeholder.com/40x40/4285f4/ffffff?text=LG', // Placeholder image
         role: 'admin',
         lastLogin: new Date()
       });
