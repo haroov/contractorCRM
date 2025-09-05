@@ -51,7 +51,7 @@ export class ContractorService {
     // Create new contractor
     static async create(contractorData: Partial<Contractor>): Promise<Contractor> {
         try {
-            const response = await fetch(API_CONFIG.CONTRACTORS_URL(), {
+            const response = await authenticatedFetch(API_CONFIG.CONTRACTORS_URL(), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export class ContractorService {
     // Update contractor
     static async update(contractorId: string, updateData: Partial<Contractor>): Promise<Contractor | null> {
         try {
-            const response = await fetch(API_CONFIG.CONTRACTOR_URL(contractorId), {
+            const response = await authenticatedFetch(API_CONFIG.CONTRACTOR_URL(contractorId), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export class ContractorService {
     // Delete contractor
     static async delete(contractorId: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE_URL}/contractors/${contractorId}`, {
+            const response = await authenticatedFetch(API_CONFIG.CONTRACTOR_URL(contractorId), {
                 method: 'DELETE'
             });
 

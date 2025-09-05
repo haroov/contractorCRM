@@ -66,16 +66,44 @@ export default function ContractorDetailsPage() {
                 } as Contractor;
                 setContractor(newContractor);
             } else if (contractorId && contractorId !== 'new') {
-                // Load existing contractor from sessionStorage
-                const storedData = sessionStorage.getItem('contractor_data');
-                if (storedData) {
+                // Load existing contractor from server
+                const loadContractorFromServer = async () => {
                     try {
-                        const contractorData = JSON.parse(storedData);
-                        setContractor(contractorData);
+                        const response = await fetch(`/api/contractors/${contractorId}`);
+                        if (response.ok) {
+                            const contractorData = await response.json();
+                            setContractor(contractorData);
+                            // Also store in sessionStorage for consistency
+                            sessionStorage.setItem('contractor_data', JSON.stringify(contractorData));
+                        } else {
+                            console.error('Failed to load contractor from server');
+                            // Fallback to sessionStorage if server fails
+                            const storedData = sessionStorage.getItem('contractor_data');
+                            if (storedData) {
+                                try {
+                                    const contractorData = JSON.parse(storedData);
+                                    setContractor(contractorData);
+                                } catch (error) {
+                                    console.error('Error parsing contractor data:', error);
+                                }
+                            }
+                        }
                     } catch (error) {
-                        console.error('Error parsing contractor data:', error);
+                        console.error('Error loading contractor from server:', error);
+                        // Fallback to sessionStorage if server fails
+                        const storedData = sessionStorage.getItem('contractor_data');
+                        if (storedData) {
+                            try {
+                                const contractorData = JSON.parse(storedData);
+                                setContractor(contractorData);
+                            } catch (error) {
+                                console.error('Error parsing contractor data:', error);
+                            }
+                        }
                     }
-                }
+                };
+                
+                loadContractorFromServer();
             }
 
             setLoading(false);
