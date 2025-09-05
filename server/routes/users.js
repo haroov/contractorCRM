@@ -33,7 +33,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 router.post('/create-temp', requireAuth, requireAdmin, async (req, res) => {
   try {
     console.log('Creating temp user with request body:', req.body);
-    
+
     const { name, email, phone, role, isActive } = req.body;
 
     // Check if user already exists
@@ -60,7 +60,7 @@ router.post('/create-temp', requireAuth, requireAdmin, async (req, res) => {
 
     const user = new User(userData);
     await user.save();
-    
+
     console.log('Temp user created successfully:', user._id);
     res.status(201).json(user);
   } catch (error) {
@@ -72,7 +72,7 @@ router.post('/create-temp', requireAuth, requireAdmin, async (req, res) => {
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     console.log('Creating user with request body:', req.body);
-    
+
     const { name, email, phone, role, isActive } = req.body;
 
     // Check if user already exists
@@ -100,7 +100,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 
     const user = new User(userData);
     await user.save();
-    
+
     console.log('User created successfully:', user._id);
     res.status(201).json(user);
   } catch (error) {
@@ -154,8 +154,11 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
 // Delete user (admin only)
 router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    // Prevent deleting yourself
-    if (req.params.id === req.user._id.toString()) {
+    console.log('Deleting user with ID:', req.params.id);
+    console.log('Request user:', req.user);
+    
+    // Prevent deleting yourself (only if req.user is available)
+    if (req.user && req.params.id === req.user._id.toString()) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
     }
 
@@ -164,10 +167,12 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    console.log('User deleted successfully:', user.email);
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
-    res.status(500).json({ error: 'Failed to delete user' });
+    console.error('Error details:', error.message);
+    res.status(500).json({ error: 'Failed to delete user', details: error.message });
   }
 });
 
