@@ -953,8 +953,8 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
-// Debug endpoint to check contractor and project data
-app.get('/debug', async (req, res) => {
+// Fix project contractor linkage
+app.post('/fix-project-linkage', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     
@@ -967,28 +967,43 @@ app.get('/debug', async (req, res) => {
     // Find צ.מ.ח המרמן
     const hamarman = contractors.find(c => c.name && c.name.includes('המרמן'));
     
-    // Find projects for this contractor
-    const hamarmanProjects = projects.filter(p => p.contractorId === hamarman?.contractor_id);
+    // Find the project with contractorId "20535"
+    const projectToFix = projects.find(p => p.contractorId === "20535");
     
-    res.json({
-      hamarman: hamarman ? {
-        contractor_id: hamarman.contractor_id,
-        name: hamarman.name,
-        current_projects: hamarman.current_projects,
-        current_projects_value_nis: hamarman.current_projects_value_nis
-      } : null,
-      hamarmanProjects: hamarmanProjects.map(p => ({
-        projectName: p.projectName,
-        contractorId: p.contractorId,
-        status: p.status,
-        valueNis: p.valueNis
-      })),
-      allContractorIds: contractors.map(c => ({ contractor_id: c.contractor_id, name: c.name })),
-      allProjectContractorIds: projects.map(p => ({ projectName: p.projectName, contractorId: p.contractorId }))
-    });
+    if (hamarman && projectToFix) {
+      // Update the project's contractorId to match the correct contractor
+      await db.collection('projects').updateOne(
+        { _id: projectToFix._id },
+        { $set: { contractorId: hamarman.contractor_id } }
+      );
+      
+      // Update contractor statistics
+      await updateContractorStats(db, hamarman.contractor_id);
+      
+      res.json({
+        success: true,
+        message: 'Project linkage fixed',
+        hamarman: {
+          contractor_id: hamarman.contractor_id,
+          name: hamarman.name
+        },
+        project: {
+          projectName: projectToFix.projectName,
+          oldContractorId: "20535",
+          newContractorId: hamarman.contractor_id
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: 'Could not find contractor or project',
+        hamarman: hamarman ? { contractor_id: hamarman.contractor_id, name: hamarman.name } : null,
+        project: projectToFix ? { projectName: projectToFix.projectName, contractorId: projectToFix.contractorId } : null
+      });
+    }
   } catch (error) {
-    console.error('❌ Error in debug endpoint:', error);
-    res.status(500).json({ error: 'Failed to get debug data' });
+    console.error('❌ Error fixing project linkage:', error);
+    res.status(500).json({ error: 'Failed to fix project linkage' });
   }
 });
 
