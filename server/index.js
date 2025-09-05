@@ -1354,7 +1354,8 @@ app.get('/add-users-now', async (req, res) => {
           role: 'user',
           isActive: false,
           createdAt: new Date(),
-          lastLogin: null
+          lastLogin: null,
+          googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         };
         
         await db.collection('users').insertOne(user);
