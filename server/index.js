@@ -953,6 +953,45 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
+// Debug endpoint to check contractor and project data
+app.get('/api/debug/contractor-stats', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    // Get all contractors
+    const contractors = await db.collection('contractors').find({}).toArray();
+    
+    // Get all projects
+    const projects = await db.collection('projects').find({}).toArray();
+    
+    // Find צ.מ.ח המרמן
+    const hamarman = contractors.find(c => c.name && c.name.includes('המרמן'));
+    
+    // Find projects for this contractor
+    const hamarmanProjects = projects.filter(p => p.contractorId === hamarman?.contractor_id);
+    
+    res.json({
+      hamarman: hamarman ? {
+        contractor_id: hamarman.contractor_id,
+        name: hamarman.name,
+        current_projects: hamarman.current_projects,
+        current_projects_value_nis: hamarman.current_projects_value_nis
+      } : null,
+      hamarmanProjects: hamarmanProjects.map(p => ({
+        projectName: p.projectName,
+        contractorId: p.contractorId,
+        status: p.status,
+        valueNis: p.valueNis
+      })),
+      allContractorIds: contractors.map(c => ({ contractor_id: c.contractor_id, name: c.name })),
+      allProjectContractorIds: projects.map(p => ({ projectName: p.projectName, contractorId: p.contractorId }))
+    });
+  } catch (error) {
+    console.error('❌ Error in debug endpoint:', error);
+    res.status(500).json({ error: 'Failed to get debug data' });
+  }
+});
+
 // Add a default route for the root path
 app.get('/', (req, res) => {
   res.json({
@@ -962,7 +1001,8 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/api/health',
       contractors: '/api/contractors',
-      projects: '/api/projects'
+      projects: '/api/projects',
+      debug: '/api/debug/contractor-stats'
     }
   });
 });
