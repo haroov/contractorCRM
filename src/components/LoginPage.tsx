@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Google as GoogleIcon, Microsoft as MicrosoftIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { API_CONFIG } from '../config/api';
+import logo from '../assets/logo.svg';
 
 interface User {
   id: string;
@@ -165,36 +166,14 @@ const LoginPage: React.FC = () => {
           </Typography>
           <Box
             component="img"
-            src="/choco-logo.png"
+            src={logo}
             alt="שוקו לוגו"
             sx={{
-              height: 40,
-              width: 'auto',
+              height: 48,
+              width: 48,
               objectFit: 'contain'
             }}
-            onError={(e) => {
-              // Fallback to text if image not found
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling.style.display = 'block';
-            }}
           />
-          <Box
-            sx={{
-              display: 'none',
-              height: 40,
-              width: 40,
-              borderRadius: '50%',
-              bgcolor: '#8B4513',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.2rem',
-              fontWeight: 'bold'
-            }}
-          >
-            ש
-          </Box>
         </Box>
         
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
