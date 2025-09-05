@@ -31,7 +31,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 // Create new user (admin only)
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { name, email, role, isActive } = req.body;
+    const { name, email, phone, role, isActive } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -43,6 +43,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     const user = new User({
       name,
       email: email.toLowerCase(),
+      phone: phone || undefined,
       role: role || 'user',
       isActive: isActive !== undefined ? isActive : true,
       // Note: For manually created users, we don't have googleId
@@ -60,7 +61,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 // Update user (admin only)
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { name, email, role, isActive } = req.body;
+    const { name, email, phone, role, isActive } = req.body;
 
     // Check if email is being changed and if it already exists
     if (email) {
@@ -76,6 +77,7 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     const updateData = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email.toLowerCase();
+    if (phone !== undefined) updateData.phone = phone || undefined;
     if (role) updateData.role = role;
     if (isActive !== undefined) updateData.isActive = isActive;
 
