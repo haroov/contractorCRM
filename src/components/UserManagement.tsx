@@ -204,6 +204,10 @@ const UserManagement: React.FC = () => {
         user.role.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Separate users into active (logged in) and pending (never logged in)
+    const activeUsers = filteredUsers.filter(user => user.lastLogin);
+    const pendingUsers = filteredUsers.filter(user => !user.lastLogin);
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('he-IL');
     };
@@ -254,81 +258,189 @@ const UserManagement: React.FC = () => {
                 />
             </Box>
 
-            {/* Users Table */}
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>משתמש</TableCell>
-                            <TableCell>אימייל</TableCell>
-                            <TableCell>תפקיד</TableCell>
-                            <TableCell>סטטוס</TableCell>
-                            <TableCell>התחברות אחרונה</TableCell>
-                            <TableCell>תאריך יצירה</TableCell>
-                            <TableCell>פעולות</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredUsers.map((user) => (
-                            <TableRow key={user._id}>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                        {user.picture ? (
-                                            <Avatar
-                                                src={user.picture}
-                                                alt={user.name}
-                                                sx={{ width: 40, height: 40 }}
-                                            />
-                                        ) : (
-                                            <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
-                                                <PersonIcon />
-                                            </Avatar>
-                                        )}
-                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                            {user.name}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                        {user.email}
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={getRoleLabel(user.role)}
-                                        color={getRoleColor(user.role)}
-                                        size="small"
-                                        icon={user.role === 'admin' ? <AdminIcon /> : <UserIcon />}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={user.isActive ? 'פעיל' : 'לא פעיל'}
-                                        color={user.isActive ? 'success' : 'default'}
-                                        size="small"
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    {user.lastLogin ? formatDate(user.lastLogin) : 'לא התחבר'}
-                                </TableCell>
-                                <TableCell>
-                                    {formatDate(user.createdAt)}
-                                </TableCell>
-                                <TableCell>
-                                    <IconButton
-                                        onClick={(e) => handleMenuOpen(e, user)}
-                                        size="small"
-                                    >
-                                        <MoreVertIcon />
-                                    </IconButton>
-                                </TableCell>
+            {/* Active Users Table */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2, color: 'primary.main', fontWeight: 600 }}>
+                    משתמשים פעילים ({activeUsers.length})
+                </Typography>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>משתמש</TableCell>
+                                <TableCell>אימייל</TableCell>
+                                <TableCell>תפקיד</TableCell>
+                                <TableCell>סטטוס</TableCell>
+                                <TableCell>התחברות אחרונה</TableCell>
+                                <TableCell>תאריך יצירה</TableCell>
+                                <TableCell>פעולות</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {activeUsers.length > 0 ? (
+                                activeUsers.map((user) => (
+                                    <TableRow key={user._id}>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                {user.picture ? (
+                                                    <Avatar
+                                                        src={user.picture}
+                                                        alt={user.name}
+                                                        sx={{ width: 40, height: 40 }}
+                                                    />
+                                                ) : (
+                                                    <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
+                                                        <PersonIcon />
+                                                    </Avatar>
+                                                )}
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {user.name}
+                                                </Typography>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                {user.email}
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={getRoleLabel(user.role)}
+                                                color={getRoleColor(user.role)}
+                                                size="small"
+                                                icon={user.role === 'admin' ? <AdminIcon /> : <UserIcon />}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={user.isActive ? 'פעיל' : 'לא פעיל'}
+                                                color={user.isActive ? 'success' : 'default'}
+                                                size="small"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            {formatDate(user.lastLogin!)}
+                                        </TableCell>
+                                        <TableCell>
+                                            {formatDate(user.createdAt)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton
+                                                onClick={(e) => handleMenuOpen(e, user)}
+                                                size="small"
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
+                                        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                                            אין משתמשים פעילים
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+
+            {/* Pending Users Table */}
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2, color: 'warning.main', fontWeight: 600 }}>
+                    משתמשים ממתינים ({pendingUsers.length})
+                </Typography>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>משתמש</TableCell>
+                                <TableCell>אימייל</TableCell>
+                                <TableCell>תפקיד</TableCell>
+                                <TableCell>סטטוס</TableCell>
+                                <TableCell>התחברות אחרונה</TableCell>
+                                <TableCell>תאריך יצירה</TableCell>
+                                <TableCell>פעולות</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {pendingUsers.length > 0 ? (
+                                pendingUsers.map((user) => (
+                                    <TableRow key={user._id}>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                {user.picture ? (
+                                                    <Avatar
+                                                        src={user.picture}
+                                                        alt={user.name}
+                                                        sx={{ width: 40, height: 40 }}
+                                                    />
+                                                ) : (
+                                                    <Avatar sx={{ width: 40, height: 40, bgcolor: 'warning.main' }}>
+                                                        <PersonIcon />
+                                                    </Avatar>
+                                                )}
+                                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                                    {user.name}
+                                                </Typography>
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                                {user.email}
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={getRoleLabel(user.role)}
+                                                color={getRoleColor(user.role)}
+                                                size="small"
+                                                icon={user.role === 'admin' ? <AdminIcon /> : <UserIcon />}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label="ממתין"
+                                                color="warning"
+                                                size="small"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                                                טרם התחבר
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            {formatDate(user.createdAt)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton
+                                                onClick={(e) => handleMenuOpen(e, user)}
+                                                size="small"
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4 }}>
+                                        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                                            אין משתמשים ממתינים
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
 
             {/* Context Menu */}
             <Menu
