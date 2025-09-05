@@ -953,8 +953,8 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
-// Fix project contractor linkage
-app.post('/fix-project-linkage', async (req, res) => {
+// Fix project contractor linkage - simple endpoint
+app.get('/fix', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     
