@@ -1021,23 +1021,27 @@ app.get('/add-pending-users', async (req, res) => {
     
     const users = [];
     for (const email of pendingEmails) {
-      // Check if user already exists
-      const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
-      if (!existingUser) {
-        const user = {
-          email: email.toLowerCase(),
-          name: email.split('@')[0], // Use email prefix as name
-          role: 'user',
-          isActive: false, // Pending users are inactive
-          createdAt: new Date(),
-          lastLogin: null
-        };
-        
-        const result = await db.collection('users').insertOne(user);
-        users.push({ ...user, _id: result.insertedId });
-        console.log(`✅ Created pending user: ${email}`);
-      } else {
-        console.log(`⚠️ User already exists: ${email}`);
+      try {
+        // Check if user already exists
+        const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+        if (!existingUser) {
+          const user = {
+            email: email.toLowerCase(),
+            name: email.split('@')[0], // Use email prefix as name
+            role: 'user',
+            isActive: false, // Pending users are inactive
+            createdAt: new Date(),
+            lastLogin: null
+          };
+          
+          const result = await db.collection('users').insertOne(user);
+          users.push({ ...user, _id: result.insertedId });
+          console.log(`✅ Created pending user: ${email}`);
+        } else {
+          console.log(`⚠️ User already exists: ${email}`);
+        }
+      } catch (userError) {
+        console.error(`❌ Error with user ${email}:`, userError);
       }
     }
     
@@ -1049,7 +1053,23 @@ app.get('/add-pending-users', async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Error adding pending users:', error);
-    res.status(500).json({ error: 'Failed to add pending users' });
+    res.status(500).json({ error: 'Failed to add pending users', details: error.message });
+  }
+});
+
+// Simple endpoint to check users
+app.get('/check-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const users = await db.collection('users').find({}).toArray();
+    res.json({ 
+      message: 'Users retrieved successfully',
+      users: users,
+      total: users.length
+    });
+  } catch (error) {
+    console.error('❌ Error checking users:', error);
+    res.status(500).json({ error: 'Failed to check users', details: error.message });
   }
 });
 
