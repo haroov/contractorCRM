@@ -1005,6 +1005,54 @@ app.post('/api/users/create-pending', requireAuth, async (req, res) => {
   }
 });
 
+// Temporary endpoint to add all pending users
+app.get('/add-pending-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const pendingEmails = [
+      'idan@yozmot.net',
+      'finkelmanyael@gmail.com',
+      'Shifra.sankewitz@gmail.com',
+      'mor@cns-law.co.il',
+      'uriel@chocoinsurance.com',
+      'shlomo@chocoinsurance.com',
+      'steven.kostyn@gmail.com'
+    ];
+    
+    const users = [];
+    for (const email of pendingEmails) {
+      // Check if user already exists
+      const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+      if (!existingUser) {
+        const user = {
+          email: email.toLowerCase(),
+          name: email.split('@')[0], // Use email prefix as name
+          role: 'user',
+          isActive: false, // Pending users are inactive
+          createdAt: new Date(),
+          lastLogin: null
+        };
+        
+        const result = await db.collection('users').insertOne(user);
+        users.push({ ...user, _id: result.insertedId });
+        console.log(`✅ Created pending user: ${email}`);
+      } else {
+        console.log(`⚠️ User already exists: ${email}`);
+      }
+    }
+    
+    res.json({ 
+      message: 'Pending users added successfully',
+      users: users,
+      total: users.length,
+      alreadyExists: pendingEmails.length - users.length
+    });
+  } catch (error) {
+    console.error('❌ Error adding pending users:', error);
+    res.status(500).json({ error: 'Failed to add pending users' });
+  }
+});
+
 // Fix project contractor linkage and add mainContractor field
 app.get('/fix', async (req, res) => {
   try {
