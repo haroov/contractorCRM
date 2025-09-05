@@ -874,6 +874,66 @@ app.delete('/api/projects/:id', async (req, res) => {
   }
 });
 
+// Update contractor project statistics
+app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.params.contractorId;
+    
+    // Get all projects for this contractor
+    const projects = await db.collection('projects').find({ contractorId: contractorId }).toArray();
+    
+    // Calculate statistics
+    let currentProjects = 0;
+    let currentProjectsValue = 0;
+    let futureProjects = 0;
+    let futureProjectsValue = 0;
+    
+    projects.forEach(project => {
+      if (project.status === 'current') {
+        currentProjects++;
+        currentProjectsValue += project.valueNis || 0;
+      } else if (project.status === 'future') {
+        futureProjects++;
+        futureProjectsValue += project.valueNis || 0;
+      }
+    });
+    
+    // Update contractor with new statistics
+    const result = await db.collection('contractors').updateOne(
+      { contractor_id: contractorId },
+      { 
+        $set: { 
+          current_projects: currentProjects,
+          current_projects_value_nis: currentProjectsValue,
+          forcast_projects: futureProjects,
+          forcast_projects_value_nis: futureProjectsValue
+        }
+      }
+    );
+    
+    console.log('✅ Updated contractor stats:', contractorId, {
+      currentProjects,
+      currentProjectsValue,
+      futureProjects,
+      futureProjectsValue
+    });
+    
+    res.json({ 
+      success: true, 
+      stats: {
+        currentProjects,
+        currentProjectsValue,
+        futureProjects,
+        futureProjectsValue
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error updating contractor stats:', error);
+    res.status(500).json({ error: 'Failed to update contractor stats' });
+  }
+});
+
 // Add a default route for the root path
 app.get('/', (req, res) => {
   res.json({

@@ -278,6 +278,34 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     };
 
+    // Function to update contractor statistics
+    const updateContractorStats = async () => {
+        try {
+            if (contractor?.contractor_id) {
+                setSnackbar({ open: true, message: 'מעדכן סטטיסטיקות פרויקטים...', severity: 'info' });
+
+                const response = await authenticatedFetch(`/api/contractors/${contractor.contractor_id}/update-stats`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Updated contractor stats:', result.stats);
+                    
+                    // Refresh contractor data to get updated statistics
+                    await refreshProjectsData();
+                    
+                    setSnackbar({ open: true, message: 'סטטיסטיקות פרויקטים עודכנו בהצלחה', severity: 'success' });
+                } else {
+                    setSnackbar({ open: true, message: 'שגיאה בעדכון סטטיסטיקות פרויקטים', severity: 'error' });
+                }
+            }
+        } catch (error) {
+            console.error('Error updating contractor stats:', error);
+            setSnackbar({ open: true, message: 'שגיאה בעדכון סטטיסטיקות פרויקטים', severity: 'error' });
+        }
+    };
+
     // Function to refresh projects data from server
     const refreshProjectsData = async () => {
         try {
@@ -1559,14 +1587,26 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<RefreshIcon />}
-                            onClick={refreshProjectsData}
-                            sx={{ gap: 1 }}
-                        >
-                            רענן פרויקטים
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Button
+                                variant="outlined"
+                                startIcon={<RefreshIcon />}
+                                onClick={refreshProjectsData}
+                                sx={{ gap: 1 }}
+                            >
+                                רענן פרויקטים
+                            </Button>
+                            
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                startIcon={<RefreshIcon />}
+                                onClick={updateContractorStats}
+                                sx={{ gap: 1 }}
+                            >
+                                עדכן סטטיסטיקות
+                            </Button>
+                        </Box>
 
                         <Button
                             variant="contained"
