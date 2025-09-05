@@ -31,10 +31,14 @@ import {
     Business as BusinessIcon,
     LocationOn as LocationIcon,
     Phone as PhoneIcon,
-    Email as EmailIcon
+    Email as EmailIcon,
+    Settings as SettingsIcon,
+    Logout as LogoutIcon,
+    AccountCircle as AccountCircleIcon
 } from '@mui/icons-material';
 import type { ContractorDocument as Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
+import logo from '../assets/logo.svg';
 
 interface ContractorRepositoryProps {
     onContractorSelect?: (contractor: Contractor) => void;
@@ -46,6 +50,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     const [loading, setLoading] = useState(true);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
+    const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
+    const [user, setUser] = useState<{name: string, picture: string} | null>(null);
 
     // Load contractors from MongoDB
     useEffect(() => {
@@ -69,6 +75,25 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         };
 
         loadContractors();
+    }, []);
+
+    // Load user data
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const response = await fetch('/api/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUser({
+                        name: userData.name || 'משתמש',
+                        picture: userData.picture || ''
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        };
+        loadUserData();
     }, []);
 
     // Auto-refresh when page gains focus
@@ -325,6 +350,25 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         return 'error';
     };
 
+    // User menu handlers
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setUserMenuAnchor(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setUserMenuAnchor(null);
+    };
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+        handleUserMenuClose();
+    };
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -335,11 +379,47 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     return (
         <Box sx={{ p: 3, direction: 'rtl' }}>
+            {/* Top Bar with User Info */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                {/* User Info */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton
+                        onClick={handleUserMenuOpen}
+                        sx={{ p: 0 }}
+                    >
+                        {user?.picture ? (
+                            <img 
+                                src={user.picture} 
+                                alt={user.name}
+                                style={{ 
+                                    width: 40, 
+                                    height: 40, 
+                                    borderRadius: '50%',
+                                    objectFit: 'cover'
+                                }}
+                            />
+                        ) : (
+                            <AccountCircleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                        )}
+                    </IconButton>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                        {user?.name || 'משתמש'}
+                    </Typography>
+                </Box>
+            </Box>
+
             {/* Header */}
             <Box sx={{ mb: 3, textAlign: 'right' }}>
-                <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    מאגר קבלנים
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 2 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                        מאגר קבלנים ויזמים
+                    </Typography>
+                    <img 
+                        src={logo} 
+                        alt="Logo" 
+                        style={{ width: 48, height: 48 }}
+                    />
+                </Box>
                 <Typography variant="body1" color="text.secondary">
                     ניהול וצפייה בכל הקבלנים במערכת
                 </Typography>
@@ -731,6 +811,74 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         מחק
                     </Button>
                 </DialogActions>
+            </Dialog>
+
+            {/* User Menu */}
+            <Dialog
+                open={Boolean(userMenuAnchor)}
+                onClose={handleUserMenuClose}
+                PaperProps={{
+                    sx: {
+                        position: 'absolute',
+                        top: 60,
+                        right: 20,
+                        minWidth: 200,
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+                    }
+                }}
+            >
+                <Box sx={{ p: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, pb: 2, borderBottom: '1px solid #e0e0e0' }}>
+                        {user?.picture ? (
+                            <img 
+                                src={user.picture} 
+                                alt={user.name}
+                                style={{ 
+                                    width: 40, 
+                                    height: 40, 
+                                    borderRadius: '50%',
+                                    objectFit: 'cover'
+                                }}
+                            />
+                        ) : (
+                            <AccountCircleIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                        )}
+                        <Box>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                                {user?.name || 'משתמש'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                מחובר
+                            </Typography>
+                        </Box>
+                    </Box>
+                    
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Button
+                            startIcon={<SettingsIcon />}
+                            onClick={handleUserMenuClose}
+                            sx={{ 
+                                justifyContent: 'flex-start',
+                                color: '#999',
+                                '&:hover': { backgroundColor: '#f5f5f5' }
+                            }}
+                            disabled
+                        >
+                            הגדרות
+                        </Button>
+                        <Button
+                            startIcon={<LogoutIcon />}
+                            onClick={handleLogout}
+                            sx={{ 
+                                justifyContent: 'flex-start',
+                                color: '#d32f2f',
+                                '&:hover': { backgroundColor: '#fff5f5' }
+                            }}
+                        >
+                            התנתק
+                        </Button>
+                    </Box>
+                </Box>
             </Dialog>
         </Box>
     );
