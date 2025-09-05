@@ -169,6 +169,11 @@ const authRoutes = require('./routes/auth.js');
 app.use('/auth', authRoutes);
 console.log('✅ Auth routes configured');
 
+// Import user management routes
+const userRoutes = require('./routes/users.js');
+app.use('/api/users', userRoutes);
+console.log('✅ User management routes configured');
+
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 

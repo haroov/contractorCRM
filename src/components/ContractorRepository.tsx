@@ -401,7 +401,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 </Box>
 
                 {/* User Info */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={handleUserMenuOpen}>
                     <IconButton
                         onClick={handleUserMenuOpen}
                         sx={{ p: 0 }}
@@ -883,15 +883,18 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <Button
                             startIcon={<SettingsIcon />}
-                            onClick={handleUserMenuClose}
+                            onClick={() => {
+                                window.open('/users', '_blank');
+                                handleUserMenuClose();
+                            }}
                             sx={{ 
                                 justifyContent: 'flex-start',
-                                color: '#999',
+                                color: '#1976d2',
+                                gap: 1.5,
                                 '&:hover': { backgroundColor: '#f5f5f5' }
                             }}
-                            disabled
                         >
-                            הגדרות
+                            ניהול משתמשים
                         </Button>
                         <Button
                             startIcon={<LogoutIcon />}
@@ -899,6 +902,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             sx={{ 
                                 justifyContent: 'flex-start',
                                 color: '#d32f2f',
+                                gap: 1.5,
                                 '&:hover': { backgroundColor: '#fff5f5' }
                             }}
                         >

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import ContractorRepository from './components/ContractorRepository';
 import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
+import UserManagement from './components/UserManagement';
 import LoginPage from './components/LoginPage';
 import { API_CONFIG } from './config/api';
 
@@ -122,6 +123,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ProjectDetailsPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/users" 
+            element={
+              <ProtectedRoute>
+                <UserManagement />
               </ProtectedRoute>
             } 
           />

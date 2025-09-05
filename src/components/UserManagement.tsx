@@ -1,0 +1,465 @@
+import React, { useState, useEffect } from 'react';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Chip,
+    Avatar,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    ListItemText,
+    Snackbar,
+    Alert,
+    CircularProgress
+} from '@mui/material';
+import {
+    Add as AddIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    MoreVert as MoreVertIcon,
+    Search as SearchIcon,
+    Person as PersonIcon,
+    Email as EmailIcon,
+    AdminPanelSettings as AdminIcon,
+    PersonAdd as UserIcon
+} from '@mui/icons-material';
+import { API_CONFIG, authenticatedFetch } from '../config/api';
+
+interface User {
+    _id: string;
+    googleId: string;
+    email: string;
+    name: string;
+    picture?: string;
+    role: 'admin' | 'user';
+    isActive: boolean;
+    lastLogin?: string;
+    createdAt: string;
+}
+
+const UserManagement: React.FC = () => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<User | null>(null);
+    const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error'}>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+
+    // Load users from API
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
+    const loadUsers = async () => {
+        try {
+            setLoading(true);
+            const response = await authenticatedFetch('/api/users');
+            if (response.ok) {
+                const data = await response.json();
+                setUsers(data);
+            } else {
+                console.error('Failed to load users');
+                showSnackbar('שגיאה בטעינת המשתמשים', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading users:', error);
+            showSnackbar('שגיאה בטעינת המשתמשים', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const showSnackbar = (message: string, severity: 'success' | 'error') => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const handleAddUser = () => {
+        setEditingUser(null);
+        setDialogOpen(true);
+    };
+
+    const handleEditUser = (user: User) => {
+        setEditingUser(user);
+        setDialogOpen(true);
+    };
+
+    const handleDeleteUser = (user: User) => {
+        setUserToDelete(user);
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDeleteUser = async () => {
+        if (!userToDelete) return;
+
+        try {
+            const response = await authenticatedFetch(`/api/users/${userToDelete._id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                setUsers(users.filter(u => u._id !== userToDelete._id));
+                showSnackbar('המשתמש נמחק בהצלחה', 'success');
+            } else {
+                showSnackbar('שגיאה במחיקת המשתמש', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showSnackbar('שגיאה במחיקת המשתמש', 'error');
+        } finally {
+            setDeleteDialogOpen(false);
+            setUserToDelete(null);
+        }
+    };
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, user: User) => {
+        setMenuAnchor(event.currentTarget);
+        setSelectedUser(user);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchor(null);
+        setSelectedUser(null);
+    };
+
+    const handleSaveUser = async (userData: Partial<User>) => {
+        try {
+            let response;
+            if (editingUser) {
+                // Update existing user
+                response = await authenticatedFetch(`/api/users/${editingUser._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+            } else {
+                // Create new user
+                response = await authenticatedFetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+            }
+
+            if (response.ok) {
+                await loadUsers(); // Reload users
+                setDialogOpen(false);
+                setEditingUser(null);
+                showSnackbar(editingUser ? 'המשתמש עודכן בהצלחה' : 'המשתמש נוצר בהצלחה', 'success');
+            } else {
+                showSnackbar('שגיאה בשמירת המשתמש', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving user:', error);
+            showSnackbar('שגיאה בשמירת המשתמש', 'error');
+        }
+    };
+
+    // Filter users based on search term
+    const filteredUsers = users.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.role.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('he-IL');
+    };
+
+    const getRoleColor = (role: string) => {
+        return role === 'admin' ? 'error' : 'default';
+    };
+
+    const getRoleLabel = (role: string) => {
+        return role === 'admin' ? 'מנהל' : 'משתמש';
+    };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={{ p: 3, direction: 'rtl' }}>
+            {/* Header */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h4" sx={{ fontWeight: 600, color: 'primary.main' }}>
+                    ניהול משתמשים
+                </Typography>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddUser}
+                    sx={{ bgcolor: 'primary.main' }}
+                >
+                    הוסף משתמש חדש
+                </Button>
+            </Box>
+
+            {/* Search */}
+            <Box sx={{ mb: 3 }}>
+                <TextField
+                    placeholder="חיפוש לפי שם, אימייל או תפקיד..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{ width: '100%', maxWidth: 400 }}
+                    InputProps={{
+                        startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                    }}
+                />
+            </Box>
+
+            {/* Users Table */}
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>משתמש</TableCell>
+                            <TableCell>אימייל</TableCell>
+                            <TableCell>תפקיד</TableCell>
+                            <TableCell>סטטוס</TableCell>
+                            <TableCell>התחברות אחרונה</TableCell>
+                            <TableCell>תאריך יצירה</TableCell>
+                            <TableCell>פעולות</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {filteredUsers.map((user) => (
+                            <TableRow key={user._id}>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        {user.picture ? (
+                                            <Avatar
+                                                src={user.picture}
+                                                alt={user.name}
+                                                sx={{ width: 40, height: 40 }}
+                                            />
+                                        ) : (
+                                            <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }}>
+                                                <PersonIcon />
+                                            </Avatar>
+                                        )}
+                                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                            {user.name}
+                                        </Typography>
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                        {user.email}
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <Chip
+                                        label={getRoleLabel(user.role)}
+                                        color={getRoleColor(user.role)}
+                                        size="small"
+                                        icon={user.role === 'admin' ? <AdminIcon /> : <UserIcon />}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <Chip
+                                        label={user.isActive ? 'פעיל' : 'לא פעיל'}
+                                        color={user.isActive ? 'success' : 'default'}
+                                        size="small"
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    {user.lastLogin ? formatDate(user.lastLogin) : 'לא התחבר'}
+                                </TableCell>
+                                <TableCell>
+                                    {formatDate(user.createdAt)}
+                                </TableCell>
+                                <TableCell>
+                                    <IconButton
+                                        onClick={(e) => handleMenuOpen(e, user)}
+                                        size="small"
+                                    >
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {/* Context Menu */}
+            <Menu
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                onClose={handleMenuClose}
+            >
+                <MenuItem onClick={() => {
+                    if (selectedUser) handleEditUser(selectedUser);
+                    handleMenuClose();
+                }}>
+                    <ListItemIcon>
+                        <EditIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>עריכה</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => {
+                    if (selectedUser) handleDeleteUser(selectedUser);
+                    handleMenuClose();
+                }} sx={{ color: 'error.main' }}>
+                    <ListItemIcon>
+                        <DeleteIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <ListItemText>מחיקה</ListItemText>
+                </MenuItem>
+            </Menu>
+
+            {/* Add/Edit User Dialog */}
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {editingUser ? 'עריכת משתמש' : 'הוספת משתמש חדש'}
+                </DialogTitle>
+                <DialogContent>
+                    <UserForm
+                        user={editingUser}
+                        onSave={handleSaveUser}
+                        onCancel={() => setDialogOpen(false)}
+                    />
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>מחיקת משתמש</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        האם אתה בטוח שברצונך למחוק את המשתמש "{userToDelete?.name}"?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>ביטול</Button>
+                    <Button onClick={confirmDeleteUser} color="error" variant="contained">
+                        מחק
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Snackbar */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
+    );
+};
+
+// User Form Component
+interface UserFormProps {
+    user: User | null;
+    onSave: (userData: Partial<User>) => void;
+    onCancel: () => void;
+}
+
+const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        name: user?.name || '',
+        email: user?.email || '',
+        role: user?.role || 'user',
+        isActive: user?.isActive ?? true
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSave(formData);
+    };
+
+    return (
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+                fullWidth
+                label="שם מלא"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                margin="normal"
+                required
+            />
+            <TextField
+                fullWidth
+                label="אימייל"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                margin="normal"
+                required
+            />
+            <TextField
+                fullWidth
+                select
+                label="תפקיד"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'user' })}
+                margin="normal"
+                SelectProps={{
+                    native: true,
+                }}
+            >
+                <option value="user">משתמש</option>
+                <option value="admin">מנהל</option>
+            </TextField>
+            <TextField
+                fullWidth
+                select
+                label="סטטוס"
+                value={formData.isActive ? 'active' : 'inactive'}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'active' })}
+                margin="normal"
+                SelectProps={{
+                    native: true,
+                }}
+            >
+                <option value="active">פעיל</option>
+                <option value="inactive">לא פעיל</option>
+            </TextField>
+            <Box sx={{ display: 'flex', gap: 2, mt: 3, justifyContent: 'flex-end' }}>
+                <Button onClick={onCancel}>ביטול</Button>
+                <Button type="submit" variant="contained">שמור</Button>
+            </Box>
+        </Box>
+    );
+};
+
+export default UserManagement;

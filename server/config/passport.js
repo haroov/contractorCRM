@@ -6,7 +6,12 @@ const User = require('../models/User');
 const ALLOWED_EMAILS = [
   'liav@chocoinsurance.com',
   'roey@chocoinsurance.com',
-  'uriel@chocoinsurance.com'
+  'uriel@chocoinsurance.com',
+  'shlomo@chocoinsurance.com',
+  'finkelmanyael@gmail.com',
+  'shifra.sankewitz@gmail.com',
+  'mor@cns-law.co.il',
+  'idan@yozmot.net'
 ];
 
 passport.use(new GoogleStrategy({
