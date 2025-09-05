@@ -8,7 +8,6 @@ router.get('/google', (req, res, next) => {
   console.log('🔐 Query params:', req.query);
   
   const prompt = req.query.prompt;
-  const approvalPrompt = req.query.approval_prompt;
   const authOptions = {
     scope: ['profile', 'email']
   };
@@ -19,14 +18,23 @@ router.get('/google', (req, res, next) => {
     console.log('🔐 Added prompt:', prompt);
   }
   
-  // approval_prompt is deprecated, use prompt=consent instead
-  // if (approvalPrompt === 'force') {
-  //   authOptions.approval_prompt = 'force';
-  //   console.log('🔐 Added approval_prompt=force');
-  // }
-  
   console.log('🔐 Auth options:', authOptions);
-  passport.authenticate('google', authOptions)(req, res, next);
+  
+  // Create custom authenticate function that passes prompt to Google
+  const authenticate = passport.authenticate('google', authOptions);
+  
+  // Override the redirect to include prompt parameter
+  const originalRedirect = res.redirect;
+  res.redirect = function(url) {
+    if (prompt && url.includes('accounts.google.com')) {
+      const separator = url.includes('?') ? '&' : '?';
+      url += separator + 'prompt=' + encodeURIComponent(prompt);
+      console.log('🔐 Modified redirect URL with prompt:', url);
+    }
+    originalRedirect.call(this, url);
+  };
+  
+  authenticate(req, res, next);
 });
 
 // Google OAuth callback
