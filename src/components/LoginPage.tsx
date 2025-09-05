@@ -181,7 +181,7 @@ const LoginPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ color: 'primary.main', ml: 2 }}>
+          <Typography variant="h4" sx={{ color: 'primary.main', mr: 2 }}>
             מערכת ניהול קבלנים
           </Typography>
           <Box
@@ -261,7 +261,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#357ae8'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '12px' // Increased spacing between icon and text
+                marginRight: '16px' // Increased spacing between icon and text
               }
             }}
           >
@@ -282,7 +282,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#0088cc'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '12px' // Increased spacing between icon and text
+                marginRight: '16px' // Increased spacing between icon and text
               }
             }}
           >
