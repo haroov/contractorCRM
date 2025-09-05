@@ -110,7 +110,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         safetyStars: 0,
         iso45001: false,
         activities: [],
-        management_contacts: [],
+        contacts: [],
         projects: [],
         notes: ''
     });
@@ -426,7 +426,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             role: '',
             email: '',
             mobile: '',
-            permissions: 'full'
+            permissions: 'user'
         };
         setEditingContact(newContact);
         setEditingContactIndex(null);
@@ -443,7 +443,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         if (window.confirm('האם אתה בטוח שברצונך למחוק איש קשר זה?')) {
             setContractor(prev => ({
                 ...prev,
-                management_contacts: (prev.management_contacts || []).filter((_, i) => i !== index)
+                contacts: (prev.contacts || []).filter((_, i) => i !== index)
             }));
             setSnackbar({ open: true, message: 'איש קשר נמחק בהצלחה', severity: 'success' });
         }
@@ -456,7 +456,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             // Update existing contact
             setContractor(prev => ({
                 ...prev,
-                management_contacts: (prev.management_contacts || []).map((contact, index) =>
+                contacts: (prev.contacts || []).map((contact, index) =>
                     index === editingContactIndex ? editingContact : contact
                 )
             }));
@@ -464,7 +464,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             // Add new contact
             setContractor(prev => ({
                 ...prev,
-                management_contacts: [...(prev.management_contacts || []), editingContact]
+                contacts: [...(prev.contacts || []), editingContact]
             }));
         }
 
@@ -1488,7 +1488,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             </TableCell>
                                             <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
                                                 <Typography variant="body2" sx={{ color: '#888' }}>
-                                                    {contact.permissions === 'manager' ? 'מנהל' : 'משתמש'}
+                                                    {contact.permissions === 'admin' ? 'מנהל' : 'משתמש'}
                                                 </Typography>
                                             </TableCell>
                                             <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
@@ -1920,7 +1920,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         onChange={(e) => setEditingContact(prev => prev ? { ...prev, permissions: e.target.value as any } : null)}
                                         label="הרשאות"
                                     >
-                                        <MenuItem value="manager">מנהל</MenuItem>
+                                        <MenuItem value="admin">מנהל</MenuItem>
                                         <MenuItem value="user">משתמש</MenuItem>
                                     </Select>
                                 </FormControl>
