@@ -364,10 +364,10 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 }}>
                     <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
                         <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            {contractors.length}
+                            {filteredContractors.length}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
-                            סך הכל קבלנים
+                            {searchTerm ? 'תוצאות חיפוש' : 'סך הכל קבלנים'}
                         </Typography>
                     </CardContent>
                 </Card>
@@ -379,7 +379,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 }}>
                     <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
                         <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            {contractors.filter(c => c.safetyRating && c.safetyRating >= 4).length}
+                            {filteredContractors.filter(c => c.safetyRating && c.safetyRating >= 4).length}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             קבלנים עם דירוג גבוה
@@ -409,7 +409,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 }}>
                     <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
                         <Typography variant="h6" sx={{ color: '#666', fontWeight: 500, mb: 0.5 }}>
-                            {contractors.filter(c => c.safetyRating && c.safetyRating < 3).length}
+                            {filteredContractors.filter(c => c.safetyRating && c.safetyRating < 3).length}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem' }}>
                             דורש שיפור בטיחות
