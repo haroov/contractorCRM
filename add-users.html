@@ -16,8 +16,13 @@
             resultDiv.innerHTML = 'Adding users...';
 
             try {
-                // Try the simple endpoint first
+                // Try the new endpoint first
                 let response = await fetch('https://contractorcrm-api.onrender.com/add-all-missing-users');
+
+                if (!response.ok) {
+                    // If that fails, try the specific users endpoint
+                    response = await fetch('https://contractorcrm-api.onrender.com/add-specific-users');
+                }
 
                 if (!response.ok) {
                     // If that fails, try the original endpoint
