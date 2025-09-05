@@ -69,7 +69,20 @@ const UserManagement: React.FC = () => {
 
     // Load users from API
     useEffect(() => {
-        loadUsers();
+        // Check if we have sessionId in URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
+        
+        if (sessionId) {
+            // Save sessionId to localStorage if it came from URL
+            if (urlParams.get('sessionId')) {
+                localStorage.setItem('sessionId', sessionId);
+            }
+            loadUsers();
+        } else {
+            // No sessionId, redirect to login
+            window.location.href = '/login';
+        }
     }, []);
 
     const loadUsers = async () => {

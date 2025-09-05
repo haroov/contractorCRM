@@ -44,6 +44,8 @@ export default function App() {
     
     if (sessionId) {
       console.log('🔑 Found session ID in URL:', sessionId);
+      // Save sessionId to localStorage for future use
+      localStorage.setItem('sessionId', sessionId);
       // Set user as authenticated if we have a session ID
       setUser({
         id: 'temp-id',

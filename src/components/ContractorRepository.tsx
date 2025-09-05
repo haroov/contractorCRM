@@ -836,7 +836,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     sx: {
                         position: 'absolute',
                         top: 60,
-                        right: 20,
+                        left: 20,
                         minWidth: 200,
                         boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
                     }
@@ -884,7 +884,11 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         <Button
                             startIcon={<SettingsIcon />}
                             onClick={() => {
-                                window.open('/users', '_blank');
+                                // Get sessionId from URL or localStorage
+                                const urlParams = new URLSearchParams(window.location.search);
+                                const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
+                                const userManagementUrl = sessionId ? `/users?sessionId=${sessionId}` : '/users';
+                                window.open(userManagementUrl, '_blank');
                                 handleUserMenuClose();
                             }}
                             sx={{ 
