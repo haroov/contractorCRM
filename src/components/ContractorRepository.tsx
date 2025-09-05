@@ -439,12 +439,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                 </Box>
             </Box>
 
-            {/* Subtitle */}
-            <Box sx={{ mb: 3, textAlign: 'right' }}>
-                <Typography variant="body1" color="text.secondary">
-                    ניהול וצפייה בכל הקבלנים במערכת
-                </Typography>
-            </Box>
 
             {/* Search and Actions */}
             <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
