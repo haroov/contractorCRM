@@ -2,18 +2,16 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
-// Allowed emails for the system
-const ALLOWED_EMAILS = [
-  'liav@chocoinsurance.com',
-  'roey@chocoinsurance.com',
-  'uriel@chocoinsurance.com',
-  'shlomo@chocoinsurance.com',
-  'finkelmanyael@gmail.com',
-  'shifra.sankewitz@gmail.com',
-  'mor@cns-law.co.il',
-  'idan@yozmot.net',
-  'liav@facio.io'
-];
+// Function to check if email is allowed (from database)
+const isEmailAllowed = async (email) => {
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    return !!user; // Return true if user exists in database
+  } catch (error) {
+    console.error('Error checking email permission:', error);
+    return false;
+  }
+};
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
@@ -23,16 +21,17 @@ passport.use(new GoogleStrategy({
   try {
     console.log('🔐 Google OAuth Profile:', profile.emails[0].value);
     
-    // Check if email is allowed
+    // Check if email is allowed (from database)
     const email = profile.emails[0].value.toLowerCase();
-    if (!ALLOWED_EMAILS.includes(email)) {
+    const emailAllowed = await isEmailAllowed(email);
+    if (!emailAllowed) {
       console.log('❌ Email not allowed:', email);
       return done(null, false, { message: 'Email not authorized for this system' });
     }
 
     // Check if user already exists by email first (for users with temporary googleId)
     let user = await User.findOne({ email: email });
-    
+
     if (user) {
       // Update existing user with real Google data
       user.googleId = profile.id;
@@ -54,7 +53,7 @@ passport.use(new GoogleStrategy({
         isActive: true,
         lastLogin: new Date()
       });
-      
+
       await user.save();
       console.log('✅ New user created:', user.email);
       return done(null, user);

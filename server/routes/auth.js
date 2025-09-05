@@ -133,4 +133,52 @@ router.get('/me', (req, res) => {
   }
 });
 
+// Check if email is allowed to login
+router.get('/check-email/:email', async (req, res) => {
+  try {
+    const email = req.params.email.toLowerCase();
+    const User = require('../models/User');
+    
+    const user = await User.findOne({ email: email });
+    const isAllowed = !!user;
+    
+    res.json({ 
+      email: email, 
+      allowed: isAllowed,
+      user: user ? {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        isActive: user.isActive,
+        lastLogin: user.lastLogin
+      } : null
+    });
+  } catch (error) {
+    console.error('Error checking email:', error);
+    res.status(500).json({ error: 'Failed to check email' });
+  }
+});
+
+// Get all allowed emails (for admin purposes)
+router.get('/allowed-emails', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const User = require('../models/User');
+    
+    const users = await User.find({}, { email: 1, name: 1, role: 1, isActive: 1, lastLogin: 1 });
+    
+    res.json({ 
+      allowedEmails: users.map(user => ({
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        isActive: user.isActive,
+        lastLogin: user.lastLogin
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching allowed emails:', error);
+    res.status(500).json({ error: 'Failed to fetch allowed emails' });
+  }
+});
+
 module.exports = router;
