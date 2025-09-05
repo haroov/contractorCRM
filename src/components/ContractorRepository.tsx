@@ -81,13 +81,18 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     useEffect(() => {
         const loadUserData = async () => {
             try {
-                const response = await fetch('/api/auth/me');
+                const response = await fetch('/auth/me', {
+                    credentials: 'include'
+                });
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log('User data loaded:', userData);
                     setUser({
                         name: userData.name || 'משתמש',
                         picture: userData.picture || ''
                     });
+                } else {
+                    console.log('Failed to load user data, status:', response.status);
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -361,7 +366,10 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     const handleLogout = async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            await fetch('/auth/logout', { 
+                method: 'POST',
+                credentials: 'include'
+            });
             window.location.href = '/login';
         } catch (error) {
             console.error('Error logging out:', error);
