@@ -29,8 +29,11 @@ router.get('/:id', requireAuth, async (req, res) => {
 });
 
 // Create new user (admin only)
-router.post('/', requireAuth, requireAdmin, async (req, res) => {
+// New endpoint for creating users with temporary googleId
+router.post('/create-temp', requireAuth, requireAdmin, async (req, res) => {
   try {
+    console.log('Creating temp user with request body:', req.body);
+    
     const { name, email, phone, role, isActive } = req.body;
 
     // Check if user already exists
@@ -39,22 +42,71 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'User with this email already exists' });
     }
 
-    // Create new user
-    const user = new User({
-      name,
-      email: email.toLowerCase(),
-      phone: phone || undefined,
+    // Create new user with temporary googleId
+    const userData = {
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
       role: role || 'user',
       isActive: isActive !== undefined ? isActive : true,
-      // Note: For manually created users, we don't have googleId
-      // They would need to login via Google to get a googleId
-    });
+      googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
 
+    // Only add phone if it's provided and not empty
+    if (phone && phone.trim() !== '') {
+      userData.phone = phone.trim();
+    }
+
+    console.log('Final temp user data:', userData);
+
+    const user = new User(userData);
     await user.save();
+    
+    console.log('Temp user created successfully:', user._id);
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating temp user:', error);
+    res.status(500).json({ error: 'Failed to create temp user', details: error.message });
+  }
+});
+
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    console.log('Creating user with request body:', req.body);
+    
+    const { name, email, phone, role, isActive } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+
+    // Create new user with minimal data
+    const userData = {
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      role: role || 'user',
+      isActive: isActive !== undefined ? isActive : true,
+      googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+
+    // Only add phone if it's provided and not empty
+    if (phone && phone.trim() !== '') {
+      userData.phone = phone.trim();
+    }
+
+    console.log('Final user data:', userData);
+
+    const user = new User(userData);
+    await user.save();
+    
+    console.log('User created successfully:', user._id);
     res.status(201).json(user);
   } catch (error) {
     console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ error: 'Failed to create user', details: error.message });
   }
 });
 
@@ -65,7 +117,7 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
 
     // Check if email is being changed and if it already exists
     if (email) {
-      const existingUser = await User.findOne({ 
+      const existingUser = await User.findOne({
         email: email.toLowerCase(),
         _id: { $ne: req.params.id }
       });
@@ -134,7 +186,7 @@ router.patch('/:id/toggle-active', requireAuth, requireAdmin, async (req, res) =
     user.isActive = !user.isActive;
     await user.save();
 
-    res.json({ 
+    res.json({
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
       isActive: user.isActive
     });

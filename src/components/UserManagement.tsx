@@ -62,7 +62,7 @@ const UserManagement: React.FC = () => {
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const [snackbar, setSnackbar] = useState<{open: boolean, message: string, severity: 'success' | 'error'}>({
+    const [snackbar, setSnackbar] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({
         open: false,
         message: '',
         severity: 'success'
@@ -73,7 +73,7 @@ const UserManagement: React.FC = () => {
         // Check if we have sessionId in URL or localStorage
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
-        
+
         if (sessionId) {
             // Save sessionId to localStorage if it came from URL
             if (urlParams.get('sessionId')) {
@@ -537,7 +537,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
         isActive: user?.isActive ?? true
     });
 
-    const [errors, setErrors] = useState<{[key: string]: string}>({});
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     // Forbidden words list
     const forbiddenWords = [
@@ -547,7 +547,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
 
     const validateName = (name: string): string => {
         if (!name.trim()) return 'שם מלא הוא שדה חובה';
-        
+
         // Check for forbidden words
         const lowerName = name.toLowerCase();
         for (const word of forbiddenWords) {
@@ -555,41 +555,41 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
                 return 'השם מכיל מילים אסורות לשימוש';
             }
         }
-        
+
         // Check for valid characters (Hebrew, English, spaces, and specific symbols)
         const validNameRegex = /^[\u0590-\u05FF\u0020\u0027\u0022a-zA-Z\s'-]+$/;
         if (!validNameRegex.test(name)) {
             return 'השם יכול להכיל רק אותיות בעברית, באנגלית, רווחים והסימנים ״ ׳';
         }
-        
+
         return '';
     };
 
     const validateEmail = (email: string): string => {
         if (!email.trim()) return 'אימייל הוא שדה חובה';
-        
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return 'אנא הזן כתובת מייל תקינה';
         }
-        
+
         return '';
     };
 
     const validatePhone = (phone: string): string => {
         if (!phone.trim()) return ''; // Phone is optional
-        
+
         const phoneRegex = /^05[0-9]-[0-9]{7}$/;
         if (!phoneRegex.test(phone)) {
             return 'מספר הטלפון חייב להיות בפורמט 05x-xxxxxxx';
         }
-        
+
         return '';
     };
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        
+
         // Clear error when user starts typing
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
@@ -598,20 +598,20 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validate all fields
         const nameError = validateName(formData.name);
         const emailError = validateEmail(formData.email);
         const phoneError = validatePhone(formData.phone);
-        
+
         const newErrors = {
             name: nameError,
             email: emailError,
             phone: phoneError
         };
-        
+
         setErrors(newErrors);
-        
+
         // If no errors, submit the form
         if (!nameError && !emailError && !phoneError) {
             onSave(formData);
@@ -650,7 +650,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 margin="normal"
                 error={!!errors.phone}
-                helperText={errors.phone || 'פורמט: 05x-xxxxxxx (אופציונלי)'}
+                helperText={errors.phone}
                 placeholder="050-1234567"
                 inputProps={{
                     maxLength: 11

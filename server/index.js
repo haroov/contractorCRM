@@ -177,6 +177,11 @@ console.log('✅ User management routes configured');
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 
+// Test endpoint for user creation debugging
+app.get('/test-users', (req, res) => {
+  res.json({ message: 'Users endpoint is working', timestamp: new Date().toISOString() });
+});
+
 // Handle OPTIONS request for validate-status endpoint
 app.options('/api/contractors/validate-status/:contractorId', cors({
   origin: [
@@ -296,7 +301,7 @@ app.get('/auth/status', (req, res) => {
   console.log('🔍 Request headers:', req.headers);
   console.log('🔍 Request cookies:', req.cookies);
   console.log('🔍 Response headers before:', res.getHeaders());
-  
+
   // Force session save to ensure cookie is sent
   req.session.save((err) => {
     if (err) {
@@ -305,7 +310,7 @@ app.get('/auth/status', (req, res) => {
       console.log('✅ Session saved for auth status check');
     }
   });
-  
+
   if (req.isAuthenticated()) {
     console.log('✅ User is authenticated:', req.user.email);
     res.json({
@@ -322,7 +327,7 @@ app.get('/auth/status', (req, res) => {
     console.log('❌ User is not authenticated');
     res.json({ authenticated: false });
   }
-  
+
   console.log('🔍 Response headers after:', res.getHeaders());
 });
 
@@ -333,14 +338,14 @@ app.get('/dashboard', (req, res) => {
 
 // Google OAuth routes (temporary until auth routes are properly loaded)
 app.get('/auth/google', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Google OAuth not configured yet. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in environment variables.',
     status: 'not_configured'
   });
 });
 
 app.get('/auth/google/callback', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Google OAuth callback not configured yet.',
     status: 'not_configured'
   });
@@ -823,7 +828,7 @@ app.post('/api/projects', async (req, res) => {
         { $push: { projectIds: result.insertedId.toString() } }
       );
       console.log('✅ Added project ID to contractor:', req.body.contractorId);
-      
+
       // Update contractor statistics automatically
       await updateContractorStats(db, req.body.contractorId);
     }
@@ -847,12 +852,12 @@ app.put('/api/projects/:id', async (req, res) => {
       { $set: updateData }
     );
     console.log('✅ Updated project:', req.params.id);
-    
+
     // Update contractor statistics automatically
     if (req.body.contractorId) {
       await updateContractorStats(db, req.body.contractorId);
     }
-    
+
     res.json(result);
   } catch (error) {
     console.error('❌ Error updating project:', error);
@@ -881,7 +886,7 @@ app.delete('/api/projects/:id', async (req, res) => {
         { $pull: { projects: { _id: new ObjectId(req.params.id) } } }
       );
       console.log('✅ Removed project from contractor:', project.contractorId);
-      
+
       // Update contractor statistics automatically
       await updateContractorStats(db, project.contractorId);
     }
@@ -897,19 +902,19 @@ app.delete('/api/projects/:id', async (req, res) => {
 async function updateContractorStats(db, contractorId) {
   try {
     // Get all projects for this contractor using mainContractor field
-    const projects = await db.collection('projects').find({ 
+    const projects = await db.collection('projects').find({
       $or: [
         { contractorId: contractorId },
         { mainContractor: contractorId }
       ]
     }).toArray();
-    
+
     // Calculate statistics
     let currentProjects = 0;
     let currentProjectsValue = 0;
     let futureProjects = 0;
     let futureProjectsValue = 0;
-    
+
     projects.forEach(project => {
       if (project.status === 'current') {
         currentProjects++;
@@ -919,12 +924,12 @@ async function updateContractorStats(db, contractorId) {
         futureProjectsValue += project.valueNis || 0;
       }
     });
-    
+
     // Update contractor with new statistics
     const result = await db.collection('contractors').updateOne(
       { contractor_id: contractorId },
-      { 
-        $set: { 
+      {
+        $set: {
           current_projects: currentProjects,
           current_projects_value_nis: currentProjectsValue,
           forcast_projects: futureProjects,
@@ -932,14 +937,14 @@ async function updateContractorStats(db, contractorId) {
         }
       }
     );
-    
+
     console.log('✅ Updated contractor stats:', contractorId, {
       currentProjects,
       currentProjectsValue,
       futureProjects,
       futureProjectsValue
     });
-    
+
     return { currentProjects, currentProjectsValue, futureProjects, futureProjectsValue };
   } catch (error) {
     console.error('❌ Error updating contractor stats:', error);
@@ -952,11 +957,11 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.params.contractorId;
-    
+
     const stats = await updateContractorStats(db, contractorId);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       stats
     });
   } catch (error) {
@@ -970,11 +975,11 @@ app.post('/api/users/create-pending', requireAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const { emails } = req.body;
-    
+
     if (!emails || !Array.isArray(emails)) {
       return res.status(400).json({ error: 'Emails array is required' });
     }
-    
+
     const users = [];
     for (const email of emails) {
       // Check if user already exists
@@ -988,13 +993,13 @@ app.post('/api/users/create-pending', requireAuth, async (req, res) => {
           createdAt: new Date(),
           lastLogin: null
         };
-        
+
         const result = await db.collection('users').insertOne(user);
         users.push({ ...user, _id: result.insertedId });
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Pending users created successfully',
       users: users,
       total: users.length
@@ -1018,7 +1023,7 @@ app.get('/add-pending-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     const users = [];
     for (const email of pendingEmails) {
       try {
@@ -1033,7 +1038,7 @@ app.get('/add-pending-users', async (req, res) => {
             createdAt: new Date(),
             lastLogin: null
           };
-          
+
           const result = await db.collection('users').insertOne(user);
           users.push({ ...user, _id: result.insertedId });
           console.log(`✅ Created pending user: ${email}`);
@@ -1044,8 +1049,8 @@ app.get('/add-pending-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Pending users added successfully',
       users: users,
       total: users.length,
@@ -1062,7 +1067,7 @@ app.get('/check-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const users = await db.collection('users').find({}).toArray();
-    res.json({ 
+    res.json({
       message: 'Users retrieved successfully',
       users: users,
       total: users.length
@@ -1086,7 +1091,7 @@ app.post('/api/users/add-pending', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     const users = [];
     for (const email of pendingEmails) {
       try {
@@ -1100,7 +1105,7 @@ app.post('/api/users/add-pending', async (req, res) => {
             createdAt: new Date(),
             lastLogin: null
           };
-          
+
           const result = await db.collection('users').insertOne(user);
           users.push({ ...user, _id: result.insertedId });
           console.log(`✅ Created pending user: ${email}`);
@@ -1109,8 +1114,8 @@ app.post('/api/users/add-pending', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Pending users added successfully',
       users: users,
       total: users.length
@@ -1132,7 +1137,7 @@ app.get('/add-pending-users-simple', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     const users = [];
     for (const email of pendingEmails) {
       try {
@@ -1146,7 +1151,7 @@ app.get('/add-pending-users-simple', async (req, res) => {
             createdAt: new Date(),
             lastLogin: null
           };
-          
+
           const result = await db.collection('users').insertOne(user);
           users.push({ ...user, _id: result.insertedId });
           console.log(`✅ Created pending user: ${email}`);
@@ -1157,8 +1162,8 @@ app.get('/add-pending-users-simple', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Pending users added successfully',
       users: users,
       total: users.length
@@ -1173,11 +1178,11 @@ app.get('/add-pending-users-simple', async (req, res) => {
 app.get('/add-all-missing-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all existing users
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
-    
+
     const allPendingEmails = [
       'idan@yozmot.net',
       'finkelmanyael@gmail.com',
@@ -1187,11 +1192,11 @@ app.get('/add-all-missing-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
-    const missingEmails = allPendingEmails.filter(email => 
+
+    const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
     );
-    
+
     const users = [];
     for (const email of missingEmails) {
       try {
@@ -1203,7 +1208,7 @@ app.get('/add-all-missing-users', async (req, res) => {
           createdAt: new Date(),
           lastLogin: null
         };
-        
+
         const result = await db.collection('users').insertOne(user);
         users.push({ ...user, _id: result.insertedId });
         console.log(`✅ Created missing user: ${email}`);
@@ -1211,8 +1216,8 @@ app.get('/add-all-missing-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Missing users added successfully',
       existingUsers: existingUsers.length,
       missingUsers: users.length,
@@ -1228,7 +1233,7 @@ app.get('/add-all-missing-users', async (req, res) => {
 app.get('/add-specific-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     const specificEmails = [
       'finkelmanyael@gmail.com',
       'Shifra.sankewitz@gmail.com',
@@ -1237,7 +1242,7 @@ app.get('/add-specific-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     const users = [];
     for (const email of specificEmails) {
       try {
@@ -1251,7 +1256,7 @@ app.get('/add-specific-users', async (req, res) => {
             createdAt: new Date(),
             lastLogin: null
           };
-          
+
           const result = await db.collection('users').insertOne(user);
           users.push({ ...user, _id: result.insertedId });
           console.log(`✅ Created user: ${email}`);
@@ -1262,8 +1267,8 @@ app.get('/add-specific-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Specific users processed successfully',
       createdUsers: users.length,
       users: users
@@ -1278,7 +1283,7 @@ app.get('/add-specific-users', async (req, res) => {
 app.get('/force-add-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     const emails = [
       'finkelmanyael@gmail.com',
       'Shifra.sankewitz@gmail.com',
@@ -1287,7 +1292,7 @@ app.get('/force-add-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     const users = [];
     for (const email of emails) {
       try {
@@ -1300,7 +1305,7 @@ app.get('/force-add-users', async (req, res) => {
           createdAt: new Date(),
           lastLogin: null
         };
-        
+
         const result = await db.collection('users').insertOne(user);
         users.push({ ...user, _id: result.insertedId });
         console.log(`✅ Force created user: ${email}`);
@@ -1308,8 +1313,8 @@ app.get('/force-add-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Users force added successfully',
       createdUsers: users.length,
       users: users
@@ -1324,21 +1329,21 @@ app.get('/force-add-users', async (req, res) => {
 app.get('/add-users-now', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Add users one by one with error handling
     const emails = [
       'finkelmanyael@gmail.com',
-      'Shifra.sankewitz@gmail.com', 
+      'Shifra.sankewitz@gmail.com',
       'mor@cns-law.co.il',
       'uriel@chocoinsurance.com',
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     let added = 0;
     let errors = 0;
     let details = [];
-    
+
     for (const email of emails) {
       try {
         // Check if user already exists
@@ -1347,7 +1352,7 @@ app.get('/add-users-now', async (req, res) => {
           details.push(`User ${email} already exists`);
           continue;
         }
-        
+
         const user = {
           email: email.toLowerCase(),
           name: email.split('@')[0],
@@ -1357,7 +1362,7 @@ app.get('/add-users-now', async (req, res) => {
           lastLogin: null,
           googleId: `pending_${email.replace('@', '_').replace('.', '_')}_${Date.now()}`
         };
-        
+
         await db.collection('users').insertOne(user);
         added++;
         details.push(`✅ Added: ${email}`);
@@ -1368,8 +1373,8 @@ app.get('/add-users-now', async (req, res) => {
         console.log(`⚠️ Skipped ${email}: ${err.message}`);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: `Added ${added} users, ${errors} errors`,
       added: added,
       errors: errors,
@@ -1384,20 +1389,20 @@ app.get('/add-users-now', async (req, res) => {
 app.get('/add-users-unique', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     const emails = [
       'finkelmanyael@gmail.com',
-      'Shifra.sankewitz@gmail.com', 
+      'Shifra.sankewitz@gmail.com',
       'mor@cns-law.co.il',
       'uriel@chocoinsurance.com',
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
+
     let added = 0;
     let errors = 0;
     const details = [];
-    
+
     for (const email of emails) {
       try {
         // Check if user already exists
@@ -1406,10 +1411,10 @@ app.get('/add-users-unique', async (req, res) => {
           details.push(`User ${email} already exists`);
           continue;
         }
-        
+
         // Create unique googleId for each user
         const uniqueGoogleId = `pending_${email.replace('@', '_').replace('.', '_')}_${Date.now()}`;
-        
+
         const user = {
           email: email.toLowerCase(),
           name: email.split('@')[0],
@@ -1419,7 +1424,7 @@ app.get('/add-users-unique', async (req, res) => {
           lastLogin: null,
           googleId: uniqueGoogleId
         };
-        
+
         await db.collection('users').insertOne(user);
         added++;
         details.push(`✅ Added: ${email} with googleId: ${uniqueGoogleId}`);
@@ -1430,7 +1435,7 @@ app.get('/add-users-unique', async (req, res) => {
         console.log(`⚠️ Error with ${email}:`, err.message);
       }
     }
-    
+
     res.json({
       message: `Added ${added} users, ${errors} errors`,
       added,
@@ -1447,11 +1452,11 @@ app.get('/add-users-unique', async (req, res) => {
 app.get('/add-all-missing-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all existing users
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
-    
+
     const allPendingEmails = [
       'idan@yozmot.net',
       'finkelmanyael@gmail.com',
@@ -1461,11 +1466,11 @@ app.get('/add-all-missing-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
-    const missingEmails = allPendingEmails.filter(email => 
+
+    const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
     );
-    
+
     const users = [];
     for (const email of missingEmails) {
       try {
@@ -1477,7 +1482,7 @@ app.get('/add-all-missing-users', async (req, res) => {
           createdAt: new Date(),
           lastLogin: null
         };
-        
+
         const result = await db.collection('users').insertOne(user);
         users.push({ ...user, _id: result.insertedId });
         console.log(`✅ Created missing user: ${email}`);
@@ -1485,8 +1490,8 @@ app.get('/add-all-missing-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Missing users added successfully',
       existingUsers: existingUsers.length,
       missingUsers: users.length,
@@ -1502,11 +1507,11 @@ app.get('/add-all-missing-users', async (req, res) => {
 app.get('/add-all-missing-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all existing users
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
-    
+
     const allPendingEmails = [
       'idan@yozmot.net',
       'finkelmanyael@gmail.com',
@@ -1516,11 +1521,11 @@ app.get('/add-all-missing-users', async (req, res) => {
       'shlomo@chocoinsurance.com',
       'steven.kostyn@gmail.com'
     ];
-    
-    const missingEmails = allPendingEmails.filter(email => 
+
+    const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
     );
-    
+
     const users = [];
     for (const email of missingEmails) {
       try {
@@ -1532,7 +1537,7 @@ app.get('/add-all-missing-users', async (req, res) => {
           createdAt: new Date(),
           lastLogin: null
         };
-        
+
         const result = await db.collection('users').insertOne(user);
         users.push({ ...user, _id: result.insertedId });
         console.log(`✅ Created missing user: ${email}`);
@@ -1540,8 +1545,8 @@ app.get('/add-all-missing-users', async (req, res) => {
         console.error(`❌ Error with user ${email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Missing users added successfully',
       existingUsers: existingUsers.length,
       missingUsers: users.length,
@@ -1557,7 +1562,7 @@ app.get('/add-all-missing-users', async (req, res) => {
 app.get('/add-specific-users', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     const usersToAdd = [
       {
         email: 'finkelmanyael@gmail.com',
@@ -1608,7 +1613,7 @@ app.get('/add-specific-users', async (req, res) => {
         lastLogin: null
       }
     ];
-    
+
     const users = [];
     for (const user of usersToAdd) {
       try {
@@ -1625,8 +1630,8 @@ app.get('/add-specific-users', async (req, res) => {
         console.error(`❌ Error with user ${user.email}:`, userError);
       }
     }
-    
-    res.json({ 
+
+    res.json({
       message: 'Users added successfully',
       addedUsers: users.length,
       users: users
@@ -1641,45 +1646,45 @@ app.get('/add-specific-users', async (req, res) => {
 app.get('/fix', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all contractors
     const contractors = await db.collection('contractors').find({}).toArray();
-    
+
     // Get all projects
     const projects = await db.collection('projects').find({}).toArray();
-    
+
     // Find צ.מ.ח המרמן
     const hamarman = contractors.find(c => c.name && c.name.includes('המרמן'));
-    
+
     // Find the specific project with ObjectId 68b73fa52f9650bd88f32578
     const projectToFix = projects.find(p => p._id.toString() === "68b73fa52f9650bd88f32578");
-    
+
     if (hamarman && projectToFix) {
       // Update the project with mainContractor field and correct contractorId
       await db.collection('projects').updateOne(
         { _id: projectToFix._id },
-        { 
-          $set: { 
+        {
+          $set: {
             contractorId: hamarman.contractor_id,
             mainContractor: hamarman.contractor_id
-          } 
+          }
         }
       );
-      
+
       // Clean up contractor's projectIds array - remove incorrect project IDs
       const correctProjectId = projectToFix._id.toString();
       await db.collection('contractors').updateOne(
         { contractor_id: hamarman.contractor_id },
-        { 
-          $set: { 
+        {
+          $set: {
             projectIds: [correctProjectId] // Only keep the correct project ID
-          } 
+          }
         }
       );
-      
+
       // Update contractor statistics
       await updateContractorStats(db, hamarman.contractor_id);
-      
+
       res.json({
         success: true,
         message: 'Project linkage fixed and mainContractor field added',

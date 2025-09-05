@@ -4,8 +4,8 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
     required: false,
-    unique: true,
-    sparse: true // Allows multiple null values
+    unique: false, // Changed to false to allow multiple null values
+    sparse: true
   },
   email: {
     type: String,
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         // Israeli mobile phone format: 05x-xxxxxxx
         // Allow empty strings and null values
         return !v || v === '' || /^05[0-9]-[0-9]{7}$/.test(v);
@@ -53,7 +53,6 @@ const userSchema = new mongoose.Schema({
 
 // Index for faster queries
 userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
 userSchema.index({ phone: 1 });
 
 module.exports = mongoose.model('User', userSchema);
