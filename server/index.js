@@ -1380,6 +1380,69 @@ app.get('/add-users-now', async (req, res) => {
   }
 });
 
+// New endpoint to add users with unique googleId
+app.get('/add-users-unique', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    const emails = [
+      'finkelmanyael@gmail.com',
+      'Shifra.sankewitz@gmail.com', 
+      'mor@cns-law.co.il',
+      'uriel@chocoinsurance.com',
+      'shlomo@chocoinsurance.com',
+      'steven.kostyn@gmail.com'
+    ];
+    
+    let added = 0;
+    let errors = 0;
+    const details = [];
+    
+    for (const email of emails) {
+      try {
+        // Check if user already exists
+        const existingUser = await db.collection('users').findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+          details.push(`User ${email} already exists`);
+          continue;
+        }
+        
+        // Create unique googleId for each user
+        const uniqueGoogleId = `pending_${email.replace('@', '_').replace('.', '_')}_${Date.now()}`;
+        
+        const user = {
+          email: email.toLowerCase(),
+          name: email.split('@')[0],
+          role: 'user',
+          isActive: false,
+          createdAt: new Date(),
+          lastLogin: null,
+          googleId: uniqueGoogleId
+        };
+        
+        await db.collection('users').insertOne(user);
+        added++;
+        details.push(`✅ Added: ${email} with googleId: ${uniqueGoogleId}`);
+        console.log(`✅ Added: ${email} with googleId: ${uniqueGoogleId}`);
+      } catch (err) {
+        errors++;
+        details.push(`⚠️ Error with ${email}: ${err.message}`);
+        console.log(`⚠️ Error with ${email}:`, err.message);
+      }
+    }
+    
+    res.json({
+      message: `Added ${added} users, ${errors} errors`,
+      added,
+      errors,
+      details
+    });
+  } catch (error) {
+    console.error('Error adding users:', error);
+    res.status(500).json({ error: 'Failed to add users' });
+  }
+});
+
 // Direct endpoint to add all missing users
 app.get('/add-all-missing-users', async (req, res) => {
   try {
