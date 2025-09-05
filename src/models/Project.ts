@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Project extends Document {
     contractorId: string;
+    mainContractor: string; // The main contractor who opened the project
     projectName: string;
     description: string;
     startDate: string;
@@ -16,6 +17,7 @@ export interface Project extends Document {
 
 const ProjectSchema = new Schema<Project>({
     contractorId: { type: String, required: true, ref: 'Contractor' },
+    mainContractor: { type: String, required: true, ref: 'Contractor' }, // The main contractor who opened the project
     projectName: { type: String, required: true },
     description: { type: String, required: false },
     startDate: { type: String, required: true },
@@ -31,6 +33,7 @@ const ProjectSchema = new Schema<Project>({
 
 // Indexes for better performance
 ProjectSchema.index({ contractorId: 1 });
+ProjectSchema.index({ mainContractor: 1 });
 ProjectSchema.index({ startDate: 1 });
 ProjectSchema.index({ status: 1 });
 ProjectSchema.index({ city: 1 });

@@ -801,6 +801,8 @@ app.post('/api/projects', async (req, res) => {
     const db = client.db('contractor-crm');
     const projectData = {
       ...req.body,
+      // Set mainContractor to the same as contractorId if not provided
+      mainContractor: req.body.mainContractor || req.body.contractorId,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -889,8 +891,13 @@ app.delete('/api/projects/:id', async (req, res) => {
 // Helper function to update contractor statistics
 async function updateContractorStats(db, contractorId) {
   try {
-    // Get all projects for this contractor
-    const projects = await db.collection('projects').find({ contractorId: contractorId }).toArray();
+    // Get all projects for this contractor using mainContractor field
+    const projects = await db.collection('projects').find({ 
+      $or: [
+        { contractorId: contractorId },
+        { mainContractor: contractorId }
+      ]
+    }).toArray();
     
     // Calculate statistics
     let currentProjects = 0;
@@ -953,7 +960,7 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
-// Fix project contractor linkage - simple endpoint
+// Fix project contractor linkage and add mainContractor field
 app.get('/fix', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
@@ -967,14 +974,30 @@ app.get('/fix', async (req, res) => {
     // Find צ.מ.ח המרמן
     const hamarman = contractors.find(c => c.name && c.name.includes('המרמן'));
     
-    // Find the project with contractorId "20535"
-    const projectToFix = projects.find(p => p.contractorId === "20535");
+    // Find the specific project with ObjectId 68b73fa52f9650bd88f32578
+    const projectToFix = projects.find(p => p._id.toString() === "68b73fa52f9650bd88f32578");
     
     if (hamarman && projectToFix) {
-      // Update the project's contractorId to match the correct contractor
+      // Update the project with mainContractor field and correct contractorId
       await db.collection('projects').updateOne(
         { _id: projectToFix._id },
-        { $set: { contractorId: hamarman.contractor_id } }
+        { 
+          $set: { 
+            contractorId: hamarman.contractor_id,
+            mainContractor: hamarman.contractor_id
+          } 
+        }
+      );
+      
+      // Clean up contractor's projectIds array - remove incorrect project IDs
+      const correctProjectId = projectToFix._id.toString();
+      await db.collection('contractors').updateOne(
+        { contractor_id: hamarman.contractor_id },
+        { 
+          $set: { 
+            projectIds: [correctProjectId] // Only keep the correct project ID
+          } 
+        }
       );
       
       // Update contractor statistics
@@ -982,15 +1005,16 @@ app.get('/fix', async (req, res) => {
       
       res.json({
         success: true,
-        message: 'Project linkage fixed',
+        message: 'Project linkage fixed and mainContractor field added',
         hamarman: {
           contractor_id: hamarman.contractor_id,
           name: hamarman.name
         },
         project: {
           projectName: projectToFix.projectName,
-          oldContractorId: "20535",
-          newContractorId: hamarman.contractor_id
+          objectId: projectToFix._id.toString(),
+          contractorId: hamarman.contractor_id,
+          mainContractor: hamarman.contractor_id
         }
       });
     } else {
@@ -998,7 +1022,7 @@ app.get('/fix', async (req, res) => {
         success: false,
         message: 'Could not find contractor or project',
         hamarman: hamarman ? { contractor_id: hamarman.contractor_id, name: hamarman.name } : null,
-        project: projectToFix ? { projectName: projectToFix.projectName, contractorId: projectToFix.contractorId } : null
+        project: projectToFix ? { projectName: projectToFix.projectName, objectId: projectToFix._id.toString() } : null
       });
     }
   } catch (error) {

@@ -26,6 +26,7 @@ export interface Project {
     isClosed: boolean;
     status?: 'future' | 'current' | 'completed';
     contractorId?: string;
+    mainContractor?: string; // The main contractor who opened the project
     contractorName?: string;
 }
 
