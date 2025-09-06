@@ -14,7 +14,7 @@ import {
   IconButton
 } from '@mui/material';
 import { Google as GoogleIcon, Microsoft as MicrosoftIcon, Visibility, VisibilityOff } from '@mui/icons-material';
-import { API_CONFIG } from '../config/api';
+// Removed API imports - using simple localStorage-based auth
 import logo from '../assets/logo.svg';
 
 interface User {
@@ -87,42 +87,9 @@ const LoginPage: React.FC = () => {
   // Check if email is valid
   const isEmailValid = email && validateEmail(email) && !emailError;
 
-  // Check if user is already logged in
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  // No need to check auth status - App.tsx handles it
 
-  const checkAuthStatus = async () => {
-    try {
-      const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.authenticated) {
-          setUser(data.user);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking auth status:', error);
-    }
-  };
-
-  const handleEmailLogin = async () => {
-    setLoading(true);
-    setError(null);
-
-    if (!isEmailValid) {
-      setError('אנא הזן כתובת מייל תקינה');
-      setLoading(false);
-      return;
-    }
-
-    // TODO: Send styled email with one-time password
-    setError('שליחת מייל עם סיסמה חד פעמית עדיין לא זמינה. אנא השתמש בגוגל קונקט');
-    setLoading(false);
-  };
+  // Removed handleEmailLogin - using Google login only
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -160,24 +127,7 @@ const LoginPage: React.FC = () => {
     setLoading(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(API_CONFIG.AUTH_LOGOUT_URL(), {
-        method: 'POST',
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        setUser(null);
-        setError(null);
-      } else {
-        setError('Logout failed');
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      setError('Logout failed');
-    }
-  };
+  // Removed handleLogout - using simple localStorage clear
 
   if (user) {
     return (
@@ -211,14 +161,7 @@ const LoginPage: React.FC = () => {
             כניסה למערכת
           </Button>
 
-          <Button
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            onClick={handleLogout}
-          >
-            התנתקות
-          </Button>
+          {/* Removed logout button - using simple localStorage clear */}
         </Paper>
       </Container>
     );
