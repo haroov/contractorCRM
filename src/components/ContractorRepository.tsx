@@ -55,6 +55,12 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
     const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<{ name: string, picture: string } | null>(null);
+    const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+    const [profileData, setProfileData] = useState({
+        name: '',
+        email: '',
+        role: 'user'
+    });
 
     // Load contractors from MongoDB
     useEffect(() => {
@@ -363,6 +369,27 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
 
     const handleUserMenuClose = () => {
         setUserMenuAnchor(null);
+    };
+
+    const handleProfileOpen = () => {
+        // Set current user data for profile dialog
+        setProfileData({
+            name: user?.name || 'Liav Geffen',
+            email: 'liav@facio.io',
+            role: 'user'
+        });
+        setProfileDialogOpen(true);
+    };
+
+    const handleProfileClose = () => {
+        setProfileDialogOpen(false);
+    };
+
+    const handleProfileSave = () => {
+        // TODO: Save profile changes to server
+        console.log('Saving profile:', profileData);
+        alert('פרופיל נשמר בהצלחה!');
+        setProfileDialogOpen(false);
     };
 
     const handleLogout = async () => {
@@ -920,11 +947,18 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         <Button
                             startIcon={<SettingsIcon />}
                             onClick={() => {
-                                // Get sessionId from URL or localStorage
-                                const urlParams = new URLSearchParams(window.location.search);
-                                const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
-                                const userManagementUrl = sessionId ? `/users?sessionId=${sessionId}` : '/users';
-                                window.open(userManagementUrl, '_blank');
+                                // Check user role to determine action
+                                const currentUser = user; // Get current user from context
+                                if (currentUser?.role === 'admin') {
+                                    // Admin can access user management
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
+                                    const userManagementUrl = sessionId ? `/users?sessionId=${sessionId}` : '/users';
+                                    window.open(userManagementUrl, '_blank');
+                                } else {
+                                    // Regular user can only view/edit their own profile
+                                    handleProfileOpen();
+                                }
                                 handleUserMenuClose();
                             }}
                             sx={{
@@ -934,7 +968,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                                 '&:hover': { backgroundColor: '#f5f5f5' }
                             }}
                         >
-                            ניהול משתמשים
+                            {user?.role === 'admin' ? 'ניהול משתמשים' : 'פרופיל'}
                         </Button>
                         <Button
                             startIcon={<LogoutIcon />}
@@ -950,6 +984,67 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                         </Button>
                     </Box>
                 </Box>
+            </Dialog>
+
+            {/* Profile Dialog */}
+            <Dialog open={profileDialogOpen} onClose={handleProfileClose} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <AccountCircleIcon color="primary" />
+                        <Typography variant="h6">עריכת פרופיל</Typography>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                            <Avatar
+                                src={user?.picture}
+                                alt={profileData.name}
+                                sx={{ width: 60, height: 60 }}
+                            />
+                            <Box>
+                                <Typography variant="h6">{profileData.name}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {profileData.email}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <TextField
+                            label="שם מלא"
+                            value={profileData.name}
+                            onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                            fullWidth
+                            variant="outlined"
+                        />
+
+                        <TextField
+                            label="כתובת אימייל"
+                            value={profileData.email}
+                            disabled
+                            fullWidth
+                            variant="outlined"
+                            helperText="כתובת האימייל לא ניתנת לשינוי"
+                        />
+
+                        <TextField
+                            label="תפקיד"
+                            value={profileData.role === 'admin' ? 'מנהל' : 'משתמש'}
+                            disabled
+                            fullWidth
+                            variant="outlined"
+                            helperText="התפקיד נקבע על ידי מנהל המערכת"
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={handleProfileClose} color="secondary">
+                        ביטול
+                    </Button>
+                    <Button onClick={handleProfileSave} variant="contained" color="primary">
+                        שמור שינויים
+                    </Button>
+                </DialogActions>
             </Dialog>
         </Box>
     );
