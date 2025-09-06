@@ -1760,3 +1760,41 @@ app.get('/add-liav-facio-user', async (req, res) => {
     res.status(500).json({ error: 'Failed to create user', details: error.message });
   }
 });
+
+app.get('/add-liav-chocoinsurance-user', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+
+    // Check if user already exists
+    const existingUser = await db.collection('users').findOne({ email: 'liav@chocoinsurance.com' });
+    if (existingUser) {
+      console.log('⚠️ User liav@chocoinsurance.com already exists');
+      return res.json({
+        message: 'User liav@chocoinsurance.com already exists',
+        user: existingUser
+      });
+    }
+
+    // Create the user
+    const user = {
+      email: 'liav@chocoinsurance.com',
+      name: 'Liav Geffen',
+      role: 'admin',
+      isActive: false,
+      createdAt: new Date(),
+      lastLogin: null
+    };
+
+    const result = await db.collection('users').insertOne(user);
+    const newUser = { ...user, _id: result.insertedId };
+
+    console.log('✅ Created user liav@chocoinsurance.com:', newUser);
+    res.json({
+      message: 'User liav@chocoinsurance.com created successfully',
+      user: newUser
+    });
+  } catch (error) {
+    console.error('❌ Error creating liav@chocoinsurance.com user:', error);
+    res.status(500).json({ error: 'Failed to create user', details: error.message });
+  }
+});

@@ -153,9 +153,8 @@ const LoginPage: React.FC = () => {
         console.log('🔧 No email entered - will determine from Google OAuth response');
         console.log('🔧 This is OK for Google Login flow');
         
-        // Clear any previous email to ensure fresh detection
-        localStorage.removeItem('userEmail');
-        console.log('🔧 Cleared previous userEmail to ensure fresh detection');
+        // Don't clear userEmail - let Google OAuth determine the user
+        console.log('🔧 Keeping any existing userEmail for reference');
       }
 
       // Build Google OAuth URL directly to bypass server issues

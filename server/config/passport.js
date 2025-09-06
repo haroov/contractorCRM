@@ -61,6 +61,19 @@ passport.use(new GoogleStrategy({
         await newUser.save();
         console.log('✅ Auto-created liav@facio.io user');
         // Continue with authentication - don't return here
+      } else if (email === 'liav@chocoinsurance.com') {
+        console.log('🔧 Auto-creating liav@chocoinsurance.com user');
+        const newUser = new User({
+          email: email,
+          name: 'Liav Geffen',
+          role: 'admin',
+          isActive: false,
+          createdAt: new Date(),
+          lastLogin: null
+        });
+        await newUser.save();
+        console.log('✅ Auto-created liav@chocoinsurance.com user');
+        // Continue with authentication - don't return here
       } else {
         return done(null, false, { message: 'Email not authorized for this system' });
       }
