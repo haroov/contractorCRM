@@ -132,7 +132,7 @@ const LoginPage: React.FC = () => {
       const params = new URLSearchParams({
         response_type: 'code',
         client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
-        redirect_uri: 'https://contractorcrm-api.onrender.com/auth/google/callback',
+        redirect_uri: 'https://contractor-crm.vercel.app/auth/callback',
         scope: 'profile email',
         access_type: 'offline'
       });

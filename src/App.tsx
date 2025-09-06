@@ -5,6 +5,7 @@ import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import LoginPage from './components/LoginPage';
+import AuthCallback from './pages/AuthCallback';
 import SkeletonLoader from './components/SkeletonLoader';
 import { API_CONFIG, authenticatedFetch } from './config/api';
 
@@ -193,6 +194,10 @@ export default function App() {
                 <UserManagement />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/auth/callback"
+            element={<AuthCallback />}
           />
         </Routes>
       </Router>
