@@ -23,7 +23,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback"
 }, async (accessToken, refreshToken, profile, done) => {
-  console.log('🔐 Google Strategy called');
+  console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString());
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔐 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
   console.log('🔐 Callback URL:', process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback");
