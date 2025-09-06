@@ -115,6 +115,8 @@ export default function App() {
             // Try to determine user email from localStorage or use default
             const savedEmail = localStorage.getItem('userEmail');
             console.log('🔧 Saved email from localStorage:', savedEmail);
+            console.log('🔧 All localStorage keys:', Object.keys(localStorage));
+            console.log('🔧 All localStorage values:', Object.values(localStorage));
             
             let userEmail = 'liav@chocoinsurance.com'; // Default
             let userName = 'Liav Geffen';
@@ -123,9 +125,11 @@ export default function App() {
             if (savedEmail) {
               userEmail = savedEmail;
               userRole = savedEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
+              console.log('🔧 Using saved email:', savedEmail, 'with role:', userRole);
             } else {
               // If no saved email, try to determine from sessionId or URL
-              console.log('🔧 No saved email, using default admin user');
+              console.log('🔧 No saved email found, using default admin user');
+              console.log('🔧 This means the email was not saved or was cleared');
             }
             
             console.log('🔧 Final user email:', userEmail);

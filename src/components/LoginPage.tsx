@@ -135,12 +135,17 @@ const LoginPage: React.FC = () => {
       const forceLogout = urlParams.get('force_logout') === 'true';
 
       // Save the email field value to localStorage for later use
+      console.log('🔧 Current email field value:', email);
+      console.log('🔧 Email field trimmed:', email ? email.trim() : 'empty');
+      
       if (email && email.trim()) {
         localStorage.setItem('userEmail', email.trim());
         console.log('🔧 Saved email to localStorage:', email.trim());
+        console.log('🔧 Verification - localStorage now contains:', localStorage.getItem('userEmail'));
       } else {
         // If no email entered, we'll try to determine it later from the sessionId or use default
         console.log('🔧 No email entered, will determine from sessionId later');
+        console.log('🔧 This means userEmail will not be saved!');
       }
 
       // Build Google OAuth URL directly to bypass server issues
