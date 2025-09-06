@@ -134,7 +134,7 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
-      // SECURITY: Save the email field value to localStorage for later use
+      // Save the email field value to localStorage for later use (if provided)
       console.log('🔧 Current email field value:', email);
       console.log('🔧 Email field trimmed:', email ? email.trim() : 'empty');
       
@@ -149,12 +149,9 @@ const LoginPage: React.FC = () => {
           console.error('❌ SECURITY ERROR: Email was not saved correctly!');
         }
       } else {
-        // SECURITY: If no email entered, deny access
-        console.log('❌ SECURITY: No email entered - this will prevent authentication');
-        console.log('❌ User must enter their email to proceed');
-        setError('אנא הזן את כתובת המייל שלך כדי להתחבר');
-        setLoading(false);
-        return;
+        // For Google Login, we don't require email field - it will be determined from Google
+        console.log('🔧 No email entered - will determine from Google OAuth response');
+        console.log('🔧 This is OK for Google Login flow');
       }
 
       // Build Google OAuth URL directly to bypass server issues
