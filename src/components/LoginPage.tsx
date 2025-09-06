@@ -127,22 +127,25 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
-      // Use server endpoint instead of direct Google OAuth
-      let googleUrl = API_CONFIG.AUTH_GOOGLE_URL();
-      const params = new URLSearchParams();
+      // Build Google OAuth URL directly with correct Client ID
+      const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
+        redirect_uri: 'https://contractorcrm-api.onrender.com/auth/google/callback',
+        scope: 'profile email',
+        access_type: 'offline'
+      });
 
       if (forceAccountSelection || forceLogout) {
         // Use both select_account and consent to force account selection and consent screen
         params.append('prompt', 'select_account consent');
       }
       
-      if (params.toString()) {
-        googleUrl += '?' + params.toString();
-      }
+      const fullUrl = `${googleAuthUrl}?${params.toString()}`;
+      console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
       
-      console.log('🔐 Redirecting to Google OAuth URL:', googleUrl);
-      
-      window.location.href = googleUrl;
+      window.location.href = fullUrl;
     } catch (error) {
       console.error('Error with Google OAuth:', error);
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
