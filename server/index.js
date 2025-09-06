@@ -1135,16 +1135,8 @@ app.get('/add-all-missing-users', async (req, res) => {
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
 
-    const allPendingEmails = [
-      'idan@yozmot.net',
-      'finkelmanyael@gmail.com',
-      'Shifra.sankewitz@gmail.com',
-      'mor@cns-law.co.il',
-      'uriel@chocoinsurance.com',
-      'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com',
-      'liav@facio.io'
-    ];
+    // No hardcoded emails - all users come from database
+    const allPendingEmails = [];
 
     const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
@@ -1410,16 +1402,8 @@ app.get('/add-all-missing-users', async (req, res) => {
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
 
-    const allPendingEmails = [
-      'idan@yozmot.net',
-      'finkelmanyael@gmail.com',
-      'Shifra.sankewitz@gmail.com',
-      'mor@cns-law.co.il',
-      'uriel@chocoinsurance.com',
-      'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com',
-      'liav@facio.io'
-    ];
+    // No hardcoded emails - all users come from database
+    const allPendingEmails = [];
 
     const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
@@ -1466,16 +1450,8 @@ app.get('/add-all-missing-users', async (req, res) => {
     const existingUsers = await db.collection('users').find({}).toArray();
     const existingEmails = existingUsers.map(u => u.email.toLowerCase());
 
-    const allPendingEmails = [
-      'idan@yozmot.net',
-      'finkelmanyael@gmail.com',
-      'Shifra.sankewitz@gmail.com',
-      'mor@cns-law.co.il',
-      'uriel@chocoinsurance.com',
-      'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com',
-      'liav@facio.io'
-    ];
+    // No hardcoded emails - all users come from database
+    const allPendingEmails = [];
 
     const missingEmails = allPendingEmails.filter(email =>
       !existingEmails.includes(email.toLowerCase())
@@ -1567,14 +1543,7 @@ app.get('/add-specific-users', async (req, res) => {
         createdAt: new Date(),
         lastLogin: null
       },
-      {
-        email: 'liav@facio.io',
-        name: 'Liav Geffen',
-        role: 'user',
-        isActive: false,
-        createdAt: new Date(),
-        lastLogin: null
-      }
+      // Removed liav@facio.io - users come from database only
     ];
 
     const users = [];
@@ -1721,45 +1690,7 @@ connectDB().then(() => {
   });
 });
 
-// Add liav@facio.io user specifically
-app.get('/add-liav-facio-user', async (req, res) => {
-  try {
-    const db = client.db('contractor-crm');
-
-    // Check if user already exists
-    const existingUser = await db.collection('users').findOne({ email: 'liav@facio.io' });
-    if (existingUser) {
-      console.log('⚠️ User liav@facio.io already exists');
-      return res.json({
-        message: 'User liav@facio.io already exists',
-        user: existingUser
-      });
-    }
-
-    // Create the user
-    const user = {
-      email: 'liav@facio.io',
-      name: 'Liav Geffen',
-      role: 'user',
-      isActive: false,
-      createdAt: new Date(),
-      lastLogin: null
-    };
-
-    const result = await db.collection('users').insertOne(user);
-    const newUser = { ...user, _id: result.insertedId };
-    
-    console.log('✅ Created user liav@facio.io:', newUser);
-
-    res.json({
-      message: 'User liav@facio.io created successfully',
-      user: newUser
-    });
-  } catch (error) {
-    console.error('❌ Error creating liav@facio.io user:', error);
-    res.status(500).json({ error: 'Failed to create user', details: error.message });
-  }
-});
+// Removed liav@facio.io endpoint - users come from database only
 
 app.get('/add-liav-chocoinsurance-user', async (req, res) => {
   try {
@@ -1805,22 +1736,7 @@ app.get('/create-users', async (req, res) => {
     const db = client.db('contractor-crm');
     const results = [];
 
-    // Create liav@facio.io user
-    const facioUser = await db.collection('users').findOne({ email: 'liav@facio.io' });
-    if (!facioUser) {
-      const user1 = {
-        email: 'liav@facio.io',
-        name: 'Liav Geffen',
-        role: 'user',
-        isActive: false,
-        createdAt: new Date(),
-        lastLogin: null
-      };
-      const result1 = await db.collection('users').insertOne(user1);
-      results.push({ email: 'liav@facio.io', created: true, id: result1.insertedId });
-    } else {
-      results.push({ email: 'liav@facio.io', created: false, exists: true });
-    }
+    // Removed liav@facio.io - users come from database only
 
     // Create liav@chocoinsurance.com user
     const chocoUser = await db.collection('users').findOne({ email: 'liav@chocoinsurance.com' });
