@@ -1848,3 +1848,8 @@ app.get('/create-users', async (req, res) => {
     res.status(500).json({ error: 'Failed to create users', details: error.message });
   }
 });
+
+// Simple test endpoint
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
+});

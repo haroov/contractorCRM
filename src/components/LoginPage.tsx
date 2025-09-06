@@ -134,27 +134,10 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
-      // Save the email field value to localStorage for later use (if provided)
-      console.log('🔧 Current email field value:', email);
-      console.log('🔧 Email field trimmed:', email ? email.trim() : 'empty');
-      
+      // Save the email field value to localStorage for later use
       if (email && email.trim()) {
-        const emailToSave = email.trim();
-        localStorage.setItem('userEmail', emailToSave);
-        console.log('✅ SECURITY: Saved email to localStorage:', emailToSave);
-        console.log('✅ Verification - localStorage now contains:', localStorage.getItem('userEmail'));
-        
-        // Additional security check
-        if (localStorage.getItem('userEmail') !== emailToSave) {
-          console.error('❌ SECURITY ERROR: Email was not saved correctly!');
-        }
-      } else {
-        // For Google Login, we don't require email field - it will be determined from Google
-        console.log('🔧 No email entered - will determine from Google OAuth response');
-        console.log('🔧 This is OK for Google Login flow');
-        
-        // Don't clear userEmail - let Google OAuth determine the user
-        console.log('🔧 Keeping any existing userEmail for reference');
+        localStorage.setItem('userEmail', email.trim());
+        console.log('✅ Saved email to localStorage:', email.trim());
       }
 
       // Build Google OAuth URL directly to bypass server issues
