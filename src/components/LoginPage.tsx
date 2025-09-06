@@ -134,11 +134,9 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
-      // Save the email field value to localStorage for later use
-      if (email && email.trim()) {
-        localStorage.setItem('userEmail', email.trim());
-        console.log('✅ Saved email to localStorage:', email.trim());
-      }
+      // Clear any previous email to ensure fresh authentication
+      localStorage.removeItem('userEmail');
+      console.log('🔧 Cleared previous userEmail for fresh authentication');
 
       // Build Google OAuth URL directly to bypass server issues
       const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -309,11 +307,6 @@ const LoginPage: React.FC = () => {
 
         {/* Social Login Buttons */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              <strong>חשוב:</strong> הזן את כתובת האימייל שלך למעלה לפני לחיצה על "התחבר עם Google"
-            </Typography>
-          </Alert>
           <Button
             variant="contained"
             size="large"
