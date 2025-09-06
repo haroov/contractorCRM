@@ -117,9 +117,9 @@ export default function App() {
             console.log('🔧 All localStorage keys:', Object.keys(localStorage));
             console.log('🔧 All localStorage values:', Object.values(localStorage));
             
-            let userEmail = 'liav@chocoinsurance.com'; // Default fallback
+            let userEmail = 'liav@facio.io'; // Default to facio.io instead of chocoinsurance
             let userName = 'Liav Geffen';
-            let userRole = 'admin';
+            let userRole = 'user'; // Default to user role
             
             if (savedEmail && savedEmail.trim()) {
               userEmail = savedEmail.trim();
@@ -127,7 +127,7 @@ export default function App() {
               console.log('✅ Using saved email:', userEmail, 'with role:', userRole);
             } else {
               // Try to determine user from sessionId pattern or use default
-              console.log('🔧 No saved email, using default admin user');
+              console.log('🔧 No saved email, using default facio.io user');
               console.log('🔧 This is a fallback - ideally we should get email from server');
             }
             

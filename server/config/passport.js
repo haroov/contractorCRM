@@ -60,7 +60,7 @@ passport.use(new GoogleStrategy({
         });
         await newUser.save();
         console.log('✅ Auto-created liav@facio.io user');
-        // Continue with authentication
+        // Continue with authentication - don't return here
       } else {
         return done(null, false, { message: 'Email not authorized for this system' });
       }
@@ -71,6 +71,13 @@ passport.use(new GoogleStrategy({
 
     if (user) {
       // Update existing user with real Google data
+      console.log('🔧 Updating existing user:', user.email);
+      console.log('🔧 Profile data:', {
+        id: profile.id,
+        displayName: profile.displayName,
+        photo: profile.photos[0]?.value
+      });
+      
       user.googleId = profile.id;
       user.name = profile.displayName;
       user.picture = profile.photos[0]?.value;
@@ -78,9 +85,23 @@ passport.use(new GoogleStrategy({
       user.isActive = true; // Activate user when they first log in
       await user.save();
       console.log('✅ Existing user updated and logged in:', user.email);
+      console.log('✅ Updated user data:', {
+        email: user.email,
+        googleId: user.googleId,
+        name: user.name,
+        picture: user.picture,
+        role: user.role
+      });
       return done(null, user);
     } else {
       // Create new user
+      console.log('🔧 Creating new user for:', email);
+      console.log('🔧 Profile data:', {
+        id: profile.id,
+        displayName: profile.displayName,
+        photo: profile.photos[0]?.value
+      });
+      
       user = new User({
         googleId: profile.id,
         email: email,
@@ -93,6 +114,13 @@ passport.use(new GoogleStrategy({
 
       await user.save();
       console.log('✅ New user created:', user.email);
+      console.log('✅ Created user data:', {
+        email: user.email,
+        googleId: user.googleId,
+        name: user.name,
+        picture: user.picture,
+        role: user.role
+      });
       return done(null, user);
     }
   } catch (error) {
