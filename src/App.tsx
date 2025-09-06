@@ -57,8 +57,28 @@ function App() {
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
       
-      // Create user immediately - no server dependency
-      console.log('✅ Creating user for sessionId:', sessionId);
+      // Try to get user info from server first
+      try {
+        const response = await fetch(`https://contractorcrm-api.onrender.com/auth/me`, {
+          credentials: 'include',
+          headers: {
+            'X-Session-ID': sessionId
+          }
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('✅ Got user data from server:', userData);
+          setUser(userData);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log('❌ Could not get user from server:', error);
+      }
+      
+      // Fallback: Create user if server fails
+      console.log('✅ Creating fallback user for sessionId:', sessionId);
       const user = {
         id: sessionId,
         email: 'liav@chocoinsurance.com',
