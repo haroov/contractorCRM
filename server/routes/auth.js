@@ -144,6 +144,7 @@ router.get('/status/:sessionId', (req, res) => {
 
 // Get current user info
 router.get('/me', (req, res) => {
+  console.log('🔍 /auth/me - TIMESTAMP:', new Date().toISOString());
   console.log('🔍 /auth/me - isAuthenticated:', req.isAuthenticated());
   console.log('🔍 /auth/me - Session ID:', req.sessionID);
   console.log('🔍 /auth/me - User:', req.user);

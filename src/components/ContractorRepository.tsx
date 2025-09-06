@@ -954,7 +954,7 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                             onClick={() => {
                                 // Check user role to determine action
                                 const currentUser = user; // Get current user from context
-                                if (currentUser?.role === 'admin' || currentUser?.email === 'liav@chocoinsurance.com') {
+                                if (currentUser?.role === 'admin') {
                                     // Admin can access user management
                                     const urlParams = new URLSearchParams(window.location.search);
                                     const sessionId = urlParams.get('sessionId') || localStorage.getItem('sessionId');
@@ -973,10 +973,10 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                                 '&:hover': { backgroundColor: '#f5f5f5' }
                             }}
                         >
-                            {(user?.role === 'admin' || user?.email === 'liav@chocoinsurance.com') ? 'ניהול משתמשים' : 'פרופיל'}
+                            {user?.role === 'admin' ? 'ניהול משתמשים' : 'פרופיל'}
                         </Button>
                         {/* Debug: Show user role */}
-                        {console.log('🔍 User role in menu:', user?.role, 'Email:', user?.email, 'Is admin check:', user?.role === 'admin' || user?.email === 'liav@chocoinsurance.com')}
+                        {console.log('🔍 User role in menu:', user?.role, 'Email:', user?.email, 'Is admin check:', user?.role === 'admin')}
                         <Button
                             startIcon={<LogoutIcon />}
                             onClick={handleLogout}
