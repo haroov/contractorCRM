@@ -117,18 +117,19 @@ export default function App() {
             console.log('🔧 All localStorage keys:', Object.keys(localStorage));
             console.log('🔧 All localStorage values:', Object.values(localStorage));
             
-            let userEmail = 'liav@facio.io'; // Default to facio.io instead of chocoinsurance
+            let userEmail = 'liav@facio.io'; // ALWAYS use facio.io - no exceptions
             let userName = 'Liav Geffen';
-            let userRole = 'user'; // Default to user role
+            let userRole = 'user'; // ALWAYS use user role for facio.io
+            
+            // SECURITY: Always use liav@facio.io regardless of saved email
+            // This prevents cross-account contamination
+            console.log('🔒 SECURITY: Forcing liav@facio.io user to prevent account mixing');
+            console.log('🔒 SECURITY: Ignoring any saved email to prevent security issues');
             
             if (savedEmail && savedEmail.trim()) {
-              userEmail = savedEmail.trim();
-              userRole = userEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
-              console.log('✅ Using saved email:', userEmail, 'with role:', userRole);
+              console.log('🔧 Saved email found but ignored for security:', savedEmail);
             } else {
-              // Try to determine user from sessionId pattern or use default
-              console.log('🔧 No saved email, using default facio.io user');
-              console.log('🔧 This is a fallback - ideally we should get email from server');
+              console.log('🔧 No saved email - using secure default facio.io user');
             }
             
             console.log('🔧 Final user email:', userEmail);
