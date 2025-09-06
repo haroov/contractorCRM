@@ -127,6 +127,12 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
+      // Save the email field value to localStorage for later use
+      if (email && email.trim()) {
+        localStorage.setItem('userEmail', email.trim());
+        console.log('🔧 Saved email to localStorage:', email.trim());
+      }
+
       // Build Google OAuth URL directly to bypass server issues
       const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
       const params = new URLSearchParams({
