@@ -60,7 +60,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
     const [profileData, setProfileData] = useState({
         name: '',
         email: '',
-        role: 'user'
+        role: 'user',
+        phone: ''
     });
 
     // Load contractors from MongoDB
@@ -377,7 +378,8 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         setProfileData({
             name: user?.name || 'Liav Geffen',
             email: 'liav@facio.io',
-            role: 'user'
+            role: 'user',
+            phone: '' // Default empty phone
         });
         setProfileDialogOpen(true);
     };
@@ -386,7 +388,20 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         setProfileDialogOpen(false);
     };
 
+    const validatePhone = (phone: string) => {
+        if (!phone) return true; // Phone is optional
+        // Israeli phone validation: 05x-xxxxxxx or 05xxxxxxxx
+        const phoneRegex = /^05\d-?\d{7}$/;
+        return phoneRegex.test(phone);
+    };
+
     const handleProfileSave = () => {
+        // Validate phone number
+        if (!validatePhone(profileData.phone)) {
+            alert('מספר טלפון לא תקין. השתמש בפורמט: 05x-xxxxxxx');
+            return;
+        }
+
         // TODO: Save profile changes to server
         console.log('Saving profile:', profileData);
         alert('פרופיל נשמר בהצלחה!');
@@ -1025,7 +1040,16 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             disabled
                             fullWidth
                             variant="outlined"
-                            helperText="כתובת האימייל לא ניתנת לשינוי"
+                        />
+
+                        <TextField
+                            label="מספר טלפון"
+                            value={profileData.phone}
+                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                            fullWidth
+                            variant="outlined"
+                            placeholder="05x-xxxxxxx"
+                            helperText="אופציונלי - פורמט: 05x-xxxxxxx"
                         />
 
                         <TextField
@@ -1034,7 +1058,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             disabled
                             fullWidth
                             variant="outlined"
-                            helperText="התפקיד נקבע על ידי מנהל המערכת"
                         />
                     </Box>
                 </DialogContent>
