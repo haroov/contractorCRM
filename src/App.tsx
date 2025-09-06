@@ -113,11 +113,23 @@ export default function App() {
             console.log('🔧 TEMPORARY FIX: Server not updated, creating mock user for sessionId:', storedSessionId);
             
             // Try to determine user email from localStorage or use default
-            let userEmail = localStorage.getItem('userEmail') || 'liav@chocoinsurance.com';
-            let userName = 'Liav Geffen';
-            let userRole = userEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
+            const savedEmail = localStorage.getItem('userEmail');
+            console.log('🔧 Saved email from localStorage:', savedEmail);
             
-            console.log('🔧 Using email from localStorage:', userEmail);
+            let userEmail = 'liav@chocoinsurance.com'; // Default
+            let userName = 'Liav Geffen';
+            let userRole = 'admin';
+            
+            if (savedEmail) {
+              userEmail = savedEmail;
+              userRole = savedEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
+            } else {
+              // If no saved email, try to determine from sessionId or URL
+              console.log('🔧 No saved email, using default admin user');
+            }
+            
+            console.log('🔧 Final user email:', userEmail);
+            console.log('🔧 Final user role:', userRole);
             
             const mockUser = {
               id: 'temp-id',

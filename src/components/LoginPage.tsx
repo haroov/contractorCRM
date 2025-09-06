@@ -131,6 +131,9 @@ const LoginPage: React.FC = () => {
       if (email && email.trim()) {
         localStorage.setItem('userEmail', email.trim());
         console.log('🔧 Saved email to localStorage:', email.trim());
+      } else {
+        // If no email entered, we'll try to determine it later from the sessionId or use default
+        console.log('🔧 No email entered, will determine from sessionId later');
       }
 
       // Build Google OAuth URL directly to bypass server issues
