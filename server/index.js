@@ -1142,7 +1142,8 @@ app.get('/add-all-missing-users', async (req, res) => {
       'mor@cns-law.co.il',
       'uriel@chocoinsurance.com',
       'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com'
+      'steven.kostyn@gmail.com',
+      'liav@facio.io'
     ];
 
     const missingEmails = allPendingEmails.filter(email =>
@@ -1416,7 +1417,8 @@ app.get('/add-all-missing-users', async (req, res) => {
       'mor@cns-law.co.il',
       'uriel@chocoinsurance.com',
       'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com'
+      'steven.kostyn@gmail.com',
+      'liav@facio.io'
     ];
 
     const missingEmails = allPendingEmails.filter(email =>
@@ -1471,7 +1473,8 @@ app.get('/add-all-missing-users', async (req, res) => {
       'mor@cns-law.co.il',
       'uriel@chocoinsurance.com',
       'shlomo@chocoinsurance.com',
-      'steven.kostyn@gmail.com'
+      'steven.kostyn@gmail.com',
+      'liav@facio.io'
     ];
 
     const missingEmails = allPendingEmails.filter(email =>
@@ -1559,6 +1562,14 @@ app.get('/add-specific-users', async (req, res) => {
       {
         email: 'steven.kostyn@gmail.com',
         name: 'steven.kostyn',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      },
+      {
+        email: 'liav@facio.io',
+        name: 'Liav Geffen',
         role: 'user',
         isActive: false,
         createdAt: new Date(),
@@ -1708,4 +1719,44 @@ connectDB().then(() => {
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
   });
+});
+
+// Add liav@facio.io user specifically
+app.get('/add-liav-facio-user', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+
+    // Check if user already exists
+    const existingUser = await db.collection('users').findOne({ email: 'liav@facio.io' });
+    if (existingUser) {
+      console.log('⚠️ User liav@facio.io already exists');
+      return res.json({
+        message: 'User liav@facio.io already exists',
+        user: existingUser
+      });
+    }
+
+    // Create the user
+    const user = {
+      email: 'liav@facio.io',
+      name: 'Liav Geffen',
+      role: 'user',
+      isActive: false,
+      createdAt: new Date(),
+      lastLogin: null
+    };
+
+    const result = await db.collection('users').insertOne(user);
+    const newUser = { ...user, _id: result.insertedId };
+    
+    console.log('✅ Created user liav@facio.io:', newUser);
+
+    res.json({
+      message: 'User liav@facio.io created successfully',
+      user: newUser
+    });
+  } catch (error) {
+    console.error('❌ Error creating liav@facio.io user:', error);
+    res.status(500).json({ error: 'Failed to create user', details: error.message });
+  }
 });
