@@ -6,7 +6,7 @@ import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import LoginPage from './components/LoginPage';
 import SkeletonLoader from './components/SkeletonLoader';
-import { API_CONFIG } from './config/api';
+import { API_CONFIG, authenticatedFetch } from './config/api';
 
 interface User {
   id: string;
@@ -87,7 +87,7 @@ export default function App() {
       // Use authenticatedFetch if we have a sessionId
       const storedSessionId = localStorage.getItem('sessionId');
       let response;
-      
+
       if (storedSessionId) {
         console.log('🔑 Using stored session ID for auth check');
         response = await authenticatedFetch('/auth/status');
