@@ -45,7 +45,7 @@ export default function App() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Listen for custom logout event
     window.addEventListener('userLogout', handleLogout);
 
@@ -84,9 +84,18 @@ export default function App() {
     }
 
     try {
-      const response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
-        credentials: 'include'
-      });
+      // Use authenticatedFetch if we have a sessionId
+      const storedSessionId = localStorage.getItem('sessionId');
+      let response;
+      
+      if (storedSessionId) {
+        console.log('🔑 Using stored session ID for auth check');
+        response = await authenticatedFetch('/auth/status');
+      } else {
+        response = await fetch(API_CONFIG.AUTH_STATUS_URL(), {
+          credentials: 'include'
+        });
+      }
 
       console.log('📡 Auth status response:', response.status);
 
@@ -99,6 +108,15 @@ export default function App() {
         } else {
           console.log('❌ User not authenticated');
           setUser(null);
+          // Clear invalid sessionId
+          if (storedSessionId) {
+            localStorage.removeItem('sessionId');
+          }
+        }
+      } else {
+        // Clear invalid sessionId on error
+        if (storedSessionId) {
+          localStorage.removeItem('sessionId');
         }
       }
     } catch (error) {
