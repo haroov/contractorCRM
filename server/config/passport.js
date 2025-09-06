@@ -24,7 +24,7 @@ passport.use(new GoogleStrategy({
   callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback",
   scope: ['profile', 'email'],
   accessType: 'offline',
-  prompt: 'select_account' // Force account selection, but don't force consent for returning users
+  prompt: 'select_account consent' // Force account selection and password entry
 }, async (accessToken, refreshToken, profile, done) => {
   console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString());
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
@@ -53,7 +53,7 @@ passport.use(new GoogleStrategy({
       return done(null, false, { message: 'Email not authorized for this system' });
     }
 
-    // Check if user already exists by email first (for users with temporary googleId)
+    // Check if user already exists by email first
     let user = await User.findOne({ email: email });
 
     if (user) {

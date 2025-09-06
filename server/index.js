@@ -466,7 +466,7 @@ app.get('/api/contractors', async (req, res) => {
     const contractorsWithProjects = [];
 
     for (const contractor of contractors) {
-      const { temp, ...contractorWithoutTemp } = contractor;
+      const contractorWithoutTemp = contractor;
       const projectIds = contractor.projectIds || [];
       let projects = [];
 
@@ -527,7 +527,7 @@ app.get('/api/contractors/:id', async (req, res) => {
     }
 
     // Return contractor with projects populated
-    const { temp, ...contractorWithoutTemp } = contractor;
+    const contractorWithoutTemp = contractor;
     const contractorWithProjects = {
       ...contractorWithoutTemp,
       projects: projects
@@ -597,7 +597,7 @@ app.put('/api/contractors/:id', async (req, res) => {
 
     // Return the updated contractor data without projects field
     const updatedContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
-    const { projects, temp, ...contractorWithoutProjects } = updatedContractor;
+    const { projects, ...contractorWithoutProjects } = updatedContractor;
     const contractorWithProjectIds = {
       ...contractorWithoutProjects,
       projectIds: updatedContractor.projectIds || []
@@ -1543,7 +1543,7 @@ app.get('/add-specific-users', async (req, res) => {
         createdAt: new Date(),
         lastLogin: null
       },
-      // Removed liav@facio.io - users come from database only
+      // Users come from database only
     ];
 
     const users = [];
@@ -1690,7 +1690,7 @@ connectDB().then(() => {
   });
 });
 
-// Removed liav@facio.io endpoint - users come from database only
+// Users come from database only
 
 // Removed hardcoded user creation endpoint - users come from database only
 

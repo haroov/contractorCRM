@@ -28,46 +28,7 @@ router.get('/:id', requireAuth, async (req, res) => {
   }
 });
 
-// Create new user (admin only)
-// New endpoint for creating users with temporary googleId
-router.post('/create-temp', requireAuth, requireAdmin, async (req, res) => {
-  try {
-    console.log('Creating temp user with request body:', req.body);
-
-    const { name, email, phone, role, isActive } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User with this email already exists' });
-    }
-
-    // Create new user with temporary googleId
-    const userData = {
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      role: role || 'user',
-      isActive: isActive !== undefined ? isActive : true,
-      googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    };
-
-    // Only add phone if it's provided and not empty
-    if (phone && phone.trim() !== '') {
-      userData.phone = phone.trim();
-    }
-
-    console.log('Final temp user data:', userData);
-
-    const user = new User(userData);
-    await user.save();
-
-    console.log('Temp user created successfully:', user._id);
-    res.status(201).json(user);
-  } catch (error) {
-    console.error('Error creating temp user:', error);
-    res.status(500).json({ error: 'Failed to create temp user', details: error.message });
-  }
-});
+// Removed temp user creation endpoint - users must authenticate via Google OAuth
 
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
@@ -87,7 +48,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       email: email.toLowerCase().trim(),
       role: role || 'user',
       isActive: isActive !== undefined ? isActive : true,
-      googleId: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      googleId: null, // Will be set when user authenticates via Google
       lastLogin: null // Explicitly set to null for pending users
     };
 
