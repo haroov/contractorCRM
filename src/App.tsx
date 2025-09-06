@@ -138,7 +138,7 @@ export default function App() {
               id: 'temp-id',
               email: userEmail,
               name: userName,
-              picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c',
+              picture: 'https://via.placeholder.com/96x96/6366f1/ffffff?text=L',
               role: userRole
             };
             setUser(mockUser);
