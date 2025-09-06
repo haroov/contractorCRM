@@ -1798,3 +1798,53 @@ app.get('/add-liav-chocoinsurance-user', async (req, res) => {
     res.status(500).json({ error: 'Failed to create user', details: error.message });
   }
 });
+
+// Create both users endpoint
+app.get('/create-users', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const results = [];
+
+    // Create liav@facio.io user
+    const facioUser = await db.collection('users').findOne({ email: 'liav@facio.io' });
+    if (!facioUser) {
+      const user1 = {
+        email: 'liav@facio.io',
+        name: 'Liav Geffen',
+        role: 'user',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      };
+      const result1 = await db.collection('users').insertOne(user1);
+      results.push({ email: 'liav@facio.io', created: true, id: result1.insertedId });
+    } else {
+      results.push({ email: 'liav@facio.io', created: false, exists: true });
+    }
+
+    // Create liav@chocoinsurance.com user
+    const chocoUser = await db.collection('users').findOne({ email: 'liav@chocoinsurance.com' });
+    if (!chocoUser) {
+      const user2 = {
+        email: 'liav@chocoinsurance.com',
+        name: 'Liav Geffen',
+        role: 'admin',
+        isActive: false,
+        createdAt: new Date(),
+        lastLogin: null
+      };
+      const result2 = await db.collection('users').insertOne(user2);
+      results.push({ email: 'liav@chocoinsurance.com', created: true, id: result2.insertedId });
+    } else {
+      results.push({ email: 'liav@chocoinsurance.com', created: false, exists: true });
+    }
+
+    res.json({
+      message: 'Users creation completed',
+      results: results
+    });
+  } catch (error) {
+    console.error('❌ Error creating users:', error);
+    res.status(500).json({ error: 'Failed to create users', details: error.message });
+  }
+});
