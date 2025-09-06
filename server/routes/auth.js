@@ -245,4 +245,30 @@ router.get('/allowed-emails', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Debug endpoint to check user data
+router.get('/debug-user/:email', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findOne({ email: req.params.email });
+    if (user) {
+      res.json({
+        found: true,
+        user: {
+          email: user.email,
+          name: user.name,
+          googleId: user.googleId,
+          picture: user.picture,
+          role: user.role,
+          isActive: user.isActive,
+          lastLogin: user.lastLogin
+        }
+      });
+    } else {
+      res.json({ found: false, message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
