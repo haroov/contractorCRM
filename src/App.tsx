@@ -8,7 +8,7 @@ import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
-import { API_CONFIG, authenticatedFetch } from './utils/api';
+// Removed API imports - using simple localStorage-based auth
 
 const theme = createTheme({
   direction: 'rtl',
