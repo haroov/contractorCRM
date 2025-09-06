@@ -370,15 +370,15 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
         try {
             // Clear all localStorage data
             localStorage.clear();
-            
+
             // Clear session storage
             sessionStorage.clear();
-            
+
             // Clear all cookies (more aggressive approach)
-            document.cookie.split(";").forEach(function(c) { 
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            document.cookie.split(";").forEach(function (c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
             });
-            
+
             // Try to logout from server
             try {
                 await authenticatedFetch('/auth/logout', {
@@ -387,10 +387,10 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             } catch (serverError) {
                 console.log('Server logout failed, but continuing with local cleanup');
             }
-            
+
             // Dispatch logout event
             window.dispatchEvent(new CustomEvent('userLogout'));
-            
+
             // More aggressive Google logout - open in new window then close
             try {
                 const googleLogoutUrl = 'https://accounts.google.com/logout';
@@ -403,7 +403,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             } catch (googleLogoutError) {
                 console.log('Google logout failed, but continuing with local cleanup');
             }
-            
+
             // Force complete page reload to clear all state
             window.location.replace('/login?t=' + Date.now() + '&prompt=select_account&force_logout=true');
         } catch (error) {

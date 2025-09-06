@@ -156,7 +156,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     console.log('Deleting user with ID:', req.params.id);
     console.log('Request user:', req.user);
-    
+
     // Prevent deleting yourself (only if req.user is available)
     if (req.user && req.params.id === req.user._id.toString()) {
       return res.status(400).json({ error: 'Cannot delete your own account' });
@@ -180,7 +180,7 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
 router.delete('/delete/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     console.log('Alternative delete - User ID:', req.params.id);
-    
+
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

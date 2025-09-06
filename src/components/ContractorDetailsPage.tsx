@@ -17,6 +17,7 @@ import {
 import type { Contractor } from '../types/contractor';
 import { ContractorService } from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
+import SkeletonLoader from './SkeletonLoader';
 
 export default function ContractorDetailsPage() {
     const [searchParams] = useSearchParams();
@@ -102,7 +103,7 @@ export default function ContractorDetailsPage() {
                         }
                     }
                 };
-                
+
                 loadContractorFromServer();
             }
 
@@ -131,6 +132,10 @@ export default function ContractorDetailsPage() {
                 <Typography>טוען פרטי קבלן...</Typography>
             </Box>
         );
+    }
+
+    if (loading) {
+        return <SkeletonLoader />;
     }
 
     return (

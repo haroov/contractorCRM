@@ -19,6 +19,7 @@ import {
     Close as CloseIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
+import SkeletonLoader from './SkeletonLoader';
 
 export default function ProjectDetailsPage() {
     const [searchParams] = useSearchParams();
@@ -109,6 +110,10 @@ export default function ProjectDetailsPage() {
                 <Typography>פרויקט לא נמצא</Typography>
             </Box>
         );
+    }
+
+    if (loading) {
+        return <SkeletonLoader />;
     }
 
     return (
@@ -202,9 +207,9 @@ export default function ProjectDetailsPage() {
                                                 <Typography variant="body2">Available: 1,701</Typography>
                                             </Box>
                                             <Box sx={{ width: '100%', height: 8, bgcolor: 'grey.300', borderRadius: 4, overflow: 'hidden' }}>
-                                                <Box sx={{ 
-                                                    width: '66%', 
-                                                    height: '100%', 
+                                                <Box sx={{
+                                                    width: '66%',
+                                                    height: '100%',
                                                     bgcolor: 'warning.main',
                                                     borderRadius: 4
                                                 }} />
@@ -223,15 +228,15 @@ export default function ProjectDetailsPage() {
                                             <Typography variant="body2" sx={{ color: 'success.main' }}>22/04/2023 Proj. Start</Typography>
                                         </Box>
                                         <Box sx={{ flexGrow: 1, height: 4, bgcolor: 'grey.300', borderRadius: 2, position: 'relative' }}>
-                                            <Box sx={{ 
-                                                width: '51%', 
-                                                height: '100%', 
+                                            <Box sx={{
+                                                width: '51%',
+                                                height: '100%',
                                                 bgcolor: 'success.main',
                                                 borderRadius: 2
                                             }} />
-                                            <Box sx={{ 
-                                                position: 'absolute', 
-                                                left: '51%', 
+                                            <Box sx={{
+                                                position: 'absolute',
+                                                left: '51%',
                                                 top: '-8px',
                                                 width: 12,
                                                 height: 20,
@@ -256,9 +261,9 @@ export default function ProjectDetailsPage() {
                                             Est. Delivery 10/06/2027
                                         </Typography>
                                     </Box>
-                                    <Button 
-                                        variant="outlined" 
-                                        size="small" 
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
                                         startIcon={<Typography>+</Typography>}
                                         sx={{ mb: 2 }}
                                     >
@@ -379,7 +384,7 @@ export default function ProjectDetailsPage() {
                                         פרטי פרויקט
                                     </Typography>
 
-                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -390,7 +395,7 @@ export default function ProjectDetailsPage() {
                                                 size="small"
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -401,7 +406,7 @@ export default function ProjectDetailsPage() {
                                                 size="small"
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -414,7 +419,7 @@ export default function ProjectDetailsPage() {
                                                 InputLabelProps={{ shrink: true }}
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -426,7 +431,7 @@ export default function ProjectDetailsPage() {
                                                 size="small"
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -438,7 +443,7 @@ export default function ProjectDetailsPage() {
                                                 size="small"
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -454,7 +459,7 @@ export default function ProjectDetailsPage() {
                                                 <MenuItem value="completed">הושלם</MenuItem>
                                             </TextField>
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -467,7 +472,7 @@ export default function ProjectDetailsPage() {
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
                                         </Box>
-                                        
+
                                         <Box>
                                             <TextField
                                                 fullWidth
@@ -480,7 +485,7 @@ export default function ProjectDetailsPage() {
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
                                         </Box>
-                                        
+
                                         <Box sx={{ gridColumn: '1 / -1' }}>
                                             <TextField
                                                 fullWidth

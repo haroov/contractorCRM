@@ -141,10 +141,10 @@ const LoginPage: React.FC = () => {
         // Use both select_account and consent to force account selection and consent screen
         params.append('prompt', 'select_account consent');
       }
-      
+
       const fullUrl = `${googleAuthUrl}?${params.toString()}`;
       console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
-      
+
       window.location.href = fullUrl;
     } catch (error) {
       console.error('Error with Google OAuth:', error);

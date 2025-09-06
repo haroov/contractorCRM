@@ -292,44 +292,7 @@ app.get('/auth/test', (req, res) => {
   res.json({ message: 'Auth routes are working!', timestamp: new Date().toISOString() });
 });
 
-// Auth status route (for frontend to check authentication)
-app.get('/auth/status', (req, res) => {
-  console.log('🔍 Auth status check - isAuthenticated:', req.isAuthenticated());
-  console.log('🔍 Session ID:', req.sessionID);
-  console.log('🔍 Session data:', req.session);
-  console.log('🔍 User:', req.user);
-  console.log('🔍 Request headers:', req.headers);
-  console.log('🔍 Request cookies:', req.cookies);
-  console.log('🔍 Response headers before:', res.getHeaders());
-
-  // Force session save to ensure cookie is sent
-  req.session.save((err) => {
-    if (err) {
-      console.error('❌ Error saving session:', err);
-    } else {
-      console.log('✅ Session saved for auth status check');
-    }
-  });
-
-  if (req.isAuthenticated()) {
-    console.log('✅ User is authenticated:', req.user.email);
-    res.json({
-      authenticated: true,
-      user: {
-        id: req.user._id,
-        email: req.user.email,
-        name: req.user.name,
-        picture: req.user.picture,
-        role: req.user.role
-      }
-    });
-  } else {
-    console.log('❌ User is not authenticated');
-    res.json({ authenticated: false });
-  }
-
-  console.log('🔍 Response headers after:', res.getHeaders());
-});
+// Auth status route is now handled by server/routes/auth.js
 
 // Dashboard route (redirect to frontend)
 app.get('/dashboard', (req, res) => {

@@ -38,6 +38,7 @@ import {
     PersonAdd as UserIcon
 } from '@mui/icons-material';
 import { API_CONFIG, authenticatedFetch } from '../config/api';
+import SkeletonLoader from './SkeletonLoader';
 
 interface User {
     _id: string;
@@ -227,6 +228,10 @@ const UserManagement: React.FC = () => {
                 <CircularProgress />
             </Box>
         );
+    }
+
+    if (loading) {
+        return <SkeletonLoader />;
     }
 
     return (
