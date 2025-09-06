@@ -1853,3 +1853,25 @@ app.get('/create-users', async (req, res) => {
 app.get('/test', (req, res) => {
   res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
 });
+
+// Debug endpoint to check users
+app.get('/debug-users', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const users = await User.find({});
+    res.json({ 
+      message: 'Users in database', 
+      count: users.length,
+      users: users.map(u => ({
+        email: u.email,
+        name: u.name,
+        role: u.role,
+        googleId: u.googleId,
+        isActive: u.isActive,
+        lastLogin: u.lastLogin
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
