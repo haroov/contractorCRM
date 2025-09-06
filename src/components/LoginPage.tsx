@@ -63,29 +63,9 @@ const LoginPage: React.FC = () => {
     }
   }, []);
   const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
+  // Removed email state and validation - using Google login only
 
-  // Email validation function
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Handle email change with validation
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-
-    if (value && !validateEmail(value)) {
-      setEmailError('אנא הזן כתובת מייל תקינה');
-    } else {
-      setEmailError('');
-    }
-  };
-
-  // Check if email is valid
-  const isEmailValid = email && validateEmail(email) && !emailError;
+  // Removed email handling - using Google login only
 
   // No need to check auth status - App.tsx handles it
 
@@ -197,43 +177,7 @@ const LoginPage: React.FC = () => {
         )}
 
         {/* Email Field */}
-        <Box sx={{ mb: 3, textAlign: 'right' }}>
-          <TextField
-            fullWidth
-            label="אימייל"
-            type="email"
-            value={email}
-            onChange={handleEmailChange}
-            error={!!emailError}
-            helperText={emailError}
-            sx={{ mb: 2 }}
-            dir="ltr"
-          />
-
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={handleEmailLogin}
-            disabled={loading || !isEmailValid}
-            sx={{
-              mb: 3,
-              bgcolor: isEmailValid ? 'primary.main' : 'grey.400',
-              '&:hover': {
-                bgcolor: isEmailValid ? 'primary.dark' : 'grey.500'
-              }
-            }}
-          >
-            התחבר
-          </Button>
-        </Box>
-
-        {/* Divider */}
-        <Divider sx={{ my: 3 }}>
-          <Typography variant="body2" color="text.secondary">
-            או
-          </Typography>
-        </Divider>
+        {/* Removed email input and divider - using Google login only */}
 
         {/* Social Login Buttons */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
