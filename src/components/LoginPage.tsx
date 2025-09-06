@@ -326,6 +326,11 @@ const LoginPage: React.FC = () => {
 
         {/* Social Login Buttons */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              <strong>חשוב:</strong> הזן את כתובת האימייל שלך למעלה לפני לחיצה על "התחבר עם Google"
+            </Typography>
+          </Alert>
           <Button
             variant="contained"
             size="large"
