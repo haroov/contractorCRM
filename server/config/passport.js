@@ -5,10 +5,15 @@ const User = require('../models/User');
 // Function to check if email is allowed (from database)
 const isEmailAllowed = async (email) => {
   try {
+    console.log('🔍 Searching for user with email:', email.toLowerCase());
     const user = await User.findOne({ email: email.toLowerCase() });
+    console.log('🔍 User found:', !!user);
+    if (user) {
+      console.log('🔍 User details:', { id: user._id, name: user.name, role: user.role, isActive: user.isActive });
+    }
     return !!user; // Return true if user exists in database
   } catch (error) {
-    console.error('Error checking email permission:', error);
+    console.error('❌ Error checking email permission:', error);
     return false;
   }
 };
@@ -22,12 +27,24 @@ passport.use(new GoogleStrategy({
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔐 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
   console.log('🔐 Callback URL:', process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback");
+  console.log('🔐 Full profile:', JSON.stringify(profile, null, 2));
+  
   try {
+    // Check if profile and emails exist
+    if (!profile || !profile.emails || !profile.emails[0]) {
+      console.error('❌ Invalid profile data:', profile);
+      return done(new Error('Invalid profile data from Google'), null);
+    }
+    
     console.log('🔐 Google OAuth Profile:', profile.emails[0].value);
 
     // Check if email is allowed (from database)
     const email = profile.emails[0].value.toLowerCase();
+    console.log('🔐 Checking if email is allowed:', email);
+    
     const emailAllowed = await isEmailAllowed(email);
+    console.log('🔐 Email allowed result:', emailAllowed);
+    
     if (!emailAllowed) {
       console.log('❌ Email not allowed:', email);
       return done(null, false, { message: 'Email not authorized for this system' });

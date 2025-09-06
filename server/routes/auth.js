@@ -6,9 +6,9 @@ const router = express.Router();
 router.get('/google', (req, res, next) => {
   console.log('🔐 Google OAuth login request received');
   console.log('🔐 Query params:', req.query);
-  
+
   const prompt = req.query.prompt;
-  
+
   // Build Google OAuth URL manually to include prompt parameter
   const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
   const params = new URLSearchParams({
@@ -18,25 +18,38 @@ router.get('/google', (req, res, next) => {
     scope: 'profile email',
     access_type: 'offline'
   });
-  
+
   // Add prompt parameter if provided
   if (prompt) {
     params.append('prompt', prompt);
     console.log('🔐 Added prompt:', prompt);
   }
-  
+
   const fullUrl = `${googleAuthUrl}?${params.toString()}`;
   console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
-  
+
   res.redirect(fullUrl);
 });
 
 // Google OAuth callback
-router.get('/google/callback',
+router.get('/google/callback', (req, res) => {
+  console.log('🔐 Google OAuth callback received');
+  console.log('🔐 Query params:', req.query);
+  
+  // Handle the callback manually
   passport.authenticate('google', {
     failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed'
-  }),
-  (req, res) => {
+  })(req, res, (err) => {
+    if (err) {
+      console.error('❌ Passport authentication error:', err);
+      return res.redirect('https://contractor-crm.vercel.app/login?error=auth_failed');
+    }
+    
+    if (!req.user) {
+      console.error('❌ No user found after authentication');
+      return res.redirect('https://contractor-crm.vercel.app/login?error=no_user');
+    }
+    
     console.log('🎉 Google OAuth callback successful!');
     console.log('👤 User:', req.user);
     console.log('🔐 Session ID:', req.sessionID);
@@ -55,8 +68,8 @@ router.get('/google/callback',
       console.log('🔄 Redirecting to:', redirectUrl);
       res.redirect(redirectUrl);
     });
-  }
-);
+  });
+});
 
 // Logout
 router.post('/logout', (req, res) => {
