@@ -127,10 +127,10 @@ router.get('/status', (req, res) => {
         authenticated: true,
         user: {
           id: 'temp-id',
-          email: 'liav@chocoinsurance.com',
+          email: 'liav@facio.io',
           name: 'Liav Geffen',
           picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c',
-          role: 'admin'
+          role: 'user'
         }
       });
     } else {
@@ -184,10 +184,10 @@ router.get('/me', (req, res) => {
       // In production, you'd want to validate the session ID and find the actual user
       res.json({
         id: 'temp-id',
-        email: 'liav@chocoinsurance.com',
+        email: 'liav@facio.io',
         name: 'Liav Geffen',
         picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c', // Real Google profile picture
-        role: 'admin',
+        role: 'user',
         lastLogin: new Date()
       });
     } else {
