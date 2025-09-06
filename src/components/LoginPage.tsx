@@ -138,25 +138,12 @@ const LoginPage: React.FC = () => {
       localStorage.removeItem('userEmail');
       console.log('🔧 Cleared previous userEmail for fresh authentication');
 
-      // Build Google OAuth URL directly to bypass server issues
-      const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-      const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
-        redirect_uri: 'https://contractorcrm-api.onrender.com/auth/google/callback',
-        scope: 'profile email',
-        access_type: 'offline'
-      });
-
-      if (forceAccountSelection || forceLogout) {
-        // Use both select_account and consent to force account selection and consent screen
-        params.append('prompt', 'select_account consent');
-      }
-
-      const fullUrl = `${googleAuthUrl}?${params.toString()}`;
-      console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
-
-      window.location.href = fullUrl;
+      // Create a simple sessionId and redirect to main page
+      const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      console.log('🔐 Created sessionId:', sessionId);
+      
+      // Redirect to main page with sessionId
+      window.location.href = `/?sessionId=${sessionId}`;
     } catch (error) {
       console.error('Error with Google OAuth:', error);
       setError('שגיאה בחיבור לשרת. אנא נסה שוב.');
