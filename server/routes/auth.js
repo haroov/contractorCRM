@@ -37,39 +37,44 @@ router.get('/google/callback', (req, res) => {
   console.log('🔐 Query params:', req.query);
   console.log('🔐 Timestamp:', new Date().toISOString());
 
-  // Handle the callback manually
-  passport.authenticate('google', {
-    failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed'
-  })(req, res, (err) => {
-    if (err) {
-      console.error('❌ Passport authentication error:', err);
-      return res.redirect('https://contractor-crm.vercel.app/login?error=auth_failed');
-    }
-
-    if (!req.user) {
-      console.error('❌ No user found after authentication');
-      return res.redirect('https://contractor-crm.vercel.app/login?error=no_user');
-    }
-
-    console.log('🎉 Google OAuth callback successful!');
-    console.log('👤 User:', req.user);
-    console.log('🔐 Session ID:', req.sessionID);
-    console.log('🔐 Session data:', req.session);
-
-    // Force session save
-    req.session.save((err) => {
+  try {
+    // Handle the callback manually
+    passport.authenticate('google', {
+      failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed'
+    })(req, res, (err) => {
       if (err) {
-        console.error('❌ Session save error:', err);
-      } else {
-        console.log('✅ Session saved successfully');
+        console.error('❌ Passport authentication error:', err);
+        return res.redirect('https://contractor-crm.vercel.app/login?error=auth_failed');
       }
 
-      // Successful authentication, redirect to main CRM page with session ID
-      const redirectUrl = `https://contractor-crm.vercel.app/?sessionId=${req.sessionID}`;
-      console.log('🔄 Redirecting to:', redirectUrl);
-      res.redirect(redirectUrl);
+      if (!req.user) {
+        console.error('❌ No user found after authentication');
+        return res.redirect('https://contractor-crm.vercel.app/login?error=no_user');
+      }
+
+      console.log('🎉 Google OAuth callback successful!');
+      console.log('👤 User:', req.user);
+      console.log('🔐 Session ID:', req.sessionID);
+      console.log('🔐 Session data:', req.session);
+
+      // Force session save
+      req.session.save((err) => {
+        if (err) {
+          console.error('❌ Session save error:', err);
+        } else {
+          console.log('✅ Session saved successfully');
+        }
+
+        // Successful authentication, redirect to main CRM page with session ID
+        const redirectUrl = `https://contractor-crm.vercel.app/?sessionId=${req.sessionID}`;
+        console.log('🔄 Redirecting to:', redirectUrl);
+        res.redirect(redirectUrl);
+      });
     });
-  });
+  } catch (error) {
+    console.error('❌ Callback error:', error);
+    res.redirect('https://contractor-crm.vercel.app/login?error=callback_error');
+  }
 });
 
 // Logout

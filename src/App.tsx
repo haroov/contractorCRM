@@ -111,12 +111,25 @@ export default function App() {
           // assume the server hasn't updated yet and create a mock user
           if (storedSessionId && storedSessionId.length > 10) {
             console.log('🔧 TEMPORARY FIX: Server not updated, creating mock user for sessionId:', storedSessionId);
+            
+            // Try to determine user email from sessionId or use default
+            let userEmail = 'liav@chocoinsurance.com';
+            let userName = 'Liav Geffen';
+            let userRole = 'admin';
+            
+            // If sessionId contains specific patterns, use different user
+            if (storedSessionId.includes('liav@facio.io') || storedSessionId.includes('facio')) {
+              userEmail = 'liav@facio.io';
+              userName = 'Liav Geffen';
+              userRole = 'user';
+            }
+            
             const mockUser = {
               id: 'temp-id',
-              email: 'liav@chocoinsurance.com',
-              name: 'Liav Geffen',
+              email: userEmail,
+              name: userName,
               picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c',
-              role: 'admin'
+              role: userRole
             };
             setUser(mockUser);
           } else {
