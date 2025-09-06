@@ -96,6 +96,7 @@ router.get('/status', (req, res) => {
   console.log('🔍 User:', req.user);
   console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
   console.log('🔍 sessionId query param:', req.query.sessionId);
+  console.log('🔍 FORCE DEPLOYMENT - Updated at:', new Date().toISOString());
 
   if (req.isAuthenticated()) {
     console.log('✅ User is authenticated via session:', req.user.email);
