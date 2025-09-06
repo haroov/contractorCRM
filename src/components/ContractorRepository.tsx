@@ -975,6 +975,8 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                         >
                             {user?.role === 'admin' ? 'ניהול משתמשים' : 'פרופיל'}
                         </Button>
+                        {/* Debug: Show user role */}
+                        {console.log('🔍 User role in menu:', user?.role, 'Email:', user?.email)}
                         <Button
                             startIcon={<LogoutIcon />}
                             onClick={handleLogout}

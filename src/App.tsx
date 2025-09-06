@@ -69,6 +69,7 @@ function App() {
         if (response.ok) {
           const userData = await response.json();
           console.log('✅ Got user data from server:', userData);
+          console.log('🔍 Server user email:', userData.email, 'Role:', userData.role);
           
           // Check if user is correctly identified
           if (userData.email === 'liav@chocoinsurance.com') {
@@ -78,6 +79,7 @@ function App() {
             return;
           } else {
             console.log('❌ User incorrectly identified, fixing...');
+            console.log('🔍 Expected: liav@chocoinsurance.com, Got:', userData.email);
             // Fix the user data
             const correctedUser = {
               ...userData,
