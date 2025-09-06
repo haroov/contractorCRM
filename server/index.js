@@ -1854,6 +1854,14 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
 });
 
+// Force server restart
+app.get('/restart', (req, res) => {
+  res.json({ message: 'Server restart requested', timestamp: new Date().toISOString() });
+  setTimeout(() => {
+    process.exit(0);
+  }, 1000);
+});
+
 // Debug endpoint to check users
 app.get('/debug-users', async (req, res) => {
   try {
