@@ -33,8 +33,9 @@ router.get('/google', (req, res, next) => {
 
 // Google OAuth callback
 router.get('/google/callback', (req, res) => {
-  console.log('🔐 Google OAuth callback received');
+  console.log('🔐 Google OAuth callback received - RESTART FIX');
   console.log('🔐 Query params:', req.query);
+  console.log('🔐 Timestamp:', new Date().toISOString());
 
   // Handle the callback manually
   passport.authenticate('google', {
