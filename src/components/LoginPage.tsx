@@ -84,7 +84,7 @@ const LoginPage: React.FC = () => {
         redirect_uri: 'https://contractorcrm-api.onrender.com/auth/google/callback',
         scope: 'profile email',
         access_type: 'offline',
-        prompt: 'select_account consent' // Force account selection and consent
+        prompt: 'select_account' // Force account selection, but don't force consent for returning users
       });
 
       const fullUrl = `${googleAuthUrl}?${params.toString()}`;

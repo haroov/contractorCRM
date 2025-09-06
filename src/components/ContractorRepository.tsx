@@ -366,8 +366,8 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
         // Set current user data for profile dialog
         setProfileData({
             name: user?.name || 'Liav Geffen',
-            email: user?.email || 'liav@chocoinsurance.com',
-            role: user?.role || 'admin',
+            email: user?.email || '',
+            role: user?.role || 'user',
             phone: '' // Default empty phone
         });
         setProfileDialogOpen(true);

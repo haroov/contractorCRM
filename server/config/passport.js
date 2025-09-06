@@ -21,7 +21,10 @@ const isEmailAllowed = async (email) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback"
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback",
+  scope: ['profile', 'email'],
+  accessType: 'offline',
+  prompt: 'select_account' // Force account selection, but don't force consent for returning users
 }, async (accessToken, refreshToken, profile, done) => {
   console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString());
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
@@ -91,7 +94,7 @@ passport.use(new GoogleStrategy({
         email: email,
         name: profile.displayName,
         picture: profile.photos[0]?.value,
-        role: email === 'liav@chocoinsurance.com' ? 'admin' : 'user',
+        role: 'user', // Default role, will be updated from database
         isActive: true,
         lastLogin: new Date()
       });

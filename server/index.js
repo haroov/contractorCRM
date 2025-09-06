@@ -1692,78 +1692,7 @@ connectDB().then(() => {
 
 // Removed liav@facio.io endpoint - users come from database only
 
-app.get('/add-liav-chocoinsurance-user', async (req, res) => {
-  try {
-    const db = client.db('contractor-crm');
-
-    // Check if user already exists
-    const existingUser = await db.collection('users').findOne({ email: 'liav@chocoinsurance.com' });
-    if (existingUser) {
-      console.log('⚠️ User liav@chocoinsurance.com already exists');
-      return res.json({
-        message: 'User liav@chocoinsurance.com already exists',
-        user: existingUser
-      });
-    }
-
-    // Create the user
-    const user = {
-      email: 'liav@chocoinsurance.com',
-      name: 'Liav Geffen',
-      role: 'admin',
-      isActive: false,
-      createdAt: new Date(),
-      lastLogin: null
-    };
-
-    const result = await db.collection('users').insertOne(user);
-    const newUser = { ...user, _id: result.insertedId };
-
-    console.log('✅ Created user liav@chocoinsurance.com:', newUser);
-    res.json({
-      message: 'User liav@chocoinsurance.com created successfully',
-      user: newUser
-    });
-  } catch (error) {
-    console.error('❌ Error creating liav@chocoinsurance.com user:', error);
-    res.status(500).json({ error: 'Failed to create user', details: error.message });
-  }
-});
-
-// Create both users endpoint
-app.get('/create-users', async (req, res) => {
-  try {
-    const db = client.db('contractor-crm');
-    const results = [];
-
-    // Removed liav@facio.io - users come from database only
-
-    // Create liav@chocoinsurance.com user
-    const chocoUser = await db.collection('users').findOne({ email: 'liav@chocoinsurance.com' });
-    if (!chocoUser) {
-      const user2 = {
-        email: 'liav@chocoinsurance.com',
-        name: 'Liav Geffen',
-        role: 'admin',
-        isActive: false,
-        createdAt: new Date(),
-        lastLogin: null
-      };
-      const result2 = await db.collection('users').insertOne(user2);
-      results.push({ email: 'liav@chocoinsurance.com', created: true, id: result2.insertedId });
-    } else {
-      results.push({ email: 'liav@chocoinsurance.com', created: false, exists: true });
-    }
-
-    res.json({
-      message: 'Users creation completed',
-      results: results
-    });
-  } catch (error) {
-    console.error('❌ Error creating users:', error);
-    res.status(500).json({ error: 'Failed to create users', details: error.message });
-  }
-});
+// Removed hardcoded user creation endpoint - users come from database only
 
 // Simple test endpoint
 app.get('/test', (req, res) => {
