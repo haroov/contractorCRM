@@ -1712,8 +1712,8 @@ app.get('/debug-users', async (req, res) => {
   try {
     const User = require('./models/User');
     const users = await User.find({});
-    res.json({ 
-      message: 'Users in database', 
+    res.json({
+      message: 'Users in database',
       count: users.length,
       users: users.map(u => ({
         email: u.email,
