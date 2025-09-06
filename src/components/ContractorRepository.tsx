@@ -1014,7 +1014,7 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                             <Avatar
-                                src={user?.picture}
+                                src={user?.picture || 'https://lh3.googleusercontent.com/a-/ALV-UjVmCkU_9mCrBtn6KJUJWXigIT_hFh48RPhi2gezJnt2ML6M7H6975EVeqCXb1X7_L17zfL3HPz2DDP-WHdRYcFARM64v_OfeiNfHHMTzIeEl2ByEUGFcaMjR8RT-2mG1jfSeCxRcmxTdmNcQg0EYQiXndV3rqEeEGvm96XRLm_0jSSiEfe-nwYokBTkkDkmd6XADpGoCi2EZGj3J2G9xGTxohRN12vYza-jIjgQuXm3zuNkCkV4npsyPJf5yLip-3mAXUjlL9M04Zjqsi9jcagFH-nmsyHrOZFjp1aM2PVnOVutnHLMMqsPm3hNDGOCRVGPdTNHjNoNJkAZs_pWaLsoZi4FDrJ433HHRVmqnkXlboT1mwshuz0l3SHONHK7y19tCvqNmOnLIfJj5zjKfxa9juRL79Euu7yLtaWpFxfcRoNH5pcqXBH-eQ7nWvr9n_O9Tx2ioci2wrOLCkPTGJlgAajrpXzHEkTsOvfWBW5niSYrT2tvu8kbiwE_lZreksq7Uhe8Fz8YInqDOasWS2PDo-CSedWgnoa1nrU_FTHgQwvO_bOPaIc4TnPW2osD69scgHkWGyP2oDdMZNiyBB-xmRuHwihV2AIvGcEK0pL5qETA236v3ySyvu8G4g6Cpjq4v5czD-fWvbpWMpUuUAQTPDdmIWb_Wuk96BrUhQqd-JxisfAOGxKMN2rj4EnryDsJMdL-eL1xsKDhukZs_mKo2dEYXqFJvG6ylLG9ys-z3FDhf9InTvi9uCjz471OR08JlXmlNwiIQ7tgWTr8Ec1Cb4QclGI6eahtbAAysNRRGq5EfzpPtviHju_c2FJ6rdn60J1hYYOhNaenXGKuxItNfsk2dQHwZVlFNls_91eFWDCYrMIXcKK-_P4xX72at0AQ97jfMpXexcE--ahZBmasYWyqHcD0bkWH4ND7HS3YtyYekT733pR_QJmKmglDRvgPoBMy10eYB1pWIUyJFRKYXXQ3a5A=s96-c'}
                                 alt={profileData.name}
                                 sx={{ width: 60, height: 60 }}
                             />
@@ -1049,7 +1049,6 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
                             fullWidth
                             variant="outlined"
                             placeholder="05x-xxxxxxx"
-                            helperText="אופציונלי - פורמט: 05x-xxxxxxx"
                         />
 
                         <TextField
