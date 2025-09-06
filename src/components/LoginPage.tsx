@@ -152,6 +152,10 @@ const LoginPage: React.FC = () => {
         // For Google Login, we don't require email field - it will be determined from Google
         console.log('🔧 No email entered - will determine from Google OAuth response');
         console.log('🔧 This is OK for Google Login flow');
+        
+        // Clear any previous email to ensure fresh detection
+        localStorage.removeItem('userEmail');
+        console.log('🔧 Cleared previous userEmail to ensure fresh detection');
       }
 
       // Build Google OAuth URL directly to bypass server issues

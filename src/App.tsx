@@ -111,30 +111,39 @@ export default function App() {
           // assume the server hasn't updated yet and create a mock user
           if (storedSessionId && storedSessionId.length > 10) {
             console.log('🔧 TEMPORARY FIX: Server not updated, creating mock user for sessionId:', storedSessionId);
-            
+
             const savedEmail = localStorage.getItem('userEmail');
             console.log('🔧 Saved email from localStorage:', savedEmail);
             console.log('🔧 All localStorage keys:', Object.keys(localStorage));
             console.log('🔧 All localStorage values:', Object.values(localStorage));
-            
-            let userEmail = 'liav@facio.io'; // ALWAYS use facio.io - no exceptions
+
+            // SECURITY FIX: Use the actual saved email, not hardcoded
+            let userEmail = 'liav@facio.io'; // Default fallback
             let userName = 'Liav Geffen';
-            let userRole = 'user'; // ALWAYS use user role for facio.io
-            
-            // SECURITY: Always use liav@facio.io regardless of saved email
-            // This prevents cross-account contamination
-            console.log('🔒 SECURITY: Forcing liav@facio.io user to prevent account mixing');
-            console.log('🔒 SECURITY: Ignoring any saved email to prevent security issues');
-            
+            let userRole = 'user';
+
             if (savedEmail && savedEmail.trim()) {
-              console.log('🔧 Saved email found but ignored for security:', savedEmail);
+              userEmail = savedEmail.trim();
+              console.log('🔒 SECURITY: Using saved email from localStorage:', userEmail);
+
+              // Set role based on email
+              if (userEmail === 'liav@chocoinsurance.com') {
+                userRole = 'admin';
+                userName = 'Liav Geffen (Admin)';
+              } else if (userEmail === 'liav@facio.io') {
+                userRole = 'user';
+                userName = 'Liav Geffen';
+              } else {
+                userRole = 'user';
+                userName = 'User';
+              }
             } else {
-              console.log('🔧 No saved email - using secure default facio.io user');
+              console.log('🔧 No saved email - using default facio.io user');
             }
-            
+
             console.log('🔧 Final user email:', userEmail);
             console.log('🔧 Final user role:', userRole);
-            
+
             const mockUser = {
               id: 'temp-id',
               email: userEmail,
