@@ -21,7 +21,8 @@ import {
     DialogContent,
     DialogActions,
     Tooltip,
-    Skeleton
+    Skeleton,
+    Avatar
 } from '@mui/material';
 import {
     Search as SearchIcon,
