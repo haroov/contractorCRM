@@ -46,9 +46,10 @@ import SkeletonLoader from './SkeletonLoader';
 
 interface ContractorRepositoryProps {
     onContractorSelect?: (contractor: Contractor) => void;
+    currentUser?: any; // Add currentUser prop
 }
 
-export default function ContractorRepository({ onContractorSelect }: ContractorRepositoryProps) {
+export default function ContractorRepository({ onContractorSelect, currentUser }: ContractorRepositoryProps) {
     const [contractors, setContractors] = useState<Contractor[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
