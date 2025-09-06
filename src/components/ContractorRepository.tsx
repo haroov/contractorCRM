@@ -433,15 +433,15 @@ export default function ContractorRepository({ onContractorSelect }: ContractorR
             // Dispatch logout event
             window.dispatchEvent(new CustomEvent('userLogout'));
 
-            // More aggressive Google logout - open in new window then close
+            // Clear Google session using iframe (invisible)
             try {
-                const googleLogoutUrl = 'https://accounts.google.com/logout';
-                const logoutWindow = window.open(googleLogoutUrl, '_blank', 'width=1,height=1');
-                if (logoutWindow) {
-                    setTimeout(() => {
-                        logoutWindow.close();
-                    }, 3000);
-                }
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = 'https://accounts.google.com/logout';
+                document.body.appendChild(iframe);
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 2000);
             } catch (googleLogoutError) {
                 console.log('Google logout failed, but continuing with local cleanup');
             }
