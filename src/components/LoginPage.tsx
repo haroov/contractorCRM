@@ -134,18 +134,27 @@ const LoginPage: React.FC = () => {
       const forceAccountSelection = urlParams.get('prompt') === 'select_account';
       const forceLogout = urlParams.get('force_logout') === 'true';
 
-      // Save the email field value to localStorage for later use
+      // SECURITY: Save the email field value to localStorage for later use
       console.log('🔧 Current email field value:', email);
       console.log('🔧 Email field trimmed:', email ? email.trim() : 'empty');
       
       if (email && email.trim()) {
-        localStorage.setItem('userEmail', email.trim());
-        console.log('🔧 Saved email to localStorage:', email.trim());
-        console.log('🔧 Verification - localStorage now contains:', localStorage.getItem('userEmail'));
+        const emailToSave = email.trim();
+        localStorage.setItem('userEmail', emailToSave);
+        console.log('✅ SECURITY: Saved email to localStorage:', emailToSave);
+        console.log('✅ Verification - localStorage now contains:', localStorage.getItem('userEmail'));
+        
+        // Additional security check
+        if (localStorage.getItem('userEmail') !== emailToSave) {
+          console.error('❌ SECURITY ERROR: Email was not saved correctly!');
+        }
       } else {
-        // If no email entered, we'll try to determine it later from the sessionId or use default
-        console.log('🔧 No email entered, will determine from sessionId later');
-        console.log('🔧 This means userEmail will not be saved!');
+        // SECURITY: If no email entered, deny access
+        console.log('❌ SECURITY: No email entered - this will prevent authentication');
+        console.log('❌ User must enter their email to proceed');
+        setError('אנא הזן את כתובת המייל שלך כדי להתחבר');
+        setLoading(false);
+        return;
       }
 
       // Build Google OAuth URL directly to bypass server issues

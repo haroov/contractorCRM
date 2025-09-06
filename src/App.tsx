@@ -107,44 +107,40 @@ export default function App() {
           console.log('✅ User authenticated:', data.user);
           setUser(data.user);
         } else {
-          // TEMPORARY FIX: If we have a sessionId but server says not authenticated,
-          // assume the server hasn't updated yet and create a mock user
+          // SECURITY FIX: Only allow authentication if we have a valid sessionId AND saved email
           if (storedSessionId && storedSessionId.length > 10) {
-            console.log('🔧 TEMPORARY FIX: Server not updated, creating mock user for sessionId:', storedSessionId);
-            
-            // Try to determine user email from localStorage or use default
             const savedEmail = localStorage.getItem('userEmail');
             console.log('🔧 Saved email from localStorage:', savedEmail);
             console.log('🔧 All localStorage keys:', Object.keys(localStorage));
             console.log('🔧 All localStorage values:', Object.values(localStorage));
             
-            let userEmail = 'liav@chocoinsurance.com'; // Default
-            let userName = 'Liav Geffen';
-            let userRole = 'admin';
-            
-            if (savedEmail) {
-              userEmail = savedEmail;
-              userRole = savedEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
-              console.log('🔧 Using saved email:', savedEmail, 'with role:', userRole);
+            if (savedEmail && savedEmail.trim()) {
+              console.log('✅ SECURITY: Valid sessionId and email found, creating user for:', savedEmail);
+              
+              const userEmail = savedEmail.trim();
+              const userName = 'Liav Geffen';
+              const userRole = userEmail === 'liav@chocoinsurance.com' ? 'admin' : 'user';
+              
+              console.log('🔧 Creating user with email:', userEmail, 'and role:', userRole);
+              
+              const mockUser = {
+                id: 'temp-id',
+                email: userEmail,
+                name: userName,
+                picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c',
+                role: userRole
+              };
+              setUser(mockUser);
             } else {
-              // If no saved email, try to determine from sessionId or URL
-              console.log('🔧 No saved email found, using default admin user');
-              console.log('🔧 This means the email was not saved or was cleared');
+              console.log('❌ SECURITY: No valid email found, denying access');
+              console.log('❌ This prevents unauthorized access with default admin user');
+              setUser(null);
+              // Clear invalid sessionId
+              localStorage.removeItem('sessionId');
+              localStorage.removeItem('userEmail');
             }
-            
-            console.log('🔧 Final user email:', userEmail);
-            console.log('🔧 Final user role:', userRole);
-            
-            const mockUser = {
-              id: 'temp-id',
-              email: userEmail,
-              name: userName,
-              picture: 'https://lh3.googleusercontent.com/a/ACg8ocJ48hjNu2ZZL9vxzmW6m4KulzkcH317dCAZzqDGMaKqlJVHNDI=s96-c',
-              role: userRole
-            };
-            setUser(mockUser);
           } else {
-            console.log('❌ User not authenticated');
+            console.log('❌ User not authenticated - no valid sessionId');
             setUser(null);
             // Clear invalid sessionId
             if (storedSessionId) {
