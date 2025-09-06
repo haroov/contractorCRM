@@ -31,9 +31,16 @@ const LoginPage: React.FC = () => {
 
   // Clear any session data when arriving at login page
   useEffect(() => {
-    // Clear localStorage and sessionStorage
+    // Clear localStorage and sessionStorage but preserve userEmail
+    const savedEmail = localStorage.getItem('userEmail');
     localStorage.clear();
     sessionStorage.clear();
+    
+    // Restore the saved email if it exists
+    if (savedEmail) {
+      localStorage.setItem('userEmail', savedEmail);
+      console.log('🔧 Preserved userEmail after clear:', savedEmail);
+    }
 
     // Remove sessionId and other parameters from URL if present
     const urlParams = new URLSearchParams(window.location.search);
