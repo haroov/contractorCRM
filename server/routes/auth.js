@@ -36,6 +36,7 @@ router.get('/google/callback', (req, res) => {
   console.log('🔐 Google OAuth callback received - RESTART FIX');
   console.log('🔐 Query params:', req.query);
   console.log('🔐 Timestamp:', new Date().toISOString());
+  console.log('🔐 FORCE SERVER RESTART - Callback timestamp:', new Date().toISOString());
 
   try {
     // Handle the callback manually
@@ -104,6 +105,7 @@ router.get('/status', (req, res) => {
   console.log('🔍 sessionId query param:', req.query.sessionId);
   console.log('🔍 FORCE DEPLOYMENT - Updated at:', new Date().toISOString());
   console.log('🔍 CRITICAL FIX - liav@facio.io should be returned, not liav@chocoinsurance.com');
+  console.log('🔍 FORCE SERVER RESTART - Timestamp:', new Date().toISOString());
 
   if (req.isAuthenticated()) {
     console.log('✅ User is authenticated via session:', req.user.email);
