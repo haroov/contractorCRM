@@ -822,7 +822,7 @@ app.put('/api/projects/:id', async (req, res) => {
       updatedAt: new Date()
     };
     const result = await db.collection('projects').updateOne(
-      { _id: req.params.id },
+      { _id: new ObjectId(req.params.id) },
       { $set: updateData }
     );
     console.log('✅ Updated project:', req.params.id);
