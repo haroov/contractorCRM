@@ -54,9 +54,6 @@ export const getAuthHeaders = (): HeadersInit => {
 // Helper function for authenticated API calls
 export const authenticatedFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const sessionId = getSessionId();
-    console.log('🔐 authenticatedFetch - sessionId:', sessionId);
-    console.log('🔐 authenticatedFetch - url:', url);
-    
     const fetchOptions: RequestInit = {
         ...options,
         headers: {
@@ -68,17 +65,14 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
     
     // Add base URL if the URL doesn't start with http
     const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
-    console.log('🔐 authenticatedFetch - fullUrl:', fullUrl);
     
     if (sessionId) {
         // Add session ID as query parameter as well
         const urlWithSession = fullUrl.includes('?') 
             ? `${fullUrl}&sessionId=${sessionId}`
             : `${fullUrl}?sessionId=${sessionId}`;
-        console.log('🔐 authenticatedFetch - urlWithSession:', urlWithSession);
         return fetch(urlWithSession, fetchOptions);
     }
     
-    console.log('🔐 authenticatedFetch - no sessionId, using fullUrl:', fullUrl);
     return fetch(fullUrl, fetchOptions);
 };

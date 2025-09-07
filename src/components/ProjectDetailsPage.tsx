@@ -62,8 +62,6 @@ export default function ProjectDetailsPage() {
                         const projectData = await projectsAPI.getById(projectId);
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
-                            console.log('🔍 Project _id:', projectData._id);
-                            console.log('🔍 Project id:', projectData.id);
                             setProject(projectData);
                         } else {
                             console.error('❌ Project not found on server');
@@ -106,23 +104,16 @@ export default function ProjectDetailsPage() {
     };
 
     const handleFieldChange = (field: keyof Project, value: any) => {
-        console.log('🔄 Field change:', field, 'value:', value, 'type:', typeof value);
         if (project) {
-            const updatedProject = {
+            setProject({
                 ...project,
                 [field]: value
-            };
-            console.log('🔄 Updated project:', updatedProject);
-            setProject(updatedProject);
+            });
         }
     };
 
     const handleSave = async () => {
         try {
-            console.log('Save project function called');
-            console.log('Saving project:', project);
-            console.log('🔍 Project _id in save:', project?._id);
-            console.log('🔍 Project id in save:', project?.id);
             
             if (!project) {
                 console.error('No project to save');
@@ -153,9 +144,7 @@ export default function ProjectDetailsPage() {
                     contractorId: project.contractorId,
                     mainContractor: project.mainContractor
                 };
-                console.log('🔄 Sending update data:', updateData);
                 const projectId = project._id || project.id;
-                console.log('🔄 Using project ID:', projectId, '(_id:', project._id, ', id:', project.id, ')');
                 const updatedProject = await projectsAPI.update(projectId, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
