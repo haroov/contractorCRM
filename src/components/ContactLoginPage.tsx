@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -14,7 +14,7 @@ import {
   Step,
   StepLabel
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface ContactLoginData {
   email: string;
@@ -22,6 +22,7 @@ interface ContactLoginData {
 }
 
 export default function ContactLoginPage() {
+  const [searchParams] = useSearchParams();
   const [loginData, setLoginData] = useState<ContactLoginData>({
     email: '',
     otp: ''
@@ -33,6 +34,17 @@ export default function ContactLoginPage() {
   const [contractors, setContractors] = useState<any[]>([]);
   const [selectedContractor, setSelectedContractor] = useState('');
   const navigate = useNavigate();
+
+  // Get email from URL parameters
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setLoginData(prev => ({
+        ...prev,
+        email: emailParam
+      }));
+    }
+  }, [searchParams]);
 
   const handleInputChange = (field: keyof ContactLoginData) => (
     event: React.ChangeEvent<HTMLInputElement>

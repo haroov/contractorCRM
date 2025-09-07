@@ -28,6 +28,8 @@ interface User {
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // Clear any session data when arriving at login page
   useEffect(() => {
@@ -106,6 +108,37 @@ const LoginPage: React.FC = () => {
     // TODO: Implement Microsoft OAuth
     setError('התחברות עם Microsoft עדיין לא זמינה');
     setLoading(false);
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setEmail(value);
+    
+    if (value && !validateEmail(value)) {
+      setEmailError('כתובת אימייל לא תקינה');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handleContactLogin = () => {
+    if (!email) {
+      setEmailError('נא להזין כתובת אימייל');
+      return;
+    }
+    
+    if (!validateEmail(email)) {
+      setEmailError('כתובת אימייל לא תקינה');
+      return;
+    }
+
+    // Navigate to contact login with email parameter
+    window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
   };
 
   // Removed handleLogout - using simple localStorage clear
@@ -255,13 +288,18 @@ const LoginPage: React.FC = () => {
               type="email"
               variant="outlined"
               size="small"
+              value={email}
+              onChange={handleEmailChange}
+              error={!!emailError}
+              helperText={emailError}
               sx={{ mb: 1 }}
             />
             <Button
               variant="outlined"
               size="large"
               fullWidth
-              onClick={() => window.location.href = '/contact-login'}
+              onClick={handleContactLogin}
+              disabled={loading}
               sx={{
                 py: 1.5,
                 borderColor: '#1976d2',
