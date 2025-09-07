@@ -223,6 +223,30 @@ const LoginPage: React.FC = () => {
           >
             התחבר עם Microsoft
           </Button>
+
+          <Divider sx={{ my: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+              או
+            </Typography>
+          </Divider>
+
+          <Button
+            variant="outlined"
+            size="large"
+            fullWidth
+            onClick={() => window.location.href = '/contact-login'}
+            sx={{
+              py: 1.5,
+              borderColor: '#1976d2',
+              color: '#1976d2',
+              '&:hover': {
+                borderColor: '#1565c0',
+                backgroundColor: 'rgba(25, 118, 210, 0.04)'
+              }
+            }}
+          >
+            התחבר כנציג חברה
+          </Button>
         </Box>
       </Paper>
     </Container>

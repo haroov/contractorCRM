@@ -89,9 +89,14 @@ interface ContractorTabsProps {
     contractor?: Contractor;
     onSave?: (contractor: Contractor) => void;
     onClose?: () => void;
+    isContactUser?: boolean;
+    contactUserPermissions?: 'contact_manager' | 'contact_user';
 }
 
-export default function ContractorTabs({ contractor: initialContractor, onSave, onClose }: ContractorTabsProps) {
+export default function ContractorTabs({ contractor: initialContractor, onSave, onClose, isContactUser = false, contactUserPermissions }: ContractorTabsProps) {
+    // Check if user can edit based on contact user permissions
+    const canEdit = !isContactUser || contactUserPermissions === 'contact_manager';
+    
     const [contractor, setContractor] = useState<Contractor>(initialContractor || {
         contractor_id: '',
         company_id: '',
@@ -235,7 +240,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 console.log('🔄 Loading projects for contractor:', contractor._id);
                 const projects = await projectsAPI.getByContractor(contractor._id);
                 console.log('✅ Loaded projects:', projects.length);
-                
+
                 // Update contractor with fresh projects
                 setContractor(prev => {
                     if (prev) {
@@ -327,11 +332,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 const response = await authenticatedFetch(`/api/contractors/${contractor.contractor_id}/update-stats`, {
                     method: 'POST'
                 });
-                
+
                 if (response.ok) {
                     const result = await response.json();
                     console.log('✅ Updated contractor stats:', result.stats);
-                    
+
                     // Contractor stats updated successfully
                 } else {
                     console.error('Failed to update contractor stats');
@@ -1323,9 +1328,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 ביטול
                             </Button>
                         )}
-                        <Button onClick={handleSave} variant="contained">
-                            שמור
-                        </Button>
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             )}
@@ -1560,9 +1567,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 ביטול
                             </Button>
                         )}
-                        <Button onClick={handleSave} variant="contained">
-                            שמור
-                        </Button>
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             )}
@@ -1600,14 +1609,16 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     </Box>
 
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={handleAddProject}
-                            sx={{ gap: 1 }}
-                        >
-                            הוסף פרויקט
-                        </Button>
+                        {canEdit && (
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={handleAddProject}
+                                sx={{ gap: 1 }}
+                            >
+                                הוסף פרויקט
+                            </Button>
+                        )}
                     </Box>
 
                     <ProjectsList
@@ -1745,7 +1756,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleCancelProject}>ביטול</Button>
-                            <Button onClick={handleSaveProject} variant="contained">שמור</Button>
+                            {canEdit && (
+                                <Button onClick={handleSaveProject} variant="contained">שמור</Button>
+                            )}
                         </DialogActions>
                     </Dialog>
 
@@ -1756,9 +1769,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 ביטול
                             </Button>
                         )}
-                        <Button onClick={handleSave} variant="contained">
-                            שמור
-                        </Button>
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             )}
@@ -1813,9 +1828,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                 ביטול
                             </Button>
                         )}
-                        <Button onClick={handleSave} variant="contained">
-                            שמור
-                        </Button>
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             )}
@@ -1934,11 +1951,11 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         // הגבלה על תווים מותרים - רק ספרות ומקף
                                         const inputValue = e.target.value;
                                         const allowedChars = /^[0-9\-]*$/;
-                                        
+
                                         if (!allowedChars.test(inputValue)) {
                                             return; // לא לעדכן אם יש תווים לא מותרים
                                         }
-                                        
+
                                         const formattedPhone = formatIsraeliPhone(inputValue);
                                         setEditingContact(prev => prev ? { ...prev, mobile: formattedPhone } : null);
                                     }}
@@ -1972,7 +1989,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelContact}>ביטול</Button>
-                    <Button onClick={handleSaveContact} variant="contained">שמור</Button>
+                    {canEdit && (
+                        <Button onClick={handleSaveContact} variant="contained">שמור</Button>
+                    )}
                 </DialogActions>
             </Dialog>
 

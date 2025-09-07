@@ -17,7 +17,7 @@ const ManagementContactSchema = new Schema<Contact>({
     mobile: { type: String, required: true },
     permissions: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'contact_manager', 'contact_user'],
         default: 'user',
         required: true
     }

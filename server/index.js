@@ -196,8 +196,14 @@ const userRoutes = require('./routes/users.js');
 app.use('/api/users', userRoutes);
 console.log('✅ User management routes configured');
 
+// Import contact authentication routes
+const contactAuthRoutes = require('./routes/contact-auth.js');
+app.use('/api/contact-auth', contactAuthRoutes);
+console.log('✅ Contact authentication routes configured');
+
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
+const { requireContactAuth, requireContactManager, requireContactContractorAccess } = require('./middleware/contact-auth.js');
 
 // Test endpoint for user creation debugging
 app.get('/test-users', (req, res) => {
@@ -1791,11 +1797,211 @@ process.on('SIGINT', async () => {
 });
 
 // Start server
+// Contact User Routes (Limited Access)
+// Get contractor details for contact user (read-only or editable based on permissions)
+app.get('/api/contact/contractor/:id', requireContactAuth, requireContactContractorAccess, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractor = await db.collection('contractors').findOne({ 
+      $or: [
+        { contractor_id: req.params.id },
+        { _id: new ObjectId(req.params.id) }
+      ]
+    });
+    
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    // Get projects for this contractor
+    const projects = await db.collection('projects').find({
+      mainContractor: contractor._id.toString()
+    }).toArray();
+
+    // Calculate project status for each project
+    const projectsWithStatus = projects.map(project => ({
+      ...project,
+      status: calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed)
+    }));
+
+    res.json({
+      ...contractor,
+      projects: projectsWithStatus
+    });
+  } catch (error) {
+    console.error('❌ Error getting contractor for contact user:', error);
+    res.status(500).json({ error: 'Failed to get contractor' });
+  }
+});
+
+// Update contractor details (only for contact managers)
+app.put('/api/contact/contractor/:id', requireContactAuth, requireContactManager, requireContactContractorAccess, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    // Remove immutable fields from update data
+    const { _id, createdAt, ...updateData } = req.body;
+    
+    const result = await db.collection('contractors').updateOne(
+      { 
+        $or: [
+          { contractor_id: req.params.id },
+          { _id: new ObjectId(req.params.id) }
+        ]
+      },
+      { 
+        $set: { 
+          ...updateData, 
+          updatedAt: new Date() 
+        } 
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    res.json({ message: 'Contractor updated successfully', modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.error('❌ Error updating contractor:', error);
+    res.status(500).json({ error: 'Failed to update contractor' });
+  }
+});
+
+// Get projects for contact user's contractor
+app.get('/api/contact/projects', requireContactAuth, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.session.contactUser.contractorId;
+    
+    const projects = await db.collection('projects').find({
+      mainContractor: contractorId
+    }).toArray();
+
+    // Calculate project status for each project
+    const projectsWithStatus = projects.map(project => ({
+      ...project,
+      status: calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed)
+    }));
+
+    res.json(projectsWithStatus);
+  } catch (error) {
+    console.error('❌ Error getting projects for contact user:', error);
+    res.status(500).json({ error: 'Failed to get projects' });
+  }
+});
+
+// Create new project (only for contact managers)
+app.post('/api/contact/projects', requireContactAuth, requireContactManager, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.session.contactUser.contractorId;
+    
+    const projectData = {
+      ...req.body,
+      mainContractor: contractorId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Create the project
+    const result = await db.collection('projects').insertOne(projectData);
+    console.log('✅ Created new project for contact user:', result.insertedId);
+
+    // Add project ID to contractor's projectIds array
+    await db.collection('contractors').updateOne(
+      { _id: new ObjectId(contractorId) },
+      { $push: { projectIds: result.insertedId.toString() } }
+    );
+
+    // Update contractor statistics automatically
+    await updateContractorStats(db, contractorId);
+
+    res.json(result);
+  } catch (error) {
+    console.error('❌ Error creating project for contact user:', error);
+    res.status(500).json({ error: 'Failed to create project' });
+  }
+});
+
+// Update project (only for contact managers)
+app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.session.contactUser.contractorId;
+    
+    // Verify project belongs to this contractor
+    const project = await db.collection('projects').findOne({
+      _id: new ObjectId(req.params.id),
+      mainContractor: contractorId
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found or access denied' });
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+
+    const result = await db.collection('projects').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: updateData }
+    );
+
+    // Update contractor statistics automatically
+    await updateContractorStats(db, contractorId);
+
+    res.json({ message: 'Project updated successfully', modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.error('❌ Error updating project for contact user:', error);
+    res.status(500).json({ error: 'Failed to update project' });
+  }
+});
+
+// Delete project (only for contact managers)
+app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManager, async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.session.contactUser.contractorId;
+    
+    // Verify project belongs to this contractor
+    const project = await db.collection('projects').findOne({
+      _id: new ObjectId(req.params.id),
+      mainContractor: contractorId
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found or access denied' });
+    }
+
+    const result = await db.collection('projects').deleteOne({
+      _id: new ObjectId(req.params.id)
+    });
+
+    // Remove project ID from contractor's projectIds array
+    await db.collection('contractors').updateOne(
+      { _id: new ObjectId(contractorId) },
+      { $pull: { projectIds: req.params.id } }
+    );
+
+    // Update contractor statistics automatically
+    await updateContractorStats(db, contractorId);
+
+    res.json({ message: 'Project deleted successfully', deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error('❌ Error deleting project for contact user:', error);
+    res.status(500).json({ error: 'Failed to delete project' });
+  }
+});
+
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log('🚀 Server running on port', PORT);
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
+    console.log('👥 Contact Auth API: http://localhost:' + PORT + '/api/contact-auth');
   });
 });
 

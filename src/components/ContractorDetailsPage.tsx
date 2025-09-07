@@ -24,11 +24,24 @@ export default function ContractorDetailsPage() {
     const [contractor, setContractor] = useState<Contractor | null>(null);
     const [loading, setLoading] = useState(true);
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
+    const [isContactUser, setIsContactUser] = useState(false);
+    const [contactUserPermissions, setContactUserPermissions] = useState<'contact_manager' | 'contact_user' | null>(null);
 
     useEffect(() => {
         const loadContractorData = () => {
             const urlMode = searchParams.get('mode') as 'view' | 'edit' | 'new';
             const contractorId = searchParams.get('contractor_id');
+            const isContactUserParam = searchParams.get('contact_user') === 'true';
+            
+            // Check if this is a contact user session
+            setIsContactUser(isContactUserParam);
+            
+            // Check contact user permissions from session
+            if (isContactUserParam) {
+                // In a real app, you'd check the session here
+                // For now, we'll assume contact_manager for demo
+                setContactUserPermissions('contact_manager');
+            }
 
             setMode(urlMode || 'view');
 
@@ -175,6 +188,8 @@ export default function ContractorDetailsPage() {
                             contractor={contractor}
                             onSave={handleSave}
                             onClose={handleClose}
+                            isContactUser={isContactUser}
+                            contactUserPermissions={contactUserPermissions}
                         />
                     )}
                 </Paper>
