@@ -12,8 +12,8 @@ const client = new MongoClient(process.env.MONGODB_URI);
 // SENDGRID_FROM_EMAIL - Verified sender email address
 if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  // Note: setDataResidency is not available in this version of SendGrid
-  console.log('✅ SendGrid configured successfully');
+  sgMail.setDataResidency('eu'); // Set EU data residency
+  console.log('✅ SendGrid configured successfully with EU data residency');
 } else {
   console.log('⚠️ SendGrid not configured - OTP emails will be logged to console only');
 }
@@ -86,36 +86,17 @@ router.post('/send-otp', async (req, res) => {
       `
     };
 
-    // Check if SendGrid is configured
-    if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
-      try {
-        await sgMail.send(msg);
-        console.log('✅ OTP email sent to:', email);
-        
-        res.json({
-          success: true,
-          message: 'קוד אימות נשלח לכתובת האימייל שלך'
-        });
-      } catch (emailError) {
-        console.error('❌ SendGrid error:', emailError);
-        res.status(500).json({ error: 'שגיאה בשליחת המייל' });
-      }
-    } else {
-      // SendGrid not configured - log OTP to console for development
-      console.log('📧 OTP Email (SendGrid not configured):');
-      console.log('To:', email);
-      console.log('Subject:', msg.subject);
-      console.log('OTP Code:', otp);
-      console.log('HTML Content:', msg.html);
+    try {
+      await sgMail.send(msg);
+      console.log('✅ OTP email sent to:', email);
       
       res.json({
         success: true,
-        message: 'קוד אימות נשלח לכתובת האימייל שלך (פיתוח מקומי)',
-        debug: {
-          otp: otp,
-          email: email
-        }
+        message: 'קוד אימות נשלח לכתובת האימייל שלך'
       });
+    } catch (emailError) {
+      console.error('❌ SendGrid error:', emailError);
+      res.status(500).json({ error: 'שגיאה בשליחת המייל' });
     }
 
   } catch (error) {
