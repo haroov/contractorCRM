@@ -146,22 +146,22 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     // Load projects when contractor changes
     useEffect(() => {
-        if (contractor.contractor_id) {
+        if (contractor._id) {
             loadProjects();
         }
-    }, [contractor.contractor_id]);
+    }, [contractor._id]);
 
     // Auto-refresh projects when page gains focus (e.g., when project editing window closes)
     useEffect(() => {
         const handleFocus = async () => {
-            if (contractor.contractor_id) {
+            if (contractor._id) {
                 console.log('Page gained focus - refreshing projects...');
                 await loadProjects();
             }
         };
 
         const handleVisibilityChange = async () => {
-            if (!document.hidden && contractor.contractor_id) {
+            if (!document.hidden && contractor._id) {
                 console.log('Page became visible - refreshing projects...');
                 await loadProjects();
             }
@@ -176,7 +176,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             window.removeEventListener('focus', handleFocus);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [contractor.contractor_id]);
+    }, [contractor._id]);
 
     // Auto-validate contractor status when contractor is loaded
     useEffect(() => {
@@ -231,9 +231,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     const loadProjects = async () => {
         try {
-            if (contractor.contractor_id) {
-                console.log('🔄 Loading projects for contractor:', contractor.contractor_id);
-                const projects = await projectsAPI.getByContractor(contractor.contractor_id);
+            if (contractor._id) {
+                console.log('🔄 Loading projects for contractor:', contractor._id);
+                const projects = await projectsAPI.getByContractor(contractor._id);
                 console.log('✅ Loaded projects:', projects.length);
                 
                 // Update contractor with fresh projects
@@ -256,10 +256,10 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             // Determine project status based on dates
             const projectStatus = getProjectStatus(project.startDate, project.duration || 0, project.isClosed);
 
-            // Add contractor_id and status to the project before saving
+            // Add mainContractor and status to the project before saving
             const projectToSave = {
                 ...project,
-                contractorId: contractor.contractor_id,
+                mainContractor: contractor._id,
                 status: projectStatus
             };
 
