@@ -259,7 +259,7 @@ export default function ContactLoginPage() {
                   </Button>
                 </Box>
               </form>
-            ) : (
+            ) : step === 1 ? (
               <form onSubmit={handleVerifyOTP}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
