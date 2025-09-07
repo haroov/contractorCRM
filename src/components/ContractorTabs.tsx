@@ -210,7 +210,14 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 console.log('✅ Loaded projects:', projects.length);
                 
                 // Update contractor with fresh projects
-                setContractor(prev => prev ? { ...prev, projects } : null);
+                setContractor(prev => {
+                    if (prev) {
+                        const updated = { ...prev, projects };
+                        console.log('🔄 Updated contractor with projects:', updated.projects?.length);
+                        return updated;
+                    }
+                    return null;
+                });
             }
         } catch (error) {
             console.error('❌ Error loading projects:', error);
