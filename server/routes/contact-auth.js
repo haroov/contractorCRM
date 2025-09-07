@@ -117,13 +117,21 @@ router.post('/send-otp', async (req, res) => {
     };
 
     try {
-      await sgMail.send(msg);
-      console.log('✅ OTP email sent to:', email);
-      
-      res.json({
-        success: true,
-        message: 'קוד אימות נשלח לכתובת האימייל שלך'
-      });
+      if (!process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
+        console.log('⚠️ SendGrid not configured - logging OTP to console:', otp);
+        res.json({
+          success: true,
+          message: 'קוד אימות נשלח לכתובת האימייל שלך (במצב פיתוח)'
+        });
+      } else {
+        await sgMail.send(msg);
+        console.log('✅ OTP email sent to:', email);
+        
+        res.json({
+          success: true,
+          message: 'קוד אימות נשלח לכתובת האימייל שלך'
+        });
+      }
     } catch (emailError) {
       console.error('❌ SendGrid error:', emailError);
       res.status(500).json({ error: 'שגיאה בשליחת המייל' });
