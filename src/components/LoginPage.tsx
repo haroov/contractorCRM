@@ -201,7 +201,7 @@ const LoginPage: React.FC = () => {
         </Box>
 
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-          התחברות למערכת {/* Updated with email validation */}
+          התחברות למערכת
         </Typography>
 
         {error && (
@@ -293,6 +293,7 @@ const LoginPage: React.FC = () => {
               error={!!emailError}
               helperText={emailError}
               placeholder="הזן את כתובת האימייל שלך"
+              autoComplete="email"
               sx={{ mb: 1 }}
             />
             <Button
