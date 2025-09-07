@@ -45,7 +45,7 @@ export default function ContactLoginPage() {
         email: emailParam
       }));
       // Automatically send OTP when email is provided in URL
-      handleSendOTP({ preventDefault: () => {} } as any);
+      handleSendOTP({ preventDefault: () => { } } as any);
     }
   }, [searchParams]);
 
@@ -53,7 +53,7 @@ export default function ContactLoginPage() {
   useEffect(() => {
     const emailParam = searchParams.get('email');
     if (emailParam && step === 1) {
-      setResendTimer(60);
+      setResendTimer(120);
     }
   }, [searchParams, step]);
 
@@ -102,7 +102,7 @@ export default function ContactLoginPage() {
       if (response.ok && data.success) {
         setEmailSent(true);
         setStep(1);
-        setResendTimer(60); // Start 60 second timer
+        setResendTimer(120); // Start 120 second timer
         console.log('✅ OTP sent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');
@@ -202,10 +202,10 @@ export default function ContactLoginPage() {
 
   const handleResendOTP = async () => {
     if (resendTimer > 0) return; // Don't allow resend if timer is active
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       const response = await fetch('/api/contact-auth/send-otp', {
         method: 'POST',
@@ -219,7 +219,7 @@ export default function ContactLoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setResendTimer(60); // Reset timer
+        setResendTimer(120); // Reset timer
         console.log('✅ OTP resent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');

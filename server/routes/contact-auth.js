@@ -60,7 +60,7 @@ router.post('/send-otp', async (req, res) => {
     const { email } = req.body;
     
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ error: 'נדרש אימייל' });
     }
 
     const db = client.db('contractor-crm');
@@ -238,21 +238,21 @@ router.post('/select-contractor', async (req, res) => {
     const { email, contractorId } = req.body;
     
     if (!email || !contractorId) {
-      return res.status(400).json({ error: 'Email and contractor ID are required' });
+      return res.status(400).json({ error: 'נדרש אימייל ומזהה קבלן' });
     }
 
     // Get stored data
     const storedData = otpStorage.get(email);
     
     if (!storedData) {
-      return res.status(400).json({ error: 'Session expired' });
+      return res.status(400).json({ error: 'הסשן פג תוקף' });
     }
 
     // Find selected contractor
     const contractorData = storedData.contractors.find(c => c.contractorId === contractorId);
     
     if (!contractorData) {
-      return res.status(400).json({ error: 'Invalid contractor selection' });
+      return res.status(400).json({ error: 'בחירת קבלן לא תקינה' });
     }
 
     const contact = contractorData.contact;
