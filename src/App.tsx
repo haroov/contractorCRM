@@ -179,6 +179,14 @@ function App() {
               }
             />
             <Route
+              path="/project"
+              element={
+                <ProtectedRoute>
+                  <ProjectDetailsPage currentUser={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/project/:id"
               element={
                 <ProtectedRoute>
