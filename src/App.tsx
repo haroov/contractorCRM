@@ -73,16 +73,24 @@ function App() {
           
                         // Use the user data from server as-is
                         console.log('✅ Using user data from server:', userData);
+                        console.log('🔍 Setting user state with:', {
+                          id: userData.id,
+                          email: userData.email,
+                          name: userData.name,
+                          role: userData.role,
+                          picture: userData.picture
+                        });
                         setUser(userData);
                         setLoading(false);
                         return;
         }
       } catch (error) {
-        console.log('❌ Could not get user from server:', error);
+        console.log('❌ Could not get user from server (URL session):', error);
       }
       
                 // No fallback user - let server handle authentication
                 console.log('❌ No user data from server, redirecting to login');
+                console.log('🔍 Setting user to null (no server data)');
                 setUser(null);
                 setLoading(false);
                 return;
@@ -103,17 +111,25 @@ function App() {
 
         if (response.ok) {
           const userData = await response.json();
-          console.log('✅ Got user data from server:', userData);
+          console.log('✅ Got user data from server (stored session):', userData);
+          console.log('🔍 Setting user state with (stored session):', {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+            picture: userData.picture
+          });
           setUser(userData);
           setLoading(false);
           return;
         }
       } catch (error) {
-        console.log('❌ Could not get user from server:', error);
+        console.log('❌ Could not get user from server (stored session):', error);
       }
     }
 
     console.log('❌ No authentication found');
+    console.log('🔍 Setting user to null (no auth)');
     setUser(null);
     setLoading(false);
   };
@@ -129,6 +145,13 @@ function App() {
 
     console.log('ProtectedRoute - loading:', loading, 'user:', user);
     console.log('User authenticated, rendering children');
+    console.log('🔍 App.tsx - user object details:', {
+      id: user?.id,
+      email: user?.email,
+      name: user?.name,
+      role: user?.role,
+      picture: user?.picture
+    });
     return <>{children}</>;
   };
 
