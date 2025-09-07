@@ -1617,7 +1617,17 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             value={editingProject.value ? `${editingProject.value.toLocaleString('he-IL')} ₪` : ''}
                                             onChange={(e) => {
                                                 const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                setEditingProject(prev => prev ? { ...prev, value: parseInt(numericValue) || 0 } : null);
+                                                setEditingProject(prev => prev ? { ...prev, value: numericValue ? parseInt(numericValue) : 0 } : null);
+                                            }}
+                                            onKeyDown={(e) => {
+                                                // Allow backspace, delete, arrow keys, etc.
+                                                if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                                                    return;
+                                                }
+                                                // Allow only numbers
+                                                if (!/[0-9]/.test(e.key)) {
+                                                    e.preventDefault();
+                                                }
                                             }}
                                             sx={{
                                                 '& .MuiOutlinedInput-root': {
