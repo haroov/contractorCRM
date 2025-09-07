@@ -149,9 +149,8 @@ export default function ProjectDetailsPage() {
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Show success message and go back to contractor page
-            alert('הפרויקט נשמר בהצלחה!');
-            window.history.back();
+            // Close the window after successful save
+            window.close();
             
         } catch (error) {
             console.error('❌ Error saving project:', error);

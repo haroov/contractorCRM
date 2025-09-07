@@ -151,6 +151,33 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     }, [contractor.contractor_id]);
 
+    // Auto-refresh projects when page gains focus (e.g., when project editing window closes)
+    useEffect(() => {
+        const handleFocus = async () => {
+            if (contractor.contractor_id) {
+                console.log('Page gained focus - refreshing projects...');
+                await loadProjects();
+            }
+        };
+
+        const handleVisibilityChange = async () => {
+            if (!document.hidden && contractor.contractor_id) {
+                console.log('Page became visible - refreshing projects...');
+                await loadProjects();
+            }
+        };
+
+        // Add event listeners for focus and visibility change
+        window.addEventListener('focus', handleFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Cleanup event listeners on unmount
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [contractor.contractor_id]);
+
     // Auto-validate contractor status when contractor is loaded
     useEffect(() => {
         if (contractor.contractor_id && contractor.company_id && !statusValidated) {
