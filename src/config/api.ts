@@ -63,13 +63,16 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
         credentials: 'include',
     };
     
+    // Add base URL if the URL doesn't start with http
+    const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
+    
     if (sessionId) {
         // Add session ID as query parameter as well
-        const urlWithSession = url.includes('?') 
-            ? `${url}&sessionId=${sessionId}`
-            : `${url}?sessionId=${sessionId}`;
+        const urlWithSession = fullUrl.includes('?') 
+            ? `${fullUrl}&sessionId=${sessionId}`
+            : `${fullUrl}?sessionId=${sessionId}`;
         return fetch(urlWithSession, fetchOptions);
     }
     
-    return fetch(url, fetchOptions);
+    return fetch(fullUrl, fetchOptions);
 };
