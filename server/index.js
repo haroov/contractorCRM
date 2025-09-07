@@ -164,6 +164,28 @@ async function validateContractorStatus(companyId) {
   }
 }
 
+// Debug endpoint to check users
+app.get('/debug-users', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const users = await User.find({});
+    res.json({
+      message: 'Users in database',
+      count: users.length,
+      users: users.map(u => ({
+        email: u.email,
+        name: u.name,
+        role: u.role,
+        googleId: u.googleId,
+        isActive: u.isActive,
+        lastLogin: u.lastLogin
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Import auth routes
 const authRoutes = require('./routes/auth.js');
 app.use('/auth', authRoutes);
@@ -1661,24 +1683,4 @@ app.get('/restart', (req, res) => {
   }, 1000);
 });
 
-// Debug endpoint to check users
-app.get('/debug-users', async (req, res) => {
-  try {
-    const User = require('./models/User');
-    const users = await User.find({});
-    res.json({
-      message: 'Users in database',
-      count: users.length,
-      users: users.map(u => ({
-        email: u.email,
-        name: u.name,
-        role: u.role,
-        googleId: u.googleId,
-        isActive: u.isActive,
-        lastLogin: u.lastLogin
-      }))
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Removed duplicate debug endpoint
