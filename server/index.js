@@ -1441,53 +1441,7 @@ app.get('/add-all-missing-users', async (req, res) => {
   }
 });
 
-// Simple endpoint to add all missing users
-app.get('/add-all-missing-users', async (req, res) => {
-  try {
-    const db = client.db('contractor-crm');
-
-    // Get all existing users
-    const existingUsers = await db.collection('users').find({}).toArray();
-    const existingEmails = existingUsers.map(u => u.email.toLowerCase());
-
-    // No hardcoded emails - all users come from database
-    const allPendingEmails = [];
-
-    const missingEmails = allPendingEmails.filter(email =>
-      !existingEmails.includes(email.toLowerCase())
-    );
-
-    const users = [];
-    for (const email of missingEmails) {
-      try {
-        const user = {
-          email: email.toLowerCase(),
-          name: email.split('@')[0],
-          role: 'user',
-          isActive: false,
-          createdAt: new Date(),
-          lastLogin: null
-        };
-
-        const result = await db.collection('users').insertOne(user);
-        users.push({ ...user, _id: result.insertedId });
-        console.log(`✅ Created missing user: ${email}`);
-      } catch (userError) {
-        console.error(`❌ Error with user ${email}:`, userError);
-      }
-    }
-
-    res.json({
-      message: 'Missing users added successfully',
-      existingUsers: existingUsers.length,
-      missingUsers: users.length,
-      users: users
-    });
-  } catch (error) {
-    console.error('❌ Error adding missing users:', error);
-    res.status(500).json({ error: 'Failed to add missing users', details: error.message });
-  }
-});
+// Removed duplicate endpoint
 
 // Simple endpoint to add specific users
 app.get('/add-specific-users', async (req, res) => {
