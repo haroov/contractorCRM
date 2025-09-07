@@ -30,6 +30,9 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  
+  // Force deployment update
+  console.log('LoginPage component loaded with email validation');
 
   // Clear any session data when arriving at login page
   useEffect(() => {
