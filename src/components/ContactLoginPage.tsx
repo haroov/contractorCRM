@@ -49,6 +49,14 @@ export default function ContactLoginPage() {
     }
   }, [searchParams]);
 
+  // Start timer when page loads with email
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam && step === 1) {
+      setResendTimer(60);
+    }
+  }, [searchParams, step]);
+
   // Timer for resend OTP
   useEffect(() => {
     let interval: NodeJS.Timeout;

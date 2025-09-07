@@ -139,7 +139,7 @@ router.post('/verify-otp', async (req, res) => {
     const { email, otp } = req.body;
     
     if (!email || !otp) {
-      return res.status(400).json({ error: 'Email and OTP are required' });
+      return res.status(400).json({ error: 'נדרש אימייל וקוד אימות' });
     }
 
     // Check if OTP exists and is valid
