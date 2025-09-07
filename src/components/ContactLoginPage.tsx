@@ -29,13 +29,13 @@ export default function ContactLoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState(0); // 0: email input, 1: OTP verification, 2: contractor selection
+  const [step, setStep] = useState(1); // 0: email input, 1: OTP verification, 2: contractor selection
   const [emailSent, setEmailSent] = useState(false);
   const [contractors, setContractors] = useState<any[]>([]);
   const [selectedContractor, setSelectedContractor] = useState('');
   const navigate = useNavigate();
 
-  // Get email from URL parameters
+  // Get email from URL parameters and send OTP automatically
   useEffect(() => {
     const emailParam = searchParams.get('email');
     if (emailParam) {
@@ -43,6 +43,8 @@ export default function ContactLoginPage() {
         ...prev,
         email: emailParam
       }));
+      // Automatically send OTP when email is provided in URL
+      handleSendOTP({ preventDefault: () => {} } as any);
     }
   }, [searchParams]);
 
@@ -185,12 +187,7 @@ export default function ContactLoginPage() {
   };
 
   const handleBackToEmail = () => {
-    setStep(0);
-    setEmailSent(false);
-    setLoginData(prev => ({ ...prev, otp: '' }));
-    setContractors([]);
-    setSelectedContractor('');
-    setError('');
+    navigate('/login');
   };
 
   return (
@@ -206,10 +203,7 @@ export default function ContactLoginPage() {
         </Box>
 
         {/* Stepper */}
-        <Stepper activeStep={step} sx={{ mb: 4 }}>
-          <Step>
-            <StepLabel>הזנת אימייל</StepLabel>
-          </Step>
+        <Stepper activeStep={step - 1} sx={{ mb: 4 }}>
           <Step>
             <StepLabel>אימות קוד</StepLabel>
           </Step>
@@ -222,44 +216,7 @@ export default function ContactLoginPage() {
 
         <Card>
           <CardContent>
-            {step === 0 ? (
-              <form onSubmit={handleSendOTP}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <TextField
-                    fullWidth
-                    label="כתובת אימייל"
-                    type="email"
-                    value={loginData.email}
-                    onChange={handleInputChange('email')}
-                    required
-                    variant="outlined"
-                    size="small"
-                    helperText="הזן את כתובת האימייל שלך כפי שמופיעה במערכת"
-                  />
-
-                  {error && (
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                      {error}
-                    </Alert>
-                  )}
-
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    disabled={loading}
-                    sx={{ mt: 2 }}
-                  >
-                    {loading ? (
-                      <CircularProgress size={24} color="inherit" />
-                    ) : (
-                      'שלח קוד אימות'
-                    )}
-                  </Button>
-                </Box>
-              </form>
-            ) : step === 1 ? (
+            {step === 1 ? (
               <form onSubmit={handleVerifyOTP}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
@@ -307,7 +264,7 @@ export default function ContactLoginPage() {
                     onClick={handleBackToEmail}
                     sx={{ mt: 1 }}
                   >
-                    חזור להזנת אימייל
+                    חזור לעמוד הלוגאין
                   </Button>
                 </Box>
               </form>
