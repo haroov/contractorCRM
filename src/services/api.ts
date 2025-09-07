@@ -48,6 +48,12 @@ export const projectsAPI = {
     return response.json();
   },
 
+  // Get project by ID
+  getById: async (projectId: string) => {
+    const response = await authenticatedFetch(`/projects/${projectId}`);
+    return response.json();
+  },
+
   // Create new project
   create: async (project: any) => {
     const response = await authenticatedFetch('/projects', {

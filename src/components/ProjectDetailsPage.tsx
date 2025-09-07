@@ -52,16 +52,43 @@ export default function ProjectDetailsPage() {
                 };
                 setProject(newProject);
             } else if (projectId && projectId !== 'new') {
-                // Load existing project from sessionStorage
-                const storedData = sessionStorage.getItem('project_data');
-                if (storedData) {
+                // Load existing project from server
+                const loadProjectFromServer = async () => {
                     try {
-                        const projectData = JSON.parse(storedData);
-                        setProject(projectData);
+                        console.log('Loading project from server:', projectId);
+                        const { projectsAPI } = await import('../services/api');
+                        const projectData = await projectsAPI.getById(projectId);
+                        if (projectData) {
+                            console.log('✅ Project loaded from server:', projectData);
+                            setProject(projectData);
+                        } else {
+                            console.error('❌ Project not found on server');
+                            // Fallback to sessionStorage
+                            const storedData = sessionStorage.getItem('project_data');
+                            if (storedData) {
+                                try {
+                                    const fallbackData = JSON.parse(storedData);
+                                    setProject(fallbackData);
+                                } catch (error) {
+                                    console.error('Error parsing fallback project data:', error);
+                                }
+                            }
+                        }
                     } catch (error) {
-                        console.error('Error parsing project data:', error);
+                        console.error('❌ Error loading project from server:', error);
+                        // Fallback to sessionStorage
+                        const storedData = sessionStorage.getItem('project_data');
+                        if (storedData) {
+                            try {
+                                const fallbackData = JSON.parse(storedData);
+                                setProject(fallbackData);
+                            } catch (parseError) {
+                                console.error('Error parsing fallback project data:', parseError);
+                            }
+                        }
                     }
-                }
+                };
+                loadProjectFromServer();
             }
 
             setLoading(false);
@@ -87,7 +114,7 @@ export default function ProjectDetailsPage() {
         try {
             console.log('Save project function called');
             console.log('Saving project:', project);
-            
+
             if (!project) {
                 console.error('No project to save');
                 return;
@@ -95,7 +122,7 @@ export default function ProjectDetailsPage() {
 
             // Use projectsAPI to save the project
             const { projectsAPI } = await import('../services/api');
-            
+
             if (mode === 'new') {
                 // Create new project
                 const savedProject = await projectsAPI.create(project);
@@ -105,13 +132,13 @@ export default function ProjectDetailsPage() {
                 const updatedProject = await projectsAPI.update(project.id, project);
                 console.log('✅ Project updated:', updatedProject);
             }
-            
+
             // Show success message
             alert('הפרויקט נשמר בהצלחה!');
-            
+
             // Close the window or go back
             window.close();
-            
+
         } catch (error) {
             console.error('❌ Error saving project:', error);
             alert('שגיאה בשמירת הפרויקט: ' + error.message);
