@@ -203,6 +203,24 @@ const LoginPage: React.FC = () => {
             {loading ? 'מתחבר...' : 'התחבר עם Google'}
           </Button>
 
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Alert severity="info" sx={{ mt: 2, textAlign: 'right' }}>
+            <Typography variant="body2">
+              <strong>אם נתקעת בעמוד הלוגאין של גוגל:</strong>
+              <br />
+              1. נקה את ה-cookies והמטמון של הדפדפן
+              <br />
+              2. נסה בחלון פרטי (Incognito)
+              <br />
+              3. ודא שאתה בוחר בחשבון הנכון
+            </Typography>
+          </Alert>
+
           <Button
             variant="contained"
             size="large"
