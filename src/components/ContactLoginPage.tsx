@@ -297,7 +297,7 @@ export default function ContactLoginPage() {
               <form onSubmit={handleVerifyOTP}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    שלחנו קוד אימות בן 6 ספרות לכתובת:
+                    שלחנו קוד אימות לכתובת:
                     <br />
                     <strong>{loginData.email}</strong>
                   </Typography>

@@ -118,6 +118,12 @@ router.post('/send-otp', async (req, res) => {
     };
 
     try {
+      console.log('🔍 SendGrid configuration check:');
+      console.log('  - SENDGRID_API_KEY exists:', !!process.env.SENDGRID_API_KEY);
+      console.log('  - SENDGRID_FROM_EMAIL:', process.env.SENDGRID_FROM_EMAIL);
+      console.log('  - Email to send to:', email);
+      console.log('  - OTP generated:', otp);
+      
       if (!process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
         console.log('⚠️ SendGrid not configured - logging OTP to console:', otp);
         res.json({
@@ -131,7 +137,11 @@ router.post('/send-otp', async (req, res) => {
             console.log('✅ OTP email sent to:', email);
           })
           .catch((error) => {
-            console.error('❌ SendGrid error:', error);
+            console.error('❌ SendGrid error details:');
+            console.error('  - Error message:', error.message);
+            console.error('  - Error code:', error.code);
+            console.error('  - Error response:', error.response?.body);
+            console.error('  - Full error:', error);
             throw error; // Re-throw to be caught by outer catch
           });
         
