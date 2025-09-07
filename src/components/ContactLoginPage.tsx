@@ -72,20 +72,12 @@ export default function ContactLoginPage() {
     setError(''); // Clear error when user types
   };
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const handleSendOTP = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setError('');
 
-    if (!validateEmail(loginData.email)) {
-      setLoading(false);
-      return;
-    }
 
     try {
       const response = await fetch('/api/contact-auth/send-otp', {
@@ -102,7 +94,7 @@ export default function ContactLoginPage() {
       if (response.ok && data.success) {
         setEmailSent(true);
         setStep(1);
-        setResendTimer(120); // Start 120 second timer
+        setResendTimer(60); // Start 60 second timer
         console.log('✅ OTP sent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');
@@ -219,7 +211,7 @@ export default function ContactLoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setResendTimer(120); // Reset timer
+        setResendTimer(60); // Reset timer
         console.log('✅ OTP resent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');
