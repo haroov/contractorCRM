@@ -11,7 +11,8 @@ import {
     Tabs,
     Tab,
     TextField,
-    MenuItem
+    MenuItem,
+    CircularProgress
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -114,11 +115,14 @@ export default function ProjectDetailsPage() {
         try {
             console.log('Save project function called');
             console.log('Saving project:', project);
-
+            
             if (!project) {
                 console.error('No project to save');
                 return;
             }
+
+            // Set loading state
+            setLoading(true);
 
             // Use projectsAPI to save the project
             const { projectsAPI } = await import('../services/api');
@@ -128,20 +132,32 @@ export default function ProjectDetailsPage() {
                 const savedProject = await projectsAPI.create(project);
                 console.log('✅ Project created:', savedProject);
             } else {
-                // Update existing project
-                const updatedProject = await projectsAPI.update(project.id, project);
+                // Update existing project - send only the fields that can be updated
+                const updateData = {
+                    projectName: project.projectName,
+                    description: project.description,
+                    startDate: project.startDate,
+                    durationMonths: project.durationMonths,
+                    valueNis: project.valueNis,
+                    city: project.city,
+                    isClosed: project.isClosed,
+                    status: project.status,
+                    contractorId: project.contractorId,
+                    mainContractor: project.mainContractor
+                };
+                const updatedProject = await projectsAPI.update(project.id, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Show success message
-            alert('הפרויקט נשמר בהצלחה!');
-
-            // Close the window or go back
-            window.close();
-
+            // Go back to contractor page instead of closing
+            window.history.back();
+            
         } catch (error) {
             console.error('❌ Error saving project:', error);
             alert('שגיאה בשמירת הפרויקט: ' + error.message);
+        } finally {
+            // Reset loading state
+            setLoading(false);
         }
     };
 
@@ -607,10 +623,11 @@ export default function ProjectDetailsPage() {
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    endIcon={<SaveIcon />}
+                    disabled={loading}
+                    endIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
                     sx={{ minWidth: 100 }}
                 >
-                    שמור
+                    {loading ? 'שומר...' : 'שמור'}
                 </Button>
             </Box>
         </Box>
