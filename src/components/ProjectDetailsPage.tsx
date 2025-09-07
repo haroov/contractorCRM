@@ -49,7 +49,7 @@ export default function ProjectDetailsPage() {
                     city: '',
                     isClosed: false,
                     status: 'future',
-                    contractorId: '',
+                    mainContractor: '',
                     contractorName: ''
                 };
                 setProject(newProject);
@@ -141,7 +141,6 @@ export default function ProjectDetailsPage() {
                     city: project.city,
                     isClosed: project.isClosed,
                     status: project.status,
-                    contractorId: project.contractorId,
                     mainContractor: project.mainContractor
                 };
                 const projectId = project._id || project.id;

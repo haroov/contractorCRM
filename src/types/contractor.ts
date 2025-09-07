@@ -25,8 +25,7 @@ export interface Project {
     city?: string;
     isClosed: boolean;
     status?: 'future' | 'current' | 'completed';
-    contractorId?: string;
-    mainContractor?: string; // The main contractor who opened the project
+    mainContractor: string; // ObjectId of the main contractor who opened the project
     contractorName?: string;
 }
 

@@ -822,7 +822,7 @@ app.get('/api/projects', async (req, res) => {
 
     let query = {};
     if (contractorId) {
-      query.contractorId = contractorId;
+      query.mainContractor = contractorId;
     }
 
     const projects = await db.collection('projects').find(query).toArray();
@@ -899,8 +899,6 @@ app.post('/api/projects', async (req, res) => {
     const db = client.db('contractor-crm');
     const projectData = {
       ...req.body,
-      // Set mainContractor to the same as contractorId if not provided
-      mainContractor: req.body.mainContractor || req.body.contractorId,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -910,15 +908,15 @@ app.post('/api/projects', async (req, res) => {
     console.log('✅ Created new project:', result.insertedId);
 
     // Add project ID to contractor's projectIds array
-    if (req.body.contractorId) {
+    if (req.body.mainContractor) {
       await db.collection('contractors').updateOne(
-        { contractor_id: req.body.contractorId },
+        { _id: new ObjectId(req.body.mainContractor) },
         { $push: { projectIds: result.insertedId.toString() } }
       );
-      console.log('✅ Added project ID to contractor:', req.body.contractorId);
+      console.log('✅ Added project ID to contractor:', req.body.mainContractor);
 
       // Update contractor statistics automatically
-      await updateContractorStats(db, req.body.contractorId);
+      await updateContractorStats(db, req.body.mainContractor);
     }
 
     res.json(result);
@@ -942,9 +940,9 @@ app.put('/api/projects/:id', async (req, res) => {
     console.log('✅ Updated project:', req.params.id);
 
     // Update contractor statistics automatically
-    if (req.body.contractorId) {
+    if (req.body.mainContractor) {
       try {
-        await updateContractorStats(db, req.body.contractorId);
+        await updateContractorStats(db, req.body.mainContractor);
       } catch (statsError) {
         console.error('❌ Error updating contractor stats:', statsError);
         // Don't fail the main request if stats update fails
@@ -1012,10 +1010,7 @@ async function updateContractorStats(db, contractorId) {
   try {
     // Get all projects for this contractor using mainContractor field
     const projects = await db.collection('projects').find({
-      $or: [
-        { contractorId: contractorId },
-        { mainContractor: contractorId }
-      ]
+      mainContractor: contractorId
     }).toArray();
 
     // Calculate statistics
@@ -1039,7 +1034,7 @@ async function updateContractorStats(db, contractorId) {
 
     // Update contractor with new statistics
     const result = await db.collection('contractors').updateOne(
-      { contractor_id: contractorId },
+      { _id: new ObjectId(contractorId) },
       {
         $set: {
           current_projects: currentProjects,
