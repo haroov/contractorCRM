@@ -204,11 +204,16 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     const loadProjects = async () => {
         try {
-            // Projects are now loaded with the contractor from the server
-            // No need to make a separate API call
-            console.log('Projects already loaded with contractor:', contractor.projects?.length || 0);
+            if (contractor.contractor_id) {
+                console.log('🔄 Loading projects for contractor:', contractor.contractor_id);
+                const projects = await projectsAPI.getByContractor(contractor.contractor_id);
+                console.log('✅ Loaded projects:', projects.length);
+                
+                // Update contractor with fresh projects
+                setContractor(prev => prev ? { ...prev, projects } : null);
+            }
         } catch (error) {
-            console.error('Error loading projects:', error);
+            console.error('❌ Error loading projects:', error);
         }
     };
 
@@ -228,6 +233,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             // Update contractor statistics automatically
             await updateContractorStats();
+
+            // Reload projects to show the new project in UI
+            await loadProjects();
 
             return savedProject;
         } catch (error) {
@@ -265,6 +273,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             // Update contractor statistics automatically
             await updateContractorStats();
+
+            // Reload projects to remove the deleted project from UI
+            await loadProjects();
 
             // Show success message
             setSnackbar({ open: true, message: 'פרויקט נמחק בהצלחה', severity: 'success' });

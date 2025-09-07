@@ -2,36 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Skeleton, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 const SkeletonLoader: React.FC = () => {
-    const [showSkeleton, setShowSkeleton] = useState(false);
-
-    useEffect(() => {
-        // Show skeleton for at least 1 second to ensure it's visible
-        const timer = setTimeout(() => {
-            setShowSkeleton(true);
-        }, 100);
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    if (!showSkeleton) {
-        return (
-            <Box sx={{
-                direction: 'rtl',
-                padding: 3,
-                backgroundColor: '#f5f5f5',
-                minHeight: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontFamily: 'Arial, sans-serif'
-            }}>
-                <Box sx={{ textAlign: 'center' }}>
-                    <Skeleton variant="circular" width={60} height={60} sx={{ mx: 'auto', mb: 2 }} />
-                    <Skeleton variant="text" width={200} height={40} sx={{ mx: 'auto' }} />
-                </Box>
-            </Box>
-        );
-    }
+    // Show skeleton immediately without delay to prevent flickering
     return (
         <Box sx={{
             direction: 'rtl',
