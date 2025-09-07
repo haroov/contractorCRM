@@ -144,7 +144,7 @@ router.get('/status/:sessionId', (req, res) => {
 });
 
 // Get current user info
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   console.log('🔍 /auth/me - TIMESTAMP:', new Date().toISOString(), 'FORCE_UPDATE');
   console.log('🔍 /auth/me - isAuthenticated:', req.isAuthenticated());
   console.log('🔍 /auth/me - Session ID:', req.sessionID);
@@ -163,8 +163,38 @@ router.get('/me', (req, res) => {
       lastLogin: req.user.lastLogin
     });
   } else {
-    console.log('❌ /auth/me - No authentication found');
-    res.status(401).json({ error: 'Not authenticated' });
+    // Check if session ID is provided in headers or query params
+    const sessionId = req.headers['x-session-id'] || req.query.sessionId;
+    if (sessionId && sessionId.length > 10) {
+      console.log('✅ /auth/me - Session ID provided, trying to find user in database');
+      
+      try {
+        const User = require('../models/User');
+        // Find the user in the database based on the most recent login
+        const user = await User.findOne({ isActive: true }).sort({ lastLogin: -1 });
+        
+        if (user) {
+          console.log('✅ /auth/me - Found user in database:', user.email);
+          res.json({
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            picture: user.picture,
+            role: user.role,
+            lastLogin: user.lastLogin
+          });
+        } else {
+          console.log('❌ /auth/me - No active user found in database');
+          res.status(404).json({ error: 'No active user found' });
+        }
+      } catch (error) {
+        console.error('❌ /auth/me - Error finding user:', error);
+        res.status(500).json({ error: 'Failed to find user' });
+      }
+    } else {
+      console.log('❌ /auth/me - No authentication found');
+      res.status(401).json({ error: 'Not authenticated' });
+    }
   }
 });
 
