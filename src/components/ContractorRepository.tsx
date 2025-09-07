@@ -570,13 +570,35 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                 }}>
                     <CardContent sx={{ textAlign: 'right', padding: '16px' }}>
                         <Typography variant="h6" sx={{ color: '#28a745', fontWeight: 500, mb: 0.5 }}>
-                            {filteredContractors.reduce((sum, contractor) => sum + (contractor.current_projects || 0), 0)}
+                            {filteredContractors.reduce((sum, contractor) => {
+                                // Calculate current projects from actual project data
+                                const currentProjects = contractor.projects?.filter(project => {
+                                    if (!project.startDate) return false;
+                                    const start = new Date(project.startDate);
+                                    const now = new Date();
+                                    const endDate = new Date(start);
+                                    endDate.setMonth(start.getMonth() + (project.durationMonths || 0));
+                                    return !project.isClosed && now >= start && now <= endDate;
+                                }).length || 0;
+                                return sum + currentProjects;
+                            }, 0)}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.875rem', mb: 1 }}>
                             פרויקטים פעילים
                         </Typography>
                         <Typography variant="h6" sx={{ color: '#28a745', fontWeight: 500, fontSize: '1rem' }}>
-                            ₪{filteredContractors.reduce((sum, contractor) => sum + (contractor.current_projects_value_nis || 0), 0).toLocaleString()}
+                            ₪{filteredContractors.reduce((sum, contractor) => {
+                                // Calculate current projects value from actual project data
+                                const currentProjectsValue = contractor.projects?.filter(project => {
+                                    if (!project.startDate) return false;
+                                    const start = new Date(project.startDate);
+                                    const now = new Date();
+                                    const endDate = new Date(start);
+                                    endDate.setMonth(start.getMonth() + (project.durationMonths || 0));
+                                    return !project.isClosed && now >= start && now <= endDate;
+                                }).reduce((projectSum, project) => projectSum + (project.valueNis || project.value || 0), 0) || 0;
+                                return sum + currentProjectsValue;
+                            }, 0).toLocaleString()}
                         </Typography>
                         <Typography variant="body2" sx={{ color: '#999', fontSize: '0.75rem' }}>
                             שווי מצרפי
@@ -777,7 +799,14 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                                     <Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                             <Chip
-                                                label={`${contractor.current_projects || 0} פעילים`}
+                                                label={`${contractor.projects?.filter(project => {
+                                                    if (!project.startDate) return false;
+                                                    const start = new Date(project.startDate);
+                                                    const now = new Date();
+                                                    const endDate = new Date(start);
+                                                    endDate.setMonth(start.getMonth() + (project.durationMonths || 0));
+                                                    return !project.isClosed && now >= start && now <= endDate;
+                                                }).length || 0} פעילים`}
                                                 size="small"
                                                 sx={{
                                                     backgroundColor: '#e8f5e8',
@@ -787,7 +816,14 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                                                 }}
                                             />
                                             <Typography variant="caption" sx={{ color: '#2e7d32', fontWeight: 500 }}>
-                                                ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
+                                                ₪{(contractor.projects?.filter(project => {
+                                                if (!project.startDate) return false;
+                                                const start = new Date(project.startDate);
+                                                const now = new Date();
+                                                const endDate = new Date(start);
+                                                endDate.setMonth(start.getMonth() + (project.durationMonths || 0));
+                                                return !project.isClosed && now >= start && now <= endDate;
+                                            }).reduce((sum, project) => sum + (project.valueNis || project.value || 0), 0) || 0).toLocaleString()}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
