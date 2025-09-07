@@ -34,6 +34,7 @@ export default function ContractorDetailsPage() {
 
             if (urlMode === 'new') {
                 // Create new contractor
+                console.log('🔍 Creating new contractor');
                 const newContractor: Contractor = {
                     contractor_id: '',
                     company_id: '',
@@ -65,7 +66,9 @@ export default function ContractorDetailsPage() {
                     createdAt: new Date(),
                     updatedAt: new Date()
                 } as Contractor;
+                console.log('✅ New contractor created:', newContractor);
                 setContractor(newContractor);
+                setLoading(false);
             } else if (contractorId && contractorId !== 'new') {
                 // Load existing contractor from server
                 const loadContractorFromServer = async () => {
