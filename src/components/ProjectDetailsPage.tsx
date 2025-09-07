@@ -149,7 +149,8 @@ export default function ProjectDetailsPage() {
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Go back to contractor page instead of closing
+            // Show success message and go back to contractor page
+            alert('הפרויקט נשמר בהצלחה!');
             window.history.back();
             
         } catch (error) {
@@ -508,13 +509,28 @@ export default function ProjectDetailsPage() {
                                         <Box>
                                             <TextField
                                                 fullWidth
-                                                label="שווי (₪)"
-                                                type="number"
-                                                value={project.valueNis || ''}
+                                                label="שווי הפרויקט"
+                                                type="text"
+                                                value={project.valueNis ? `${project.valueNis.toLocaleString('he-IL')} ₪` : ''}
                                                 onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    const numValue = value === '' ? 0 : parseInt(value) || 0;
+                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                    const numValue = numericValue ? parseInt(numericValue) : 0;
                                                     handleFieldChange('valueNis', numValue);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
+                                                    if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
+                                                        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                                                        (e.keyCode === 65 && e.ctrlKey === true) ||
+                                                        (e.keyCode === 67 && e.ctrlKey === true) ||
+                                                        (e.keyCode === 86 && e.ctrlKey === true) ||
+                                                        (e.keyCode === 88 && e.ctrlKey === true)) {
+                                                        return;
+                                                    }
+                                                    // Ensure that it is a number and stop the keypress
+                                                    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                                        e.preventDefault();
+                                                    }
                                                 }}
                                                 variant="outlined"
                                                 size="small"
