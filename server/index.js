@@ -344,6 +344,86 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Fix mainContractor field endpoint
+app.post('/api/fix-maincontractor', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractorsCollection = db.collection('contractors');
+    const projectsCollection = db.collection('projects');
+    
+    // Get all contractors to create a mapping from contractor_id to _id
+    const contractors = await contractorsCollection.find({}).toArray();
+    const contractorMapping = {};
+    
+    contractors.forEach(contractor => {
+      contractorMapping[contractor.contractor_id] = contractor._id.toString();
+    });
+    
+    console.log('Contractor mapping:', contractorMapping);
+    
+    // Get all projects that need fixing
+    const projects = await projectsCollection.find({
+      mainContractor: { $type: "string" } // Find projects where mainContractor is a string (contractor_id)
+    }).toArray();
+    
+    console.log(`Found ${projects.length} projects to fix`);
+    
+    const results = [];
+    
+    // Update each project
+    for (const project of projects) {
+      const contractorId = project.mainContractor;
+      const contractorObjectId = contractorMapping[contractorId];
+      
+      if (contractorObjectId) {
+        console.log(`Updating project ${project.projectName} (${project._id}):`);
+        console.log(`  - mainContractor: "${contractorId}" -> "${contractorObjectId}"`);
+        
+        const result = await projectsCollection.updateOne(
+          { _id: project._id },
+          { 
+            $set: { 
+              mainContractor: contractorObjectId,
+              updatedAt: new Date()
+            } 
+          }
+        );
+        
+        results.push({
+          projectId: project._id,
+          projectName: project.projectName,
+          oldMainContractor: contractorId,
+          newMainContractor: contractorObjectId,
+          modified: result.modifiedCount
+        });
+        
+        console.log(`  - Update result: ${result.modifiedCount} document(s) modified`);
+      } else {
+        console.log(`Warning: No contractor found for contractor_id: ${contractorId}`);
+        results.push({
+          projectId: project._id,
+          projectName: project.projectName,
+          oldMainContractor: contractorId,
+          newMainContractor: null,
+          modified: 0,
+          error: 'Contractor not found'
+        });
+      }
+    }
+    
+    console.log('✅ MainContractor field fix completed!');
+    res.json({ 
+      success: true, 
+      message: `Fixed ${results.length} projects`,
+      results: results
+    });
+    
+  } catch (error) {
+    console.error('❌ Error fixing mainContractor field:', error);
+    res.status(500).json({ error: 'Failed to fix mainContractor field' });
+  }
+});
+
 
 
 // Bulk validate all contractors from Companies Register
