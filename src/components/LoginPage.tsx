@@ -215,9 +215,6 @@ const LoginPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ color: 'primary.main', mr: 2 }}>
-            מערכת ניהול קבלנים
-          </Typography>
           <Box
             component="img"
             src={logo}
@@ -225,9 +222,13 @@ const LoginPage: React.FC = () => {
             sx={{
               height: 48,
               width: 48,
-              objectFit: 'contain'
+              objectFit: 'contain',
+              mr: 2
             }}
           />
+          <Typography variant="h4" sx={{ color: 'primary.main' }}>
+            מערכת ניהול קבלנים
+          </Typography>
         </Box>
 
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
@@ -259,7 +260,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#357ae8'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '16px' // Increased spacing between icon and text
+                marginRight: '8px'
               }
             }}
           >
@@ -286,7 +287,7 @@ const LoginPage: React.FC = () => {
                 bgcolor: '#0088cc'
               },
               '& .MuiButton-startIcon': {
-                marginRight: '16px' // Increased spacing between icon and text
+                marginRight: '8px'
               }
             }}
           >
@@ -305,7 +306,6 @@ const LoginPage: React.FC = () => {
               label="כתובת אימייל"
               type="email"
               variant="outlined"
-              size="small"
               value={email}
               onChange={handleEmailChange}
               error={!!emailError}
