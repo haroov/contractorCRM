@@ -761,6 +761,33 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
+// Get single project by ID
+app.get('/api/projects/:id', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const projectId = req.params.id;
+    
+    console.log('🔍 Fetching project by ID:', projectId);
+    
+    const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });
+    
+    if (!project) {
+      console.log('❌ Project not found:', projectId);
+      return res.status(404).json({ error: 'Project not found' });
+    }
+    
+    // Calculate correct status for the project
+    const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
+    const projectWithStatus = { ...project, status };
+    
+    console.log('✅ Fetched project:', projectWithStatus.projectName);
+    res.json(projectWithStatus);
+  } catch (error) {
+    console.error('❌ Error fetching project by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch project' });
+  }
+});
+
 // Get projects by contractor with population
 app.get('/api/contractors/:id/projects', async (req, res) => {
   try {
