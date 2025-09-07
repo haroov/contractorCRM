@@ -59,8 +59,10 @@ router.post('/send-otp', async (req, res) => {
   try {
     const { email } = req.body;
     
+    // Email validation removed - email comes from URL parameter
     if (!email) {
-      return res.status(400).json({ error: 'נדרש אימייל' });
+      console.log('❌ No email provided in request body');
+      return res.status(400).json({ error: 'אימייל לא סופק' });
     }
 
     const db = client.db('contractor-crm');

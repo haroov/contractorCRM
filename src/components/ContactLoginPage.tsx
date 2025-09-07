@@ -45,7 +45,7 @@ export default function ContactLoginPage() {
         email: emailParam
       }));
       // Automatically send OTP when email is provided in URL
-      handleSendOTP({ preventDefault: () => { } } as any);
+      sendOTPForEmail(emailParam);
     }
   }, [searchParams]);
 
@@ -69,6 +69,38 @@ export default function ContactLoginPage() {
       if (interval) clearInterval(interval);
     };
   }, [resendTimer]);
+
+  const sendOTPForEmail = async (email: string) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/contact-auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setEmailSent(true);
+        setStep(1);
+        setResendTimer(120); // Start 120 second timer
+        console.log('✅ OTP sent successfully');
+      } else {
+        setError(data.error || 'שגיאה בשליחת קוד האימות');
+      }
+    } catch (error) {
+      console.error('❌ Send OTP error:', error);
+      setError('שגיאה בהתחברות לשרת');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field: keyof ContactLoginData) => (
     event: React.ChangeEvent<HTMLInputElement>
