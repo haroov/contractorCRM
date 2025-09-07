@@ -235,11 +235,6 @@ const LoginPage: React.FC = () => {
           התחברות למערכת
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
 
         {/* Email Field */}
         {/* Removed email input and divider - using Google login only */}
@@ -266,12 +261,6 @@ const LoginPage: React.FC = () => {
           >
             {loading ? 'מתחבר...' : 'התחבר עם Google'}
           </Button>
-
-                  {error && (
-                    <Alert severity="error" sx={{ mt: 2 }}>
-                      {error}
-                    </Alert>
-                  )}
 
           <Button
             variant="contained"
@@ -314,6 +303,11 @@ const LoginPage: React.FC = () => {
               autoComplete="email"
               sx={{ mb: 1 }}
             />
+            {error && (
+              <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+                {error}
+              </Alert>
+            )}
             <Button
               variant="outlined"
               size="large"
