@@ -26,7 +26,7 @@ passport.use(new GoogleStrategy({
   accessType: 'offline',
   prompt: 'select_account consent' // Force account selection and password entry
 }, async (accessToken, refreshToken, profile, done) => {
-        console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString(), 'FORCE_UPDATE_V244');
+  console.log('🔐 Google Strategy called - TIMESTAMP:', new Date().toISOString(), 'FORCE_UPDATE_V244');
   console.log('🔐 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔐 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
   console.log('🔐 Callback URL:', process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback");

@@ -104,11 +104,14 @@ export default function ProjectDetailsPage() {
     };
 
     const handleFieldChange = (field: keyof Project, value: any) => {
+        console.log('🔄 Field change:', field, 'value:', value, 'type:', typeof value);
         if (project) {
-            setProject({
+            const updatedProject = {
                 ...project,
                 [field]: value
-            });
+            };
+            console.log('🔄 Updated project:', updatedProject);
+            setProject(updatedProject);
         }
     };
 
@@ -139,13 +142,14 @@ export default function ProjectDetailsPage() {
                     description: project.description,
                     startDate: project.startDate,
                     durationMonths: project.durationMonths,
-                    valueNis: project.valueNis,
+                    valueNis: typeof project.valueNis === 'number' ? project.valueNis : 0,
                     city: project.city,
                     isClosed: project.isClosed,
                     status: project.status,
                     contractorId: project.contractorId,
                     mainContractor: project.mainContractor
                 };
+                console.log('🔄 Sending update data:', updateData);
                 const updatedProject = await projectsAPI.update(project.id, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
@@ -512,7 +516,11 @@ export default function ProjectDetailsPage() {
                                                 label="שווי (₪)"
                                                 type="number"
                                                 value={project.valueNis || ''}
-                                                onChange={(e) => handleFieldChange('valueNis', parseInt(e.target.value) || 0)}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    const numValue = value === '' ? 0 : parseInt(value) || 0;
+                                                    handleFieldChange('valueNis', numValue);
+                                                }}
                                                 variant="outlined"
                                                 size="small"
                                             />
