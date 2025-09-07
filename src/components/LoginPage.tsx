@@ -129,19 +129,46 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleContactLogin = () => {
+  const handleContactLogin = async () => {
     if (!email) {
       setEmailError('נא להזין כתובת אימייל');
       return;
     }
-    
+
     if (!validateEmail(email)) {
       setEmailError('כתובת אימייל לא תקינה');
       return;
     }
 
-    // Navigate to contact login with email parameter
-    window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Check if email exists in the system
+      const response = await fetch('/api/contact-auth/check-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.exists) {
+        // Email exists - navigate to contact login with email parameter
+        window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
+      } else {
+        // Email doesn't exist - show error message
+        setError('אינך מורשה למערכת. אנא פנה למנהל המערכת.');
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+      setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Removed handleLogout - using simple localStorage clear
@@ -239,23 +266,11 @@ const LoginPage: React.FC = () => {
             {loading ? 'מתחבר...' : 'התחבר עם Google'}
           </Button>
 
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Alert severity="info" sx={{ mt: 2, textAlign: 'right' }}>
-            <Typography variant="body2">
-              <strong>אם נתקעת בעמוד הלוגאין של גוגל:</strong>
-              <br />
-              1. נקה את ה-cookies והמטמון של הדפדפן
-              <br />
-              2. נסה בחלון פרטי (Incognito)
-              <br />
-              3. ודא שאתה בוחר בחשבון הנכון
-            </Typography>
-          </Alert>
+                  {error && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                      {error}
+                    </Alert>
+                  )}
 
           <Button
             variant="contained"
@@ -315,7 +330,7 @@ const LoginPage: React.FC = () => {
                 }
               }}
             >
-              התחבר כנציג חברה
+              התחבר
             </Button>
           </Box>
         </Box>

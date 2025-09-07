@@ -26,6 +26,34 @@ function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Check if email exists in system
+router.post('/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'כתובת אימייל נדרשת' });
+    }
+
+    const db = client.db('contractor-crm');
+    
+    // Check if email exists in contractors.contacts
+    const contractors = await db.collection('contractors').find({
+      'contacts.email': email,
+      'contacts.permissions': { $in: ['contact_manager', 'contact_user'] }
+    }).toArray();
+
+    if (contractors.length > 0) {
+      res.json({ exists: true, message: 'כתובת האימייל נמצאה במערכת' });
+    } else {
+      res.json({ exists: false, message: 'כתובת האימייל לא נמצאה במערכת' });
+    }
+  } catch (error) {
+    console.error('❌ Check email error:', error);
+    res.status(500).json({ error: 'שגיאה בבדיקת כתובת האימייל' });
+  }
+});
+
 // Send OTP email endpoint
 router.post('/send-otp', async (req, res) => {
   try {
