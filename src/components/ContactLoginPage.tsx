@@ -33,6 +33,7 @@ export default function ContactLoginPage() {
   const [emailSent, setEmailSent] = useState(false);
   const [contractors, setContractors] = useState<any[]>([]);
   const [selectedContractor, setSelectedContractor] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
   const navigate = useNavigate();
 
   // Get email from URL parameters and send OTP automatically
@@ -47,6 +48,19 @@ export default function ContactLoginPage() {
       handleSendOTP({ preventDefault: () => {} } as any);
     }
   }, [searchParams]);
+
+  // Timer for resend OTP
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
 
   const handleInputChange = (field: keyof ContactLoginData) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -69,7 +83,6 @@ export default function ContactLoginPage() {
     setError('');
 
     if (!validateEmail(loginData.email)) {
-      setError('אנא הזן כתובת אימייל תקינה');
       setLoading(false);
       return;
     }
@@ -89,6 +102,7 @@ export default function ContactLoginPage() {
       if (response.ok && data.success) {
         setEmailSent(true);
         setStep(1);
+        setResendTimer(120); // Start 120 second timer
         console.log('✅ OTP sent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');
@@ -186,6 +200,38 @@ export default function ContactLoginPage() {
     }
   };
 
+  const handleResendOTP = async () => {
+    if (resendTimer > 0) return; // Don't allow resend if timer is active
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await fetch('/api/contact-auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: loginData.email }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setResendTimer(120); // Reset timer
+        console.log('✅ OTP resent successfully');
+      } else {
+        setError(data.error || 'שגיאה בשליחת קוד האימות');
+      }
+    } catch (error) {
+      console.error('❌ Resend OTP error:', error);
+      setError('שגיאה בהתחברות לשרת');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBackToEmail = () => {
     navigate('/login');
   };
@@ -259,13 +305,28 @@ export default function ContactLoginPage() {
                     )}
                   </Button>
 
-                  <Button
-                    variant="text"
-                    onClick={handleBackToEmail}
-                    sx={{ mt: 1 }}
-                  >
-                    חזור לעמוד הלוגאין
-                  </Button>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2 }}>
+                    {resendTimer > 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        ניתן לשלוח קוד חוזר בעוד {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
+                      </Typography>
+                    ) : (
+                      <Button
+                        variant="text"
+                        onClick={handleResendOTP}
+                        disabled={loading}
+                        sx={{ textDecoration: 'underline' }}
+                      >
+                        שלח קוד חוזר
+                      </Button>
+                    )}
+                    <Button
+                      variant="text"
+                      onClick={handleBackToEmail}
+                    >
+                      חזור לעמוד הלוגאין
+                    </Button>
+                  </Box>
                 </Box>
               </form>
             ) : step === 2 ? (
