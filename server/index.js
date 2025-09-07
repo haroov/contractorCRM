@@ -863,7 +863,12 @@ app.put('/api/projects/:id', async (req, res) => {
 
     // Update contractor statistics automatically
     if (req.body.contractorId) {
-      await updateContractorStats(db, req.body.contractorId);
+      try {
+        await updateContractorStats(db, req.body.contractorId);
+      } catch (statsError) {
+        console.error('❌ Error updating contractor stats:', statsError);
+        // Don't fail the main request if stats update fails
+      }
     }
 
     res.json(result);

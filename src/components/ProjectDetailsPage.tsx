@@ -25,7 +25,8 @@ import SkeletonLoader from './SkeletonLoader';
 export default function ProjectDetailsPage() {
     const [searchParams] = useSearchParams();
     const [project, setProject] = useState<Project | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
 
@@ -121,8 +122,8 @@ export default function ProjectDetailsPage() {
                 return;
             }
 
-            // Set loading state
-            setLoading(true);
+            // Set saving state
+            setSaving(true);
 
             // Use projectsAPI to save the project
             const { projectsAPI } = await import('../services/api');
@@ -156,8 +157,8 @@ export default function ProjectDetailsPage() {
             console.error('❌ Error saving project:', error);
             alert('שגיאה בשמירת הפרויקט: ' + error.message);
         } finally {
-            // Reset loading state
-            setLoading(false);
+            // Reset saving state
+            setSaving(false);
         }
     };
 
@@ -623,11 +624,11 @@ export default function ProjectDetailsPage() {
                 <Button
                     variant="contained"
                     onClick={handleSave}
-                    disabled={loading}
-                    endIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                    disabled={saving}
+                    endIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
                     sx={{ minWidth: 100 }}
                 >
-                    {loading ? 'שומר...' : 'שמור'}
+                    {saving ? 'שומר...' : 'שמור'}
                 </Button>
             </Box>
         </Box>
