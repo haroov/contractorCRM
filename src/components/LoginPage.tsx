@@ -292,6 +292,7 @@ const LoginPage: React.FC = () => {
               onChange={handleEmailChange}
               error={!!emailError}
               helperText={emailError}
+              placeholder="הזן את כתובת האימייל שלך"
               sx={{ mb: 1 }}
             />
             <Button
