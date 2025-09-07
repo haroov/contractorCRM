@@ -40,7 +40,7 @@ router.post('/check-email', async (req, res) => {
     // Check if email exists in contractors.contacts
     const contractors = await db.collection('contractors').find({
       'contacts.email': email,
-      'contacts.permissions': { $in: ['contact_manager', 'contact_user'] }
+      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user'] }
     }).toArray();
 
     if (contractors.length > 0) {
@@ -68,7 +68,7 @@ router.post('/send-otp', async (req, res) => {
     // Find contact user in any contractor's contacts
     const contractors = await db.collection('contractors').find({
       'contacts.email': email,
-      'contacts.permissions': { $in: ['contact_manager', 'contact_user'] }
+      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user'] }
     }).toArray();
 
     if (contractors.length === 0) {
