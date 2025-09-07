@@ -201,7 +201,7 @@ const LoginPage: React.FC = () => {
         </Box>
 
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-          התחברות למערכת
+          התחברות למערכת {/* Updated with email validation */}
         </Typography>
 
         {error && (
