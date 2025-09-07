@@ -56,7 +56,7 @@ function App() {
       // Remove sessionId from URL to clean it up
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
-      
+
       // Try to get user info from server first
       try {
         const response = await fetch(`https://contractorcrm-api.onrender.com/auth/me`, {
@@ -65,35 +65,35 @@ function App() {
             'X-Session-ID': sessionId
           }
         });
-        
+
         if (response.ok) {
           const userData = await response.json();
           console.log('✅ Got user data from server:', userData);
           console.log('🔍 Server user email:', userData.email, 'Role:', userData.role);
-          
-                        // Use the user data from server as-is
-                        console.log('✅ Using user data from server:', userData);
-                        console.log('🔍 Setting user state with:', {
-                          id: userData.id,
-                          email: userData.email,
-                          name: userData.name,
-                          role: userData.role,
-                          picture: userData.picture
-                        });
-                        setUser(userData);
-                        setLoading(false);
-                        return;
+
+          // Use the user data from server as-is
+          console.log('✅ Using user data from server:', userData);
+          console.log('🔍 Setting user state with:', {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+            picture: userData.picture
+          });
+          setUser(userData);
+          setLoading(false);
+          return;
         }
       } catch (error) {
         console.log('❌ Could not get user from server (URL session):', error);
       }
-      
-                // No fallback user - let server handle authentication
-                console.log('❌ No user data from server, redirecting to login');
-                console.log('🔍 Setting user to null (no server data)');
-                setUser(null);
-                setLoading(false);
-                return;
+
+      // No fallback user - let server handle authentication
+      console.log('❌ No user data from server, redirecting to login');
+      console.log('🔍 Setting user to null (no server data)');
+      setUser(null);
+      setLoading(false);
+      return;
     }
 
     // Check if we have a stored sessionId
@@ -171,7 +171,7 @@ function App() {
               }
             />
             <Route
-              path="/contractor/:id"
+              path="/contractor"
               element={
                 <ProtectedRoute>
                   <ContractorDetailsPage currentUser={user} />

@@ -70,19 +70,21 @@ export default function ContractorDetailsPage() {
                 // Load existing contractor from server
                 const loadContractorFromServer = async () => {
                     try {
-                        const response = await fetch(`/api/contractors/${contractorId}`);
-                        if (response.ok) {
-                            const contractorData = await response.json();
+                        console.log('🔍 Loading contractor from server:', contractorId);
+                        const contractorData = await ContractorService.getById(contractorId);
+                        if (contractorData) {
+                            console.log('✅ Contractor loaded from server:', contractorData);
                             setContractor(contractorData);
                             // Also store in sessionStorage for consistency
                             sessionStorage.setItem('contractor_data', JSON.stringify(contractorData));
                         } else {
-                            console.error('Failed to load contractor from server');
+                            console.error('❌ Contractor not found on server');
                             // Fallback to sessionStorage if server fails
                             const storedData = sessionStorage.getItem('contractor_data');
                             if (storedData) {
                                 try {
                                     const contractorData = JSON.parse(storedData);
+                                    console.log('✅ Using contractor from sessionStorage:', contractorData);
                                     setContractor(contractorData);
                                 } catch (error) {
                                     console.error('Error parsing contractor data:', error);
@@ -90,24 +92,27 @@ export default function ContractorDetailsPage() {
                             }
                         }
                     } catch (error) {
-                        console.error('Error loading contractor from server:', error);
+                        console.error('❌ Error loading contractor from server:', error);
                         // Fallback to sessionStorage if server fails
                         const storedData = sessionStorage.getItem('contractor_data');
                         if (storedData) {
                             try {
                                 const contractorData = JSON.parse(storedData);
+                                console.log('✅ Using contractor from sessionStorage (fallback):', contractorData);
                                 setContractor(contractorData);
                             } catch (error) {
                                 console.error('Error parsing contractor data:', error);
                             }
                         }
+                    } finally {
+                        setLoading(false);
                     }
                 };
 
                 loadContractorFromServer();
+            } else {
+                setLoading(false);
             }
-
-            setLoading(false);
         };
 
         loadContractorData();
@@ -125,14 +130,6 @@ export default function ContractorDetailsPage() {
     const handleBack = () => {
         window.history.back();
     };
-
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <Typography>טוען פרטי קבלן...</Typography>
-            </Box>
-        );
-    }
 
     if (loading) {
         return <SkeletonLoader />;
