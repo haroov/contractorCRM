@@ -264,9 +264,6 @@ export default function ContactLoginPage() {
     }
   };
 
-  const handleBackToEmail = () => {
-    navigate('/login');
-  };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -313,7 +310,6 @@ export default function ContactLoginPage() {
                     variant="outlined"
                     size="small"
                     inputProps={{ maxLength: 6 }}
-                    helperText="הזן את הקוד בן 6 הספרות שקיבלת במייל"
                   />
 
                   {error && (
@@ -352,12 +348,6 @@ export default function ContactLoginPage() {
                         שלח קוד חוזר
                       </Button>
                     )}
-                    <Button
-                      variant="text"
-                      onClick={handleBackToEmail}
-                    >
-                      חזור לעמוד הלוגאין
-                    </Button>
                   </Box>
                 </Box>
               </form>
@@ -418,28 +408,12 @@ export default function ContactLoginPage() {
                     )}
                   </Button>
 
-                  <Button
-                    variant="text"
-                    onClick={handleBackToEmail}
-                    sx={{ mt: 1 }}
-                  >
-                    חזור להתחלה
-                  </Button>
                 </Box>
               </form>
             ) : null}
           </CardContent>
         </Card>
 
-        <Box sx={{ textAlign: 'center', mt: 3 }}>
-          <Button
-            variant="text"
-            onClick={() => navigate('/login')}
-            sx={{ textDecoration: 'underline' }}
-          >
-            חזור להתחברות רגילה
-          </Button>
-        </Box>
       </Paper>
     </Container>
   );
