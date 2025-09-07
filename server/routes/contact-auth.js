@@ -12,8 +12,8 @@ const client = new MongoClient(process.env.MONGODB_URI);
 // SENDGRID_FROM_EMAIL - Verified sender email address
 if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  sgMail.setDataResidency('eu'); // Set EU data residency
-  console.log('✅ SendGrid configured successfully with EU data residency');
+  // Note: setDataResidency is not available in this version of SendGrid
+  console.log('✅ SendGrid configured successfully');
 } else {
   console.log('⚠️ SendGrid not configured - OTP emails will be logged to console only');
 }
