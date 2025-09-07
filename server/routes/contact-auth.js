@@ -100,6 +100,7 @@ router.post('/send-otp', async (req, res) => {
       to: email,
       from: process.env.SENDGRID_FROM_EMAIL || 'noreply@contractor-crm.com',
       subject: 'קוד אימות למערכת ניהול קבלנים',
+      text: `שלום,\n\nקיבלת בקשה להתחבר למערכת ניהול קבלנים.\n\nקוד האימות שלך הוא: ${otp}\n\nקוד זה תקף למשך 10 דקות.\n\nאם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.\n\nזהו מייל אוטומטי, אנא אל תשיב עליו.`,
       html: `
         <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1976d2;">קוד אימות למערכת ניהול קבלנים</h2>
@@ -124,8 +125,15 @@ router.post('/send-otp', async (req, res) => {
           message: 'קוד אימות נשלח לכתובת האימייל שלך (במצב פיתוח)'
         });
       } else {
-        await sgMail.send(msg);
-        console.log('✅ OTP email sent to:', email);
+        // Send email using SendGrid v3 API
+        await sgMail.send(msg)
+          .then(() => {
+            console.log('✅ OTP email sent to:', email);
+          })
+          .catch((error) => {
+            console.error('❌ SendGrid error:', error);
+            throw error; // Re-throw to be caught by outer catch
+          });
         
         res.json({
           success: true,
