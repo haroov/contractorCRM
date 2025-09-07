@@ -84,8 +84,38 @@ export default function ProjectDetailsPage() {
     };
 
     const handleSave = async () => {
-        // TODO: Implement project save logic
-        console.log('Save project function called');
+        try {
+            console.log('Save project function called');
+            console.log('Saving project:', project);
+            
+            if (!project) {
+                console.error('No project to save');
+                return;
+            }
+
+            // Use projectsAPI to save the project
+            const { projectsAPI } = await import('../services/api');
+            
+            if (mode === 'new') {
+                // Create new project
+                const savedProject = await projectsAPI.create(project);
+                console.log('✅ Project created:', savedProject);
+            } else {
+                // Update existing project
+                const updatedProject = await projectsAPI.update(project.id, project);
+                console.log('✅ Project updated:', updatedProject);
+            }
+            
+            // Show success message
+            alert('הפרויקט נשמר בהצלחה!');
+            
+            // Close the window or go back
+            window.close();
+            
+        } catch (error) {
+            console.error('❌ Error saving project:', error);
+            alert('שגיאה בשמירת הפרויקט: ' + error.message);
+        }
     };
 
     const handleClose = () => {
