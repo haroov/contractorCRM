@@ -50,13 +50,14 @@ interface ContractorRepositoryProps {
 }
 
 export default function ContractorRepository({ onContractorSelect, currentUser }: ContractorRepositoryProps) {
+    console.log('🔍 ContractorRepository component - currentUser prop:', currentUser);
     const [contractors, setContractors] = useState<Contractor[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
     const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<{ name: string, picture: string } | null>(null);
+    const [user, setUser] = useState<{ name: string, picture: string, role: string, email: string } | null>(null);
     const [profileDialogOpen, setProfileDialogOpen] = useState(false);
     const [profileData, setProfileData] = useState({
         name: '',
@@ -91,11 +92,18 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
 
     // Load user data from App.tsx context
     useEffect(() => {
+        console.log('🔍 ContractorRepository useEffect - currentUser:', currentUser);
         if (currentUser) {
-            setUser({
+            const userData = {
                 name: currentUser.name,
-                picture: currentUser.picture
-            });
+                picture: currentUser.picture,
+                role: currentUser.role,
+                email: currentUser.email
+            };
+            console.log('🔍 Setting user data:', userData);
+            setUser(userData);
+        } else {
+            console.log('🔍 No currentUser provided');
         }
     }, [currentUser]);
 
@@ -976,7 +984,7 @@ export default function ContractorRepository({ onContractorSelect, currentUser }
                             {user?.role === 'admin' ? 'ניהול משתמשים' : 'פרופיל'}
                         </Button>
                         {/* Debug: Show user role */}
-                        {console.log('🔍 User role in menu:', user?.role, 'Email:', user?.email, 'Is admin check:', user?.role === 'admin')}
+                        {console.log('🔍 User role in menu:', user?.role, 'Email:', user?.email, 'Is admin check:', user?.role === 'admin', 'Full user object:', user)}
                         <Button
                             startIcon={<LogoutIcon />}
                             onClick={handleLogout}
