@@ -255,10 +255,12 @@ export default function ContactLoginPage() {
         console.log('✅ OTP resent successfully');
       } else {
         setError(data.error || 'שגיאה בשליחת קוד האימות');
+        setResendTimer(120); // Start timer even if sending failed
       }
     } catch (error) {
       console.error('❌ Resend OTP error:', error);
       setError('שגיאה בהתחברות לשרת');
+      setResendTimer(120); // Start timer even if sending failed
     } finally {
       setLoading(false);
     }
@@ -342,7 +344,7 @@ export default function ContactLoginPage() {
                       <Button
                         variant="text"
                         onClick={handleResendOTP}
-                        disabled={loading}
+                        disabled={loading || resendTimer > 0}
                         sx={{ textDecoration: 'underline' }}
                       >
                         שלח קוד חוזר
