@@ -230,23 +230,33 @@ const LoginPage: React.FC = () => {
             </Typography>
           </Divider>
 
-          <Button
-            variant="outlined"
-            size="large"
-            fullWidth
-            onClick={() => window.location.href = '/contact-login'}
-            sx={{
-              py: 1.5,
-              borderColor: '#1976d2',
-              color: '#1976d2',
-              '&:hover': {
-                borderColor: '#1565c0',
-                backgroundColor: 'rgba(25, 118, 210, 0.04)'
-              }
-            }}
-          >
-            התחבר כנציג חברה
-          </Button>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <TextField
+              fullWidth
+              label="כתובת אימייל"
+              type="email"
+              variant="outlined"
+              size="small"
+              sx={{ mb: 1 }}
+            />
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={() => window.location.href = '/contact-login'}
+              sx={{
+                py: 1.5,
+                borderColor: '#1976d2',
+                color: '#1976d2',
+                '&:hover': {
+                  borderColor: '#1565c0',
+                  backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                }
+              }}
+            >
+              התחבר כנציג חברה
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </Container>
