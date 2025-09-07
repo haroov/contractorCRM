@@ -746,8 +746,15 @@ app.get('/api/projects', async (req, res) => {
     }
 
     const projects = await db.collection('projects').find(query).toArray();
-    console.log('📋 Fetched', projects.length, 'projects for contractor:', contractorId || 'all');
-    res.json(projects);
+    
+    // Calculate correct status for each project
+    const projectsWithStatus = projects.map(project => {
+      const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
+      return { ...project, status };
+    });
+    
+    console.log('📋 Fetched', projectsWithStatus.length, 'projects for contractor:', contractorId || 'all');
+    res.json(projectsWithStatus);
   } catch (error) {
     console.error('❌ Error fetching projects:', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
@@ -873,6 +880,22 @@ app.delete('/api/projects/:id', async (req, res) => {
 });
 
 // Helper function to update contractor statistics
+// Calculate project status based on dates
+function calculateProjectStatus(startDate, durationMonths, isClosed) {
+  if (isClosed) return 'completed';
+  
+  if (!startDate) return 'future';
+  
+  const start = new Date(startDate);
+  const now = new Date();
+  const endDate = new Date(start);
+  endDate.setMonth(start.getMonth() + (durationMonths || 0));
+  
+  if (now < start) return 'future';
+  if (now >= start && now <= endDate) return 'current';
+  return 'completed';
+}
+
 async function updateContractorStats(db, contractorId) {
   try {
     // Get all projects for this contractor using mainContractor field
@@ -890,12 +913,15 @@ async function updateContractorStats(db, contractorId) {
     let futureProjectsValue = 0;
 
     projects.forEach(project => {
-      if (project.status === 'current') {
+      // Calculate correct status for each project
+      const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
+      
+      if (status === 'current') {
         currentProjects++;
-        currentProjectsValue += project.valueNis || 0;
-      } else if (project.status === 'future') {
+        currentProjectsValue += project.valueNis || project.value || 0;
+      } else if (status === 'future') {
         futureProjects++;
-        futureProjectsValue += project.valueNis || 0;
+        futureProjectsValue += project.valueNis || project.value || 0;
       }
     });
 
