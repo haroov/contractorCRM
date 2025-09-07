@@ -150,7 +150,9 @@ export default function ProjectDetailsPage() {
                     mainContractor: project.mainContractor
                 };
                 console.log('🔄 Sending update data:', updateData);
-                const updatedProject = await projectsAPI.update(project.id, updateData);
+                const projectId = project._id || project.id;
+                console.log('🔄 Using project ID:', projectId, '(_id:', project._id, ', id:', project.id, ')');
+                const updatedProject = await projectsAPI.update(projectId, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
 
