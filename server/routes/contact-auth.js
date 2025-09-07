@@ -10,7 +10,13 @@ const client = new MongoClient(process.env.MONGODB_URI);
 // Required environment variables:
 // SENDGRID_API_KEY - Your SendGrid API key
 // SENDGRID_FROM_EMAIL - Verified sender email address
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  sgMail.setDataResidency('eu'); // Set EU data residency
+  console.log('✅ SendGrid configured successfully with EU data residency');
+} else {
+  console.log('⚠️ SendGrid not configured - OTP emails will be logged to console only');
+}
 
 // In-memory storage for OTPs (in production, use Redis or database)
 const otpStorage = new Map();
@@ -80,17 +86,36 @@ router.post('/send-otp', async (req, res) => {
       `
     };
 
-    try {
-      await sgMail.send(msg);
-      console.log('✅ OTP email sent to:', email);
+    // Check if SendGrid is configured
+    if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
+      try {
+        await sgMail.send(msg);
+        console.log('✅ OTP email sent to:', email);
+        
+        res.json({
+          success: true,
+          message: 'קוד אימות נשלח לכתובת האימייל שלך'
+        });
+      } catch (emailError) {
+        console.error('❌ SendGrid error:', emailError);
+        res.status(500).json({ error: 'שגיאה בשליחת המייל' });
+      }
+    } else {
+      // SendGrid not configured - log OTP to console for development
+      console.log('📧 OTP Email (SendGrid not configured):');
+      console.log('To:', email);
+      console.log('Subject:', msg.subject);
+      console.log('OTP Code:', otp);
+      console.log('HTML Content:', msg.html);
       
       res.json({
         success: true,
-        message: 'קוד אימות נשלח לכתובת האימייל שלך'
+        message: 'קוד אימות נשלח לכתובת האימייל שלך (פיתוח מקומי)',
+        debug: {
+          otp: otp,
+          email: email
+        }
       });
-    } catch (emailError) {
-      console.error('❌ SendGrid error:', emailError);
-      res.status(500).json({ error: 'שגיאה בשליחת המייל' });
     }
 
   } catch (error) {
