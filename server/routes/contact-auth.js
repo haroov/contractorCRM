@@ -193,7 +193,11 @@ router.post('/send-otp', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Send OTP error:', error);
-    res.status(500).json({ error: 'שגיאה בשליחת קוד האימות' });
+    console.error('❌ Error stack:', error.stack);
+    res.status(500).json({ 
+      error: 'שגיאה בשליחת קוד האימות',
+      details: error.message 
+    });
   }
 });
 
