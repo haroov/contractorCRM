@@ -42,7 +42,7 @@ app.use(session({
   resave: true, // Changed to true
   saveUninitialized: true, // Changed to true
   cookie: {
-    secure: true, // Set to true for HTTPS
+    secure: false, // Set to false for debugging
     httpOnly: false, // Set to false for debugging
     sameSite: 'lax', // Changed to lax for better compatibility
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
