@@ -683,6 +683,9 @@ app.post('/api/contractors', async (req, res) => {
 
 app.put('/api/contractors/:id', async (req, res) => {
   try {
+    console.log('🔍 PUT /api/contractors/:id called with ID:', req.params.id);
+    console.log('🔍 Request body keys:', Object.keys(req.body));
+    
     const db = client.db('contractor-crm');
 
     // Remove immutable fields from update data
