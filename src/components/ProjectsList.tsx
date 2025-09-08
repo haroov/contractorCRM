@@ -54,6 +54,10 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
         const active: Project[] = [];
         const closed: Project[] = [];
 
+        if (!projects || !Array.isArray(projects)) {
+            return { future, active, closed };
+        }
+
         projects.forEach(project => {
             const projectDate = new Date(project.startDate);
 

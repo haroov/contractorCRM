@@ -524,14 +524,16 @@ export default function ContractorForm() {
             newErrors.phone = "מספר טלפון לא תקין. אנא הכנס מספר בפורמט 05XXXXXXXX.";
         }
 
-        contractor.contacts.forEach((contact, index) => {
+        if (contractor.contacts && Array.isArray(contractor.contacts)) {
+            contractor.contacts.forEach((contact, index) => {
             if (contact.email && !validateEmail(contact.email)) {
                 newErrors[`contact_${index}_email`] = "כתובת אימייל לא תקינה.";
             }
             if (contact.mobile && !validateMobile(contact.mobile)) {
                 newErrors[`contact_${index}_mobile`] = "מספר טלפון לא תקין.";
             }
-        });
+            });
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
