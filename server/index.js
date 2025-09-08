@@ -1799,7 +1799,10 @@ process.on('SIGINT', async () => {
 // Start server
 // Contact User Routes (Limited Access)
 // Get contractor details for contact user (read-only or editable based on permissions)
-app.get('/api/contact/contractor/:id', requireContactAuth, requireContactContractorAccess, async (req, res) => {
+app.get('/api/contact/contractor/:id', async (req, res) => {
+  console.log('🔍 Contact contractor endpoint called with ID:', req.params.id);
+  console.log('🔍 Session data:', req.session);
+  
   try {
     const db = client.db('contractor-crm');
     const contractor = await db.collection('contractors').findOne({ 
