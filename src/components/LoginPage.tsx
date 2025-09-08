@@ -245,7 +245,7 @@ const LoginPage: React.FC = () => {
             variant="contained"
             size="large"
             fullWidth
-            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <GoogleIcon />}
+            startIcon={<GoogleIcon />}
             onClick={handleGoogleLogin}
             disabled={loading}
             sx={{
@@ -259,7 +259,7 @@ const LoginPage: React.FC = () => {
               }
             }}
           >
-            {loading ? 'מתחבר...' : 'התחבר עם Google'}
+            התחבר עם Google
           </Button>
 
           <Button
@@ -312,6 +312,7 @@ const LoginPage: React.FC = () => {
               variant="outlined"
               size="large"
               fullWidth
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
               onClick={handleContactLogin}
               disabled={loading}
               sx={{
@@ -324,7 +325,7 @@ const LoginPage: React.FC = () => {
                 }
               }}
             >
-              התחבר
+              {loading ? 'מתחבר...' : 'התחבר'}
             </Button>
           </Box>
         </Box>
