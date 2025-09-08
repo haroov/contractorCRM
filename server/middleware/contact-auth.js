@@ -31,7 +31,7 @@ const requireContactAuth = async (req, res, next) => {
       const contractor = await db.collection('contractors').findOne({ 
         $or: [
           { contractor_id: contactUserData.contractorId },
-          { _id: new require('mongodb').ObjectId(contactUserData.contractorId) }
+          { _id: new (require('mongodb')).ObjectId(contactUserData.contractorId) }
         ]
       });
       

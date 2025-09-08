@@ -245,8 +245,13 @@ export default function ContactLoginPage() {
           type: data.user.type
         };
 
+        // Clear old data and store new essential data
+        localStorage.removeItem('contactUser');
+        localStorage.removeItem('contactUserAuthenticated');
         localStorage.setItem('contactUser', JSON.stringify(essentialUserData));
         localStorage.setItem('contactUserAuthenticated', 'true');
+        
+        console.log('✅ Stored essential user data:', essentialUserData);
 
         navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
       } else {
