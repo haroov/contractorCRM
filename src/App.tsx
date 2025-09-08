@@ -47,6 +47,31 @@ function App() {
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
 
+    // First check if user is a contact user
+    try {
+      const contactResponse = await fetch('/api/contact-auth/status', {
+        credentials: 'include'
+      });
+      
+      if (contactResponse.ok) {
+        const contactData = await contactResponse.json();
+        if (contactData.authenticated) {
+          console.log('✅ Contact user authenticated:', contactData.user);
+          setUser({
+            id: contactData.user.id,
+            email: contactData.user.email,
+            name: contactData.user.name,
+            role: contactData.user.role,
+            picture: contactData.user.picture || ''
+          });
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('❌ No contact user session:', error);
+    }
+
     // Check if there's a session ID in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('sessionId');
