@@ -248,7 +248,7 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
 }), requireAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ 
+    const contractor = await db.collection('contractors').findOne({
       $or: [
         { contractor_id: req.params.contractorId },
         { _id: new ObjectId(req.params.contractorId) }
@@ -271,7 +271,7 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
     if (validationResult) {
       // Update contractor with validated status
       const updateResult = await db.collection('contractors').updateOne(
-        { 
+        {
           $or: [
             { contractor_id: req.params.contractorId },
             { _id: new ObjectId(req.params.contractorId) }
@@ -369,45 +369,45 @@ app.post('/api/fix-maincontractor', async (req, res) => {
     const db = client.db('contractor-crm');
     const contractorsCollection = db.collection('contractors');
     const projectsCollection = db.collection('projects');
-    
+
     // Get all contractors to create a mapping from contractor_id to _id
     const contractors = await contractorsCollection.find({}).toArray();
     const contractorMapping = {};
-    
+
     contractors.forEach(contractor => {
       contractorMapping[contractor.contractor_id] = contractor._id.toString();
     });
-    
+
     console.log('Contractor mapping:', contractorMapping);
-    
+
     // Get all projects that need fixing
     const projects = await projectsCollection.find({
       mainContractor: { $type: "string" } // Find projects where mainContractor is a string (contractor_id)
     }).toArray();
-    
+
     console.log(`Found ${projects.length} projects to fix`);
-    
+
     const results = [];
-    
+
     // Update each project
     for (const project of projects) {
       const contractorId = project.mainContractor;
       const contractorObjectId = contractorMapping[contractorId];
-      
+
       if (contractorObjectId) {
         console.log(`Updating project ${project.projectName} (${project._id}):`);
         console.log(`  - mainContractor: "${contractorId}" -> "${contractorObjectId}"`);
-        
+
         const result = await projectsCollection.updateOne(
           { _id: project._id },
-          { 
-            $set: { 
+          {
+            $set: {
               mainContractor: contractorObjectId,
               updatedAt: new Date()
-            } 
+            }
           }
         );
-        
+
         results.push({
           projectId: project._id,
           projectName: project.projectName,
@@ -415,7 +415,7 @@ app.post('/api/fix-maincontractor', async (req, res) => {
           newMainContractor: contractorObjectId,
           modified: result.modifiedCount
         });
-        
+
         console.log(`  - Update result: ${result.modifiedCount} document(s) modified`);
       } else {
         console.log(`Warning: No contractor found for contractor_id: ${contractorId}`);
@@ -429,14 +429,14 @@ app.post('/api/fix-maincontractor', async (req, res) => {
         });
       }
     }
-    
+
     console.log('✅ MainContractor field fix completed!');
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: `Fixed ${results.length} projects`,
       results: results
     });
-    
+
   } catch (error) {
     console.error('❌ Error fixing mainContractor field:', error);
     res.status(500).json({ error: 'Failed to fix mainContractor field' });
@@ -689,7 +689,7 @@ app.put('/api/contractors/:id', async (req, res) => {
     const { _id, createdAt, ...updateData } = req.body;
 
     // קבלת הנתונים הקיימים בדאטה בייס
-    const existingContractor = await db.collection('contractors').findOne({ 
+    const existingContractor = await db.collection('contractors').findOne({
       $or: [
         { contractor_id: req.params.id },
         { _id: new ObjectId(req.params.id) }
@@ -713,7 +713,7 @@ app.put('/api/contractors/:id', async (req, res) => {
     };
 
     const result = await db.collection('contractors').updateOne(
-      { 
+      {
         $or: [
           { contractor_id: req.params.id },
           { _id: new ObjectId(req.params.id) }
@@ -855,13 +855,13 @@ app.get('/api/projects', async (req, res) => {
     }
 
     const projects = await db.collection('projects').find(query).toArray();
-    
+
     // Calculate correct status for each project
     const projectsWithStatus = projects.map(project => {
       const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
       return { ...project, status };
     });
-    
+
     console.log('📋 Fetched', projectsWithStatus.length, 'projects for contractor:', contractorId || 'all');
     res.json(projectsWithStatus);
   } catch (error) {
@@ -875,20 +875,20 @@ app.get('/api/projects/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const projectId = req.params.id;
-    
+
     console.log('🔍 Fetching project by ID:', projectId);
-    
+
     const project = await db.collection('projects').findOne({ _id: new ObjectId(projectId) });
-    
+
     if (!project) {
       console.log('❌ Project not found:', projectId);
       return res.status(404).json({ error: 'Project not found' });
     }
-    
+
     // Calculate correct status for the project
     const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
     const projectWithStatus = { ...project, status };
-    
+
     console.log('✅ Fetched project:', projectWithStatus.projectName);
     res.json(projectWithStatus);
   } catch (error) {
@@ -1022,14 +1022,14 @@ app.delete('/api/projects/:id', async (req, res) => {
 // Calculate project status based on dates
 function calculateProjectStatus(startDate, durationMonths, isClosed) {
   if (isClosed) return 'completed';
-  
+
   if (!startDate) return 'future';
-  
+
   const start = new Date(startDate);
   const now = new Date();
   const endDate = new Date(start);
   endDate.setMonth(start.getMonth() + (durationMonths || 0));
-  
+
   if (now < start) return 'future';
   if (now >= start && now <= endDate) return 'current';
   return 'completed';
@@ -1051,7 +1051,7 @@ async function updateContractorStats(db, contractorId) {
     projects.forEach(project => {
       // Calculate correct status for each project
       const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
-      
+
       if (status === 'current') {
         currentProjects++;
         currentProjectsValue += project.valueNis || project.value || 0;
@@ -1825,16 +1825,16 @@ process.on('SIGINT', async () => {
 app.get('/api/contact/contractor/:id', requireContactAuth, requireContactContractorAccess, async (req, res) => {
   console.log('🔍 Contact contractor endpoint called with ID:', req.params.id);
   console.log('🔍 Session data:', req.session);
-  
+
   try {
     const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ 
+    const contractor = await db.collection('contractors').findOne({
       $or: [
         { contractor_id: req.params.id },
         { _id: new ObjectId(req.params.id) }
       ]
     });
-    
+
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
@@ -1863,16 +1863,16 @@ app.get('/api/contact/contractor/:id', requireContactAuth, requireContactContrac
 // Validate contractor status for contact users
 app.post('/api/contact/contractor/validate-status/:id', async (req, res) => {
   console.log('🔍 Contact validate status endpoint called with ID:', req.params.id);
-  
+
   try {
     const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ 
+    const contractor = await db.collection('contractors').findOne({
       $or: [
         { contractor_id: req.params.id },
         { _id: new ObjectId(req.params.id) }
       ]
     });
-    
+
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
@@ -1893,11 +1893,11 @@ app.post('/api/contact/contractor/validate-status/:id', async (req, res) => {
 app.get('/api/contact/projects', async (req, res) => {
   console.log('🔍 Contact projects endpoint called');
   console.log('🔍 Session data:', req.session);
-  
+
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.query.contractorId;
-    
+
     if (!contractorId) {
       return res.status(400).json({ error: 'Contractor ID is required' });
     }
@@ -1924,22 +1924,22 @@ app.get('/api/contact/projects', async (req, res) => {
 app.put('/api/contact/contractor/:id', requireContactAuth, requireContactManager, requireContactContractorAccess, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Remove immutable fields from update data
     const { _id, createdAt, ...updateData } = req.body;
-    
+
     const result = await db.collection('contractors').updateOne(
-      { 
+      {
         $or: [
           { contractor_id: req.params.id },
           { _id: new ObjectId(req.params.id) }
         ]
       },
-      { 
-        $set: { 
-          ...updateData, 
-          updatedAt: new Date() 
-        } 
+      {
+        $set: {
+          ...updateData,
+          updatedAt: new Date()
+        }
       }
     );
 
@@ -1959,7 +1959,7 @@ app.get('/api/contact/projects', requireContactAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
-    
+
     const projects = await db.collection('projects').find({
       mainContractor: contractorId
     }).toArray();
@@ -1982,7 +1982,7 @@ app.post('/api/contact/projects', requireContactAuth, requireContactManager, asy
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
-    
+
     const projectData = {
       ...req.body,
       mainContractor: contractorId,
@@ -2015,7 +2015,7 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
-    
+
     // Verify project belongs to this contractor
     const project = await db.collection('projects').findOne({
       _id: new ObjectId(req.params.id),
@@ -2051,7 +2051,7 @@ app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManage
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
-    
+
     // Verify project belongs to this contractor
     const project = await db.collection('projects').findOne({
       _id: new ObjectId(req.params.id),
