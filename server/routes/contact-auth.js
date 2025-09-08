@@ -97,7 +97,7 @@ router.post('/send-otp', async (req, res) => {
     // Send email via SendGrid
     const msg = {
       to: email,
-      from: process.env.SENDGRID_FROM_EMAIL || 'noreply@em1760.chocoinsurance.com',
+      from: process.env.SENDGRID_FROM_EMAIL || 'hello@chocoinsurance.com',
       subject: 'קוד אימות למערכת ניהול קבלנים',
       text: `שלום,\n\nקיבלת בקשה להתחבר למערכת ניהול קבלנים.\n\nקוד האימות שלך הוא: ${otp}\n\nקוד זה תקף למשך 10 דקות.\n\nאם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.\n\nזהו מייל אוטומטי, אנא אל תשיב עליו.`,
       html: `
