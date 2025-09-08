@@ -9,6 +9,7 @@ import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
+import UnifiedContractorView from './components/UnifiedContractorView';
 // Removed API imports - using simple localStorage-based auth
 
 const theme = createTheme({
@@ -250,7 +251,7 @@ function App() {
               path="/"
               element={
                 <ProtectedRoute>
-                  <ContractorRepository currentUser={user} />
+                  <UnifiedContractorView currentUser={user} />
                 </ProtectedRoute>
               }
             />
