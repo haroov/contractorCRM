@@ -158,6 +158,7 @@ router.post('/send-otp', async (req, res) => {
           message: 'קוד אימות נשלח לכתובת האימייל שלך (במצב פיתוח)'
         });
       } else {
+        console.log('📧 Attempting to send email via SendGrid...');
         // Send email using SendGrid v3 API
         await sgMail.send(msg)
           .then(() => {
