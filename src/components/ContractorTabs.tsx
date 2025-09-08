@@ -1058,7 +1058,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             setValidationLoading(true);
             setValidationMessage('מאמת סטטוס מרשום החברות...');
 
-            const response = await authenticatedFetch(API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id), {
+            // Use different endpoint for contact users
+            const validateUrl = isContactUser 
+                ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor.contractor_id}`
+                : API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id);
+
+            const response = await authenticatedFetch(validateUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

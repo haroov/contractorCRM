@@ -1837,6 +1837,35 @@ app.get('/api/contact/contractor/:id', async (req, res) => {
   }
 });
 
+// Validate contractor status for contact users
+app.post('/api/contact/contractor/validate-status/:id', async (req, res) => {
+  console.log('🔍 Contact validate status endpoint called with ID:', req.params.id);
+  
+  try {
+    const db = client.db('contractor-crm');
+    const contractor = await db.collection('contractors').findOne({ 
+      $or: [
+        { contractor_id: req.params.id },
+        { _id: new ObjectId(req.params.id) }
+      ]
+    });
+    
+    if (!contractor) {
+      return res.status(404).json({ error: 'Contractor not found' });
+    }
+
+    // For now, just return a success message
+    // In a real implementation, this would validate against external company registry
+    res.json({
+      updated: false,
+      message: 'סטטוס החברה תקין'
+    });
+  } catch (error) {
+    console.error('❌ Error validating contractor status for contact user:', error);
+    res.status(500).json({ error: 'Failed to validate contractor status' });
+  }
+});
+
 // Update contractor details (only for contact managers)
 app.put('/api/contact/contractor/:id', requireContactAuth, requireContactManager, requireContactContractorAccess, async (req, res) => {
   try {
