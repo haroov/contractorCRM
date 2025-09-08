@@ -87,7 +87,13 @@ export default function ContractorDetailsPage() {
                 const loadContractorFromServer = async () => {
                     try {
                         console.log('🔍 Loading contractor from server:', contractorId);
-                        const contractorData = await ContractorService.getById(contractorId);
+                        console.log('🔍 Is contact user:', isContactUser);
+                        
+                        // Use different API endpoint for contact users
+                        const contractorData = isContactUser 
+                            ? await ContractorService.getByIdForContactUser(contractorId)
+                            : await ContractorService.getById(contractorId);
+                            
                         if (contractorData) {
                             console.log('✅ Contractor loaded from server:', contractorData);
                             setContractor(contractorData);

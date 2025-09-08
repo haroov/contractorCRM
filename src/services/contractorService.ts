@@ -36,6 +36,25 @@ export class ContractorService {
         }
     }
 
+    // Get contractor by ID for contact users
+    static async getByIdForContactUser(contractorId: string): Promise<Contractor | null> {
+        try {
+            const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/contractor/${contractorId}`;
+            const response = await authenticatedFetch(contactApiUrl);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    return null;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const contractor = await response.json();
+            return contractor;
+        } catch (error) {
+            console.error('Error fetching contractor by ID for contact user:', error);
+            return null;
+        }
+    }
+
     // Get contractor by company ID
     static async getByCompanyId(companyId: string): Promise<Contractor | null> {
         try {
