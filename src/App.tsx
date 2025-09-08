@@ -258,7 +258,7 @@ function App() {
               path="/contractor"
               element={
                 <ProtectedRoute>
-                  <ContractorDetailsPage currentUser={user} />
+                  <UnifiedContractorView currentUser={user} />
                 </ProtectedRoute>
               }
             />

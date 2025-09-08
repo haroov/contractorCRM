@@ -199,7 +199,7 @@ const LoginPage: React.FC = () => {
             color="primary"
             size="large"
             fullWidth
-            onClick={() => window.location.href = '/contractor'}
+            onClick={() => window.location.href = '/'}
             sx={{ mb: 2 }}
           >
             כניסה למערכת
