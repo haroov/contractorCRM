@@ -55,6 +55,15 @@ export const getAuthHeaders = (): HeadersInit => {
         headers['X-Session-ID'] = sessionId;
     }
     
+    // Add contact user data from localStorage if available
+    const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+    if (isContactUser) {
+        const contactUser = localStorage.getItem('contactUser');
+        if (contactUser) {
+            headers['X-Contact-User'] = contactUser;
+        }
+    }
+    
     return headers;
 };
 

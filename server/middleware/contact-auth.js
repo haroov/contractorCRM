@@ -7,9 +7,24 @@ const requireContactAuth = (req, res, next) => {
   console.log('🔍 Request headers:', req.headers);
   console.log('🔍 Cookies:', req.headers.cookie);
   
+  // Check for contact user in session first
   if (req.session.contactUser) {
-    console.log('✅ Contact user is authenticated:', req.session.contactUser.contactName);
+    console.log('✅ Contact user is authenticated via session:', req.session.contactUser.contactName);
     return next();
+  }
+  
+  // Check for contact user in request headers (from localStorage)
+  const contactUserHeader = req.headers['x-contact-user'];
+  if (contactUserHeader) {
+    try {
+      const contactUser = JSON.parse(contactUserHeader);
+      console.log('✅ Contact user is authenticated via header:', contactUser.contactName);
+      // Store in session for this request
+      req.session.contactUser = contactUser;
+      return next();
+    } catch (error) {
+      console.log('❌ Error parsing contact user header:', error);
+    }
   }
   
   console.log('❌ Contact user is not authenticated');
