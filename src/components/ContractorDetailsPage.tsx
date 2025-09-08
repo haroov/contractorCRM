@@ -179,7 +179,8 @@ export default function ContractorDetailsPage() {
             // For contact users, redirect to login page
             window.location.href = '/login';
         } else {
-            window.close();
+            // Navigate back to main view
+            window.location.href = '/';
         }
     };
 

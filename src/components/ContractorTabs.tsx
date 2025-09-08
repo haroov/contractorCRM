@@ -689,9 +689,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 onSave(savedContractor || contractorToSave);
             }
 
-            // Close window after successful save
+            // Refresh the page after successful save
             setTimeout(() => {
-                window.close();
+                window.location.reload();
             }, 1500); // Wait 1.5 seconds for user to see success message
         } catch (error) {
             console.error('Error saving contractor to MongoDB:', error);
@@ -1584,7 +1584,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                     }}
                                                     onClick={() => {
                                                         if (contact.email) {
-                                                            window.open(`mailto:${contact.email}`, '_blank');
+                                                            window.location.href = `mailto:${contact.email}`;
                                                         }
                                                     }}
                                                 >
@@ -1602,7 +1602,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                     }}
                                                     onClick={() => {
                                                         if (contact.mobile) {
-                                                            window.open(`callto://${contact.mobile.replace(/\D/g, '')}`, '_blank');
+                                                            window.location.href = `callto://${contact.mobile.replace(/\D/g, '')}`;
                                                         }
                                                     }}
                                                 >

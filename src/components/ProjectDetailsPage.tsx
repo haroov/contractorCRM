@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Box,
     Typography,
@@ -12,23 +12,37 @@ import {
     Tab,
     TextField,
     MenuItem,
-    CircularProgress
+    CircularProgress,
+    Avatar,
+    Menu,
+    MenuItem as MenuItemComponent,
+    ListItemIcon,
+    ListItemText
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
     Save as SaveIcon,
-    Close as CloseIcon
+    Close as CloseIcon,
+    AccountCircle as AccountCircleIcon,
+    Logout as LogoutIcon,
+    Person as PersonIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 
-export default function ProjectDetailsPage() {
+interface ProjectDetailsPageProps {
+    currentUser: any;
+}
+
+export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPageProps) {
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     useEffect(() => {
         const loadProjectData = () => {
@@ -148,8 +162,8 @@ export default function ProjectDetailsPage() {
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Close the window after successful save
-            window.close();
+            // Navigate back to main view after successful save
+            navigate('/');
             
         } catch (error) {
             console.error('❌ Error saving project:', error);
@@ -161,11 +175,27 @@ export default function ProjectDetailsPage() {
     };
 
     const handleClose = () => {
-        window.close();
+        // Navigate back to the main contractor view
+        navigate('/');
     };
 
     const handleBack = () => {
-        window.history.back();
+        navigate('/');
+    };
+
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        // Clear localStorage for contact users
+        localStorage.clear();
+        // Navigate to login
+        navigate('/login');
     };
 
     if (loading) {
@@ -191,31 +221,67 @@ export default function ProjectDetailsPage() {
     return (
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
             {/* Header */}
-            <AppBar position="static" sx={{ direction: 'rtl' }}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={handleBack}
-                        sx={{ mr: 2 }}
-                    >
-                        <ArrowBackIcon />
-                    </IconButton>
-
-                    <Typography variant="h6" sx={{ flexGrow: 1, mr: 2 }}>
-                        {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
-                    </Typography>
-
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+            {/* Header with Profile and Navigation */}
+            <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {/* Left side - Back button and title */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
-                            color="inherit"
-                            onClick={handleClose}
+                            onClick={handleBack}
+                            sx={{ mr: 2 }}
                         >
-                            <CloseIcon />
+                            <ArrowBackIcon />
                         </IconButton>
+                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                            {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
+                        </Typography>
                     </Box>
-                </Toolbar>
-            </AppBar>
+
+                    {/* Right side - User profile */}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="body1" sx={{ mr: 2, fontWeight: 500 }}>
+                            {currentUser?.name || 'משתמש'}
+                        </Typography>
+                        <IconButton
+                            onClick={handleUserMenuOpen}
+                            sx={{ p: 0 }}
+                        >
+                            <Avatar
+                                src={currentUser?.picture}
+                                sx={{ width: 40, height: 40 }}
+                            >
+                                <AccountCircleIcon />
+                            </Avatar>
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleUserMenuClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <MenuItemComponent onClick={handleUserMenuClose}>
+                                <ListItemIcon>
+                                    <PersonIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>פרופיל</ListItemText>
+                            </MenuItemComponent>
+                            <MenuItemComponent onClick={handleLogout}>
+                                <ListItemIcon>
+                                    <LogoutIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>התנתק</ListItemText>
+                            </MenuItemComponent>
+                        </Menu>
+                    </Box>
+                </Box>
+            </Paper>
 
             {/* Content */}
             <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3 }}>

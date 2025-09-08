@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Typography,
@@ -45,6 +46,7 @@ interface ProjectsListProps {
 }
 
 const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, onDeleteProject, activeTab = 'all' }) => {
+    const navigate = useNavigate();
     const today = new Date();
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(today.getMonth() - 3);
@@ -110,7 +112,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
         return new Intl.NumberFormat('he-IL').format(value);
     };
 
-    const openProjectInNewWindow = (project: Project, mode: 'view' | 'edit' | 'new') => {
+    const navigateToProject = (project: Project, mode: 'view' | 'edit' | 'new') => {
         // Get session ID from current URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
@@ -119,7 +121,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
         const params = new URLSearchParams();
         params.set('mode', mode);
         
-        // Add session ID to the new window URL
+        // Add session ID to the URL
         if (sessionId) {
             params.set('sessionId', sessionId);
         }
@@ -128,16 +130,12 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
             params.set('project_id', 'new');
         } else {
             params.set('project_id', project._id || project.id || '');
-            // Store project data in sessionStorage for the new window to access
+            // Store project data in sessionStorage for the project page to access
             sessionStorage.setItem('project_data', JSON.stringify(project));
         }
 
-        // Open new window with project details
-        const newWindow = window.open(
-            `/project?${params.toString()}`,
-            '_blank',
-            'width=1200,height=800,scrollbars=yes,resizable=yes'
-        );
+        // Navigate to project page in the same window
+        navigate(`/project?${params.toString()}`);
     };
 
     const ProjectCard = ({ project, index }: { project: Project; index: number }) => (
@@ -166,7 +164,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                     <Box>
                         <IconButton
                             size="small"
-                            onClick={() => openProjectInNewWindow(project, 'edit')}
+                            onClick={() => navigateToProject(project, 'edit')}
                             sx={{ color: '#666', mr: 1 }}
                         >
                             <EditIcon />
