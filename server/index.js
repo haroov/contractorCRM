@@ -34,6 +34,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User'],
   exposedHeaders: ['Set-Cookie']
 }));
+
+// Add CORS logging middleware
+app.use((req, res, next) => {
+  console.log('🔍 CORS Request:', req.method, req.url, 'from origin:', req.headers.origin);
+  next();
+});
 app.use(express.json());
 app.use(cookieParser());
 
