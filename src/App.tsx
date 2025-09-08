@@ -174,8 +174,23 @@ function App() {
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     console.log('🔍 ProtectedRoute check - loading:', loading, 'user:', user);
     
+    // Check if user is authenticated via localStorage (for contact users)
+    const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+    const contactUserData = localStorage.getItem('contactUser');
+    
+    console.log('🔍 ProtectedRoute - localStorage check:', {
+      contactUserAuthenticated,
+      hasContactUserData: !!contactUserData
+    });
+    
     if (loading) {
       console.log('⏳ ProtectedRoute - still loading, showing skeleton');
+      return <SkeletonLoader />;
+    }
+
+    // If no user in state but we have contact user in localStorage, wait a bit for state to update
+    if (!user && contactUserAuthenticated === 'true' && contactUserData) {
+      console.log('⏳ ProtectedRoute - contact user found in localStorage, waiting for state update');
       return <SkeletonLoader />;
     }
 
