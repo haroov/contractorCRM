@@ -32,22 +32,22 @@ export default function ContractorDetailsPage() {
             const urlMode = searchParams.get('mode') as 'view' | 'edit' | 'new';
             const contractorId = searchParams.get('contractor_id');
             const isContactUserParam = searchParams.get('contact_user') === 'true';
-            
+
             // Check if this is a contact user session
             // Also check localStorage for contact user data
             const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
             const contactUserData = localStorage.getItem('contactUser');
             const isContactUserFromStorage = contactUserAuthenticated === 'true' && contactUserData;
-            
+
             const isContactUser = isContactUserParam || isContactUserFromStorage;
             console.log('🔍 Contact user detection:', {
                 urlParam: isContactUserParam,
                 localStorage: isContactUserFromStorage,
                 final: isContactUser
             });
-            
+
             setIsContactUser(isContactUser);
-            
+
             // Check contact user permissions from session
             if (isContactUser) {
                 // Try to get permissions from localStorage
@@ -117,12 +117,12 @@ export default function ContractorDetailsPage() {
                     try {
                         console.log('🔍 Loading contractor from server:', contractorId);
                         console.log('🔍 Is contact user:', isContactUser);
-                        
+
                         // Use different API endpoint for contact users
-                        const contractorData = isContactUser 
+                        const contractorData = isContactUser
                             ? await ContractorService.getByIdForContactUser(contractorId)
                             : await ContractorService.getById(contractorId);
-                            
+
                         if (contractorData) {
                             console.log('✅ Contractor loaded from server:', contractorData);
                             setContractor(contractorData);
@@ -175,7 +175,12 @@ export default function ContractorDetailsPage() {
     };
 
     const handleClose = () => {
-        window.close();
+        if (isContactUser) {
+            // For contact users, redirect to login page
+            window.location.href = '/login';
+        } else {
+            window.close();
+        }
     };
 
     const handleBack = () => {
