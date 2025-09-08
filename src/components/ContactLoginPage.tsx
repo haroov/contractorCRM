@@ -192,10 +192,9 @@ export default function ContactLoginPage() {
 
           console.log('💾 Stored contact user data in localStorage');
 
-          const navigateUrl = `/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`;
-          console.log('🚀 Navigating to:', navigateUrl);
-
-          navigate(navigateUrl);
+          console.log('🚀 Contact user authenticated, staying on main page');
+          // Stay on main page - the UnifiedContractorView will handle showing contractor details
+          navigate('/');
         }
       } else {
         console.log('❌ OTP verification failed:', data);
@@ -252,7 +251,9 @@ export default function ContactLoginPage() {
         
         console.log('✅ Cleared localStorage and stored essential user data:', essentialUserData);
 
-        navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
+        console.log('🚀 Contact user selected contractor, staying on main page');
+        // Stay on main page - the UnifiedContractorView will handle showing contractor details
+        navigate('/');
       } else {
         setError(data.error || 'שגיאה בבחירת החברה');
       }

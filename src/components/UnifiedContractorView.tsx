@@ -48,6 +48,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const data = await ContractorService.getAll();
         console.log('Contractors from localStorage:', data);
         setContractors(data);
+
+        // Check if this is a contact user and auto-select their contractor
+        const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+        const contactUserData = localStorage.getItem('contactUser');
+        
+        if (contactUserAuthenticated === 'true' && contactUserData) {
+          try {
+            const contactUser = JSON.parse(contactUserData);
+            console.log('🔍 Contact user detected:', contactUser);
+            
+            // Find the contractor for this contact user
+            const userContractor = data.find(c => c._id === contactUser.contractorId);
+            if (userContractor) {
+              console.log('✅ Found contractor for contact user:', userContractor.name);
+              setSelectedContractor(userContractor);
+              setContractorMode('view');
+              setShowContractorDetails(true);
+            }
+          } catch (error) {
+            console.error('❌ Error parsing contact user data:', error);
+          }
+        }
       } catch (error) {
         console.error('❌ Error loading contractors from localStorage:', error);
         // Fallback to empty array if localStorage fails
@@ -430,8 +452,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               contractor={selectedContractor!}
               onSave={handleSaveContractor}
               onClose={handleCloseContractorDetails}
-              isContactUser={false}
-              contactUserPermissions="admin"
+              isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
+              contactUserPermissions={(() => {
+                const contactUserData = localStorage.getItem('contactUser');
+                if (contactUserData) {
+                  try {
+                    const contactUser = JSON.parse(contactUserData);
+                    return contactUser.permissions;
+                  } catch (error) {
+                    console.error('Error parsing contact user permissions:', error);
+                  }
+                }
+                return 'admin';
+              })()}
               isSaving={isSaving}
             />
           </Paper>

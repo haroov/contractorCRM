@@ -4,7 +4,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import LoginPage from './components/LoginPage';
 import ContactLoginPage from './components/ContactLoginPage';
-import ContractorRepository from './components/ContractorRepository';
 import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';

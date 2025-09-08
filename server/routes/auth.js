@@ -42,16 +42,16 @@ router.get('/google/callback', (req, res) => {
   try {
     // Handle the callback manually
     passport.authenticate('google', {
-      failureRedirect: 'https://contractor-crm.vercel.app/login?error=auth_failed'
+      failureRedirect: 'https://dash.chocoinsurance.com/login?error=auth_failed'
     })(req, res, (err) => {
       if (err) {
         console.error('❌ Passport authentication error:', err);
-        return res.redirect('https://contractor-crm.vercel.app/login?error=auth_failed');
+        return res.redirect('https://dash.chocoinsurance.com/login?error=auth_failed');
       }
 
       if (!req.user) {
         console.error('❌ No user found after authentication');
-        return res.redirect('https://contractor-crm.vercel.app/login?error=no_user');
+        return res.redirect('https://dash.chocoinsurance.com/login?error=no_user');
       }
 
       console.log('🎉 Google OAuth callback successful!');
@@ -68,14 +68,14 @@ router.get('/google/callback', (req, res) => {
         }
 
         // Successful authentication, redirect to main CRM page with session ID
-        const redirectUrl = `https://contractor-crm.vercel.app/?sessionId=${req.sessionID}`;
+        const redirectUrl = `https://dash.chocoinsurance.com/?sessionId=${req.sessionID}`;
         console.log('🔄 Redirecting to:', redirectUrl);
         res.redirect(redirectUrl);
       });
     });
   } catch (error) {
     console.error('❌ Callback error:', error);
-    res.redirect('https://contractor-crm.vercel.app/login?error=callback_error');
+    res.redirect('https://dash.chocoinsurance.com/login?error=callback_error');
   }
 });
 
