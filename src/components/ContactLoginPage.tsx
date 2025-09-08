@@ -236,8 +236,16 @@ export default function ContactLoginPage() {
       if (response.ok && data.success) {
         console.log('✅ Contact user selected contractor:', data.user);
 
-        // Store contact user data in localStorage for App.tsx to recognize
-        localStorage.setItem('contactUser', JSON.stringify(data.user));
+        // Store only essential data (ObjectIds) to avoid Hebrew characters in headers
+        const essentialUserData = {
+          id: data.user.id,
+          email: data.user.email,
+          permissions: data.user.permissions,
+          contractorId: data.user.contractorId,
+          type: data.user.type
+        };
+
+        localStorage.setItem('contactUser', JSON.stringify(essentialUserData));
         localStorage.setItem('contactUserAuthenticated', 'true');
 
         navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);

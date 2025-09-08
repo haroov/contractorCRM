@@ -19,11 +19,45 @@ const requireContactAuth = (req, res, next) => {
     try {
       // Decode the URI encoded contact user data
       const decodedContactUser = decodeURIComponent(contactUserHeader);
-      const contactUser = JSON.parse(decodedContactUser);
-      console.log('✅ Contact user is authenticated via header:', contactUser.contactName);
-      // Store in session for this request
-      req.session.contactUser = contactUser;
-      return next();
+      const contactUserData = JSON.parse(decodedContactUser);
+      console.log('✅ Contact user is authenticated via header:', contactUserData.email);
+      
+      // Load full contact user data from database using ObjectId
+      const { MongoClient } = require('mongodb');
+      const client = new MongoClient(process.env.MONGODB_URI);
+      await client.connect();
+      const db = client.db('contractor-crm');
+      
+      const contractor = await db.collection('contractors').findOne({ 
+        $or: [
+          { contractor_id: contactUserData.contractorId },
+          { _id: new require('mongodb').ObjectId(contactUserData.contractorId) }
+        ]
+      });
+      
+      if (contractor) {
+        const contact = contractor.contacts.find(c => c.id === contactUserData.id);
+        if (contact) {
+          const fullContactUser = {
+            type: 'contact_user',
+            contactId: contact.id,
+            contactName: contact.fullName,
+            contactEmail: contact.email,
+            contactRole: contact.role,
+            contactPermissions: contact.permissions,
+            contractorId: contractor.contractor_id || contractor._id.toString(),
+            contractorName: contractor.companyName,
+            contractorIdNumber: contractor.contractorIdNumber
+          };
+          
+          console.log('✅ Full contact user data loaded:', fullContactUser.contactName);
+          req.session.contactUser = fullContactUser;
+          await client.close();
+          return next();
+        }
+      }
+      
+      await client.close();
     } catch (error) {
       console.log('❌ Error parsing contact user header:', error);
     }
