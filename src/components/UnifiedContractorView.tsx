@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { Box, Paper, Grid, Typography, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Menu, MenuItem, Avatar, Chip, TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, CardActions, Divider } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Logout as LogoutIcon, Person as PersonIcon, Business as BusinessIcon, Engineering as EngineeringIcon, Assessment as AssessmentIcon, Note as NoteIcon, Close as CloseIcon } from '@mui/icons-material';
 import { Contractor } from '../types/contractor';
@@ -11,6 +12,8 @@ interface UnifiedContractorViewProps {
 }
 
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
+  const [searchParams] = useSearchParams();
+  const { id } = useParams();
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -94,6 +97,42 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       });
     }
   }, [currentUser]);
+
+  // Handle URL parameters for contractor editing
+  useEffect(() => {
+    const handleUrlParams = async () => {
+      const mode = searchParams.get('mode') as 'view' | 'edit' | 'new';
+      const contractorId = searchParams.get('contractor_id') || id;
+      
+      if (mode && contractorId && contractors.length > 0) {
+        console.log('🔍 URL params detected:', { mode, contractorId });
+        
+        // Find the contractor by ID
+        const contractor = contractors.find(c => 
+          c.contractor_id === contractorId || 
+          c._id === contractorId ||
+          c.id === contractorId
+        );
+        
+        if (contractor) {
+          console.log('✅ Found contractor for URL params:', contractor.name);
+          setSelectedContractor(contractor);
+          setContractorMode(mode);
+          setShowContractorDetails(true);
+          
+          // Clean up URL parameters
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        } else {
+          console.log('❌ Contractor not found for ID:', contractorId);
+        }
+      }
+    };
+
+    if (contractors.length > 0) {
+      handleUrlParams();
+    }
+  }, [contractors, searchParams, id]);
 
   // Filter contractors based on search term
   const filteredContractors = contractors.filter(contractor =>

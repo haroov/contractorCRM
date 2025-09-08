@@ -263,6 +263,14 @@ function App() {
               }
             />
             <Route
+              path="/contractor/:id"
+              element={
+                <ProtectedRoute>
+                  <UnifiedContractorView currentUser={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/project"
               element={
                 <ProtectedRoute>
