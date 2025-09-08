@@ -159,6 +159,8 @@ router.post('/send-otp', async (req, res) => {
         });
       } else {
         console.log('📧 Attempting to send email via SendGrid...');
+        console.log('🔑 API Key first 10 chars:', process.env.SENDGRID_API_KEY?.substring(0, 10));
+        console.log('📧 From email:', process.env.SENDGRID_FROM_EMAIL);
         // Send email using SendGrid v3 API
         await sgMail.send(msg)
           .then(() => {
