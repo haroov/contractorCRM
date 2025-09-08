@@ -185,7 +185,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     // Auto-validate contractor status when contractor is loaded
     useEffect(() => {
-        if (contractor.contractor_id && contractor.company_id && !statusValidated) {
+        if (contractor._id && contractor.company_id && !statusValidated) {
             // Auto-validate status if not already validated and not currently validating
             if ((contractor.status === null || contractor.violator === null || contractor.restrictions === null) && !validationLoading) {
                 // Use setTimeout to avoid calling during render
@@ -196,7 +196,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 }, 100);
             }
         }
-    }, [contractor.contractor_id, contractor.company_id, statusValidated]);
+    }, [contractor._id, contractor.company_id, statusValidated]);
 
     // Load sample data for testing - REMOVED
     // System now only accepts manually entered data
@@ -342,8 +342,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     // Function to update contractor statistics
     const updateContractorStats = async () => {
         try {
-            if (contractor?.contractor_id) {
-                const response = await authenticatedFetch(`/api/contractors/${contractor.contractor_id}/update-stats`, {
+            if (contractor?._id) {
+                const response = await authenticatedFetch(`/api/contractors/${contractor._id}/update-stats`, {
                     method: 'POST'
                 });
 
@@ -626,9 +626,9 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             // For contact users, use contact-specific endpoints
             if (isContactUser) {
                 // Contact users can only update existing contractors
-                if (contractor.contractor_id && contractor.contractor_id !== '') {
+                if (contractor._id && contractor._id !== '') {
                     // Use contact-specific update endpoint
-                    const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/contractor/${contractor.contractor_id}`;
+                    const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/contractor/${contractor._id}`;
                     const response = await authenticatedFetch(contactApiUrl, {
                         method: 'PUT',
                         headers: {
@@ -660,13 +660,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         savedContractor = await ContractorService.create(contractorToSave);
                         console.log('Created new contractor:', savedContractor);
                     }
-                } else if (contractor.contractor_id && contractor.contractor_id !== '') {
-                    // Check if contractor exists by contractor_id
-                    const existingContractor = await ContractorService.getById(contractor.contractor_id);
+                } else if (contractor._id && contractor._id !== '') {
+                    // Check if contractor exists by _id
+                    const existingContractor = await ContractorService.getById(contractor._id);
                     if (existingContractor) {
                         // Update existing contractor
-                        savedContractor = await ContractorService.update(contractor.contractor_id, contractorToSave);
-                        console.log('Updated existing contractor by contractor_id:', savedContractor);
+                        savedContractor = await ContractorService.update(contractor._id, contractorToSave);
+                        console.log('Updated existing contractor by _id:', savedContractor);
                     } else {
                         // Create new contractor if not found
                         savedContractor = await ContractorService.create(contractorToSave);
@@ -1109,8 +1109,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
                 // Use different endpoint for contact users
                 const validateUrl = isContactUser
-                    ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor.contractor_id}`
-                    : API_CONFIG.VALIDATE_STATUS_URL(contractor.contractor_id);
+                    ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor._id}`
+                    : API_CONFIG.VALIDATE_STATUS_URL(contractor._id);
 
                 const response = await authenticatedFetch(validateUrl, {
                     method: 'POST',
