@@ -698,12 +698,23 @@ app.put('/api/contractors/:id', async (req, res) => {
     const { _id, createdAt, ...updateData } = req.body;
 
     // קבלת הנתונים הקיימים בדאטה בייס
-    const existingContractor = await db.collection('contractors').findOne({
-      $or: [
-        { contractor_id: req.params.id },
-        { _id: new ObjectId(req.params.id) }
-      ]
-    });
+    let existingContractor;
+    try {
+      // ננסה לחפש לפי contractor_id קודם (מספר)
+      existingContractor = await db.collection('contractors').findOne({
+        contractor_id: req.params.id
+      });
+      
+      // אם לא נמצא, ננסה לחפש לפי ObjectId (רק אם זה ObjectId תקין)
+      if (!existingContractor && req.params.id.length === 24) {
+        existingContractor = await db.collection('contractors').findOne({
+          _id: new ObjectId(req.params.id)
+        });
+      }
+    } catch (error) {
+      console.log('❌ Error searching for contractor:', error.message);
+      return res.status(400).json({ error: 'Invalid contractor ID format' });
+    }
     if (!existingContractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
@@ -721,15 +732,26 @@ app.put('/api/contractors/:id', async (req, res) => {
       iso45001: updateData.iso45001 === true ? true : false
     };
 
-    const result = await db.collection('contractors').updateOne(
-      {
-        $or: [
-          { contractor_id: req.params.id },
-          { _id: new ObjectId(req.params.id) }
-        ]
-      },
-      { $set: finalUpdateData }
-    );
+    // עדכון הקבלן - נשתמש באותו לוגיקה כמו בחיפוש
+    let result;
+    try {
+      // ננסה לעדכן לפי contractor_id קודם
+      result = await db.collection('contractors').updateOne(
+        { contractor_id: req.params.id },
+        { $set: finalUpdateData }
+      );
+      
+      // אם לא נמצא, ננסה לפי ObjectId (רק אם זה ObjectId תקין)
+      if (result.matchedCount === 0 && req.params.id.length === 24) {
+        result = await db.collection('contractors').updateOne(
+          { _id: new ObjectId(req.params.id) },
+          { $set: finalUpdateData }
+        );
+      }
+    } catch (error) {
+      console.log('❌ Error updating contractor:', error.message);
+      return res.status(500).json({ error: 'Failed to update contractor' });
+    }
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
