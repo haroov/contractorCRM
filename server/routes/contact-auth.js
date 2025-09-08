@@ -101,17 +101,44 @@ router.post('/send-otp', async (req, res) => {
       subject: 'קוד אימות למערכת ניהול קבלנים',
       text: `שלום,\n\nקיבלת בקשה להתחבר למערכת ניהול קבלנים.\n\nקוד האימות שלך הוא: ${otp}\n\nקוד זה תקף למשך 10 דקות.\n\nאם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.\n\nזהו מייל אוטומטי, אנא אל תשיב עליו.`,
       html: `
-        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1976d2;">קוד אימות למערכת ניהול קבלנים</h2>
-          <p>שלום,</p>
-          <p>קיבלת בקשה להתחבר למערכת ניהול קבלנים.</p>
-          <p><strong>קוד האימות שלך הוא: ${otp}</strong></p>
-          <p>קוד זה תקף למשך 10 דקות.</p>
-          <p>אם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.</p>
-          <hr style="margin: 20px 0;">
-          <p style="color: #666; font-size: 12px;">
-            זהו מייל אוטומטי, אנא אל תשיב עליו.
-          </p>
+        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px;">
+          <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <!-- Header with Logo -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="display: inline-flex; align-items: center; background-color: #882DD7; color: white; padding: 15px 25px; border-radius: 50px; margin-bottom: 20px;">
+                <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: #882DD7; font-size: 20px; font-weight: bold;">C</span>
+                </div>
+                <span style="font-size: 18px; font-weight: bold;">שוקו ביטוח</span>
+              </div>
+              <h1 style="color: #1976d2; margin: 0; font-size: 24px;">מערכת ניהול קבלנים</h1>
+            </div>
+            
+            <!-- Main Content -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h2 style="color: #333; margin-bottom: 20px;">קוד אימות למערכת</h2>
+              <p style="color: #666; font-size: 16px; margin-bottom: 25px;">שלום,</p>
+              <p style="color: #666; font-size: 16px; margin-bottom: 25px;">קיבלת בקשה להתחבר למערכת ניהול קבלנים.</p>
+              
+              <!-- OTP Code Box -->
+              <div style="background-color: #f0f8ff; border: 2px solid #1976d2; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                <p style="color: #1976d2; font-size: 14px; margin: 0 0 10px 0;">קוד האימות שלך:</p>
+                <div style="font-size: 32px; font-weight: bold; color: #1976d2; letter-spacing: 5px; font-family: 'Courier New', monospace;">${otp}</div>
+              </div>
+              
+              <p style="color: #666; font-size: 14px; margin-bottom: 20px;">קוד זה תקף למשך 10 דקות.</p>
+              <p style="color: #999; font-size: 12px;">אם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.</p>
+            </div>
+            
+            <!-- Footer -->
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            <div style="text-align: center;">
+              <p style="color: #999; font-size: 12px; margin: 0;">
+                זהו מייל אוטומטי, אנא אל תשיב עליו.<br>
+                © 2024 שוקו ביטוח - מערכת ניהול קבלנים
+              </p>
+            </div>
+          </div>
         </div>
       `
     };
@@ -151,7 +178,16 @@ router.post('/send-otp', async (req, res) => {
       }
     } catch (emailError) {
       console.error('❌ SendGrid error:', emailError);
-      res.status(500).json({ error: 'שגיאה בשליחת המייל' });
+      console.error('❌ Error details:', {
+        message: emailError.message,
+        code: emailError.code,
+        response: emailError.response?.body,
+        stack: emailError.stack
+      });
+      res.status(500).json({ 
+        error: 'שגיאה בשליחת המייל',
+        details: emailError.message 
+      });
     }
 
   } catch (error) {
