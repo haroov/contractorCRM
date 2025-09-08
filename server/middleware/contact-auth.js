@@ -45,7 +45,7 @@ const requireContactAuth = async (req, res, next) => {
             contactEmail: contact.email,
             contactRole: contact.role,
             contactPermissions: contact.permissions,
-            contractorId: contractor.contractor_id || contractor._id.toString(),
+            contractorId: contractor._id.toString(), // Always use ObjectId for consistency
             contractorName: contractor.companyName,
             contractorIdNumber: contractor.contractorIdNumber
           };
@@ -100,6 +100,8 @@ const requireContactContractorAccess = (req, res, next) => {
   console.log('🔍 Contractor ID comparison:');
   console.log('  - Requested:', requestedContractorId);
   console.log('  - User has access to:', userContractorId);
+  console.log('  - Requested type:', typeof requestedContractorId);
+  console.log('  - User type:', typeof userContractorId);
   console.log('  - Are they equal?', requestedContractorId === userContractorId);
 
   if (requestedContractorId && requestedContractorId !== userContractorId) {
