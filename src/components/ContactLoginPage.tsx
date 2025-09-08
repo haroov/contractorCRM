@@ -181,7 +181,7 @@ export default function ContactLoginPage() {
         } else {
           // Single contractor - proceed with login
           console.log('✅ Contact user logged in successfully:', data.user);
-          navigate(`/contractor?mode=view&contractor_id=${data.user.contractorIdNumber}&contact_user=true`);
+          navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
         }
       } else {
         setError(data.error || 'קוד האימות שגוי או פג תוקף');
@@ -220,7 +220,7 @@ export default function ContactLoginPage() {
 
       if (response.ok && data.success) {
         console.log('✅ Contact user selected contractor:', data.user);
-        navigate(`/contractor?mode=view&contractor_id=${data.user.contractorIdNumber}&contact_user=true`);
+        navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
       } else {
         setError(data.error || 'שגיאה בבחירת החברה');
       }
