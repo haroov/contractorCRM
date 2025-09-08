@@ -95,7 +95,7 @@ interface ContractorTabsProps {
 
 export default function ContractorTabs({ contractor: initialContractor, onSave, onClose, isContactUser = false, contactUserPermissions }: ContractorTabsProps) {
     // Check if user can edit based on contact user permissions
-    const canEdit = !isContactUser || contactUserPermissions === 'contact_manager';
+    const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
     const [contractor, setContractor] = useState<Contractor>(initialContractor || {
         contractor_id: '',
@@ -238,7 +238,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         try {
             if (contractor._id) {
                 console.log('🔄 Loading projects for contractor:', contractor._id);
-                
+
                 let projects;
                 if (isContactUser) {
                     // Use contact-specific endpoint for contact users
@@ -252,7 +252,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     // Use regular endpoint for regular users
                     projects = await projectsAPI.getByContractor(contractor._id);
                 }
-                
+
                 console.log('✅ Loaded projects:', projects?.length || 0);
 
                 // Update contractor with fresh projects
@@ -1079,894 +1079,265 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 }
 
                 setContractor(prev => ({
-                        ...prev,
-                        contractor_id: contractorId || prev.contractor_id,
-                        sector: (contractorsData.result && contractorsData.result.records && contractorsData.result.records[0]) ? contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector : prev.sector,
-                        email: email || prev.email, // Add email from contractors registry
-                        website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
-                        activities: activities
-                    }));
+                    ...prev,
+                    contractor_id: contractorId || prev.contractor_id,
+                    sector: (contractorsData.result && contractorsData.result.records && contractorsData.result.records[0]) ? contractorsData.result.records[0]['TEUR_ANAF'] || prev.sector : prev.sector,
+                    email: email || prev.email, // Add email from contractors registry
+                    website: prev.website || generateWebsiteFromEmail(email || ''), // Generate website from email if empty
+                    activities: activities
+                }));
 
-                    setSnackbar({ open: true, message: `הנתונים רועננו בהצלחה (${activities.length} פעילויות)`, severity: 'success' });
-                } else {
-                    setSnackbar({ open: true, message: 'לא נמצאו נתונים בפנקס הקבלנים', severity: 'error' });
-                }
-            } catch (error) {
-                console.error('Error refreshing contractor data:', error);
-                setSnackbar({ open: true, message: 'שגיאה ברענון הנתונים', severity: 'error' });
+                setSnackbar({ open: true, message: `הנתונים רועננו בהצלחה (${activities.length} פעילויות)`, severity: 'success' });
+            } else {
+                setSnackbar({ open: true, message: 'לא נמצאו נתונים בפנקס הקבלנים', severity: 'error' });
             }
-        };
+        } catch (error) {
+            console.error('Error refreshing contractor data:', error);
+            setSnackbar({ open: true, message: 'שגיאה ברענון הנתונים', severity: 'error' });
+        }
+    };
 
-        const handleValidateStatus = async () => {
-            if (!contractor.company_id) {
-                setSnackbar({ open: true, message: 'נא להזין מספר חברה תחילה', severity: 'error' });
-                return;
+    const handleValidateStatus = async () => {
+        if (!contractor.company_id) {
+            setSnackbar({ open: true, message: 'נא להזין מספר חברה תחילה', severity: 'error' });
+            return;
+        }
+
+        try {
+            setValidationLoading(true);
+            setValidationMessage('מאמת סטטוס מרשום החברות...');
+
+            // Use different endpoint for contact users
+            const validateUrl = isContactUser
+                ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor._id}`
+                : API_CONFIG.VALIDATE_STATUS_URL(contractor._id);
+
+            const response = await authenticatedFetch(validateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            try {
-                setValidationLoading(true);
-                setValidationMessage('מאמת סטטוס מרשום החברות...');
+            const result = await response.json();
 
-                // Use different endpoint for contact users
-                const validateUrl = isContactUser
-                    ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor._id}`
-                    : API_CONFIG.VALIDATE_STATUS_URL(contractor._id);
+            if (result.updated) {
+                // Company status updated successfully
 
-                const response = await authenticatedFetch(validateUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.updated) {
-                    // Company status updated successfully
-
-                    setValidationMessage(`סטטוס עודכן בהצלחה: ${result.message}`);
-                    setSnackbar({ open: true, message: 'סטטוס החברה עודכן בהצלחה מרשום החברות', severity: 'success' });
-                    setStatusValidated(true);
-                } else {
-                    setValidationMessage(`לא נדרש עדכון: ${result.message}`);
-                    setStatusValidated(true);
-                }
-            } catch (error) {
-                console.error('Error validating status:', error);
-                setValidationMessage('שגיאה בעדכון הסטטוס');
-                setSnackbar({ open: true, message: 'שגיאה בעדכון הסטטוס מרשום החברות', severity: 'error' });
-            } finally {
-                setValidationLoading(false);
-                // Clear validation message after 5 seconds
-                setTimeout(() => setValidationMessage(''), 5000);
+                setValidationMessage(`סטטוס עודכן בהצלחה: ${result.message}`);
+                setSnackbar({ open: true, message: 'סטטוס החברה עודכן בהצלחה מרשום החברות', severity: 'success' });
+                setStatusValidated(true);
+            } else {
+                setValidationMessage(`לא נדרש עדכון: ${result.message}`);
+                setStatusValidated(true);
             }
-        };
+        } catch (error) {
+            console.error('Error validating status:', error);
+            setValidationMessage('שגיאה בעדכון הסטטוס');
+            setSnackbar({ open: true, message: 'שגיאה בעדכון הסטטוס מרשום החברות', severity: 'error' });
+        } finally {
+            setValidationLoading(false);
+            // Clear validation message after 5 seconds
+            setTimeout(() => setValidationMessage(''), 5000);
+        }
+    };
 
-        return (
-            <Box sx={{ width: '100%', typography: 'body1' }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs value={activeTab} onChange={handleTabChange} aria-label="contractor tabs">
-                        <Tab label="פרטי חברה" />
-                        <Tab label="מידע עסקי" />
-                        <Tab label="אנשי קשר" />
-                        <Tab label="פרויקטים" />
-                        <Tab label="הערות" />
-                    </Tabs>
-                </Box>
+    return (
+        <Box sx={{ width: '100%', typography: 'body1' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={activeTab} onChange={handleTabChange} aria-label="contractor tabs">
+                    <Tab label="פרטי חברה" />
+                    <Tab label="מידע עסקי" />
+                    <Tab label="אנשי קשר" />
+                    <Tab label="פרויקטים" />
+                    <Tab label="הערות" />
+                </Tabs>
+            </Box>
 
-                {/* Company Details Tab */}
-                {activeTab === 0 && (
-                    <Box sx={{ p: 3, pb: 6 }}>
-                        {/* Risk Indicator */}
-                        <RiskIndicator
-                            status={contractor.status}
-                            violator={contractor.violator}
-                            restrictions={contractor.restrictions}
-                        />
+            {/* Company Details Tab */}
+            {activeTab === 0 && (
+                <Box sx={{ p: 3, pb: 6 }}>
+                    {/* Risk Indicator */}
+                    <RiskIndicator
+                        status={contractor.status}
+                        violator={contractor.violator}
+                        restrictions={contractor.restrictions}
+                    />
 
-                        {/* Company General Details Section */}
-                        <Card sx={{ mb: 3, boxShadow: 2 }}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי חברה כללים</Typography>
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}>
-                                        <Box sx={{ position: 'relative' }}>
-                                            <TextField
-                                                fullWidth
-                                                label="מספר חברה (ח״פ)"
-                                                value={contractor.company_id}
-                                                onChange={(e) => handleChange('company_id', e.target.value)}
-                                                onBlur={handleCompanyIdBlur}
-                                                error={!!errors.company_id}
-                                                helperText={errors.company_id}
-                                                required
-                                                InputLabelProps={{
-                                                    sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                                }}
-                                            />
-                                            {isLoadingCompanyData && (
-                                                <CircularProgress
-                                                    size={20}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        left: 7,
-                                                        top: 'calc(50% - 5px)',
-                                                        transform: 'translateY(-50%)',
-                                                        zIndex: 1
-                                                    }}
-                                                />
-                                            )}
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="מספר קבלן"
-                                            value={contractor.contractor_id || ''}
-                                            onChange={(e) => handleChange('contractor_id', e.target.value)}
-                                            error={!!errors.contractor_id}
-                                            helperText={errors.contractor_id}
-                                            InputLabelProps={{
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="שם החברה"
-                                            value={contractor.name}
-                                            onChange={(e) => handleChange('name', e.target.value)}
-                                            onBlur={handleNameBlur}
-                                            error={!!errors.name}
-                                            helperText={errors.name}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="שם באנגלית"
-                                            value={contractor.nameEnglish}
-                                            onChange={(e) => handleEnglishNameChange(e.target.value)}
-                                            onBlur={handleEnglishNameBlur}
-                                            error={!!errors.nameEnglish}
-                                            helperText={errors.nameEnglish}
-                                            InputLabelProps={{
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{ backgroundColor: 'white', paddingRight: '4px' }}>סוג חברה</InputLabel>
-                                            <Select
-                                                value={contractor.companyType}
-                                                onChange={(e) => handleChange('companyType', e.target.value)}
-                                                error={!!errors.companyType}
-                                                MenuProps={{
-                                                    PaperProps: {
-                                                        style: {
-                                                            maxHeight: 300
-                                                        }
-                                                    }
-                                                }}
-                                            >
-                                                <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
-                                                <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
-                                                <MenuItem value="חברה ממשלתית">חברה ממשלתית</MenuItem>
-                                                <MenuItem value="חברה זרה">חברה זרה</MenuItem>
-                                                <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
-                                                <MenuItem value="עמותה">עמותה</MenuItem>
-                                                <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
-                                                <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
-                                                <MenuItem value="שותפות">שותפות</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="מספר עובדים"
-                                            type="number"
-                                            value={contractor.numberOfEmployees}
-                                            onChange={(e) => handleChange('numberOfEmployees', parseInt(e.target.value) || 0)}
-                                            error={!!errors.numberOfEmployees}
-                                            helperText={errors.numberOfEmployees}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="תאריך הקמה"
-                                            type="date"
-                                            value={contractor.foundationDate}
-                                            onChange={(e) => handleFoundationDateChange(e.target.value)}
-                                            onBlur={handleFoundationDateBlur}
-                                            error={!!errors.foundationDate}
-                                            helperText={errors.foundationDate}
-                                            InputLabelProps={{ shrink: true }}
-                                            inputProps={{
-                                                style: { color: '#666' }
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                        </Card>
-
-                        {/* Contact Information Section */}
-                        <Card sx={{ mb: 3, boxShadow: 2 }}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי קשר</Typography>
-                                <Grid container spacing={3}>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="עיר"
-                                            value={contractor.city}
-                                            onChange={(e) => handleChange('city', e.target.value)}
-                                            error={!!errors.city}
-                                            helperText={errors.city}
-                                            required
-                                            InputLabelProps={{
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="כתובת"
-                                            value={contractor.address}
-                                            onChange={(e) => handleChange('address', e.target.value)}
-                                            error={!!errors.address}
-                                            helperText={errors.address}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="אימייל"
-                                            type="email"
-                                            value={contractor.email}
-                                            onChange={(e) => handleChange('email', e.target.value)}
-                                            error={!!errors.email}
-                                            helperText={errors.email}
-                                            required
-                                            InputLabelProps={{
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="טלפון"
-                                            value={contractor.phone}
-                                            onChange={(e) => handleChange('phone', e.target.value)}
-                                            error={!!errors.phone}
-                                            helperText={errors.phone}
-                                            required
-                                            InputLabelProps={{
-                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            fullWidth
-                                            label="אתר אינטרנט"
-                                            value={contractor.website}
-                                            onChange={(e) => handleChange('website', e.target.value)}
-                                            error={!!errors.website}
-                                            helperText={errors.website}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                        </Card>
-
-                        {/* Action Buttons */}
-                        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                            {onClose && (
-                                <Button onClick={onClose} variant="outlined">
-                                    ביטול
-                                </Button>
-                            )}
-                            {canEdit && (
-                                <Button onClick={handleSave} variant="contained">
-                                    שמור
-                                </Button>
-                            )}
-                        </Box>
-                    </Box>
-                )}
-
-                {/* Business Information Tab */}
-                {activeTab === 1 && (
-                    <Box sx={{ p: 3, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="h6" gutterBottom>מידע עסקי ופעילויות</Typography>
-
-                        {/* Safety Section */}
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>בטיחות ואיכות</Typography>
+                    {/* Company General Details Section */}
+                    <Card sx={{ mb: 3, boxShadow: 2 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי חברה כללים</Typography>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} md={6}>
-                                    <FormControl sx={{ minWidth: 200 }}>
-                                        <InputLabel>דירוג כוכבי בטיחות</InputLabel>
-                                        <Select
-                                            value={contractor.safetyRating || 0}
-                                            onChange={(e) => handleChange('safetyRating', e.target.value)}
-                                            error={!!errors.safetyRating}
-                                            label="דירוג כוכבי בטיחות"
-                                        >
-                                            <MenuItem value={0}>0 כוכבים</MenuItem>
-                                            <MenuItem value={1}>1 כוכב</MenuItem>
-                                            <MenuItem value={2}>2 כוכבים</MenuItem>
-                                            <MenuItem value={3}>3 כוכבים</MenuItem>
-                                            <MenuItem value={4}>4 כוכבים</MenuItem>
-                                            <MenuItem value={5}>5 כוכבים</MenuItem>
-                                            <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
-                                        </Select>
-                                        {errors.safetyRating && (
-                                            <FormHelperText error>{errors.safetyRating}</FormHelperText>
+                                    <Box sx={{ position: 'relative' }}>
+                                        <TextField
+                                            fullWidth
+                                            label="מספר חברה (ח״פ)"
+                                            value={contractor.company_id}
+                                            onChange={(e) => handleChange('company_id', e.target.value)}
+                                            onBlur={handleCompanyIdBlur}
+                                            error={!!errors.company_id}
+                                            helperText={errors.company_id}
+                                            required
+                                            InputLabelProps={{
+                                                sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                            }}
+                                        />
+                                        {isLoadingCompanyData && (
+                                            <CircularProgress
+                                                size={20}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    left: 7,
+                                                    top: 'calc(50% - 5px)',
+                                                    transform: 'translateY(-50%)',
+                                                    zIndex: 1
+                                                }}
+                                            />
                                         )}
-                                    </FormControl>
+                                    </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={contractor.iso45001}
-                                                onChange={(e) => handleChange('iso45001', e.target.checked)}
-                                            />
-                                        }
-                                        label="תקן ISO 45001"
-                                    />
-                                </Grid>
-                            </Grid>
-                        </Box>
-
-                        {/* Activities Section */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6" sx={{ color: 'primary.main' }}>פעילויות מפנקס הקבלנים</Typography>
-                            <Button
-                                variant="contained"
-                                startIcon={<RefreshIcon />}
-                                onClick={refreshContractorActivities}
-                                sx={{ gap: 1 }}
-                            >
-                                רענן נתונים
-                            </Button>
-                        </Box>
-
-                        {(!contractor.classifications || contractor.classifications.length === 0) ? (
-                            <Card sx={{ mb: 2 }}>
-                                <CardContent>
-                                    <Typography variant="body1" color="text.secondary" align="center">
-                                        אין פעילויות זמינות. לחץ על "רענן נתונים" כדי לטעון את הנתונים מפנקס הקבלנים.
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            <Card sx={{ mt: 2, boxShadow: 'none', border: '1px solid #e0e0e0', flexGrow: 1 }}>
-                                <TableContainer>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>תיאור ענף</TableCell>
-                                                <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סיווג</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {contractor.classifications.map((classification, index) => (
-                                                <TableRow key={classification.id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                                    <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification_type || ''}</TableCell>
-                                                    <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification || ''}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Card>
-                        )}
-                    </Box>
-                )}
-
-                {/* Management Contacts Tab */}
-                {activeTab === 2 && (
-                    <Box sx={{ p: 3 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Button
-                                variant="contained"
-                                startIcon={<AddIcon />}
-                                onClick={handleAddContact}
-                                sx={{
-                                    backgroundColor: '#f5f5f5',
-                                    color: '#666',
-                                    border: '1px solid #e0e0e0',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                                    gap: 1,
-                                    '&:hover': {
-                                        backgroundColor: '#e8e8e8'
-                                    }
-                                }}
-                            >
-                                הוסף
-                            </Button>
-                        </Box>
-
-                        {(!contractor.contacts || contractor.contacts.length === 0) ? (
-                            <Card sx={{
-                                mb: 2,
-                                backgroundColor: '#fafafa',
-                                border: '1px solid #e0e0e0',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                                borderRadius: 2
-                            }}>
-                                <CardContent sx={{ padding: '16px' }}>
-                                    <Typography variant="body1" sx={{ color: '#888', textAlign: 'center' }}>
-                                        אין אנשי קשר. לחץ על "הוסף" כדי להוסיף איש קשר חדש.
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            <TableContainer component={Paper} sx={{
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                                borderRadius: 2,
-                                backgroundColor: '#fafafa'
-                            }}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {contractor.contacts?.map((contact, index) => (
-                                            <TableRow key={contact.id} sx={{
-                                                backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafafa',
-                                                '&:hover': { backgroundColor: '#f0f0f0' }
-                                            }}>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
-                                                        {contact.fullName || `איש קשר ${index + 1}`}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <Typography variant="body2" sx={{ color: '#888' }}>
-                                                        {contact.role}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <Typography
-                                                        variant="body2"
-                                                        sx={{
-                                                            color: '#888',
-                                                            cursor: 'pointer',
-                                                            textDecoration: 'underline',
-                                                            '&:hover': { color: 'primary.main' }
-                                                        }}
-                                                        onClick={() => {
-                                                            if (contact.email) {
-                                                                window.open(`mailto:${contact.email}`, '_blank');
-                                                            }
-                                                        }}
-                                                    >
-                                                        {contact.email}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <Typography
-                                                        variant="body2"
-                                                        sx={{
-                                                            color: '#888',
-                                                            cursor: 'pointer',
-                                                            textDecoration: 'underline',
-                                                            '&:hover': { color: 'primary.main' }
-                                                        }}
-                                                        onClick={() => {
-                                                            if (contact.mobile) {
-                                                                window.open(`callto://${contact.mobile.replace(/\D/g, '')}`, '_blank');
-                                                            }
-                                                        }}
-                                                    >
-                                                        {contact.mobile}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <Typography variant="body2" sx={{ color: '#888' }}>
-                                                        {contact.permissions === 'admin' ? 'מנהל' : 'משתמש'}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
-                                                    <IconButton
-                                                        onClick={() => handleEditContact(contact, index)}
-                                                        sx={{ color: '#666', mr: 1 }}
-                                                    >
-                                                        <EditIcon />
-                                                    </IconButton>
-                                                    <IconButton
-                                                        onClick={() => handleDeleteContact(index)}
-                                                        sx={{ color: '#666' }}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        )}
-
-                        {/* Action Buttons */}
-                        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                            {onClose && (
-                                <Button onClick={onClose} variant="outlined">
-                                    ביטול
-                                </Button>
-                            )}
-                            {canEdit && (
-                                <Button onClick={handleSave} variant="contained">
-                                    שמור
-                                </Button>
-                            )}
-                        </Box>
-                    </Box>
-                )}
-
-                {/* Projects Tab */}
-                {activeTab === 3 && (
-                    <Box sx={{ p: 3 }}>
-                        {/* Project Sub-tabs */}
-                        <Box sx={{ mb: 3 }}>
-                            <Tabs
-                                value={activeProjectTab}
-                                onChange={(e, newValue) => setActiveProjectTab(newValue)}
-                                sx={{
-                                    '& .MuiTab-root': {
-                                        color: '#666',
-                                        fontWeight: 500,
-                                        textTransform: 'none',
-                                        minWidth: 'auto',
-                                        px: 2,
-                                        '&.Mui-selected': {
-                                            color: 'primary.main',
-                                            fontWeight: 600
-                                        }
-                                    },
-                                    '& .MuiTabs-indicator': {
-                                        backgroundColor: 'primary.main'
-                                    }
-                                }}
-                            >
-                                <Tab label="הכל" value="all" />
-                                <Tab label="עתידיים" value="future" />
-                                <Tab label="פעילים" value="active" />
-                                <Tab label="סגורים" value="closed" />
-                            </Tabs>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
-                            {canEdit && (
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleAddProject}
-                                    sx={{ gap: 1 }}
-                                >
-                                    הוסף פרויקט
-                                </Button>
-                            )}
-                        </Box>
-
-                        <ProjectsList
-                            projects={contractor.projects as any}
-                            onEditProject={handleEditProject}
-                            onDeleteProject={handleDeleteProject}
-                            activeTab={activeProjectTab}
-                        />
-
-                        {/* Project Dialog */}
-                        <Dialog open={isProjectDialogOpen} onClose={handleCancelProject} maxWidth="lg" fullWidth>
-                            <DialogTitle>
-                                {editingProjectIndex !== null ? 'ערוך פרויקט' : 'הוסף פרויקט חדש'}
-                            </DialogTitle>
-                            <DialogContent>
-                                {editingProject && (
-                                    <Grid container spacing={3} sx={{ mt: 1 }}>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                label="שם הפרויקט"
-                                                value={editingProject.projectName}
-                                                onChange={(e) => setEditingProject(prev => prev ? { ...prev, projectName: e.target.value } : null)}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                                placeholder="לדוגמה: בניית מבנה מסחרי"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="תאריך התחלה"
-                                                type="date"
-                                                value={editingProject.startDate}
-                                                onChange={(e) => setEditingProject(prev => prev ? { ...prev, startDate: e.target.value } : null)}
-                                                InputLabelProps={{ shrink: true }}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <TextField
-                                                fullWidth
-                                                label="שווי הפרויקט"
-                                                type="text"
-                                                value={editingProject.value ? `${editingProject.value.toLocaleString('he-IL')} ₪` : ''}
-                                                onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                    setEditingProject(prev => prev ? { ...prev, value: numericValue ? parseInt(numericValue) : 0 } : null);
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    // Allow backspace, delete, arrow keys, etc.
-                                                    if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-                                                        return;
-                                                    }
-                                                    // Allow only numbers
-                                                    if (!/[0-9]/.test(e.key)) {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                                placeholder="לדוגמה: 1,000,000 ₪"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                label="משך הפרויקט בחודשים"
-                                                type="number"
-                                                value={editingProject.durationMonths || ''}
-                                                onChange={(e) => setEditingProject(prev => prev ? { ...prev, durationMonths: parseInt(e.target.value) || 0 } : null)}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                                placeholder="לדוגמה: 12"
-                                                inputProps={{ min: 1, max: 120 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                label="תיאור הפרויקט"
-                                                multiline
-                                                rows={6}
-                                                value={editingProject.description}
-                                                onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                                placeholder="תאר את הפרויקט בפירוט..."
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                label="עיר הפרויקט"
-                                                value={editingProject.city || ''}
-                                                onChange={(e) => setEditingProject(prev => prev ? { ...prev, city: e.target.value } : null)}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 1.5
-                                                    }
-                                                }}
-                                                placeholder="לדוגמה: תל אביב"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={editingProject.isClosed}
-                                                        onChange={(e) => setEditingProject(prev => prev ? { ...prev, isClosed: e.target.checked } : null)}
-                                                    />
-                                                }
-                                                label="פרויקט סגור"
-                                                sx={{ mt: 1 }}
-                                            />
-                                        </Grid>
-                                    </Grid>
-                                )}
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleCancelProject}>ביטול</Button>
-                                {canEdit && (
-                                    <Button onClick={handleSaveProject} variant="contained">שמור</Button>
-                                )}
-                            </DialogActions>
-                        </Dialog>
-
-                        {/* Action Buttons */}
-                        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                            {onClose && (
-                                <Button onClick={onClose} variant="outlined">
-                                    ביטול
-                                </Button>
-                            )}
-                            {canEdit && (
-                                <Button onClick={handleSave} variant="contained">
-                                    שמור
-                                </Button>
-                            )}
-                        </Box>
-                    </Box>
-                )}
-
-                {/* Notes Tab */}
-                {activeTab === 4 && (
-                    <Box sx={{ p: 3 }}>
-                        {/* Risk Indicator */}
-                        <RiskIndicator
-                            status={contractor.status}
-                            violator={contractor.violator}
-                            restrictions={contractor.restrictions}
-                        />
-
-                        {/* Validation Button */}
-                        <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={handleValidateStatus}
-                                disabled={!contractor.company_id}
-                                startIcon={<RefreshIcon />}
-                            >
-                                עדכן סטטוס מרשום החברות
-                            </Button>
-                            {validationLoading && (
-                                <CircularProgress size={20} />
-                            )}
-                            {validationMessage && (
-                                <Alert severity="info" sx={{ flex: 1 }}>
-                                    {validationMessage}
-                                </Alert>
-                            )}
-                        </Box>
-
-                        <Typography variant="h6" gutterBottom>הערות</Typography>
-                        <TextField
-                            fullWidth
-                            label="הערות"
-                            multiline
-                            rows={6}
-                            value={contractor.notes}
-                            onChange={(e) => handleChange('notes', e.target.value)}
-                            error={!!errors.notes}
-                            helperText={errors.notes}
-                        />
-
-                        {/* Action Buttons */}
-                        <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                            {onClose && (
-                                <Button onClick={onClose} variant="outlined">
-                                    ביטול
-                                </Button>
-                            )}
-                            {canEdit && (
-                                <Button onClick={handleSave} variant="contained">
-                                    שמור
-                                </Button>
-                            )}
-                        </Box>
-                    </Box>
-                )}
-
-                {/* Contacts Dialog */}
-                <Dialog open={isContactsDialogOpen} onClose={handleCancelContact} maxWidth="md" fullWidth>
-                    <DialogTitle>
-                        {editingContactIndex !== null ? 'ערוך איש קשר' : 'הוסף איש קשר חדש'}
-                    </DialogTitle>
-                    <DialogContent>
-                        {editingContact && (
-                            <Grid container spacing={3} sx={{ mt: 1 }}>
                                 <Grid item xs={12} md={6}>
                                     <TextField
                                         fullWidth
-                                        label="שם מלא"
-                                        value={editingContact.fullName}
-                                        required
-                                        sx={{ minWidth: 300 }}
-                                        error={editingContact.fullName && (containsForbiddenWords(editingContact.fullName) || !validateHebrewName(editingContact.fullName))}
-                                        helperText={
-                                            editingContact.fullName && containsForbiddenWords(editingContact.fullName) ? "השם מכיל מילים לא הולמות" :
-                                                editingContact.fullName && !validateHebrewName(editingContact.fullName) ? "השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים" : ""
-                                        }
-                                        onChange={(e) => setEditingContact(prev => prev ? { ...prev, fullName: e.target.value } : null)}
-                                        onBlur={(e) => {
-                                            // ולידציה רק אחרי עזיבת השדה
-                                            if (e.target.value) {
-                                                if (containsForbiddenWords(e.target.value)) {
-                                                    setSnackbar({
-                                                        open: true,
-                                                        message: 'השם מכיל מילים לא הולמות',
-                                                        severity: 'error'
-                                                    });
-                                                } else if (!validateHebrewName(e.target.value)) {
-                                                    setSnackbar({
-                                                        open: true,
-                                                        message: 'השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים',
-                                                        severity: 'error'
-                                                    });
-                                                }
-                                            }
+                                        label="מספר קבלן"
+                                        value={contractor.contractor_id || ''}
+                                        onChange={(e) => handleChange('contractor_id', e.target.value)}
+                                        error={!!errors.contractor_id}
+                                        helperText={errors.contractor_id}
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
-                                    <Autocomplete
-                                        freeSolo
-                                        options={commonRoles}
-                                        value={editingContact.role}
-                                        onChange={(event, newValue) => {
-                                            setEditingContact(prev => prev ? { ...prev, role: newValue || '' } : null);
+                                    <TextField
+                                        fullWidth
+                                        label="שם החברה"
+                                        value={contractor.name}
+                                        onChange={(e) => handleChange('name', e.target.value)}
+                                        onBlur={handleNameBlur}
+                                        error={!!errors.name}
+                                        helperText={errors.name}
+                                        required
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
-                                        onInputChange={(event, newInputValue) => {
-                                            setEditingContact(prev => prev ? { ...prev, role: newInputValue } : null);
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="שם באנגלית"
+                                        value={contractor.nameEnglish}
+                                        onChange={(e) => handleEnglishNameChange(e.target.value)}
+                                        onBlur={handleEnglishNameBlur}
+                                        error={!!errors.nameEnglish}
+                                        helperText={errors.nameEnglish}
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
-                                        sx={{ minWidth: 300 }}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                label="תפקיד"
-                                                required
-                                                fullWidth
-                                                sx={{ minWidth: 300 }}
-                                                error={editingContact.role && containsForbiddenWords(editingContact.role)}
-                                                helperText={
-                                                    editingContact.role && containsForbiddenWords(editingContact.role) ? "התפקיד מכיל מילים לא הולמות" : ""
-                                                }
-                                                onBlur={(e) => {
-                                                    // ולידציה רק אחרי עזיבת השדה
-                                                    if (e.target.value && containsForbiddenWords(e.target.value)) {
-                                                        setSnackbar({
-                                                            open: true,
-                                                            message: 'התפקיד מכיל מילים לא הולמות',
-                                                            severity: 'error'
-                                                        });
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel sx={{ backgroundColor: 'white', paddingRight: '4px' }}>סוג חברה</InputLabel>
+                                        <Select
+                                            value={contractor.companyType}
+                                            onChange={(e) => handleChange('companyType', e.target.value)}
+                                            error={!!errors.companyType}
+                                            disabled={!canEdit}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        maxHeight: 300
                                                     }
-                                                }}
-                                            />
-                                        )}
+                                                }
+                                            }}
+                                        >
+                                            <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
+                                            <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
+                                            <MenuItem value="חברה ממשלתית">חברה ממשלתית</MenuItem>
+                                            <MenuItem value="חברה זרה">חברה זרה</MenuItem>
+                                            <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
+                                            <MenuItem value="עמותה">עמותה</MenuItem>
+                                            <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
+                                            <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
+                                            <MenuItem value="שותפות">שותפות</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="מספר עובדים"
+                                        type="number"
+                                        value={contractor.numberOfEmployees}
+                                        onChange={(e) => handleChange('numberOfEmployees', parseInt(e.target.value) || 0)}
+                                        error={!!errors.numberOfEmployees}
+                                        helperText={errors.numberOfEmployees}
+                                        disabled={!canEdit}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="תאריך הקמה"
+                                        type="date"
+                                        value={contractor.foundationDate}
+                                        onChange={(e) => handleFoundationDateChange(e.target.value)}
+                                        onBlur={handleFoundationDateBlur}
+                                        error={!!errors.foundationDate}
+                                        helperText={errors.foundationDate}
+                                        disabled={!canEdit}
+                                        InputLabelProps={{ shrink: true }}
+                                        inputProps={{
+                                            style: { color: '#666' }
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+
+                    {/* Contact Information Section */}
+                    <Card sx={{ mb: 3, boxShadow: 2 }}>
+                        <CardContent>
+                            <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>פרטי קשר</Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="עיר"
+                                        value={contractor.city}
+                                        onChange={(e) => handleChange('city', e.target.value)}
+                                        error={!!errors.city}
+                                        helperText={errors.city}
+                                        required
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="כתובת"
+                                        value={contractor.address}
+                                        onChange={(e) => handleChange('address', e.target.value)}
+                                        error={!!errors.address}
+                                        helperText={errors.address}
+                                        disabled={!canEdit}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
@@ -1974,91 +1345,732 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         fullWidth
                                         label="אימייל"
                                         type="email"
-                                        value={editingContact.email}
-                                        sx={{ minWidth: 300 }}
-                                        error={editingContact.email && !validateEmail(editingContact.email)}
-                                        helperText={editingContact.email && !validateEmail(editingContact.email) ? "כתובת אימייל לא תקינה" : ""}
-                                        onChange={(e) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
-                                        onBlur={(e) => {
-                                            // ולידציה רק אחרי עזיבת השדה
-                                            if (e.target.value && !validateEmail(e.target.value)) {
-                                                setSnackbar({
-                                                    open: true,
-                                                    message: 'כתובת אימייל לא תקינה',
-                                                    severity: 'error'
-                                                });
-                                            }
+                                        value={contractor.email}
+                                        onChange={(e) => handleChange('email', e.target.value)}
+                                        error={!!errors.email}
+                                        helperText={errors.email}
+                                        required
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     <TextField
                                         fullWidth
-                                        label="טלפון נייד"
-                                        value={editingContact.mobile}
-                                        placeholder="050-1234567 או 02-1234567"
-                                        inputMode="tel"
-                                        sx={{ minWidth: 300 }}
-                                        error={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile)}
-                                        helperText={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile) ? "מספר טלפון לא תקין" : ""}
-                                        onChange={(e) => {
-                                            // הגבלה על תווים מותרים - רק ספרות ומקף
-                                            const inputValue = e.target.value;
-                                            const allowedChars = /^[0-9\-]*$/;
-
-                                            if (!allowedChars.test(inputValue)) {
-                                                return; // לא לעדכן אם יש תווים לא מותרים
-                                            }
-
-                                            const formattedPhone = formatIsraeliPhone(inputValue);
-                                            setEditingContact(prev => prev ? { ...prev, mobile: formattedPhone } : null);
-                                        }}
-                                        onBlur={(e) => {
-                                            // ולידציה רק אחרי עזיבת השדה
-                                            if (e.target.value && !validateIsraeliPhone(e.target.value)) {
-                                                setSnackbar({
-                                                    open: true,
-                                                    message: 'מספר טלפון לא תקין',
-                                                    severity: 'error'
-                                                });
-                                            }
+                                        label="טלפון"
+                                        value={contractor.phone}
+                                        onChange={(e) => handleChange('phone', e.target.value)}
+                                        error={!!errors.phone}
+                                        helperText={errors.phone}
+                                        required
+                                        disabled={!canEdit}
+                                        InputLabelProps={{
+                                            sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <FormControl sx={{ minWidth: 200 }} required>
-                                        <InputLabel sx={{ backgroundColor: 'white', px: 1 }}>הרשאות</InputLabel>
-                                        <Select
-                                            value={editingContact.permissions}
-                                            onChange={(e) => setEditingContact(prev => prev ? { ...prev, permissions: e.target.value as any } : null)}
-                                            label="הרשאות"
-                                        >
-                                            <MenuItem value="admin">מנהל</MenuItem>
-                                            <MenuItem value="user">משתמש</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    <TextField
+                                        fullWidth
+                                        label="אתר אינטרנט"
+                                        value={contractor.website}
+                                        onChange={(e) => handleChange('website', e.target.value)}
+                                        error={!!errors.website}
+                                        helperText={errors.website}
+                                        disabled={!canEdit}
+                                    />
                                 </Grid>
                             </Grid>
-                        )}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCancelContact}>ביטול</Button>
-                        {canEdit && (
-                            <Button onClick={handleSaveContact} variant="contained">שמור</Button>
-                        )}
-                    </DialogActions>
-                </Dialog>
+                        </CardContent>
+                    </Card>
 
-                {/* Snackbar for notifications */}
-                <Snackbar
-                    open={snackbar.open}
-                    autoHideDuration={6000}
-                    onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
-                >
-                    <Alert severity={snackbar.severity} onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}>
-                        {snackbar.message}
-                    </Alert>
-                </Snackbar>
-            </Box>
-        );
-    }
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
+                    </Box>
+                </Box>
+            )}
+
+            {/* Business Information Tab */}
+            {activeTab === 1 && (
+                <Box sx={{ p: 3, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="h6" gutterBottom>מידע עסקי ופעילויות</Typography>
+
+                    {/* Safety Section */}
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="h6" gutterBottom sx={{ color: 'primary.main' }}>בטיחות ואיכות</Typography>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} md={6}>
+                                <FormControl sx={{ minWidth: 200 }}>
+                                    <InputLabel>דירוג כוכבי בטיחות</InputLabel>
+                                    <Select
+                                        value={contractor.safetyRating || 0}
+                                        onChange={(e) => handleChange('safetyRating', e.target.value)}
+                                        error={!!errors.safetyRating}
+                                        label="דירוג כוכבי בטיחות"
+                                    >
+                                        <MenuItem value={0}>0 כוכבים</MenuItem>
+                                        <MenuItem value={1}>1 כוכב</MenuItem>
+                                        <MenuItem value={2}>2 כוכבים</MenuItem>
+                                        <MenuItem value={3}>3 כוכבים</MenuItem>
+                                        <MenuItem value={4}>4 כוכבים</MenuItem>
+                                        <MenuItem value={5}>5 כוכבים</MenuItem>
+                                        <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
+                                    </Select>
+                                    {errors.safetyRating && (
+                                        <FormHelperText error>{errors.safetyRating}</FormHelperText>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={contractor.iso45001}
+                                            onChange={(e) => handleChange('iso45001', e.target.checked)}
+                                        />
+                                    }
+                                    label="תקן ISO 45001"
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    {/* Activities Section */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6" sx={{ color: 'primary.main' }}>פעילויות מפנקס הקבלנים</Typography>
+                        <Button
+                            variant="contained"
+                            startIcon={<RefreshIcon />}
+                            onClick={refreshContractorActivities}
+                            sx={{ gap: 1 }}
+                        >
+                            רענן נתונים
+                        </Button>
+                    </Box>
+
+                    {(!contractor.classifications || contractor.classifications.length === 0) ? (
+                        <Card sx={{ mb: 2 }}>
+                            <CardContent>
+                                <Typography variant="body1" color="text.secondary" align="center">
+                                    אין פעילויות זמינות. לחץ על "רענן נתונים" כדי לטעון את הנתונים מפנקס הקבלנים.
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card sx={{ mt: 2, boxShadow: 'none', border: '1px solid #e0e0e0', flexGrow: 1 }}>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>תיאור ענף</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, textAlign: 'right', borderBottom: '2px solid #e0e0e0', backgroundColor: '#fafafa' }}>סיווג</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {contractor.classifications.map((classification, index) => (
+                                            <TableRow key={classification.id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification_type || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>{classification.classification || ''}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Card>
+                    )}
+                </Box>
+            )}
+
+            {/* Management Contacts Tab */}
+            {activeTab === 2 && (
+                <Box sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon />}
+                            onClick={handleAddContact}
+                            sx={{
+                                backgroundColor: '#f5f5f5',
+                                color: '#666',
+                                border: '1px solid #e0e0e0',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                gap: 1,
+                                '&:hover': {
+                                    backgroundColor: '#e8e8e8'
+                                }
+                            }}
+                        >
+                            הוסף
+                        </Button>
+                    </Box>
+
+                    {(!contractor.contacts || contractor.contacts.length === 0) ? (
+                        <Card sx={{
+                            mb: 2,
+                            backgroundColor: '#fafafa',
+                            border: '1px solid #e0e0e0',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                            borderRadius: 2
+                        }}>
+                            <CardContent sx={{ padding: '16px' }}>
+                                <Typography variant="body1" sx={{ color: '#888', textAlign: 'center' }}>
+                                    אין אנשי קשר. לחץ על "הוסף" כדי להוסיף איש קשר חדש.
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <TableContainer component={Paper} sx={{
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                            borderRadius: 2,
+                            backgroundColor: '#fafafa'
+                        }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
+                                        <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {contractor.contacts?.map((contact, index) => (
+                                        <TableRow key={contact.id} sx={{
+                                            backgroundColor: index % 2 === 0 ? '#ffffff' : '#fafafa',
+                                            '&:hover': { backgroundColor: '#f0f0f0' }
+                                        }}>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#666', fontWeight: 500 }}>
+                                                    {contact.fullName || `איש קשר ${index + 1}`}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#888' }}>
+                                                    {contact.role}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: '#888',
+                                                        cursor: 'pointer',
+                                                        textDecoration: 'underline',
+                                                        '&:hover': { color: 'primary.main' }
+                                                    }}
+                                                    onClick={() => {
+                                                        if (contact.email) {
+                                                            window.open(`mailto:${contact.email}`, '_blank');
+                                                        }
+                                                    }}
+                                                >
+                                                    {contact.email}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: '#888',
+                                                        cursor: 'pointer',
+                                                        textDecoration: 'underline',
+                                                        '&:hover': { color: 'primary.main' }
+                                                    }}
+                                                    onClick={() => {
+                                                        if (contact.mobile) {
+                                                            window.open(`callto://${contact.mobile.replace(/\D/g, '')}`, '_blank');
+                                                        }
+                                                    }}
+                                                >
+                                                    {contact.mobile}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>
+                                                <Typography variant="body2" sx={{ color: '#888' }}>
+                                                    {contact.permissions === 'admin' ? 'מנהל' : 'משתמש'}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
+                                                <IconButton
+                                                    onClick={() => handleEditContact(contact, index)}
+                                                    sx={{ color: '#666', mr: 1 }}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={() => handleDeleteContact(index)}
+                                                    sx={{ color: '#666' }}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    )}
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
+                    </Box>
+                </Box>
+            )}
+
+            {/* Projects Tab */}
+            {activeTab === 3 && (
+                <Box sx={{ p: 3 }}>
+                    {/* Project Sub-tabs */}
+                    <Box sx={{ mb: 3 }}>
+                        <Tabs
+                            value={activeProjectTab}
+                            onChange={(e, newValue) => setActiveProjectTab(newValue)}
+                            sx={{
+                                '& .MuiTab-root': {
+                                    color: '#666',
+                                    fontWeight: 500,
+                                    textTransform: 'none',
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    '&.Mui-selected': {
+                                        color: 'primary.main',
+                                        fontWeight: 600
+                                    }
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: 'primary.main'
+                                }
+                            }}
+                        >
+                            <Tab label="הכל" value="all" />
+                            <Tab label="עתידיים" value="future" />
+                            <Tab label="פעילים" value="active" />
+                            <Tab label="סגורים" value="closed" />
+                        </Tabs>
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
+                        {canEdit && (
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={handleAddProject}
+                                sx={{ gap: 1 }}
+                            >
+                                הוסף פרויקט
+                            </Button>
+                        )}
+                    </Box>
+
+                    <ProjectsList
+                        projects={contractor.projects as any}
+                        onEditProject={handleEditProject}
+                        onDeleteProject={handleDeleteProject}
+                        activeTab={activeProjectTab}
+                    />
+
+                    {/* Project Dialog */}
+                    <Dialog open={isProjectDialogOpen} onClose={handleCancelProject} maxWidth="lg" fullWidth>
+                        <DialogTitle>
+                            {editingProjectIndex !== null ? 'ערוך פרויקט' : 'הוסף פרויקט חדש'}
+                        </DialogTitle>
+                        <DialogContent>
+                            {editingProject && (
+                                <Grid container spacing={3} sx={{ mt: 1 }}>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="שם הפרויקט"
+                                            value={editingProject.projectName}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, projectName: e.target.value } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: בניית מבנה מסחרי"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="תאריך התחלה"
+                                            type="date"
+                                            value={editingProject.startDate}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, startDate: e.target.value } : null)}
+                                            InputLabelProps={{ shrink: true }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="שווי הפרויקט"
+                                            type="text"
+                                            value={editingProject.value ? `${editingProject.value.toLocaleString('he-IL')} ₪` : ''}
+                                            onChange={(e) => {
+                                                const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                setEditingProject(prev => prev ? { ...prev, value: numericValue ? parseInt(numericValue) : 0 } : null);
+                                            }}
+                                            onKeyDown={(e) => {
+                                                // Allow backspace, delete, arrow keys, etc.
+                                                if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                                                    return;
+                                                }
+                                                // Allow only numbers
+                                                if (!/[0-9]/.test(e.key)) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: 1,000,000 ₪"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="משך הפרויקט בחודשים"
+                                            type="number"
+                                            value={editingProject.durationMonths || ''}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, durationMonths: parseInt(e.target.value) || 0 } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: 12"
+                                            inputProps={{ min: 1, max: 120 }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="תיאור הפרויקט"
+                                            multiline
+                                            rows={6}
+                                            value={editingProject.description}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="תאר את הפרויקט בפירוט..."
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="עיר הפרויקט"
+                                            value={editingProject.city || ''}
+                                            onChange={(e) => setEditingProject(prev => prev ? { ...prev, city: e.target.value } : null)}
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 1.5
+                                                }
+                                            }}
+                                            placeholder="לדוגמה: תל אביב"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={editingProject.isClosed}
+                                                    onChange={(e) => setEditingProject(prev => prev ? { ...prev, isClosed: e.target.checked } : null)}
+                                                />
+                                            }
+                                            label="פרויקט סגור"
+                                            sx={{ mt: 1 }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCancelProject}>ביטול</Button>
+                            {canEdit && (
+                                <Button onClick={handleSaveProject} variant="contained">שמור</Button>
+                            )}
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
+                    </Box>
+                </Box>
+            )}
+
+            {/* Notes Tab */}
+            {activeTab === 4 && (
+                <Box sx={{ p: 3 }}>
+                    {/* Risk Indicator */}
+                    <RiskIndicator
+                        status={contractor.status}
+                        violator={contractor.violator}
+                        restrictions={contractor.restrictions}
+                    />
+
+                    {/* Validation Button */}
+                    <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleValidateStatus}
+                            disabled={!contractor.company_id}
+                            startIcon={<RefreshIcon />}
+                        >
+                            עדכן סטטוס מרשום החברות
+                        </Button>
+                        {validationLoading && (
+                            <CircularProgress size={20} />
+                        )}
+                        {validationMessage && (
+                            <Alert severity="info" sx={{ flex: 1 }}>
+                                {validationMessage}
+                            </Alert>
+                        )}
+                    </Box>
+
+                    <Typography variant="h6" gutterBottom>הערות</Typography>
+                    <TextField
+                        fullWidth
+                        label="הערות"
+                        multiline
+                        rows={6}
+                        value={contractor.notes}
+                        onChange={(e) => handleChange('notes', e.target.value)}
+                        error={!!errors.notes}
+                        helperText={errors.notes}
+                        disabled={!canEdit}
+                    />
+
+                    {/* Action Buttons */}
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                        {onClose && (
+                            <Button onClick={onClose} variant="outlined">
+                                ביטול
+                            </Button>
+                        )}
+                        {canEdit && (
+                            <Button onClick={handleSave} variant="contained">
+                                שמור
+                            </Button>
+                        )}
+                    </Box>
+                </Box>
+            )}
+
+            {/* Contacts Dialog */}
+            <Dialog open={isContactsDialogOpen} onClose={handleCancelContact} maxWidth="md" fullWidth>
+                <DialogTitle>
+                    {editingContactIndex !== null ? 'ערוך איש קשר' : 'הוסף איש קשר חדש'}
+                </DialogTitle>
+                <DialogContent>
+                    {editingContact && (
+                        <Grid container spacing={3} sx={{ mt: 1 }}>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="שם מלא"
+                                    value={editingContact.fullName}
+                                    required
+                                    sx={{ minWidth: 300 }}
+                                    error={editingContact.fullName && (containsForbiddenWords(editingContact.fullName) || !validateHebrewName(editingContact.fullName))}
+                                    helperText={
+                                        editingContact.fullName && containsForbiddenWords(editingContact.fullName) ? "השם מכיל מילים לא הולמות" :
+                                            editingContact.fullName && !validateHebrewName(editingContact.fullName) ? "השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים" : ""
+                                    }
+                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, fullName: e.target.value } : null)}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value) {
+                                            if (containsForbiddenWords(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'השם מכיל מילים לא הולמות',
+                                                    severity: 'error'
+                                                });
+                                            } else if (!validateHebrewName(e.target.value)) {
+                                                setSnackbar({
+                                                    open: true,
+                                                    message: 'השם יכול להכיל רק אותיות בעברית, מקף, גרש וגרשיים',
+                                                    severity: 'error'
+                                                });
+                                            }
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Autocomplete
+                                    freeSolo
+                                    options={commonRoles}
+                                    value={editingContact.role}
+                                    onChange={(event, newValue) => {
+                                        setEditingContact(prev => prev ? { ...prev, role: newValue || '' } : null);
+                                    }}
+                                    onInputChange={(event, newInputValue) => {
+                                        setEditingContact(prev => prev ? { ...prev, role: newInputValue } : null);
+                                    }}
+                                    sx={{ minWidth: 300 }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label="תפקיד"
+                                            required
+                                            fullWidth
+                                            sx={{ minWidth: 300 }}
+                                            error={editingContact.role && containsForbiddenWords(editingContact.role)}
+                                            helperText={
+                                                editingContact.role && containsForbiddenWords(editingContact.role) ? "התפקיד מכיל מילים לא הולמות" : ""
+                                            }
+                                            onBlur={(e) => {
+                                                // ולידציה רק אחרי עזיבת השדה
+                                                if (e.target.value && containsForbiddenWords(e.target.value)) {
+                                                    setSnackbar({
+                                                        open: true,
+                                                        message: 'התפקיד מכיל מילים לא הולמות',
+                                                        severity: 'error'
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="אימייל"
+                                    type="email"
+                                    value={editingContact.email}
+                                    sx={{ minWidth: 300 }}
+                                    error={editingContact.email && !validateEmail(editingContact.email)}
+                                    helperText={editingContact.email && !validateEmail(editingContact.email) ? "כתובת אימייל לא תקינה" : ""}
+                                    onChange={(e) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value && !validateEmail(e.target.value)) {
+                                            setSnackbar({
+                                                open: true,
+                                                message: 'כתובת אימייל לא תקינה',
+                                                severity: 'error'
+                                            });
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label="טלפון נייד"
+                                    value={editingContact.mobile}
+                                    placeholder="050-1234567 או 02-1234567"
+                                    inputMode="tel"
+                                    sx={{ minWidth: 300 }}
+                                    error={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile)}
+                                    helperText={editingContact.mobile && !validateIsraeliPhone(editingContact.mobile) ? "מספר טלפון לא תקין" : ""}
+                                    onChange={(e) => {
+                                        // הגבלה על תווים מותרים - רק ספרות ומקף
+                                        const inputValue = e.target.value;
+                                        const allowedChars = /^[0-9\-]*$/;
+
+                                        if (!allowedChars.test(inputValue)) {
+                                            return; // לא לעדכן אם יש תווים לא מותרים
+                                        }
+
+                                        const formattedPhone = formatIsraeliPhone(inputValue);
+                                        setEditingContact(prev => prev ? { ...prev, mobile: formattedPhone } : null);
+                                    }}
+                                    onBlur={(e) => {
+                                        // ולידציה רק אחרי עזיבת השדה
+                                        if (e.target.value && !validateIsraeliPhone(e.target.value)) {
+                                            setSnackbar({
+                                                open: true,
+                                                message: 'מספר טלפון לא תקין',
+                                                severity: 'error'
+                                            });
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl sx={{ minWidth: 200 }} required>
+                                    <InputLabel sx={{ backgroundColor: 'white', px: 1 }}>הרשאות</InputLabel>
+                                    <Select
+                                        value={editingContact.permissions}
+                                        onChange={(e) => setEditingContact(prev => prev ? { ...prev, permissions: e.target.value as any } : null)}
+                                        label="הרשאות"
+                                    >
+                                        <MenuItem value="admin">מנהל</MenuItem>
+                                        <MenuItem value="user">משתמש</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelContact}>ביטול</Button>
+                    {canEdit && (
+                        <Button onClick={handleSaveContact} variant="contained">שמור</Button>
+                    )}
+                </DialogActions>
+            </Dialog>
+
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+            >
+                <Alert severity={snackbar.severity} onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
+    );
+}
