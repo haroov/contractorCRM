@@ -35,7 +35,7 @@ router.post('/check-email', async (req, res) => {
     }
 
     const db = client.db('contractor-crm');
-    
+
     // Check if email exists in contractors.contacts
     const contractors = await db.collection('contractors').find({
       'contacts.email': email,
@@ -57,7 +57,7 @@ router.post('/check-email', async (req, res) => {
 router.post('/send-otp', async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     // Email validation removed - email comes from URL parameter
     if (!email) {
       console.log('❌ No email provided in request body');
@@ -65,7 +65,7 @@ router.post('/send-otp', async (req, res) => {
     }
 
     const db = client.db('contractor-crm');
-    
+
     // Find contact user in any contractor's contacts
     const contractors = await db.collection('contractors').find({
       'contacts.email': email,
@@ -73,8 +73,8 @@ router.post('/send-otp', async (req, res) => {
     }).toArray();
 
     if (contractors.length === 0) {
-      return res.status(404).json({ 
-        error: 'כתובת האימייל לא נמצאה במערכת. אנא פנה למנהל המערכת.' 
+      return res.status(404).json({
+        error: 'כתובת האימייל לא נמצאה במערכת. אנא פנה למנהל המערכת.'
       });
     }
 
@@ -150,7 +150,7 @@ router.post('/send-otp', async (req, res) => {
       console.log('  - Email to send to:', email);
       console.log('  - OTP generated:', otp);
       console.log('  - Message object:', JSON.stringify(msg, null, 2));
-      
+
       // Check if SendGrid is properly configured
       if (!process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
         console.log('⚠️ SendGrid in development mode - logging OTP to console for:', email);
@@ -168,6 +168,10 @@ router.post('/send-otp', async (req, res) => {
         await sgMail.send(msg)
           .then(() => {
             console.log('✅ OTP email sent to:', email);
+            res.json({
+              success: true,
+              message: 'קוד אימות נשלח לכתובת האימייל שלך'
+            });
           })
           .catch((error) => {
             console.error('❌ SendGrid error details:');
@@ -177,11 +181,6 @@ router.post('/send-otp', async (req, res) => {
             console.error('  - Full error:', error);
             throw error; // Re-throw to be caught by outer catch
           });
-        
-        res.json({
-          success: true,
-          message: 'קוד אימות נשלח לכתובת האימייל שלך'
-        });
       }
     } catch (emailError) {
       console.error('❌ SendGrid error:', emailError);
@@ -191,18 +190,18 @@ router.post('/send-otp', async (req, res) => {
         response: emailError.response?.body,
         stack: emailError.stack
       });
-      res.status(500).json({ 
+      res.status(500).json({
         error: 'שגיאה בשליחת המייל',
-        details: emailError.message 
+        details: emailError.message
       });
     }
 
   } catch (error) {
     console.error('❌ Send OTP error:', error);
     console.error('❌ Error stack:', error.stack);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'שגיאה בשליחת קוד האימות',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -211,14 +210,14 @@ router.post('/send-otp', async (req, res) => {
 router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
-    
+
     if (!email || !otp) {
       return res.status(400).json({ error: 'נדרש אימייל וקוד אימות' });
     }
 
     // Check if OTP exists and is valid
     const storedData = otpStorage.get(email);
-    
+
     if (!storedData) {
       return res.status(400).json({ error: 'קוד אימות לא נמצא או פג תוקף' });
     }
@@ -267,10 +266,10 @@ router.post('/verify-otp', async (req, res) => {
 
     // Store session data in req.session
     req.session.contactUser = sessionData;
-    
+
     // Clean up OTP
     otpStorage.delete(email);
-    
+
     console.log('✅ Contact user logged in via OTP:', contact.fullName, 'for contractor:', contractorData.contractorName);
 
     res.json({
@@ -310,21 +309,21 @@ router.get('/status', (req, res) => {
 router.post('/select-contractor', async (req, res) => {
   try {
     const { email, contractorId } = req.body;
-    
+
     if (!email || !contractorId) {
       return res.status(400).json({ error: 'נדרש אימייל ומזהה קבלן' });
     }
 
     // Get stored data
     const storedData = otpStorage.get(email);
-    
+
     if (!storedData) {
       return res.status(400).json({ error: 'הסשן פג תוקף' });
     }
 
     // Find selected contractor
     const contractorData = storedData.contractors.find(c => c.contractorId === contractorId);
-    
+
     if (!contractorData) {
       return res.status(400).json({ error: 'בחירת קבלן לא תקינה' });
     }
@@ -346,10 +345,10 @@ router.post('/select-contractor', async (req, res) => {
 
     // Store session data in req.session
     req.session.contactUser = sessionData;
-    
+
     // Clean up OTP
     otpStorage.delete(email);
-    
+
     console.log('✅ Contact user selected contractor:', contact.fullName, 'for contractor:', contractorData.contractorName);
 
     res.json({

@@ -26,6 +26,7 @@ app.use(cors({
     'https://contractor-crm-liav-geffens-projects.vercel.app',
     'https://contractor-crm.vercel.app',
     'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://dash.chocoinsurance.com',
     'https://accounts.google.com'
   ],
   credentials: true,
@@ -218,6 +219,7 @@ app.options('/api/contractors/validate-status/:contractorId', cors({
     'https://contractor-crm-liav-geffens-projects.vercel.app',
     'https://contractor-crm.vercel.app',
     'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://dash.chocoinsurance.com',
     'https://accounts.google.com'
   ],
   credentials: true,
@@ -236,6 +238,7 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
     'https://contractor-crm-liav-geffens-projects.vercel.app',
     'https://contractor-crm.vercel.app',
     'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
+    'https://dash.chocoinsurance.com',
     'https://accounts.google.com'
   ],
   credentials: true,
