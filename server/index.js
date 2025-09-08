@@ -44,7 +44,7 @@ app.use(session({
   cookie: {
     secure: true, // Set to true for HTTPS
     httpOnly: false, // Set to false for debugging
-    sameSite: 'none', // Set to none for cross-origin
+    sameSite: 'lax', // Changed to lax for better compatibility
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

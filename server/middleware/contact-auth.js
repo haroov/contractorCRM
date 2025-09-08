@@ -3,7 +3,9 @@ const requireContactAuth = (req, res, next) => {
   console.log('🔍 Contact auth middleware - checking contact user authentication');
   console.log('🔍 Session contactUser:', req.session.contactUser);
   console.log('🔍 Session ID:', req.sessionID);
+  console.log('🔍 Session keys:', Object.keys(req.session));
   console.log('🔍 Request headers:', req.headers);
+  console.log('🔍 Cookies:', req.headers.cookie);
   
   if (req.session.contactUser) {
     console.log('✅ Contact user is authenticated:', req.session.contactUser.contactName);
