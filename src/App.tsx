@@ -49,8 +49,12 @@ function App() {
 
     // First check if user is a contact user (check localStorage)
     const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+    console.log('🔍 Contact user authenticated flag:', contactUserAuthenticated);
+    
     if (contactUserAuthenticated === 'true') {
       const contactUserData = localStorage.getItem('contactUser');
+      console.log('🔍 Contact user data from localStorage:', contactUserData);
+      
       if (contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
@@ -63,13 +67,18 @@ function App() {
             picture: contactUser.picture || ''
           });
           setLoading(false);
+          console.log('✅ Contact user state set, returning early');
           return;
         } catch (error) {
           console.log('❌ Error parsing contact user data:', error);
           localStorage.removeItem('contactUser');
           localStorage.removeItem('contactUserAuthenticated');
         }
+      } else {
+        console.log('❌ No contact user data found in localStorage');
       }
+    } else {
+      console.log('❌ Contact user not authenticated');
     }
 
     // Check if there's a session ID in the URL

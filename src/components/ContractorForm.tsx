@@ -197,11 +197,11 @@ const ContactDialog = ({
                             // הגבלה על תווים מותרים - רק ספרות ומקף
                             const inputValue = e.target.value;
                             const allowedChars = /^[0-9\-]*$/;
-                            
+
                             if (!allowedChars.test(inputValue)) {
                                 return; // לא לעדכן אם יש תווים לא מותרים
                             }
-                            
+
                             handleChange('mobile', inputValue);
                         }}
                         fullWidth
@@ -730,11 +730,11 @@ export default function ContractorForm() {
                         // הגבלה על תווים מותרים - רק ספרות ומקף
                         const inputValue = e.target.value;
                         const allowedChars = /^[0-9\-]*$/;
-                        
+
                         if (!allowedChars.test(inputValue)) {
                             return; // לא לעדכן אם יש תווים לא מותרים
                         }
-                        
+
                         handleChange('phone', inputValue);
                     }}
                     fullWidth

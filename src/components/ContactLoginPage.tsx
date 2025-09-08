@@ -174,21 +174,31 @@ export default function ContactLoginPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        console.log('🔍 OTP verification response:', data);
+        
         if (data.multipleContractors) {
           // User has access to multiple contractors - show selection
+          console.log('📋 Multiple contractors found, showing selection');
           setContractors(data.contractors);
           setStep(2);
         } else {
           // Single contractor - proceed with login
           console.log('✅ Contact user logged in successfully:', data.user);
-          
+          console.log('🔗 Navigating to contractor page with ID:', data.user.contractorId);
+
           // Store contact user data in localStorage for App.tsx to recognize
           localStorage.setItem('contactUser', JSON.stringify(data.user));
           localStorage.setItem('contactUserAuthenticated', 'true');
           
-          navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
+          console.log('💾 Stored contact user data in localStorage');
+
+          const navigateUrl = `/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`;
+          console.log('🚀 Navigating to:', navigateUrl);
+          
+          navigate(navigateUrl);
         }
       } else {
+        console.log('❌ OTP verification failed:', data);
         setError(data.error || 'קוד האימות שגוי או פג תוקף');
       }
     } catch (error) {
@@ -225,11 +235,11 @@ export default function ContactLoginPage() {
 
       if (response.ok && data.success) {
         console.log('✅ Contact user selected contractor:', data.user);
-        
+
         // Store contact user data in localStorage for App.tsx to recognize
         localStorage.setItem('contactUser', JSON.stringify(data.user));
         localStorage.setItem('contactUserAuthenticated', 'true');
-        
+
         navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
       } else {
         setError(data.error || 'שגיאה בבחירת החברה');
