@@ -97,6 +97,11 @@ const requireContactContractorAccess = (req, res, next) => {
   const requestedContractorId = req.params.id || req.params.contractorId || req.body.contractorId;
   const userContractorId = req.session.contactUser.contractorId;
 
+  console.log('🔍 Contractor ID comparison:');
+  console.log('  - Requested:', requestedContractorId);
+  console.log('  - User has access to:', userContractorId);
+  console.log('  - Are they equal?', requestedContractorId === userContractorId);
+
   if (requestedContractorId && requestedContractorId !== userContractorId) {
     console.log('❌ Contact user trying to access different contractor');
     return res.status(403).json({ 
