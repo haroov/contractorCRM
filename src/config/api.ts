@@ -61,7 +61,7 @@ export const getAuthHeaders = (): HeadersInit => {
         const contactUser = localStorage.getItem('contactUser');
         if (contactUser) {
             // Encode the contact user data to avoid non-ISO-8859-1 characters
-            headers['X-Contact-User'] = btoa(contactUser);
+            headers['X-Contact-User'] = encodeURIComponent(contactUser);
         }
     }
     
