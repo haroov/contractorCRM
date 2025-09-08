@@ -34,13 +34,42 @@ export default function ContractorDetailsPage() {
             const isContactUserParam = searchParams.get('contact_user') === 'true';
             
             // Check if this is a contact user session
-            setIsContactUser(isContactUserParam);
+            // Also check localStorage for contact user data
+            const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+            const contactUserData = localStorage.getItem('contactUser');
+            const isContactUserFromStorage = contactUserAuthenticated === 'true' && contactUserData;
+            
+            const isContactUser = isContactUserParam || isContactUserFromStorage;
+            console.log('🔍 Contact user detection:', {
+                urlParam: isContactUserParam,
+                localStorage: isContactUserFromStorage,
+                final: isContactUser
+            });
+            
+            setIsContactUser(isContactUser);
             
             // Check contact user permissions from session
-            if (isContactUserParam) {
-                // In a real app, you'd check the session here
-                // For now, we'll assume contact_manager for demo
-                setContactUserPermissions('contact_manager');
+            if (isContactUser) {
+                // Try to get permissions from localStorage
+                if (contactUserData) {
+                    try {
+                        const userData = JSON.parse(contactUserData);
+                        const permissions = userData.permissions;
+                        if (permissions === 'admin' || permissions === 'contact_manager') {
+                            setContactUserPermissions('contact_manager');
+                        } else if (permissions === 'contact_user') {
+                            setContactUserPermissions('contact_user');
+                        } else {
+                            setContactUserPermissions('contact_user'); // Default to read-only
+                        }
+                        console.log('🔍 Contact user permissions set to:', permissions);
+                    } catch (error) {
+                        console.error('❌ Error parsing contact user data:', error);
+                        setContactUserPermissions('contact_user'); // Default to read-only
+                    }
+                } else {
+                    setContactUserPermissions('contact_user'); // Default to read-only
+                }
             }
 
             setMode(urlMode || 'view');
