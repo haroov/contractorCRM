@@ -245,7 +245,12 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
 }), requireAuth, async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.contractorId });
+    const contractor = await db.collection('contractors').findOne({ 
+      $or: [
+        { contractor_id: req.params.contractorId },
+        { _id: new ObjectId(req.params.contractorId) }
+      ]
+    });
 
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
@@ -263,7 +268,12 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
     if (validationResult) {
       // Update contractor with validated status
       const updateResult = await db.collection('contractors').updateOne(
-        { contractor_id: req.params.contractorId },
+        { 
+          $or: [
+            { contractor_id: req.params.contractorId },
+            { _id: new ObjectId(req.params.contractorId) }
+          ]
+        },
         {
           $set: {
             status: validationResult.status,
@@ -676,7 +686,12 @@ app.put('/api/contractors/:id', async (req, res) => {
     const { _id, createdAt, ...updateData } = req.body;
 
     // קבלת הנתונים הקיימים בדאטה בייס
-    const existingContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    const existingContractor = await db.collection('contractors').findOne({ 
+      $or: [
+        { contractor_id: req.params.id },
+        { _id: new ObjectId(req.params.id) }
+      ]
+    });
     if (!existingContractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
@@ -695,7 +710,12 @@ app.put('/api/contractors/:id', async (req, res) => {
     };
 
     const result = await db.collection('contractors').updateOne(
-      { contractor_id: req.params.id },
+      { 
+        $or: [
+          { contractor_id: req.params.id },
+          { _id: new ObjectId(req.params.id) }
+        ]
+      },
       { $set: finalUpdateData }
     );
     if (result.matchedCount === 0) {
