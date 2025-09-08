@@ -1184,6 +1184,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             error={!!errors.company_id}
                                             helperText={errors.company_id}
                                             required
+                                            disabled={!canEdit}
                                             InputLabelProps={{
                                                 sx: { backgroundColor: 'white', paddingRight: '4px' }
                                             }}
@@ -1419,6 +1420,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         onChange={(e) => handleChange('safetyRating', e.target.value)}
                                         error={!!errors.safetyRating}
                                         label="דירוג כוכבי בטיחות"
+                                        disabled={!canEdit}
                                     >
                                         <MenuItem value={0}>0 כוכבים</MenuItem>
                                         <MenuItem value={1}>1 כוכב</MenuItem>
@@ -1439,6 +1441,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         <Checkbox
                                             checked={contractor.iso45001}
                                             onChange={(e) => handleChange('iso45001', e.target.checked)}
+                                            disabled={!canEdit}
                                         />
                                     }
                                     label="תקן ISO 45001"
@@ -1497,23 +1500,25 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             {activeTab === 2 && (
                 <Box sx={{ p: 3 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={handleAddContact}
-                            sx={{
-                                backgroundColor: '#f5f5f5',
-                                color: '#666',
-                                border: '1px solid #e0e0e0',
-                                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                                gap: 1,
-                                '&:hover': {
-                                    backgroundColor: '#e8e8e8'
-                                }
-                            }}
-                        >
-                            הוסף
-                        </Button>
+                        {canEdit && (
+                            <Button
+                                variant="contained"
+                                startIcon={<AddIcon />}
+                                onClick={handleAddContact}
+                                sx={{
+                                    backgroundColor: '#f5f5f5',
+                                    color: '#666',
+                                    border: '1px solid #e0e0e0',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                    gap: 1,
+                                    '&:hover': {
+                                        backgroundColor: '#e8e8e8'
+                                    }
+                                }}
+                            >
+                                הוסף
+                            </Button>
+                        )}
                     </Box>
 
                     {(!contractor.contacts || contractor.contacts.length === 0) ? (
@@ -1605,18 +1610,22 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                                 </Typography>
                                             </TableCell>
                                             <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
-                                                <IconButton
-                                                    onClick={() => handleEditContact(contact, index)}
-                                                    sx={{ color: '#666', mr: 1 }}
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
-                                                <IconButton
-                                                    onClick={() => handleDeleteContact(index)}
-                                                    sx={{ color: '#666' }}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                                {canEdit && (
+                                                    <>
+                                                        <IconButton
+                                                            onClick={() => handleEditContact(contact, index)}
+                                                            sx={{ color: '#666', mr: 1 }}
+                                                        >
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            onClick={() => handleDeleteContact(index)}
+                                                            sx={{ color: '#666' }}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -1884,7 +1893,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         onChange={(e) => handleChange('notes', e.target.value)}
                         error={!!errors.notes}
                         helperText={errors.notes}
-                        disabled={!canEdit}
                     />
 
                     {/* Action Buttons */}
