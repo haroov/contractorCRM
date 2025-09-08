@@ -75,7 +75,7 @@ const requireContactAuth = async (req, res, next) => {
 const requireContactManager = (req, res, next) => {
   console.log('🔍 Contact manager middleware - checking manager permissions');
   
-  if (req.session.contactUser && req.session.contactUser.contactPermissions === 'contact_manager') {
+  if (req.session.contactUser && (req.session.contactUser.contactPermissions === 'contact_manager' || req.session.contactUser.contactPermissions === 'admin')) {
     console.log('✅ Contact manager is authenticated:', req.session.contactUser.contactName);
     return next();
   }

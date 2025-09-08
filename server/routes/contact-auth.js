@@ -151,8 +151,8 @@ router.post('/send-otp', async (req, res) => {
       console.log('  - OTP generated:', otp);
       console.log('  - Message object:', JSON.stringify(msg, null, 2));
       
-      // Temporary: Force development mode until SendGrid is fixed
-      if (true || !process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
+      // Check if SendGrid is properly configured
+      if (!process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
         console.log('⚠️ SendGrid in development mode - logging OTP to console for:', email);
         console.log('🔑 OTP CODE FOR', email, ':', otp);
         console.log('📧 Email would be sent with beautiful design including Choco logo');
