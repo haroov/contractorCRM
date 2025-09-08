@@ -34,6 +34,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [selectedContractor, setSelectedContractor] = useState<Contractor | null>(null);
   const [contractorMode, setContractorMode] = useState<'view' | 'edit' | 'new'>('view');
   const [showContractorDetails, setShowContractorDetails] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load contractors from MongoDB
   useEffect(() => {
@@ -161,6 +162,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   };
 
   const handleSaveContractor = async (updatedContractor: Contractor) => {
+    setIsSaving(true);
     try {
       if (contractorMode === 'new') {
         // Create new contractor
@@ -184,6 +186,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       setSnackbarMessage('שגיאה בשמירת הקבלן');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -235,12 +239,25 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
-      {/* Header */}
-      <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'primary.main', color: 'white' }}>
+      {/* Header with Profile */}
+      <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <BusinessIcon sx={{ fontSize: 32 }} />
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+            <Box sx={{ 
+              width: 40, 
+              height: 40, 
+              borderRadius: '50%', 
+              bgcolor: '#882DD7', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '1.2rem'
+            }}>
+              C
+            </Box>
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
               מאגר קבלנים ויזמים
             </Typography>
           </Box>
@@ -259,11 +276,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 ),
               }}
               sx={{ 
-                bgcolor: 'white', 
+                bgcolor: 'grey.50', 
                 borderRadius: 1,
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { border: 'none' }
-                }
+                minWidth: 200
               }}
             />
             
@@ -271,7 +286,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddNewContractor}
-              sx={{ bgcolor: 'white', color: 'primary.main', '&:hover': { bgcolor: 'grey.100' } }}
+              sx={{ bgcolor: '#1976d2' }}
             >
               הוסף קבלן
             </Button>
@@ -280,7 +295,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
                 <Typography variant="body2">{user.name}</Typography>
-                <IconButton onClick={handleUserMenuClick} sx={{ color: 'white' }}>
+                <IconButton onClick={handleUserMenuClick}>
                   <MoreVertIcon />
                 </IconButton>
               </Box>
@@ -290,9 +305,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       </Paper>
 
       {/* Main Content */}
-      <Box sx={{ display: 'flex', gap: 2, p: 2 }}>
-        {/* Left Panel - Contractor List */}
-        <Box sx={{ flex: showContractorDetails ? '0 0 400px' : '1', transition: 'flex 0.3s ease' }}>
+      {!showContractorDetails ? (
+        /* Contractor List View */
+        <Box sx={{ p: 2 }}>
           <Paper elevation={1} sx={{ p: 2, height: 'calc(100vh - 120px)', overflow: 'auto' }}>
             <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <EngineeringIcon />
@@ -384,31 +399,44 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             )}
           </Paper>
         </Box>
-
-        {/* Right Panel - Contractor Details */}
-        {showContractorDetails && selectedContractor && (
-          <Box sx={{ flex: 1 }}>
-            <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', overflow: 'auto' }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                  {selectedContractor.name || 'קבלן חדש'}
-                </Typography>
-                <IconButton onClick={handleCloseContractorDetails}>
+      ) : (
+        /* Contractor Details View */
+        <Box sx={{ p: 2 }}>
+          <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', overflow: 'auto' }}>
+            {/* Contractor Header */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              p: 2, 
+              bgcolor: '#1976d2', 
+              color: 'white',
+              borderRadius: '4px 4px 0 0'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton 
+                  onClick={handleCloseContractorDetails}
+                  sx={{ color: 'white' }}
+                >
                   <CloseIcon />
                 </IconButton>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                  {selectedContractor?.name || 'קבלן חדש'}
+                </Typography>
               </Box>
-              
-              <ContractorTabs
-                contractor={selectedContractor}
-                onSave={handleSaveContractor}
-                onClose={handleCloseContractorDetails}
-                isContactUser={false}
-                contactUserPermissions="admin"
-              />
-            </Paper>
-          </Box>
-        )}
-      </Box>
+            </Box>
+            
+            <ContractorTabs
+              contractor={selectedContractor!}
+              onSave={handleSaveContractor}
+              onClose={handleCloseContractorDetails}
+              isContactUser={false}
+              contactUserPermissions="admin"
+              isSaving={isSaving}
+            />
+          </Paper>
+        </Box>
+      )}
 
       {/* User Menu */}
       <Menu

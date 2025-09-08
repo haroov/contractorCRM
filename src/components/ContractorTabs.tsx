@@ -91,9 +91,10 @@ interface ContractorTabsProps {
     onClose?: () => void;
     isContactUser?: boolean;
     contactUserPermissions?: 'contact_manager' | 'contact_user';
+    isSaving?: boolean;
 }
 
-export default function ContractorTabs({ contractor: initialContractor, onSave, onClose, isContactUser = false, contactUserPermissions }: ContractorTabsProps) {
+export default function ContractorTabs({ contractor: initialContractor, onSave, onClose, isContactUser = false, contactUserPermissions, isSaving = false }: ContractorTabsProps) {
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
@@ -1395,8 +1396,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             </Button>
                         )}
                         {canEdit && (
-                            <Button onClick={handleSave} variant="contained">
-                                שמור
+                            <Button 
+                                onClick={handleSave} 
+                                variant="contained"
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'שומר...' : 'שמור'}
                             </Button>
                         )}
                     </Box>
@@ -1642,8 +1647,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             </Button>
                         )}
                         {canEdit && (
-                            <Button onClick={handleSave} variant="contained">
-                                שמור
+                            <Button 
+                                onClick={handleSave} 
+                                variant="contained"
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'שומר...' : 'שמור'}
                             </Button>
                         )}
                     </Box>
@@ -1844,8 +1853,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             </Button>
                         )}
                         {canEdit && (
-                            <Button onClick={handleSave} variant="contained">
-                                שמור
+                            <Button 
+                                onClick={handleSave} 
+                                variant="contained"
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'שומר...' : 'שמור'}
                             </Button>
                         )}
                     </Box>
@@ -1903,8 +1916,12 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                             </Button>
                         )}
                         {canEdit && (
-                            <Button onClick={handleSave} variant="contained">
-                                שמור
+                            <Button 
+                                onClick={handleSave} 
+                                variant="contained"
+                                disabled={isSaving}
+                            >
+                                {isSaving ? 'שומר...' : 'שמור'}
                             </Button>
                         )}
                     </Box>
