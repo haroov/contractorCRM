@@ -238,13 +238,27 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         try {
             if (contractor._id) {
                 console.log('🔄 Loading projects for contractor:', contractor._id);
-                const projects = await projectsAPI.getByContractor(contractor._id);
-                console.log('✅ Loaded projects:', projects.length);
+                
+                let projects;
+                if (isContactUser) {
+                    // Use contact-specific endpoint for contact users
+                    const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/projects?contractorId=${contractor._id}`;
+                    const response = await authenticatedFetch(contactApiUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    projects = await response.json();
+                } else {
+                    // Use regular endpoint for regular users
+                    projects = await projectsAPI.getByContractor(contractor._id);
+                }
+                
+                console.log('✅ Loaded projects:', projects?.length || 0);
 
                 // Update contractor with fresh projects
                 setContractor(prev => {
                     if (prev) {
-                        const updated = { ...prev, projects };
+                        const updated = { ...prev, projects: projects || [] };
                         console.log('🔄 Updated contractor with projects:', updated.projects?.length);
                         return updated;
                     }

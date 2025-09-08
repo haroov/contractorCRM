@@ -1799,7 +1799,7 @@ process.on('SIGINT', async () => {
 // Start server
 // Contact User Routes (Limited Access)
 // Get contractor details for contact user (read-only or editable based on permissions)
-app.get('/api/contact/contractor/:id', async (req, res) => {
+app.get('/api/contact/contractor/:id', requireContactAuth, requireContactContractorAccess, async (req, res) => {
   console.log('🔍 Contact contractor endpoint called with ID:', req.params.id);
   console.log('🔍 Session data:', req.session);
   
@@ -1863,6 +1863,37 @@ app.post('/api/contact/contractor/validate-status/:id', async (req, res) => {
   } catch (error) {
     console.error('❌ Error validating contractor status for contact user:', error);
     res.status(500).json({ error: 'Failed to validate contractor status' });
+  }
+});
+
+// Get projects for contact users
+app.get('/api/contact/projects', async (req, res) => {
+  console.log('🔍 Contact projects endpoint called');
+  console.log('🔍 Session data:', req.session);
+  
+  try {
+    const db = client.db('contractor-crm');
+    const contractorId = req.query.contractorId;
+    
+    if (!contractorId) {
+      return res.status(400).json({ error: 'Contractor ID is required' });
+    }
+
+    // Get projects for this contractor
+    const projects = await db.collection('projects').find({
+      mainContractor: contractorId
+    }).toArray();
+
+    // Calculate project status for each project
+    const projectsWithStatus = projects.map(project => ({
+      ...project,
+      status: calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed)
+    }));
+
+    res.json(projectsWithStatus);
+  } catch (error) {
+    console.error('❌ Error getting projects for contact user:', error);
+    res.status(500).json({ error: 'Failed to get projects' });
   }
 });
 

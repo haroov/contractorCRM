@@ -88,6 +88,9 @@ const ProjectsList: React.FC<ProjectsListProps> = ({ projects, onEditProject, on
                 return closed;
             default:
                 // For 'all' tab, return all projects sorted by date (most future first)
+                if (!projects || !Array.isArray(projects)) {
+                    return [];
+                }
                 return projects.sort((a, b) => {
                     const dateA = new Date(a.startDate);
                     const dateB = new Date(b.startDate);
