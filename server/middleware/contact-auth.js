@@ -17,7 +17,9 @@ const requireContactAuth = (req, res, next) => {
   const contactUserHeader = req.headers['x-contact-user'];
   if (contactUserHeader) {
     try {
-      const contactUser = JSON.parse(contactUserHeader);
+      // Decode the base64 encoded contact user data
+      const decodedContactUser = Buffer.from(contactUserHeader, 'base64').toString('utf-8');
+      const contactUser = JSON.parse(decodedContactUser);
       console.log('✅ Contact user is authenticated via header:', contactUser.contactName);
       // Store in session for this request
       req.session.contactUser = contactUser;
