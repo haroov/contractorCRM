@@ -175,7 +175,7 @@ export default function ContactLoginPage() {
 
       if (response.ok && data.success) {
         console.log('🔍 OTP verification response:', data);
-        
+
         if (data.multipleContractors) {
           // User has access to multiple contractors - show selection
           console.log('📋 Multiple contractors found, showing selection');
@@ -189,12 +189,12 @@ export default function ContactLoginPage() {
           // Store contact user data in localStorage for App.tsx to recognize
           localStorage.setItem('contactUser', JSON.stringify(data.user));
           localStorage.setItem('contactUserAuthenticated', 'true');
-          
+
           console.log('💾 Stored contact user data in localStorage');
 
           const navigateUrl = `/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`;
           console.log('🚀 Navigating to:', navigateUrl);
-          
+
           navigate(navigateUrl);
         }
       } else {

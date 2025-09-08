@@ -59,13 +59,15 @@ function App() {
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('✅ Contact user authenticated from localStorage:', contactUser);
-          setUser({
+          const userState = {
             id: contactUser.id,
             email: contactUser.email,
             name: contactUser.name,
             role: contactUser.role,
             picture: contactUser.picture || ''
-          });
+          };
+          console.log('🔍 Setting user state to:', userState);
+          setUser(userState);
           setLoading(false);
           console.log('✅ Contact user state set, returning early');
           return;
@@ -170,16 +172,19 @@ function App() {
   };
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    console.log('🔍 ProtectedRoute check - loading:', loading, 'user:', user);
+    
     if (loading) {
+      console.log('⏳ ProtectedRoute - still loading, showing skeleton');
       return <SkeletonLoader />;
     }
 
     if (!user) {
+      console.log('❌ ProtectedRoute - no user found, redirecting to login');
       return <Navigate to="/login" replace />;
     }
 
-    console.log('ProtectedRoute - loading:', loading, 'user:', user);
-    console.log('User authenticated, rendering children');
+    console.log('✅ ProtectedRoute - user authenticated, rendering children');
     console.log('🔍 App.tsx - user object details:', {
       id: user?.id,
       email: user?.email,
