@@ -149,6 +149,7 @@ router.post('/send-otp', async (req, res) => {
       console.log('  - SENDGRID_FROM_EMAIL:', process.env.SENDGRID_FROM_EMAIL);
       console.log('  - Email to send to:', email);
       console.log('  - OTP generated:', otp);
+      console.log('  - Message object:', JSON.stringify(msg, null, 2));
       
       if (!process.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY === 'your_sendgrid_api_key_here') {
         console.log('⚠️ SendGrid not configured - logging OTP to console:', otp);
