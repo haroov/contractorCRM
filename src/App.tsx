@@ -47,29 +47,29 @@ function App() {
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
 
-    // First check if user is a contact user
-    try {
-      const contactResponse = await fetch('/api/contact-auth/status', {
-        credentials: 'include'
-      });
-      
-      if (contactResponse.ok) {
-        const contactData = await contactResponse.json();
-        if (contactData.authenticated) {
-          console.log('✅ Contact user authenticated:', contactData.user);
+    // First check if user is a contact user (check localStorage)
+    const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+    if (contactUserAuthenticated === 'true') {
+      const contactUserData = localStorage.getItem('contactUser');
+      if (contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          console.log('✅ Contact user authenticated from localStorage:', contactUser);
           setUser({
-            id: contactData.user.id,
-            email: contactData.user.email,
-            name: contactData.user.name,
-            role: contactData.user.role,
-            picture: contactData.user.picture || ''
+            id: contactUser.id,
+            email: contactUser.email,
+            name: contactUser.name,
+            role: contactUser.role,
+            picture: contactUser.picture || ''
           });
           setLoading(false);
           return;
+        } catch (error) {
+          console.log('❌ Error parsing contact user data:', error);
+          localStorage.removeItem('contactUser');
+          localStorage.removeItem('contactUserAuthenticated');
         }
       }
-    } catch (error) {
-      console.log('❌ No contact user session:', error);
     }
 
     // Check if there's a session ID in the URL

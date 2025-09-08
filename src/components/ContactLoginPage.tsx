@@ -181,6 +181,11 @@ export default function ContactLoginPage() {
         } else {
           // Single contractor - proceed with login
           console.log('✅ Contact user logged in successfully:', data.user);
+          
+          // Store contact user data in localStorage for App.tsx to recognize
+          localStorage.setItem('contactUser', JSON.stringify(data.user));
+          localStorage.setItem('contactUserAuthenticated', 'true');
+          
           navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
         }
       } else {
@@ -220,6 +225,11 @@ export default function ContactLoginPage() {
 
       if (response.ok && data.success) {
         console.log('✅ Contact user selected contractor:', data.user);
+        
+        // Store contact user data in localStorage for App.tsx to recognize
+        localStorage.setItem('contactUser', JSON.stringify(data.user));
+        localStorage.setItem('contactUserAuthenticated', 'true');
+        
         navigate(`/contractor?mode=view&contractor_id=${data.user.contractorId}&contact_user=true`);
       } else {
         setError(data.error || 'שגיאה בבחירת החברה');
