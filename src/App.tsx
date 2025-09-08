@@ -44,6 +44,34 @@ function App() {
     checkAuthStatus();
   }, []);
 
+  // Additional effect to handle contact user state updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+      if (contactUserAuthenticated === 'true' && !user) {
+        console.log('🔄 Storage change detected, re-checking auth status');
+        checkAuthStatus();
+      }
+    };
+
+    // Check for contact user in localStorage periodically
+    const interval = setInterval(() => {
+      const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+      if (contactUserAuthenticated === 'true' && !user) {
+        console.log('🔄 Periodic check: contact user found in localStorage, updating state');
+        checkAuthStatus();
+      }
+    }, 1000); // Check every second
+
+    // Listen for storage changes
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [user]);
+
   const checkAuthStatus = async () => {
     console.log('🔍 Checking auth status...');
 
