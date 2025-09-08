@@ -34,6 +34,13 @@ export const getSessionId = (): string | null => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlSessionId = urlParams.get('sessionId');
     const localSessionId = localStorage.getItem('sessionId');
+    
+    // For contact users, we don't need sessionId - they use session cookies
+    const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+    if (isContactUser) {
+        return null; // Contact users rely on session cookies
+    }
+    
     return urlSessionId || localSessionId;
 };
 
@@ -66,7 +73,9 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
     // Add base URL if the URL doesn't start with http
     const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
     
-    if (sessionId) {
+    // For contact users, don't add sessionId - they use session cookies
+    const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+    if (sessionId && !isContactUser) {
         // Add session ID as query parameter as well
         const urlWithSession = fullUrl.includes('?') 
             ? `${fullUrl}&sessionId=${sessionId}`
