@@ -1,5 +1,5 @@
 // Middleware to check if user is a contact user (manager or user)
-const requireContactAuth = (req, res, next) => {
+const requireContactAuth = async (req, res, next) => {
   console.log('🔍 Contact auth middleware - checking contact user authentication');
   console.log('🔍 Session contactUser:', req.session.contactUser);
   console.log('🔍 Session ID:', req.sessionID);
@@ -60,6 +60,7 @@ const requireContactAuth = (req, res, next) => {
       await client.close();
     } catch (error) {
       console.log('❌ Error parsing contact user header:', error);
+      return res.status(500).json({ error: 'Internal server error' });
     }
   }
   
