@@ -42,6 +42,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   // Load contractors from MongoDB
   useEffect(() => {
     loadContractors();
+    loadUserData();
   }, []);
 
   // Handle URL parameters for contractor selection
@@ -94,6 +95,56 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       console.error('Error loading contractors:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUserData = async () => {
+    try {
+      // Check if user is a contact user
+      const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+      if (contactUserAuthenticated === 'true') {
+        const contactUserData = localStorage.getItem('contactUser');
+        if (contactUserData) {
+          const contactUser = JSON.parse(contactUserData);
+          setUser({
+            name: contactUser.name || 'משתמש',
+            picture: contactUser.picture || '',
+            role: contactUser.role || 'contact_user',
+            email: contactUser.email || ''
+          });
+          return;
+        }
+      }
+
+      // For regular users, try to get from server
+      const sessionId = localStorage.getItem('sessionId');
+      if (sessionId) {
+        const response = await fetch(`https://contractorcrm-api.onrender.com/auth/me`, {
+          credentials: 'include',
+          headers: {
+            'X-Session-ID': sessionId
+          }
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser({
+            name: userData.name || 'משתמש',
+            picture: userData.picture || '',
+            role: userData.role || 'user',
+            email: userData.email || ''
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      // Set default user if loading fails
+      setUser({
+        name: 'משתמש',
+        picture: '',
+        role: 'user',
+        email: ''
+      });
     }
   };
 
@@ -275,10 +326,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
-              <AccountCircleIcon />
-            </Avatar>
-            <Typography variant="body2">משתמש</Typography>
+            {user?.picture ? (
+              <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
+            ) : (
+              <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
+                <AccountCircleIcon />
+              </Avatar>
+            )}
+            <Typography variant="body2">{user?.name || 'משתמש'}</Typography>
             <IconButton onClick={handleUserMenuClick}>
               <MoreVertIcon />
             </IconButton>
@@ -303,8 +358,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   </InputAdornment>
                 ),
               }}
-              sx={{ 
-                bgcolor: 'white', 
+              sx={{
+                bgcolor: 'white',
                 borderRadius: 1,
                 minWidth: 800
               }}
