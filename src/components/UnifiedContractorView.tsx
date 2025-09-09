@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import { Contractor } from '../types/contractor';
 import ContractorService from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
@@ -174,6 +174,21 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       } catch (error) {
         console.error('Error archiving contractor:', error);
         setSnackbar({ open: true, message: 'שגיאה בארכוב הקבלן', severity: 'error' });
+      }
+    }
+  };
+
+  const handleDeleteContractor = async (contractor: Contractor) => {
+    const confirmed = window.confirm(`האם אתה בטוח שברצונך למחוק את הקבלן "${contractor.name}" לצמיתות? פעולה זו לא ניתנת לביטול!`);
+    if (confirmed) {
+      try {
+        await ContractorService.deleteContractor(contractor._id);
+        setSnackbar({ open: true, message: 'הקבלן נמחק בהצלחה', severity: 'success' });
+        // Refresh the contractors list
+        loadContractors();
+      } catch (error) {
+        console.error('Error deleting contractor:', error);
+        setSnackbar({ open: true, message: 'שגיאה במחיקת הקבלן', severity: 'error' });
       }
     }
   };
@@ -592,16 +607,45 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                         {/* פעולות */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleArchiveContractor(contractor);
-                            }}
-                            color="default"
-                          >
-                            <ArchiveIcon fontSize="small" />
-                          </IconButton>
+                          <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                            {/* כפתור ארכב - לכל המשתמשים */}
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleArchiveContractor(contractor);
+                              }}
+                              sx={{
+                                color: '#5f6368',
+                                '&:hover': {
+                                  backgroundColor: '#f1f3f4',
+                                  color: '#202124'
+                                }
+                              }}
+                            >
+                              <ArchiveIcon fontSize="small" />
+                            </IconButton>
+                            
+                            {/* כפתור מחק - רק לאדמין */}
+                            {currentUser?.permissions === 'admin' && (
+                              <IconButton
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteContractor(contractor);
+                                }}
+                                sx={{
+                                  color: '#5f6368',
+                                  '&:hover': {
+                                    backgroundColor: '#fce8e6',
+                                    color: '#d93025'
+                                  }
+                                }}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </Box>
                         </TableCell>
                       </TableRow>
                     ))}
