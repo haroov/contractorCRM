@@ -1149,7 +1149,14 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     return (
         <Box sx={{ width: '100%', typography: 'body1' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ 
+                borderBottom: 1, 
+                borderColor: 'divider',
+                position: 'sticky',
+                top: 0,
+                zIndex: 9,
+                backgroundColor: 'white'
+            }}>
                 <Tabs value={activeTab} onChange={handleTabChange} aria-label="contractor tabs">
                     <Tab label="פרטי חברה" />
                     <Tab label="מידע עסקי" />

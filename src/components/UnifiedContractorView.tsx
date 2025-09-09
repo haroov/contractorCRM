@@ -664,19 +664,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              p: 2,
+              p: 1.5,
               bgcolor: '#882DD7',
               color: 'white',
-              borderRadius: '4px 4px 0 0'
+              borderRadius: '4px 4px 0 0',
+              position: 'sticky',
+              top: 0,
+              zIndex: 10
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton
                   onClick={handleCloseContractorDetails}
-                  sx={{ color: 'white' }}
+                  sx={{ color: 'white', p: 0.5 }}
                 >
-                  <CloseIcon />
+                  <CloseIcon fontSize="small" />
                 </IconButton>
-                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                <Typography variant="h6" sx={{ fontWeight: 500 }}>
                   {selectedContractor?.name || 'קבלן חדש'}
                 </Typography>
               </Box>
