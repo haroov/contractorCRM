@@ -306,8 +306,15 @@ export default function ContractorTabsSimple({
                                 />
                             </Grid>
                             
-                            {/* שורה שלישית */}
-
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="כתובת"
+                                    value={contractor?.address || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -316,7 +323,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
