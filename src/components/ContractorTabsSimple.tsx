@@ -137,16 +137,6 @@ export default function ContractorTabsSimple({
                             sx={{ mb: 2 }}
                             disabled={!canEdit}
                         />
-                        
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={contractor?.iso45001 || false}
-                                    disabled={!canEdit}
-                                />
-                            }
-                            label="ISO45001"
-                        />
                     </Box>
                 )}
                 
@@ -156,9 +146,52 @@ export default function ContractorTabsSimple({
                             מידע עסקי
                         </Typography>
                         
-                        <Typography variant="body2" color="text.secondary">
-                            מידע עסקי נוסף יוצג כאן
-                        </Typography>
+                        <TextField
+                            fullWidth
+                            label="מספר כוכבי בטיחות"
+                            type="number"
+                            value={contractor?.safetyRating || contractor?.safetyStars || ''}
+                            sx={{ mb: 2 }}
+                            disabled={!canEdit}
+                            inputProps={{ min: 0, max: 5 }}
+                        />
+                        
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={contractor?.iso45001 || false}
+                                    disabled={!canEdit}
+                                />
+                            }
+                            label="ISO45001"
+                            sx={{ mb: 2 }}
+                        />
+                        
+                        {contractor?.classifications && contractor.classifications.length > 0 && (
+                            <Box sx={{ mb: 2 }}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    סוגי רישיונות:
+                                </Typography>
+                                {contractor.classifications.map((classification: any, index: number) => (
+                                    <Typography key={index} variant="body2" sx={{ mb: 1 }}>
+                                        • {classification}
+                                    </Typography>
+                                ))}
+                            </Box>
+                        )}
+                        
+                        {contractor?.activities && contractor.activities.length > 0 && (
+                            <Box sx={{ mb: 2 }}>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    פעילויות:
+                                </Typography>
+                                {contractor.activities.map((activity: any, index: number) => (
+                                    <Typography key={index} variant="body2" sx={{ mb: 1 }}>
+                                        • {activity}
+                                    </Typography>
+                                ))}
+                            </Box>
+                        )}
                     </Box>
                 )}
                 
