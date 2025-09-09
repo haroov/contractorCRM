@@ -286,6 +286,7 @@ export default function ContractorTabsSimple({
                                             setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
                                         }
                                         
+                                        // Update contractor state immediately
                                         if (contractor && onSave) {
                                             const updatedContractor = {
                                                 ...contractor,

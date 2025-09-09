@@ -1753,6 +1753,82 @@ app.get('/add-specific-users', async (req, res) => {
   }
 });
 
+// Cleanup contractors without names
+app.get('/api/cleanup-contractors', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    // Get all contractors
+    const allContractors = await db.collection('contractors').find({}).toArray();
+    console.log(`📊 Found ${allContractors.length} contractors in database`);
+    
+    // Find contractors without names or with empty names
+    const invalidContractors = allContractors.filter(contractor => 
+      !contractor.name || 
+      contractor.name.trim() === '' || 
+      contractor.name === 'undefined' ||
+      contractor.name === 'null'
+    );
+    
+    console.log(`🗑️ Found ${invalidContractors.length} invalid contractors to delete:`);
+    invalidContractors.forEach(contractor => {
+      console.log(`  - ID: ${contractor._id}, Name: "${contractor.name}", Company ID: ${contractor.company_id}`);
+    });
+    
+    let deletedCount = 0;
+    if (invalidContractors.length > 0) {
+      // Delete invalid contractors
+      const deleteResult = await db.collection('contractors').deleteMany({
+        _id: { $in: invalidContractors.map(c => c._id) }
+      });
+      
+      deletedCount = deleteResult.deletedCount;
+      console.log(`✅ Deleted ${deletedCount} invalid contractors`);
+    }
+    
+    // Get remaining contractors
+    const remainingContractors = await db.collection('contractors').find({}).toArray();
+    console.log(`📊 Remaining contractors: ${remainingContractors.length}`);
+    
+    // If we have more than 15 contractors, keep only the first 15
+    let excessDeleted = 0;
+    if (remainingContractors.length > 15) {
+      console.log(`⚠️ More than 15 contractors found. Keeping only the first 15.`);
+      
+      const contractorsToDelete = remainingContractors.slice(15);
+      const deleteResult = await db.collection('contractors').deleteMany({
+        _id: { $in: contractorsToDelete.map(c => c._id) }
+      });
+      
+      excessDeleted = deleteResult.deletedCount;
+      console.log(`✅ Deleted ${excessDeleted} excess contractors`);
+    }
+    
+    // Get final contractors
+    const finalContractors = await db.collection('contractors').find({}).toArray();
+    
+    res.json({
+      success: true,
+      message: 'Contractors cleaned up successfully',
+      deleted: {
+        invalid: deletedCount,
+        excess: excessDeleted,
+        total: deletedCount + excessDeleted
+      },
+      remaining: finalContractors.length,
+      contractors: finalContractors.map(c => ({
+        id: c._id,
+        name: c.name,
+        company_id: c.company_id
+      }))
+    });
+    
+  } catch (error) {
+    console.error('❌ Error cleaning up contractors:', error);
+    res.status(500).json({ error: 'Failed to cleanup contractors' });
+  }
+});
+
 // Fix project contractor linkage and add mainContractor field
 app.get('/fix', async (req, res) => {
   try {
