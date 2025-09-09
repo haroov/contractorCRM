@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
-// import ContractorTabs from './ContractorTabs';
+
+const ContractorTabs = lazy(() => import('./ContractorTabs'));
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
@@ -712,7 +713,34 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <div>Loading contractor details...</div>
+              <Suspense fallback={
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                  <CircularProgress />
+                  <Typography sx={{ ml: 2 }}>טוען פרטי קבלן...</Typography>
+                </Box>
+              }>
+                <ContractorTabs
+                  contractor={selectedContractor!}
+                  onSave={handleSaveContractor}
+                  onClose={handleCloseContractorDetails}
+                  isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
+                  contactUserPermissions={(() => {
+                    const contactUserData = localStorage.getItem('contactUser');
+                    if (contactUserData) {
+                      try {
+                        const contactUser = JSON.parse(contactUserData);
+                        return contactUser.permissions;
+                      } catch (error) {
+                        console.error('Error parsing contact user data:', error);
+                        return 'contact_user';
+                      }
+                    }
+                    return 'contact_user';
+                  })()}
+                  currentUser={currentUser}
+                  isSaving={isSaving}
+                />
+              </Suspense>
             </Box>
           </Paper>
         </Box>
