@@ -390,6 +390,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       '&:hover': { bgcolor: 'action.hover' }
                     }}
                     onClick={() => {
+                      console.log('🔥 Contractor card clicked!', contractor.name);
                       // Determine mode based on user permissions
                       const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
                       const contactUserData = localStorage.getItem('contactUser');
@@ -410,6 +411,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         mode = 'edit';
                       }
                       
+                      console.log('🔥 Opening contractor in mode:', mode);
                       handleContractorSelect(contractor, mode);
                     }}
                   >
