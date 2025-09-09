@@ -213,6 +213,11 @@ const contactAuthRoutes = require('./routes/contact-auth.js');
 app.use('/api/contact-auth', contactAuthRoutes);
 console.log('✅ Contact authentication routes configured');
 
+// Import contractors routes
+const contractorsRoutes = require('./routes/contractors.js');
+app.use('/api/contractors', contractorsRoutes);
+console.log('✅ Contractors routes configured');
+
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 const { requireContactAuth, requireContactManager, requireContactContractorAccess } = require('./middleware/contact-auth.js');

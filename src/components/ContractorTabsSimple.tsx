@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from '@mui/material';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
@@ -25,6 +25,7 @@ export default function ContractorTabsSimple({
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: string}>({});
+    const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -41,7 +42,7 @@ export default function ContractorTabsSimple({
         setUploadDialogOpen(true);
     };
 
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file && uploadType) {
             // Check file type
@@ -51,15 +52,84 @@ export default function ContractorTabsSimple({
                 return;
             }
 
-            // Create preview URL
-            const fileUrl = URL.createObjectURL(file);
-            setUploadedFiles(prev => ({
-                ...prev,
-                [uploadType]: fileUrl
-            }));
+            // Check file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('גודל הקובץ גדול מדי. מקסימום 10MB');
+                return;
+            }
 
-            setUploadDialogOpen(false);
-            setUploadType(null);
+            setIsUploading(true);
+
+            try {
+                // Convert file to base64
+                const base64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+
+                // Save to database
+                const fileData = {
+                    contractorId: contractor?._id,
+                    fileType: uploadType,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    mimeType: file.type,
+                    data: base64,
+                    uploadedAt: new Date().toISOString()
+                };
+
+                // Call API to save file
+                const response = await fetch('/api/contractors/upload-certificate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Contact-User': localStorage.getItem('contactUser') || '',
+                        'Contact-Session': localStorage.getItem('contactSessionId') || ''
+                    },
+                    body: JSON.stringify(fileData)
+                });
+
+                if (response.ok) {
+                    // Create preview URL for display
+                    const fileUrl = URL.createObjectURL(file);
+                    setUploadedFiles(prev => ({
+                        ...prev,
+                        [uploadType]: fileUrl
+                    }));
+
+                    // Update contractor data
+                    if (contractor) {
+                        const updatedContractor = {
+                            ...contractor,
+                            [`${uploadType}Certificate`]: {
+                                fileName: file.name,
+                                uploadedAt: new Date().toISOString(),
+                                fileSize: file.size
+                            }
+                        };
+                        if (onSave) {
+                            onSave(updatedContractor);
+                        }
+                    }
+
+                    alert('הקובץ הועלה בהצלחה!');
+                } else {
+                    throw new Error('שגיאה בהעלאת הקובץ');
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('שגיאה בהעלאת הקובץ. אנא נסה שוב.');
+            } finally {
+                setIsUploading(false);
+                setUploadDialogOpen(false);
+                setUploadType(null);
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
+            }
         }
     };
 
@@ -505,34 +575,50 @@ export default function ContractorTabsSimple({
                 </DialogTitle>
                 <DialogContent>
                     <Box sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="body2" sx={{ mb: 2 }}>
-                            בחר קובץ PDF או תמונה (JPG, PNG)
-                        </Typography>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={handleFileUpload}
-                            style={{ display: 'none' }}
-                        />
-                        <Button
-                            variant="contained"
-                            component="label"
-                            startIcon={<CloudUploadIcon />}
-                            sx={{ mb: 2 }}
-                        >
-                            בחר קובץ
-                            <input
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={handleFileUpload}
-                                style={{ display: 'none' }}
-                            />
-                        </Button>
+                        {isUploading ? (
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                <CircularProgress size={40} />
+                                <Typography variant="body2">
+                                    מעלה קובץ...
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <>
+                                <Typography variant="body2" sx={{ mb: 2 }}>
+                                    בחר קובץ PDF או תמונה (JPG, PNG)
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                                    מקסימום 10MB
+                                </Typography>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    onChange={handleFileUpload}
+                                    style={{ display: 'none' }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    component="label"
+                                    startIcon={<CloudUploadIcon />}
+                                    sx={{ mb: 2 }}
+                                >
+                                    בחר קובץ
+                                    <input
+                                        type="file"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        onChange={handleFileUpload}
+                                        style={{ display: 'none' }}
+                                    />
+                                </Button>
+                            </>
+                        )}
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseUploadDialog}>ביטול</Button>
+                    <Button onClick={handleCloseUploadDialog} disabled={isUploading}>
+                        ביטול
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>
