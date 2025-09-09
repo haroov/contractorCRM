@@ -486,44 +486,42 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             {contractor.email && (
                               <Typography 
                                 variant="caption" 
-                                color="primary" 
+                                color="text.secondary" 
                                 sx={{ 
                                   display: 'block', 
                                   cursor: 'pointer',
-                                  textDecoration: 'underline',
-                                  '&:hover': { color: 'primary.dark' }
+                                  '&:hover': { color: 'primary.main' }
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 {contractor.email}
+                                📧 <span style={{ textDecoration: 'underline' }}>{contractor.email}</span>
                               </Typography>
                             )}
                             {contractor.phone && (
                               <Typography 
                                 variant="caption" 
-                                color="primary" 
+                                color="text.secondary" 
                                 sx={{ 
                                   display: 'block', 
                                   cursor: 'pointer',
-                                  textDecoration: 'underline',
-                                  '&:hover': { color: 'primary.dark' }
+                                  '&:hover': { color: 'primary.main' }
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 {contractor.phone}
+                                📞 <span style={{ textDecoration: 'underline' }}>{contractor.phone}</span>
                               </Typography>
                             )}
                           </Box>
                         </TableCell>
 
                         {/* ח"פ */}
-                        <TableCell sx={{ textAlign: 'center' }}>
+                        <TableCell sx={{ textAlign: 'right' }}>
                           <Typography variant="body2">
                             {contractor.company_id}
                           </Typography>
@@ -533,7 +531,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         </TableCell>
 
                         {/* כתובת */}
-                        <TableCell sx={{ textAlign: 'center' }}>
+                        <TableCell sx={{ textAlign: 'right' }}>
                           <Typography variant="body2">
                             {contractor.city}
                           </Typography>
@@ -542,15 +540,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           </Typography>
                         </TableCell>
 
-                        {/* פרויקטים */}
-                        <TableCell sx={{ textAlign: 'center' }}>
+                        {/* פרויקטים פעילים */}
+                        <TableCell sx={{ textAlign: 'right' }}>
                           <Typography variant="body2">
                             {contractor.current_projects || 0} פעילים
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        </TableCell>
+
+                        {/* פרויקטים עתידיים */}
+                        <TableCell sx={{ textAlign: 'right' }}>
+                          <Typography variant="body2">
                             {contractor.forcast_projects || 0} עתידיים
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -559,7 +561,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         </TableCell>
 
                         {/* דירוג בטיחות */}
-                        <TableCell sx={{ textAlign: 'center' }}>
+                        <TableCell sx={{ textAlign: 'right' }}>
                           <Typography variant="body2">
                             {contractor.safetyRating || 0} כוכבים
                           </Typography>
