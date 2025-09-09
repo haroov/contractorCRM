@@ -276,7 +276,7 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
                                     value={contractor?.company_id || ''}
-                                    disabled={!canEdit || (!!contractor?.contractor_id && contractor?.contractor_id !== 'new')}
+                                    disabled={!canEdit || (contractor?.contractor_id && contractor?.contractor_id !== 'new')}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         setCompanyIdError('');
