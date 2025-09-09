@@ -3,9 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
-import ContractorService from '../services/contractorService';
-import ContractorTabs from './ContractorTabs';
+// import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
+import ContractorTabs from './ContractorTabs';
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
@@ -89,6 +89,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const loadContractors = async () => {
     try {
       setLoading(true);
+      const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
       setContractors(contractorsData);
     } catch (error) {
@@ -167,6 +168,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const confirmed = window.confirm(`האם אתה בטוח שברצונך לארכב את הקבלן "${contractor.name}"?`);
     if (confirmed) {
       try {
+        const { default: ContractorService } = await import('../services/contractorService');
         await ContractorService.updateContractor(contractor._id, { status: 'archived' });
         setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
         // Refresh the contractors list
@@ -182,6 +184,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const confirmed = window.confirm(`האם אתה בטוח שברצונך למחוק את הקבלן "${contractor.name}" לצמיתות? פעולה זו לא ניתנת לביטול!`);
     if (confirmed) {
       try {
+        const { default: ContractorService } = await import('../services/contractorService');
         await ContractorService.deleteContractor(contractor._id);
         setSnackbar({ open: true, message: 'הקבלן נמחק בהצלחה', severity: 'success' });
         // Refresh the contractors list
@@ -197,6 +200,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (!contractorToDelete) return;
 
     try {
+      const { default: ContractorService } = await import('../services/contractorService');
       const success = await ContractorService.delete(contractorToDelete.contractor_id);
       if (success) {
         setContractors(contractors.filter(c => c.contractor_id !== contractorToDelete.contractor_id));
@@ -251,6 +255,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const handleSaveContractor = async (updatedContractor: Contractor) => {
     setIsSaving(true);
     try {
+      const { default: ContractorService } = await import('../services/contractorService');
       if (contractorMode === 'new') {
         const newContractor = await ContractorService.create(updatedContractor);
         setContractors([...contractors, newContractor]);
