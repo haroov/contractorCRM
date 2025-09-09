@@ -153,9 +153,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setShowContractorDetails(true);
   };
 
-  const handleEditContractor = (contractor: Contractor) => {
-    handleContractorSelect(contractor, 'edit');
-  };
 
   const handleDeleteContractor = (contractor: Contractor) => {
     setContractorToDelete(contractor);
@@ -392,7 +389,29 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       borderColor: selectedContractor?.contractor_id === contractor.contractor_id ? 'primary.main' : 'divider',
                       '&:hover': { bgcolor: 'action.hover' }
                     }}
-                    onClick={() => handleContractorSelect(contractor)}
+                    onClick={() => {
+                      // Determine mode based on user permissions
+                      const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+                      const contactUserData = localStorage.getItem('contactUser');
+                      let mode: 'view' | 'edit' = 'view';
+                      
+                      if (isContactUser && contactUserData) {
+                        try {
+                          const userData = JSON.parse(contactUserData);
+                          const permissions = userData.permissions;
+                          // Contact managers and admins can edit, contact users can only view
+                          mode = (permissions === 'contact_manager' || permissions === 'admin') ? 'edit' : 'view';
+                        } catch (error) {
+                          console.error('Error parsing contact user data:', error);
+                          mode = 'view';
+                        }
+                      } else {
+                        // Regular users can edit
+                        mode = 'edit';
+                      }
+                      
+                      handleContractorSelect(contractor, mode);
+                    }}
                   >
                     <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -434,15 +453,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     </CardContent>
                     
                     <CardActions sx={{ p: 1, pt: 0 }}>
-                      <IconButton 
-                        size="small" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditContractor(contractor);
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
                       <IconButton 
                         size="small" 
                         onClick={(e) => {
