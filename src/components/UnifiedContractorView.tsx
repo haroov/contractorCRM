@@ -517,10 +517,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.name}
                             </Typography>
                             {contractor.email && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
                                   display: 'block',
                                   cursor: 'pointer'
                                 }}
@@ -529,17 +529,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 <span style={{ 
+                                📧 <span style={{
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.email}</span>
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
                                   display: 'block',
                                   cursor: 'pointer'
                                 }}
@@ -548,7 +548,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 <span style={{ 
+                                📞 <span style={{
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.phone}</span>

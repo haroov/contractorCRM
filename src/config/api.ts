@@ -1,10 +1,24 @@
 // API Configuration
+const getBaseUrl = () => {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+        return import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com/api';
+    }
+    return 'https://contractorcrm-api.onrender.com/api';
+};
+
+const getAuthBaseUrl = () => {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+        return import.meta.env.VITE_AUTH_BASE_URL || 'https://contractorcrm-api.onrender.com';
+    }
+    return 'https://contractorcrm-api.onrender.com';
+};
+
 export const API_CONFIG = {
     // Base URL for API calls - use import.meta.env for Vite/Vercel
-    BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com/api',
+    BASE_URL: getBaseUrl(),
     
     // Auth Base URL - for authentication endpoints
-    AUTH_BASE_URL: import.meta.env.VITE_AUTH_BASE_URL || 'https://contractorcrm-api.onrender.com',
+    AUTH_BASE_URL: getAuthBaseUrl(),
 
     // Specific endpoints
     CONTRACTORS: '/contractors',
