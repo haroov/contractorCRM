@@ -95,14 +95,36 @@ export default function ContractorTabsSimple({
                             {/* שורה שנייה */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControl fullWidth>
-                                    <InputLabel>סוג חברה</InputLabel>
+                                    <InputLabel sx={{ 
+                                        backgroundColor: 'white', 
+                                        px: 1,
+                                        '&.Mui-focused': {
+                                            backgroundColor: 'white'
+                                        }
+                                    }}>
+                                        סוג חברה
+                                    </InputLabel>
                                     <Select
                                         value={contractor?.companyType || ''}
                                         disabled={!canEdit}
+                                        sx={{
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#d0d0d0'
+                                            },
+                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#9c27b0'
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#9c27b0'
+                                            }
+                                        }}
                                     >
-                                        <MenuItem value="בע״מ">בע״מ</MenuItem>
                                         <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
-                                        <MenuItem value="שותפות">שותפות</MenuItem>
+                                        <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
+                                        <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
+                                        <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
+                                        <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
+                                        <MenuItem value="עמותה רשומה">עמותה רשומה</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
