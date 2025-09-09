@@ -517,37 +517,41 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.name}
                             </Typography>
                             {contractor.email && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'block',
-                                  cursor: 'pointer',
-                                  '&:hover': { color: 'primary.main' }
+                              <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                  display: 'inline-block',
+                                  cursor: 'pointer'
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 <span style={{ textDecoration: 'underline' }}>{contractor.email}</span>
+                                📧 <span style={{ 
+                                  textDecoration: 'underline',
+                                  '&:hover': { color: 'primary.main' }
+                                }}>{contractor.email}</span>
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'block',
-                                  cursor: 'pointer',
-                                  '&:hover': { color: 'primary.main' }
+                              <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                  display: 'inline-block',
+                                  cursor: 'pointer'
                                 }}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 <span style={{ textDecoration: 'underline' }}>{contractor.phone}</span>
+                                📞 <span style={{ 
+                                  textDecoration: 'underline',
+                                  '&:hover': { color: 'primary.main' }
+                                }}>{contractor.phone}</span>
                               </Typography>
                             )}
                           </Box>
