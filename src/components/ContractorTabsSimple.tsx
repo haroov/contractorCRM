@@ -24,7 +24,7 @@ export default function ContractorTabsSimple({
     const [activeTab, setActiveTab] = useState(0);
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
-    const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: string}>({});
+    const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,14 +81,30 @@ export default function ContractorTabsSimple({
                 };
 
                 // Call API to save file
+                const headers: {[key: string]: string} = {
+                    'Content-Type': 'application/json'
+                };
+
+                // Add authentication headers based on user type
+                const token = localStorage.getItem('token');
+                const contactUser = localStorage.getItem('contactUser');
+                const contactSessionId = localStorage.getItem('contactSessionId');
+
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                if (contactUser) {
+                    headers['Contact-User'] = contactUser;
+                }
+                
+                if (contactSessionId) {
+                    headers['Contact-Session'] = contactSessionId;
+                }
+
                 const response = await fetch('/api/contractors/upload-certificate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Contact-User': localStorage.getItem('contactUser') || '',
-                        'Contact-Session': localStorage.getItem('contactSessionId') || ''
-                    },
+                    headers,
                     body: JSON.stringify(fileData)
                 });
 
@@ -172,7 +188,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit || !!contractor?.contractor_id}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -181,7 +197,7 @@ export default function ContractorTabsSimple({
                                     disabled={true}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -190,7 +206,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -199,12 +215,12 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             {/* שורה שנייה */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControl fullWidth>
-                                    <InputLabel sx={{ 
-                                        backgroundColor: 'white', 
+                                    <InputLabel sx={{
+                                        backgroundColor: 'white',
                                         px: 1,
                                         '&.Mui-focused': {
                                             backgroundColor: 'white'
@@ -236,7 +252,7 @@ export default function ContractorTabsSimple({
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -246,7 +262,7 @@ export default function ContractorTabsSimple({
                                     disabled={true}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -256,7 +272,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -265,7 +281,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             {/* שורה שלישית */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
@@ -275,7 +291,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -284,7 +300,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -307,8 +323,8 @@ export default function ContractorTabsSimple({
                             {/* שורה ראשונה - כוכבי בטיחות */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControl fullWidth>
-                                    <InputLabel sx={{ 
-                                        backgroundColor: 'white', 
+                                    <InputLabel sx={{
+                                        backgroundColor: 'white',
                                         px: 1,
                                         '&.Mui-focused': {
                                             backgroundColor: 'white'
@@ -365,7 +381,7 @@ export default function ContractorTabsSimple({
                                         disabled={!canEdit}
                                         title="העלאת תעודת הסמכת כוכבי בטיחות"
                                         onClick={() => handleUploadClick('safety')}
-                                        sx={{ 
+                                        sx={{
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
@@ -375,9 +391,9 @@ export default function ContractorTabsSimple({
                                         <CloudUploadIcon />
                                     </IconButton>
                                     {uploadedFiles.safety && (
-                                        <Box sx={{ 
-                                            width: 40, 
-                                            height: 40, 
+                                        <Box sx={{
+                                            width: 40,
+                                            height: 40,
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             overflow: 'hidden',
@@ -385,14 +401,14 @@ export default function ContractorTabsSimple({
                                             alignItems: 'center',
                                             justifyContent: 'center'
                                         }}>
-                                            <img 
-                                                src={uploadedFiles.safety} 
-                                                alt="תצוגה מקדימה" 
-                                                style={{ 
-                                                    width: '100%', 
-                                                    height: '100%', 
-                                                    objectFit: 'cover' 
-                                                }} 
+                                            <img
+                                                src={uploadedFiles.safety}
+                                                alt="תצוגה מקדימה"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover'
+                                                }}
                                             />
                                         </Box>
                                     )}
@@ -413,7 +429,7 @@ export default function ContractorTabsSimple({
                                         />
                                     }
                                     label="ISO45001"
-                                    sx={{ 
+                                    sx={{
                                         height: '100%',
                                         display: 'flex',
                                         alignItems: 'center'
@@ -445,7 +461,7 @@ export default function ContractorTabsSimple({
                                         disabled={!canEdit}
                                         title="העלאת תעודת ISO45001"
                                         onClick={() => handleUploadClick('iso')}
-                                        sx={{ 
+                                        sx={{
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
@@ -455,9 +471,9 @@ export default function ContractorTabsSimple({
                                         <CloudUploadIcon />
                                     </IconButton>
                                     {uploadedFiles.iso && (
-                                        <Box sx={{ 
-                                            width: 40, 
-                                            height: 40, 
+                                        <Box sx={{
+                                            width: 40,
+                                            height: 40,
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             overflow: 'hidden',
@@ -465,14 +481,14 @@ export default function ContractorTabsSimple({
                                             alignItems: 'center',
                                             justifyContent: 'center'
                                         }}>
-                                            <img 
-                                                src={uploadedFiles.iso} 
-                                                alt="תצוגה מקדימה" 
-                                                style={{ 
-                                                    width: '100%', 
-                                                    height: '100%', 
-                                                    objectFit: 'cover' 
-                                                }} 
+                                            <img
+                                                src={uploadedFiles.iso}
+                                                alt="תצוגה מקדימה"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover'
+                                                }}
                                             />
                                         </Box>
                                     )}
