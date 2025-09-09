@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
@@ -22,6 +22,10 @@ export default function ContractorTabsSimple({
     isSaving = false
 }: ContractorTabsSimpleProps) {
     const [activeTab, setActiveTab] = useState(0);
+    const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+    const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
+    const [uploadedFiles, setUploadedFiles] = useState<{[key: string]: string}>({});
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
@@ -29,6 +33,41 @@ export default function ContractorTabsSimple({
     const handleSave = () => {
         if (onSave && contractor) {
             onSave(contractor);
+        }
+    };
+
+    const handleUploadClick = (type: 'safety' | 'iso') => {
+        setUploadType(type);
+        setUploadDialogOpen(true);
+    };
+
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file && uploadType) {
+            // Check file type
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('אנא בחר קובץ PDF או תמונה (JPG, PNG)');
+                return;
+            }
+
+            // Create preview URL
+            const fileUrl = URL.createObjectURL(file);
+            setUploadedFiles(prev => ({
+                ...prev,
+                [uploadType]: fileUrl
+            }));
+
+            setUploadDialogOpen(false);
+            setUploadType(null);
+        }
+    };
+
+    const handleCloseUploadDialog = () => {
+        setUploadDialogOpen(false);
+        setUploadType(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
     };
 
@@ -61,7 +100,6 @@ export default function ContractorTabsSimple({
                                     label="מספר חברה (ח״פ)"
                                     value={contractor?.company_id || ''}
                                     disabled={!canEdit || !!contractor?.contractor_id}
-                                    helperText={contractor?.contractor_id ? "ניתן לערוך רק בקבלן חדש" : ""}
                                 />
                             </Grid>
                             
@@ -196,7 +234,7 @@ export default function ContractorTabsSimple({
                         </Typography>
 
                         <Grid container spacing={2}>
-                            {/* שורה ראשונה */}
+                            {/* שורה ראשונה - כוכבי בטיחות */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControl fullWidth>
                                     <InputLabel sx={{ 
@@ -236,19 +274,27 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="תאריך תוקף כוכבי בטיחות"
+                                    label="תאריך תוקף"
                                     type="date"
                                     value={contractor?.safetyRatingExpiry || ''}
                                     disabled={!canEdit}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: {
+                                            backgroundColor: 'white',
+                                            px: 1
+                                        }
+                                    }}
                                 />
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     <IconButton
                                         color="primary"
                                         disabled={!canEdit}
                                         title="העלאת תעודת הסמכת כוכבי בטיחות"
+                                        onClick={() => handleUploadClick('safety')}
                                         sx={{ 
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
@@ -258,9 +304,36 @@ export default function ContractorTabsSimple({
                                     >
                                         <CloudUploadIcon />
                                     </IconButton>
+                                    {uploadedFiles.safety && (
+                                        <Box sx={{ 
+                                            width: 40, 
+                                            height: 40, 
+                                            border: '1px solid #d0d0d0',
+                                            borderRadius: 1,
+                                            overflow: 'hidden',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <img 
+                                                src={uploadedFiles.safety} 
+                                                alt="תצוגה מקדימה" 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    height: '100%', 
+                                                    objectFit: 'cover' 
+                                                }} 
+                                            />
+                                        </Box>
+                                    )}
                                 </Box>
                             </Grid>
 
+                            <Grid item xs={12} sm={6} md={3}>
+                                {/* מקום ריק לשורה הראשונה */}
+                            </Grid>
+
+                            {/* שורה שנייה - ISO45001 */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControlLabel
                                     control={
@@ -278,23 +351,30 @@ export default function ContractorTabsSimple({
                                 />
                             </Grid>
 
-                            {/* שורה שנייה */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="תאריך תוקף ISO45001"
+                                    label="תאריך תוקף"
                                     type="date"
                                     value={contractor?.iso45001Expiry || ''}
                                     disabled={!canEdit}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: {
+                                            backgroundColor: 'white',
+                                            px: 1
+                                        }
+                                    }}
                                 />
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     <IconButton
                                         color="primary"
                                         disabled={!canEdit}
                                         title="העלאת תעודת ISO45001"
+                                        onClick={() => handleUploadClick('iso')}
                                         sx={{ 
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
@@ -304,7 +384,33 @@ export default function ContractorTabsSimple({
                                     >
                                         <CloudUploadIcon />
                                     </IconButton>
+                                    {uploadedFiles.iso && (
+                                        <Box sx={{ 
+                                            width: 40, 
+                                            height: 40, 
+                                            border: '1px solid #d0d0d0',
+                                            borderRadius: 1,
+                                            overflow: 'hidden',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            <img 
+                                                src={uploadedFiles.iso} 
+                                                alt="תצוגה מקדימה" 
+                                                style={{ 
+                                                    width: '100%', 
+                                                    height: '100%', 
+                                                    objectFit: 'cover' 
+                                                }} 
+                                            />
+                                        </Box>
+                                    )}
                                 </Box>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                {/* מקום ריק לשורה השנייה */}
                             </Grid>
                         </Grid>
 
@@ -391,6 +497,44 @@ export default function ContractorTabsSimple({
                     </Box>
                 )}
             </Box>
+
+            {/* Upload Dialog */}
+            <Dialog open={uploadDialogOpen} onClose={handleCloseUploadDialog} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    העלאת קובץ {uploadType === 'safety' ? 'תעודת כוכבי בטיחות' : 'תעודת ISO45001'}
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{ p: 2, textAlign: 'center' }}>
+                        <Typography variant="body2" sx={{ mb: 2 }}>
+                            בחר קובץ PDF או תמונה (JPG, PNG)
+                        </Typography>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                        />
+                        <Button
+                            variant="contained"
+                            component="label"
+                            startIcon={<CloudUploadIcon />}
+                            sx={{ mb: 2 }}
+                        >
+                            בחר קובץ
+                            <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={handleFileUpload}
+                                style={{ display: 'none' }}
+                            />
+                        </Button>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseUploadDialog}>ביטול</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
