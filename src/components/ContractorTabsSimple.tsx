@@ -78,21 +78,61 @@ export default function ContractorTabsSimple({
                             disabled={true}
                         />
                         
-                        <TextField
-                            fullWidth
-                            label="אימייל"
-                            value={contractor?.email || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
+                        <Box sx={{ mb: 2 }}>
+                            <TextField
+                                fullWidth
+                                label="אימייל"
+                                value={contractor?.email || ''}
+                                disabled={!canEdit}
+                                InputProps={{
+                                    endAdornment: contractor?.email && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: 'text.secondary',
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        color: '#9c27b0' // סגול שוקו
+                                                    }
+                                                }}
+                                                onClick={() => window.open(`mailto:${contractor.email}`)}
+                                            >
+                                                {contractor.email}
+                                            </Typography>
+                                        </Box>
+                                    )
+                                }}
+                            />
+                        </Box>
                         
-                        <TextField
-                            fullWidth
-                            label="טלפון"
-                            value={contractor?.phone || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
+                        <Box sx={{ mb: 2 }}>
+                            <TextField
+                                fullWidth
+                                label="טלפון"
+                                value={contractor?.phone || ''}
+                                disabled={!canEdit}
+                                InputProps={{
+                                    endAdornment: contractor?.phone && (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    color: 'text.secondary',
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        color: '#9c27b0' // סגול שוקו
+                                                    }
+                                                }}
+                                                onClick={() => window.open(`tel:${contractor.phone}`)}
+                                            >
+                                                {contractor.phone}
+                                            </Typography>
+                                        </Box>
+                                    )
+                                }}
+                            />
+                        </Box>
                         
                         <TextField
                             fullWidth
