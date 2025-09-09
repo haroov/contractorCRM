@@ -1,7 +1,7 @@
 import type { ContractorDocument as Contractor } from '../types/contractor';
 import { API_CONFIG, authenticatedFetch } from '../config/api';
 
-export class ContractorService {
+class ContractorService {
     // Get all contractors
     static async getAll(): Promise<Contractor[]> {
         try {
@@ -207,3 +207,5 @@ export class ContractorService {
         console.log('📝 No automatic sample data creation - contractors must be added manually');
     }
 }
+
+export default ContractorService;
