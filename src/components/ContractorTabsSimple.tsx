@@ -173,7 +173,7 @@ export default function ContractorTabsSimple({
                                     label="תאריך התאגדות"
                                     type="date"
                                     value={contractor?.foundationDate || ''}
-                                    disabled={!canEdit}
+                                    disabled={true}
                                 />
                             </Grid>
                             
