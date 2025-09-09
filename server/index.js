@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const { MongoClient, ObjectId } = require('mongodb');
@@ -46,12 +47,16 @@ app.use(cookieParser());
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'contractor-crm-secret-key',
-  resave: true, // Changed to true
-  saveUninitialized: true, // Changed to true
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm',
+    touchAfter: 24 * 3600 // lazy session update
+  }),
   cookie: {
-    secure: false, // Set to false for debugging
-    httpOnly: false, // Set to false for debugging
-    sameSite: 'lax', // Changed to lax for better compatibility
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    httpOnly: true, // More secure
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
