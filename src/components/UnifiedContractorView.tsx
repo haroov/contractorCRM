@@ -685,6 +685,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               zIndex: 10,
               flexShrink: 0
             }}>
+              <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                {selectedContractor?.name || 'קבלן חדש'}
+              </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Button
                   variant="outlined"
@@ -707,9 +710,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   שמירה
                 </Button>
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
-                {selectedContractor?.name || 'קבלן חדש'}
-              </Typography>
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>

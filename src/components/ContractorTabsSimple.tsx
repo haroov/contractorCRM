@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid } from '@mui/material';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
@@ -12,17 +12,17 @@ interface ContractorTabsSimpleProps {
     isSaving?: boolean;
 }
 
-export default function ContractorTabsSimple({ 
-    contractor, 
-    onSave, 
-    onClose, 
-    isContactUser = false, 
-    contactUserPermissions, 
-    currentUser, 
-    isSaving = false 
+export default function ContractorTabsSimple({
+    contractor,
+    onSave,
+    onClose,
+    isContactUser = false,
+    contactUserPermissions,
+    currentUser,
+    isSaving = false
 }: ContractorTabsSimpleProps) {
     const [activeTab, setActiveTab] = useState(0);
-    
+
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
@@ -52,142 +52,153 @@ export default function ContractorTabsSimple({
                         <Typography variant="h6" gutterBottom>
                             פרטי חברה
                         </Typography>
-                        
-                        <TextField
-                            fullWidth
-                            label="שם החברה"
-                            value={contractor?.name || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            label="מספר חברה (ח״פ)"
-                            value={contractor?.company_id || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit || !!contractor?.contractor_id}
-                            helperText={contractor?.contractor_id ? "ניתן לערוך רק בקבלן חדש" : ""}
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            label="מספר קבלן"
-                            value={contractor?.contractor_id || ''}
-                            sx={{ mb: 2 }}
-                            disabled={true}
-                        />
-                        
-                        <Box sx={{ mb: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="אימייל"
-                                value={contractor?.email || ''}
-                                disabled={!canEdit}
-                                InputProps={{
-                                    endAdornment: contractor?.email && (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    color: 'text.secondary',
-                                                    cursor: 'pointer',
-                                                    '&:hover': {
-                                                        color: '#9c27b0' // סגול שוקו
-                                                    }
-                                                }}
-                                                onClick={() => window.open(`mailto:${contractor.email}`)}
-                                            >
-                                                {contractor.email}
-                                            </Typography>
-                                        </Box>
-                                    )
-                                }}
-                            />
-                        </Box>
-                        
-                        <Box sx={{ mb: 2 }}>
-                            <TextField
-                                fullWidth
-                                label="טלפון"
-                                value={contractor?.phone || ''}
-                                disabled={!canEdit}
-                                InputProps={{
-                                    endAdornment: contractor?.phone && (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    color: 'text.secondary',
-                                                    cursor: 'pointer',
-                                                    '&:hover': {
-                                                        color: '#9c27b0' // סגול שוקו
-                                                    }
-                                                }}
-                                                onClick={() => window.open(`tel:${contractor.phone}`)}
-                                            >
-                                                {contractor.phone}
-                                            </Typography>
-                                        </Box>
-                                    )
-                                }}
-                            />
-                        </Box>
-                        
-                        <TextField
-                            fullWidth
-                            label="עיר"
-                            value={contractor?.city || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            label="כתובת"
-                            value={contractor?.address || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
-                        
-                        <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>סוג חברה</InputLabel>
-                            <Select
-                                value={contractor?.companyType || ''}
-                                disabled={!canEdit}
-                            >
-                                <MenuItem value="בע״מ">בע״מ</MenuItem>
-                                <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
-                                <MenuItem value="שותפות">שותפות</MenuItem>
-                            </Select>
-                        </FormControl>
-                        
-                        <TextField
-                            fullWidth
-                            label="מספר עובדים"
-                            type="number"
-                            value={contractor?.numberOfEmployees || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
-                        
-                        <TextField
-                            fullWidth
-                            label="תאריך הקמה"
-                            type="date"
-                            value={contractor?.foundationDate || ''}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                        />
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="שם החברה"
+                                    value={contractor?.name || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="מספר חברה (ח״פ)"
+                                    value={contractor?.company_id || ''}
+                                    disabled={!canEdit || !!contractor?.contractor_id}
+                                    helperText={contractor?.contractor_id ? "ניתן לערוך רק בקבלן חדש" : ""}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="מספר קבלן"
+                                    value={contractor?.contractor_id || ''}
+                                    disabled={true}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="עיר"
+                                    value={contractor?.city || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="כתובת"
+                                    value={contractor?.address || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FormControl fullWidth>
+                                    <InputLabel>סוג חברה</InputLabel>
+                                    <Select
+                                        value={contractor?.companyType || ''}
+                                        disabled={!canEdit}
+                                    >
+                                        <MenuItem value="בע״מ">בע״מ</MenuItem>
+                                        <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
+                                        <MenuItem value="שותפות">שותפות</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="מספר עובדים"
+                                    type="number"
+                                    value={contractor?.numberOfEmployees || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך הקמה"
+                                    type="date"
+                                    value={contractor?.foundationDate || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="אימייל"
+                                    value={contractor?.email || ''}
+                                    disabled={!canEdit}
+                                    InputProps={{
+                                        endAdornment: contractor?.email && (
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        cursor: 'pointer',
+                                                        '&:hover': {
+                                                            color: '#9c27b0' // סגול שוקו
+                                                        }
+                                                    }}
+                                                    onClick={() => window.open(`mailto:${contractor.email}`)}
+                                                >
+                                                    {contractor.email}
+                                                </Typography>
+                                            </Box>
+                                        )
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="טלפון"
+                                    value={contractor?.phone || ''}
+                                    disabled={!canEdit}
+                                    InputProps={{
+                                        endAdornment: contractor?.phone && (
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: 'text.secondary',
+                                                        cursor: 'pointer',
+                                                        '&:hover': {
+                                                            color: '#9c27b0' // סגול שוקו
+                                                        }
+                                                    }}
+                                                    onClick={() => window.open(`tel:${contractor.phone}`)}
+                                                >
+                                                    {contractor.phone}
+                                                </Typography>
+                                            </Box>
+                                        )
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                     </Box>
                 )}
-                
+
                 {activeTab === 1 && (
                     <Box>
                         <Typography variant="h6" gutterBottom>
                             מידע עסקי
                         </Typography>
-                        
+
                         <Box sx={{ mb: 2 }}>
                             <FormControl fullWidth sx={{ mb: 1 }}>
                                 <InputLabel>מספר כוכבי בטיחות</InputLabel>
@@ -203,7 +214,7 @@ export default function ContractorTabsSimple({
                                     <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
                                 </Select>
                             </FormControl>
-                            
+
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <TextField
                                     label="תאריך תוקף"
@@ -212,8 +223,8 @@ export default function ContractorTabsSimple({
                                     sx={{ flex: 1 }}
                                     disabled={!canEdit}
                                 />
-                                <IconButton 
-                                    color="primary" 
+                                <IconButton
+                                    color="primary"
                                     disabled={!canEdit}
                                     title="העלאת תעודת הסמכת כוכבי בטיחות"
                                 >
@@ -221,7 +232,7 @@ export default function ContractorTabsSimple({
                                 </IconButton>
                             </Box>
                         </Box>
-                        
+
                         <Box sx={{ mb: 2 }}>
                             <FormControlLabel
                                 control={
@@ -233,7 +244,7 @@ export default function ContractorTabsSimple({
                                 label="ISO45001"
                                 sx={{ mb: 1 }}
                             />
-                            
+
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <TextField
                                     label="תאריך תוקף ISO45001"
@@ -242,8 +253,8 @@ export default function ContractorTabsSimple({
                                     sx={{ flex: 1 }}
                                     disabled={!canEdit}
                                 />
-                                <IconButton 
-                                    color="primary" 
+                                <IconButton
+                                    color="primary"
                                     disabled={!canEdit}
                                     title="העלאת תעודת ISO45001"
                                 >
@@ -251,7 +262,7 @@ export default function ContractorTabsSimple({
                                 </IconButton>
                             </Box>
                         </Box>
-                        
+
                         {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>
@@ -264,7 +275,7 @@ export default function ContractorTabsSimple({
                                 ))}
                             </Box>
                         )}
-                        
+
                         {contractor?.activities && Array.isArray(contractor.activities) && contractor.activities.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>
@@ -279,7 +290,7 @@ export default function ContractorTabsSimple({
                         )}
                     </Box>
                 )}
-                
+
                 {activeTab === 2 && (
                     <Box>
                         <Typography variant="h6" gutterBottom>
@@ -293,7 +304,7 @@ export default function ContractorTabsSimple({
                         </Typography>
                     </Box>
                 )}
-                
+
                 {activeTab === 3 && (
                     <Box>
                         <Typography variant="h6" gutterBottom>
@@ -304,13 +315,13 @@ export default function ContractorTabsSimple({
                         </Typography>
                     </Box>
                 )}
-                
+
                 {activeTab === 4 && (
                     <Box>
                         <Typography variant="h6" gutterBottom>
                             הערות
                         </Typography>
-                        
+
                         <TextField
                             fullWidth
                             multiline
@@ -321,7 +332,7 @@ export default function ContractorTabsSimple({
                             disabled={!canEdit}
                             placeholder="הוסף הערות על הקבלן..."
                         />
-                        
+
                         <TextField
                             fullWidth
                             multiline
