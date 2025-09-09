@@ -107,14 +107,6 @@ export default function ContractorTabsSimple({
                             sx={{ mb: 2 }}
                             disabled={!canEdit}
                         />
-                    </Box>
-                )}
-                
-                {activeTab === 1 && (
-                    <Box>
-                        <Typography variant="h6" gutterBottom>
-                            מידע עסקי
-                        </Typography>
                         
                         <FormControl fullWidth sx={{ mb: 2 }}>
                             <InputLabel>סוג חברה</InputLabel>
@@ -155,6 +147,18 @@ export default function ContractorTabsSimple({
                             }
                             label="ISO45001"
                         />
+                    </Box>
+                )}
+                
+                {activeTab === 1 && (
+                    <Box>
+                        <Typography variant="h6" gutterBottom>
+                            מידע עסקי
+                        </Typography>
+                        
+                        <Typography variant="body2" color="text.secondary">
+                            מידע עסקי נוסף יוצג כאן
+                        </Typography>
                     </Box>
                 )}
                 
