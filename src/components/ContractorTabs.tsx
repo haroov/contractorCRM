@@ -1152,6 +1152,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             <Box sx={{ 
                 borderBottom: 1, 
                 borderColor: 'divider',
+                borderLeft: '1px solid #e0e0e0',
+                borderRight: '1px solid #e0e0e0',
                 position: 'sticky',
                 top: 0,
                 zIndex: 9,
@@ -1168,7 +1170,14 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Company Details Tab */}
             {activeTab === 0 && (
-                <Box sx={{ p: 3, pb: 6 }}>
+                <Box sx={{ 
+                    p: 3, 
+                    pb: 6,
+                    borderLeft: '1px solid #e0e0e0',
+                    borderRight: '1px solid #e0e0e0',
+                    borderBottom: '1px solid #e0e0e0',
+                    borderRadius: '0 0 4px 4px'
+                }}>
                     {/* Risk Indicator */}
                     <RiskIndicator
                         status={contractor.status}
@@ -1218,7 +1227,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         value={contractor.contractor_id || ''}
                                         onChange={(e) => handleChange('contractor_id', e.target.value)}
                                         error={!!errors.contractor_id}
-                                        helperText={errors.contractor_id || "מתעדכן אוטומטית מרשם החברות"}
+                                        helperText={errors.contractor_id}
                                         disabled={true}
                                         InputLabelProps={{
                                             sx: { backgroundColor: 'white', paddingRight: '4px' }
@@ -1417,7 +1426,16 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Business Information Tab */}
             {activeTab === 1 && (
-                <Box sx={{ p: 3, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ 
+                    p: 3, 
+                    minHeight: '100vh', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    borderLeft: '1px solid #e0e0e0',
+                    borderRight: '1px solid #e0e0e0',
+                    borderBottom: '1px solid #e0e0e0',
+                    borderRadius: '0 0 4px 4px'
+                }}>
                     <Typography variant="h6" gutterBottom>מידע עסקי ופעילויות</Typography>
 
                     {/* Safety Section */}
@@ -1510,7 +1528,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Management Contacts Tab */}
             {activeTab === 2 && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{ 
+                    p: 3,
+                    borderLeft: '1px solid #e0e0e0',
+                    borderRight: '1px solid #e0e0e0',
+                    borderBottom: '1px solid #e0e0e0',
+                    borderRadius: '0 0 4px 4px'
+                }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         {canEdit && (
                             <Button
@@ -1668,7 +1692,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Projects Tab */}
             {activeTab === 3 && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{ 
+                    p: 3,
+                    borderLeft: '1px solid #e0e0e0',
+                    borderRight: '1px solid #e0e0e0',
+                    borderBottom: '1px solid #e0e0e0',
+                    borderRadius: '0 0 4px 4px'
+                }}>
                     {/* Project Sub-tabs */}
                     <Box sx={{ mb: 3 }}>
                         <Tabs

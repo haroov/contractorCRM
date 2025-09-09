@@ -665,8 +665,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               justifyContent: 'space-between',
               alignItems: 'center',
               p: 1.5,
-              bgcolor: '#882DD7',
-              color: 'white',
+              bgcolor: 'white',
+              color: 'black',
+              border: '1px solid #e0e0e0',
+              borderBottom: 'none',
               borderRadius: '4px 4px 0 0',
               position: 'sticky',
               top: 0,
@@ -675,11 +677,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton
                   onClick={handleCloseContractorDetails}
-                  sx={{ color: 'white', p: 0.5 }}
+                  sx={{ color: 'black', p: 0.5 }}
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
-                <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
                   {selectedContractor?.name || 'קבלן חדש'}
                 </Typography>
               </Box>
