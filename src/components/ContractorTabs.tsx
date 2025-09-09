@@ -5,7 +5,7 @@ import RiskIndicator from './RiskIndicator';
 import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
-import ContractorService from '../services/contractorService';
+// import ContractorService from '../services/contractorService';
 import { API_CONFIG, authenticatedFetch } from '../config/api';
 import {
     containsForbiddenWords,
@@ -661,6 +661,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 }
             } else {
                 // Regular users use standard endpoints
+                const { default: ContractorService } = await import('../services/contractorService');
+                
                 // Check if contractor exists by company_id (ח"פ) first
                 if (contractor.company_id && contractor.company_id !== '') {
                     const existingContractor = await ContractorService.getByCompanyId(contractor.company_id);
@@ -759,6 +761,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 console.log('Checking if company ID exists in database:', contractor.company_id);
 
                 // First, check if the company ID already exists in our database
+                const { default: ContractorService } = await import('../services/contractorService');
                 const existingContractors = await ContractorService.getAll();
                 const existingContractor = existingContractors.find(c => c.company_id === contractor.company_id);
 
