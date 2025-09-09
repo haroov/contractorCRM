@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton } from '@mui/material';
+import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -40,6 +41,7 @@ export default function ContractorTabsSimple({
                     <Tab label="מידע עסקי" />
                     <Tab label="פרויקטים" />
                     <Tab label="אנשי קשר" />
+                    <Tab label="הערות" />
                 </Tabs>
             </Box>
 
@@ -146,26 +148,69 @@ export default function ContractorTabsSimple({
                             מידע עסקי
                         </Typography>
                         
-                        <TextField
-                            fullWidth
-                            label="מספר כוכבי בטיחות"
-                            type="number"
-                            value={contractor?.safetyRating || contractor?.safetyStars || 0}
-                            sx={{ mb: 2 }}
-                            disabled={!canEdit}
-                            inputProps={{ min: 0, max: 5 }}
-                        />
-                        
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={contractor?.iso45001 || false}
+                        <Box sx={{ mb: 2 }}>
+                            <FormControl fullWidth sx={{ mb: 1 }}>
+                                <InputLabel>מספר כוכבי בטיחות</InputLabel>
+                                <Select
+                                    value={contractor?.safetyRating || contractor?.safetyStars || ''}
+                                    disabled={!canEdit}
+                                >
+                                    <MenuItem value={1}>1 כוכב</MenuItem>
+                                    <MenuItem value={2}>2 כוכבים</MenuItem>
+                                    <MenuItem value={3}>3 כוכבים</MenuItem>
+                                    <MenuItem value={4}>4 כוכבים</MenuItem>
+                                    <MenuItem value={5}>5 כוכבים</MenuItem>
+                                    <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
+                                </Select>
+                            </FormControl>
+                            
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <TextField
+                                    label="תאריך תוקף"
+                                    type="date"
+                                    value={contractor?.safetyRatingExpiry || ''}
+                                    sx={{ flex: 1 }}
                                     disabled={!canEdit}
                                 />
-                            }
-                            label="ISO45001"
-                            sx={{ mb: 2 }}
-                        />
+                                <IconButton 
+                                    color="primary" 
+                                    disabled={!canEdit}
+                                    title="העלאת תעודת הסמכת כוכבי בטיחות"
+                                >
+                                    <CloudUploadIcon />
+                                </IconButton>
+                            </Box>
+                        </Box>
+                        
+                        <Box sx={{ mb: 2 }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={contractor?.iso45001 || false}
+                                        disabled={!canEdit}
+                                    />
+                                }
+                                label="ISO45001"
+                                sx={{ mb: 1 }}
+                            />
+                            
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <TextField
+                                    label="תאריך תוקף ISO45001"
+                                    type="date"
+                                    value={contractor?.iso45001Expiry || ''}
+                                    sx={{ flex: 1 }}
+                                    disabled={!canEdit}
+                                />
+                                <IconButton 
+                                    color="primary" 
+                                    disabled={!canEdit}
+                                    title="העלאת תעודת ISO45001"
+                                >
+                                    <CloudUploadIcon />
+                                </IconButton>
+                            </Box>
+                        </Box>
                         
                         {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
@@ -217,6 +262,36 @@ export default function ContractorTabsSimple({
                         <Typography variant="body2" color="text.secondary">
                             מספר אנשי קשר: {contractor?.contacts?.length || 0}
                         </Typography>
+                    </Box>
+                )}
+                
+                {activeTab === 4 && (
+                    <Box>
+                        <Typography variant="h6" gutterBottom>
+                            הערות
+                        </Typography>
+                        
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={8}
+                            label="הערות כלליות"
+                            value={contractor?.notes || ''}
+                            sx={{ mb: 2 }}
+                            disabled={!canEdit}
+                            placeholder="הוסף הערות על הקבלן..."
+                        />
+                        
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            label="הערות פנימיות"
+                            value={contractor?.internalNotes || ''}
+                            sx={{ mb: 2 }}
+                            disabled={!canEdit}
+                            placeholder="הערות פנימיות לצוות..."
+                        />
                     </Box>
                 )}
             </Box>
