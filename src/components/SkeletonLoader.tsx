@@ -60,7 +60,7 @@ const SkeletonLoader: React.FC = () => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                {['פעולות', 'דירוג בטיחות', 'פרויקטים', 'כתובת', 'ח"פ', 'קבלן'].map((header, index) => (
+                                {['קבלן', 'ח"פ', 'כתובת', 'פרויקטים', 'דירוג בטיחות', 'פעולות'].map((header, index) => (
                                     <TableCell key={index} sx={{
                                         fontWeight: 'bold',
                                         backgroundColor: '#f8f9fa',
@@ -75,45 +75,6 @@ const SkeletonLoader: React.FC = () => {
                         <TableBody>
                             {[1, 2, 3, 4, 5].map((rowIndex) => (
                                 <TableRow key={rowIndex} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                    {/* פעולות */}
-                                    <TableCell sx={{ textAlign: 'center' }}>
-                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                                            <Skeleton variant="circular" width={32} height={32} />
-                                            <Skeleton variant="circular" width={32} height={32} />
-                                        </Box>
-                                    </TableCell>
-
-                                    {/* דירוג בטיחות */}
-                                    <TableCell sx={{ textAlign: 'center' }}>
-                                        <Skeleton variant="rectangular" width={80} height={24} sx={{ borderRadius: 3, mx: 'auto' }} />
-                                    </TableCell>
-
-                                    {/* פרויקטים */}
-                                    <TableCell sx={{ textAlign: 'center' }}>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 2, mx: 'auto' }} />
-                                            <Skeleton variant="text" width={40} height={16} sx={{ mx: 'auto' }} />
-                                            <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 2, mx: 'auto' }} />
-                                            <Skeleton variant="text" width={40} height={16} sx={{ mx: 'auto' }} />
-                                        </Box>
-                                    </TableCell>
-
-                                    {/* כתובת */}
-                                    <TableCell>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Skeleton variant="circular" width={16} height={16} />
-                                            <Skeleton variant="text" width={120} height={20} />
-                                        </Box>
-                                    </TableCell>
-
-                                    {/* ח"פ */}
-                                    <TableCell sx={{ textAlign: 'center' }}>
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            <Skeleton variant="text" width={80} height={20} />
-                                            <Skeleton variant="text" width={60} height={16} />
-                                        </Box>
-                                    </TableCell>
-
                                     {/* קבלן */}
                                     <TableCell>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -126,6 +87,44 @@ const SkeletonLoader: React.FC = () => {
                                                 <Skeleton variant="circular" width={16} height={16} />
                                                 <Skeleton variant="text" width={120} height={16} />
                                             </Box>
+                                        </Box>
+                                    </TableCell>
+
+                                    {/* ח"פ */}
+                                    <TableCell sx={{ textAlign: 'center' }}>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            <Skeleton variant="text" width={80} height={20} />
+                                            <Skeleton variant="text" width={60} height={16} />
+                                        </Box>
+                                    </TableCell>
+
+                                    {/* כתובת */}
+                                    <TableCell>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Skeleton variant="circular" width={16} height={16} />
+                                            <Skeleton variant="text" width={120} height={20} />
+                                        </Box>
+                                    </TableCell>
+
+                                    {/* פרויקטים */}
+                                    <TableCell sx={{ textAlign: 'center' }}>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 2, mx: 'auto' }} />
+                                            <Skeleton variant="text" width={40} height={16} sx={{ mx: 'auto' }} />
+                                            <Skeleton variant="rectangular" width={60} height={20} sx={{ borderRadius: 2, mx: 'auto' }} />
+                                            <Skeleton variant="text" width={40} height={16} sx={{ mx: 'auto' }} />
+                                        </Box>
+                                    </TableCell>
+
+                                    {/* דירוג בטיחות */}
+                                    <TableCell sx={{ textAlign: 'center' }}>
+                                        <Skeleton variant="rectangular" width={80} height={24} sx={{ borderRadius: 3, mx: 'auto' }} />
+                                    </TableCell>
+
+                                    {/* פעולות */}
+                                    <TableCell sx={{ textAlign: 'center' }}>
+                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                            <Skeleton variant="circular" width={32} height={32} />
                                         </Box>
                                     </TableCell>
                                 </TableRow>

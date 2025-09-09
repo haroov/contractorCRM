@@ -324,6 +324,34 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Typography>
           </Box>
           
+          {/* Statistics Cards */}
+          <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#e3f2fd' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                {contractors.length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                סך הכל קבלנים
+              </Typography>
+            </Paper>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#e8f5e8' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
+                {contractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                פרויקטים פעילים
+              </Typography>
+            </Paper>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#fff3e0' }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#f57c00' }}>
+                ₪{contractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                שווי מצרפי
+              </Typography>
+            </Paper>
+          </Box>
+          
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <TextField
               size="small"
@@ -387,7 +415,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 <Table>
                   <TableHead>
                     <TableRow>
-                      {['פעולות', 'דירוג בטיחות', 'פרויקטים', 'כתובת', 'ח"פ', 'קבלן'].map((header, index) => (
+                      {['קבלן', 'ח"פ', 'כתובת', 'פרויקטים', 'דירוג בטיחות', 'פעולות'].map((header, index) => (
                         <TableCell key={index} sx={{
                           fontWeight: 'bold',
                           backgroundColor: '#f8f9fa',
