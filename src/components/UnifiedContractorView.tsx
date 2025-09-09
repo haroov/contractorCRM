@@ -315,9 +315,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (contractor.status === 'archived' && !isAdmin) {
       return false;
     }
-    
+
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
 
     // Search in basic contractor info
