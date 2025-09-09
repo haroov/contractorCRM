@@ -696,7 +696,7 @@ app.put('/api/contractors/:id', async (req, res) => {
   try {
     console.log('🔍 PUT /api/contractors/:id called with ID:', req.params.id);
     console.log('🔍 Request body keys:', Object.keys(req.body));
-    
+
     const db = client.db('contractor-crm');
 
     // Remove immutable fields from update data
@@ -709,7 +709,7 @@ app.put('/api/contractors/:id', async (req, res) => {
       existingContractor = await db.collection('contractors').findOne({
         contractor_id: req.params.id
       });
-      
+
       // אם לא נמצא, ננסה לחפש לפי ObjectId (רק אם זה ObjectId תקין)
       if (!existingContractor && req.params.id.length === 24) {
         existingContractor = await db.collection('contractors').findOne({
@@ -745,7 +745,7 @@ app.put('/api/contractors/:id', async (req, res) => {
         { contractor_id: req.params.id },
         { $set: finalUpdateData }
       );
-      
+
       // אם לא נמצא, ננסה לפי ObjectId (רק אם זה ObjectId תקין)
       if (result.matchedCount === 0 && req.params.id.length === 24) {
         result = await db.collection('contractors').updateOne(

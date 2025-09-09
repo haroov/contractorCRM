@@ -625,7 +625,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             >
                               <ArchiveIcon fontSize="small" />
                             </IconButton>
-                            
+
                             {/* כפתור מחק - רק לאדמין */}
                             {currentUser?.permissions === 'admin' && (
                               <IconButton

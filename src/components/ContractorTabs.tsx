@@ -1185,7 +1185,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                             error={!!errors.company_id}
                                             helperText={errors.company_id}
                                             required
-                                            disabled={!canEdit}
+                                            disabled={!canEdit || !!contractor.contractor_id}
                                             InputLabelProps={{
                                                 sx: { backgroundColor: 'white', paddingRight: '4px' }
                                             }}
@@ -1211,8 +1211,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                                         value={contractor.contractor_id || ''}
                                         onChange={(e) => handleChange('contractor_id', e.target.value)}
                                         error={!!errors.contractor_id}
-                                        helperText={errors.contractor_id}
-                                        disabled={!canEdit}
+                                        helperText={errors.contractor_id || "מתעדכן אוטומטית מרשם החברות"}
+                                        disabled={true}
                                         InputLabelProps={{
                                             sx: { backgroundColor: 'white', paddingRight: '4px' }
                                         }}
