@@ -1,22 +1,22 @@
 
 import { useState, useEffect } from "react";
-import ProjectsList from './ProjectsList';
-import RiskIndicator from './RiskIndicator';
+// import ProjectsList from './ProjectsList';
+// import RiskIndicator from './RiskIndicator';
 // import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import { API_CONFIG, authenticatedFetch } from '../config/api';
-import {
-    containsForbiddenWords,
-    validateEmail,
-    validateIsraeliPhone,
-    formatIsraeliPhone,
-    validateHebrewName,
-    validateHebrewRole,
-    commonRoles,
-    containsForbiddenEnglishWords
-} from '../data/forbiddenWords';
+// import {
+//     containsForbiddenWords,
+//     validateEmail,
+//     validateIsraeliPhone,
+//     formatIsraeliPhone,
+//     validateHebrewName,
+//     validateHebrewRole,
+//     commonRoles,
+//     containsForbiddenEnglishWords
+// } from '../data/forbiddenWords';
 import {
     Box,
     Tabs,
