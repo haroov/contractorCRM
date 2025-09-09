@@ -301,22 +301,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   // Filter contractors based on search term
   const filteredContractors = contractors.filter(contractor => {
     const searchLower = searchTerm.toLowerCase();
-    
+
     // Search in basic contractor info
-    const basicMatch = 
+    const basicMatch =
       contractor.name?.toLowerCase().includes(searchLower) ||
       contractor.company_id?.toLowerCase().includes(searchLower) ||
       contractor.city?.toLowerCase().includes(searchLower) ||
       contractor.nameEnglish?.toLowerCase().includes(searchLower);
-    
+
     // Search in contacts
-    const contactMatch = contractor.contacts?.some(contact => 
+    const contactMatch = contractor.contacts?.some(contact =>
       contact.fullName?.toLowerCase().includes(searchLower) ||
       contact.email?.toLowerCase().includes(searchLower) ||
       contact.mobile?.includes(searchTerm) ||
       contact.role?.toLowerCase().includes(searchLower)
     );
-    
+
     return basicMatch || contactMatch;
   });
 
@@ -426,10 +426,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
           {/* Contractor List */}
           <Paper elevation={1} sx={{ p: 2, height: 'calc(100vh - 120px)', overflow: 'auto' }}>
-            <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <EngineeringIcon />
-              רשימת קבלנים
-            </Typography>
 
             {filteredContractors.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -496,7 +492,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         }}
                       >
                         {/* קבלן */}
-                        <TableCell sx={{ textAlign: 'center' }}>
+                        <TableCell sx={{ textAlign: 'right' }}>
                           <Box>
                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                               {contractor.name}
@@ -504,22 +500,27 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             <Typography variant="caption" color="text.secondary">
                               {contractor.nameEnglish}
                             </Typography>
+                            {contractor.email && (
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                📧 {contractor.email}
+                              </Typography>
+                            )}
+                            {contractor.phone && (
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                📞 {contractor.phone}
+                              </Typography>
+                            )}
                           </Box>
                         </TableCell>
 
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Box>
-                            <Chip
-                              label={contractor.company_id}
-                              size="small"
-                              color="primary"
-                              variant="outlined"
-                            />
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                              קבלן {contractor.contractor_id}
-                            </Typography>
-                          </Box>
+                          <Typography variant="body2">
+                            {contractor.company_id}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            קבלן {contractor.contractor_id}
+                          </Typography>
                         </TableCell>
 
                         {/* כתובת */}
