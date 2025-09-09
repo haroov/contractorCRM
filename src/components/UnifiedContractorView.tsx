@@ -6,7 +6,7 @@ import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
 
-const ContractorTabs = lazy(() => import('./ContractorTabs'));
+const ContractorTabs = lazy(() => import('./ContractorTabsSimple'));
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
