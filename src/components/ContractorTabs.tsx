@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
-import { API_CONFIG, authenticatedFetch } from '../config/api';
+// import { API_CONFIG, authenticatedFetch } from '../config/api';
 // import {
 //     containsForbiddenWords,
 //     validateEmail,
@@ -255,6 +255,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 let projects;
                 if (isContactUser) {
                     // Use contact-specific endpoint for contact users
+                    const { API_CONFIG, authenticatedFetch } = await import('../config/api');
                     const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/projects?contractorId=${contractor._id}`;
                     const response = await authenticatedFetch(contactApiUrl);
                     if (!response.ok) {
@@ -360,6 +361,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     const updateContractorStats = async () => {
         try {
             if (contractor?._id) {
+                const { authenticatedFetch } = await import('../config/api');
                 const response = await authenticatedFetch(`/api/contractors/${contractor._id}/update-stats`, {
                     method: 'POST'
                 });
@@ -645,6 +647,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 // Contact users can only update existing contractors
                 if (contractor._id && contractor._id !== '') {
                     // Use contact-specific update endpoint
+                    const { API_CONFIG, authenticatedFetch } = await import('../config/api');
                     const contactApiUrl = `${API_CONFIG.BASE_URL}/contact/contractor/${contractor._id}`;
                     const response = await authenticatedFetch(contactApiUrl, {
                         method: 'PUT',
@@ -1128,6 +1131,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             setValidationMessage('מאמת סטטוס מרשום החברות...');
 
             // Use different endpoint for contact users
+            const { API_CONFIG, authenticatedFetch } = await import('../config/api');
             const validateUrl = isContactUser
                 ? `${API_CONFIG.BASE_URL}/contact/contractor/validate-status/${contractor._id}`
                 : API_CONFIG.VALIDATE_STATUS_URL(contractor._id);
