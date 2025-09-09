@@ -5,7 +5,7 @@ import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
-import ContractorTabs from './ContractorTabs';
+// import ContractorTabs from './ContractorTabs';
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
@@ -712,26 +712,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <ContractorTabs
-                contractor={selectedContractor!}
-                onSave={handleSaveContractor}
-                onClose={handleCloseContractorDetails}
-                isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
-                contactUserPermissions={(() => {
-                  const contactUserData = localStorage.getItem('contactUser');
-                  if (contactUserData) {
-                    try {
-                      const contactUser = JSON.parse(contactUserData);
-                      return contactUser.permissions;
-                    } catch (error) {
-                      console.error('Error parsing contact user data:', error);
-                      return 'contact_user';
-                    }
-                  }
-                  return 'contact_user';
-                })()}
-                isSaving={isSaving}
-              />
+              <div>Loading contractor details...</div>
             </Box>
           </Paper>
         </Box>
