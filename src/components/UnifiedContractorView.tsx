@@ -436,20 +436,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             ) : (
               <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                 <Table>
-                  <TableHead>
-                    <TableRow>
-                      {['קבלן', 'ח"פ', 'כתובת', 'פרויקטים', 'דירוג בטיחות', 'פעולות'].map((header, index) => (
-                        <TableCell key={index} sx={{
-                          fontWeight: 'bold',
-                          backgroundColor: '#f8f9fa',
-                          textAlign: 'center',
-                          borderBottom: '2px solid #e0e0e0'
-                        }}>
-                          {header}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
                   <TableBody>
                     {filteredContractors.map((contractor) => (
                       <TableRow
@@ -497,16 +483,39 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                               {contractor.name}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {contractor.nameEnglish}
-                            </Typography>
                             {contractor.email && (
-                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                              <Typography 
+                                variant="caption" 
+                                color="primary" 
+                                sx={{ 
+                                  display: 'block', 
+                                  cursor: 'pointer',
+                                  textDecoration: 'underline',
+                                  '&:hover': { color: 'primary.dark' }
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `mailto:${contractor.email}`;
+                                }}
+                              >
                                 📧 {contractor.email}
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                              <Typography 
+                                variant="caption" 
+                                color="primary" 
+                                sx={{ 
+                                  display: 'block', 
+                                  cursor: 'pointer',
+                                  textDecoration: 'underline',
+                                  '&:hover': { color: 'primary.dark' }
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `tel:${contractor.phone}`;
+                                }}
+                              >
                                 📞 {contractor.phone}
                               </Typography>
                             )}
@@ -535,26 +544,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                         {/* פרויקטים */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Box>
-                            <Chip
-                              label={`${contractor.current_projects || 0} פעילים`}
-                              size="small"
-                              color="success"
-                            />
-                            <br />
-                            <Typography variant="caption" color="text.secondary">
-                              ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
-                            </Typography>
-                          </Box>
+                          <Typography variant="body2">
+                            {contractor.current_projects || 0} פעילים
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                            {contractor.forcast_projects || 0} עתידיים
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            ₪{(contractor.forcast_projects_value_nis || 0).toLocaleString()}
+                          </Typography>
                         </TableCell>
 
                         {/* דירוג בטיחות */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Chip
-                            label={`${contractor.safetyRating || 0} כוכבים`}
-                            size="small"
-                            color={contractor.safetyRating >= 4 ? 'success' : contractor.safetyRating >= 3 ? 'warning' : 'error'}
-                          />
+                          <Typography variant="body2">
+                            {contractor.safetyRating || 0} כוכבים
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {contractor.iso45001 ? 'יש ISO45001' : 'אין ISO45001'}
+                          </Typography>
                         </TableCell>
 
                         {/* פעולות */}
