@@ -54,15 +54,7 @@ export default function ContractorTabsSimple({
                         </Typography>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6} md={3}>
-                                <TextField
-                                    fullWidth
-                                    label="שם החברה"
-                                    value={contractor?.name || ''}
-                                    disabled={!canEdit}
-                                />
-                            </Grid>
-
+                            {/* שורה ראשונה */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -72,7 +64,7 @@ export default function ContractorTabsSimple({
                                     helperText={contractor?.contractor_id ? "ניתן לערוך רק בקבלן חדש" : ""}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -81,25 +73,26 @@ export default function ContractorTabsSimple({
                                     disabled={true}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="עיר"
-                                    value={contractor?.city || ''}
+                                    label="שם החברה (עברית)"
+                                    value={contractor?.name || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="כתובת"
-                                    value={contractor?.address || ''}
+                                    label="שם החברה (אנגלית)"
+                                    value={contractor?.nameEnglish || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
+                            {/* שורה שנייה */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControl fullWidth>
                                     <InputLabel>סוג חברה</InputLabel>
@@ -113,7 +106,17 @@ export default function ContractorTabsSimple({
                                     </Select>
                                 </FormControl>
                             </Grid>
-
+                            
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך התאגדות"
+                                    type="date"
+                                    value={contractor?.foundationDate || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -123,70 +126,41 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="תאריך הקמה"
-                                    type="date"
-                                    value={contractor?.foundationDate || ''}
+                                    label="עיר"
+                                    value={contractor?.city || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
+                            {/* שורה שלישית */}
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="כתובת"
+                                    value={contractor?.address || ''}
+                                    disabled={!canEdit}
+                                />
+                            </Grid>
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
                                     label="אימייל"
                                     value={contractor?.email || ''}
                                     disabled={!canEdit}
-                                    InputProps={{
-                                        endAdornment: contractor?.email && (
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        color: 'text.secondary',
-                                                        cursor: 'pointer',
-                                                        '&:hover': {
-                                                            color: '#9c27b0' // סגול שוקו
-                                                        }
-                                                    }}
-                                                    onClick={() => window.open(`mailto:${contractor.email}`)}
-                                                >
-                                                    {contractor.email}
-                                                </Typography>
-                                            </Box>
-                                        )
-                                    }}
                                 />
                             </Grid>
-
+                            
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
                                     label="טלפון"
                                     value={contractor?.phone || ''}
                                     disabled={!canEdit}
-                                    InputProps={{
-                                        endAdornment: contractor?.phone && (
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        color: 'text.secondary',
-                                                        cursor: 'pointer',
-                                                        '&:hover': {
-                                                            color: '#9c27b0' // סגול שוקו
-                                                        }
-                                                    }}
-                                                    onClick={() => window.open(`tel:${contractor.phone}`)}
-                                                >
-                                                    {contractor.phone}
-                                                </Typography>
-                                            </Box>
-                                        )
-                                    }}
                                 />
                             </Grid>
                         </Grid>
