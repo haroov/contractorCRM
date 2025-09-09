@@ -148,9 +148,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   const handleContractorSelect = (contractor: Contractor, mode: 'view' | 'edit' | 'new' = 'view') => {
     console.log('🔍 Contractor selected:', contractor.name, 'mode:', mode);
+    console.log('🔍 Setting selectedContractor to:', contractor);
+    console.log('🔍 Setting contractorMode to:', mode);
+    console.log('🔍 Setting showContractorDetails to: true');
     setSelectedContractor(contractor);
     setContractorMode(mode);
     setShowContractorDetails(true);
+    console.log('🔍 State updated successfully');
   };
 
 
@@ -404,8 +408,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           cursor: 'pointer',
                           backgroundColor: selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : 'inherit'
                         }}
-                        onClick={() => {
+                        onClick={(e) => {
                           console.log('🔥 Contractor row clicked!', contractor.name);
+                          console.log('🔥 Event target:', e.target);
+                          console.log('🔥 Current target:', e.currentTarget);
+                          
+                          // Prevent event bubbling
+                          e.preventDefault();
+                          e.stopPropagation();
+                          
                           // Determine mode based on user permissions
                           const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
                           const contactUserData = localStorage.getItem('contactUser');
@@ -427,6 +438,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           }
                           
                           console.log('🔥 Opening contractor in mode:', mode);
+                          console.log('🔥 Calling handleContractorSelect with:', { contractor: contractor.name, mode });
                           handleContractorSelect(contractor, mode);
                         }}
                       >
