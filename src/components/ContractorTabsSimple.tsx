@@ -300,21 +300,13 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="כתובת"
-                                    value={contractor?.address || ''}
-                                    disabled={!canEdit}
-                                />
-                            </Grid>
-                            
-                            {/* שורה שלישית */}
-                            <Grid item xs={12} sm={6} md={3}>
-                                <TextField
-                                    fullWidth
                                     label="עיר"
                                     value={contractor?.city || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
+                            
+                            {/* שורה שלישית */}
 
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
@@ -593,6 +585,7 @@ export default function ContractorTabsSimple({
                                             <TableCell sx={{ fontWeight: 'bold' }}>תפקיד</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>טלפון</TableCell>
                                             <TableCell sx={{ fontWeight: 'bold' }}>אימייל</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>הרשאות</TableCell>
                                             {canEdit && (
                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                             )}
@@ -601,10 +594,18 @@ export default function ContractorTabsSimple({
                                     <TableBody>
                                         {contractor.contacts.map((contact: any, index: number) => (
                                             <TableRow key={contact.id || index}>
-                                                <TableCell>{contact.name || ''}</TableCell>
-                                                <TableCell>{contact.role || ''}</TableCell>
-                                                <TableCell>{contact.phone || ''}</TableCell>
-                                                <TableCell>{contact.email || ''}</TableCell>
+                                                <TableCell>{contact.name || contact.fullName || ''}</TableCell>
+                                                <TableCell>{contact.role || contact.position || ''}</TableCell>
+                                                <TableCell>{contact.phone || contact.phoneNumber || ''}</TableCell>
+                                                <TableCell>{contact.email || contact.emailAddress || ''}</TableCell>
+                                                <TableCell>
+                                                    <Typography variant="body2" sx={{ 
+                                                        color: contact.permissions === 'contact_manager' ? 'primary.main' : 'text.secondary',
+                                                        fontWeight: contact.permissions === 'contact_manager' ? 'bold' : 'normal'
+                                                    }}>
+                                                        {contact.permissions === 'contact_manager' ? 'מנהל קשר' : 'משתמש קשר'}
+                                                    </Typography>
+                                                </TableCell>
                                                 {canEdit && (
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <IconButton
@@ -688,28 +689,48 @@ export default function ContractorTabsSimple({
                         <TextField
                             fullWidth
                             label="שם מלא"
-                            defaultValue={editingContact?.name || ''}
+                            defaultValue={editingContact?.name || editingContact?.fullName || ''}
                             sx={{ mb: 2 }}
                         />
                         <TextField
                             fullWidth
                             label="תפקיד"
-                            defaultValue={editingContact?.role || ''}
+                            defaultValue={editingContact?.role || editingContact?.position || ''}
                             sx={{ mb: 2 }}
                         />
                         <TextField
                             fullWidth
                             label="טלפון"
-                            defaultValue={editingContact?.phone || ''}
+                            defaultValue={editingContact?.phone || editingContact?.phoneNumber || ''}
                             sx={{ mb: 2 }}
                         />
                         <TextField
                             fullWidth
                             label="אימייל"
                             type="email"
-                            defaultValue={editingContact?.email || ''}
+                            defaultValue={editingContact?.email || editingContact?.emailAddress || ''}
                             sx={{ mb: 2 }}
                         />
+                        <FormControl fullWidth sx={{ mb: 2 }}>
+                            <InputLabel>הרשאות</InputLabel>
+                            <Select
+                                defaultValue={editingContact?.permissions || 'contact_user'}
+                                sx={{
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#d0d0d0'
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#9c27b0'
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#9c27b0'
+                                    }
+                                }}
+                            >
+                                <MenuItem value="contact_user">משתמש קשר</MenuItem>
+                                <MenuItem value="contact_manager">מנהל קשר</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Box>
                 </DialogContent>
                 <DialogActions>
