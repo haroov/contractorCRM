@@ -4,7 +4,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import LoginPage from './components/LoginPage';
 import ContactLoginPage from './components/ContactLoginPage';
-import ContractorDetailsPage from './components/ContractorDetailsPage';
 import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -78,11 +77,11 @@ function App() {
     // First check if user is a contact user (check localStorage)
     const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
     console.log('🔍 Contact user authenticated flag:', contactUserAuthenticated);
-    
+
     if (contactUserAuthenticated === 'true') {
       const contactUserData = localStorage.getItem('contactUser');
       console.log('🔍 Contact user data from localStorage:', contactUserData);
-      
+
       if (contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
@@ -201,16 +200,16 @@ function App() {
 
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     console.log('🔍 ProtectedRoute check - loading:', loading, 'user:', user);
-    
+
     // Check if user is authenticated via localStorage (for contact users)
     const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
     const contactUserData = localStorage.getItem('contactUser');
-    
+
     console.log('🔍 ProtectedRoute - localStorage check:', {
       contactUserAuthenticated,
       hasContactUserData: !!contactUserData
     });
-    
+
     if (loading) {
       console.log('⏳ ProtectedRoute - still loading, showing skeleton');
       return <SkeletonLoader />;
