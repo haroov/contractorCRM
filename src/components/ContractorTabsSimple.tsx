@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from '@mui/material';
-import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -26,6 +26,8 @@ export default function ContractorTabsSimple({
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
     const [isUploading, setIsUploading] = useState(false);
+    const [contactDialogOpen, setContactDialogOpen] = useState(false);
+    const [editingContact, setEditingContact] = useState<any>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -157,6 +159,28 @@ export default function ContractorTabsSimple({
         }
     };
 
+    const handleAddContact = () => {
+        setEditingContact(null);
+        setContactDialogOpen(true);
+    };
+
+    const handleEditContact = (contact: any) => {
+        setEditingContact(contact);
+        setContactDialogOpen(true);
+    };
+
+    const handleDeleteContact = (contactId: string) => {
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את איש הקשר?')) {
+            // TODO: Implement delete contact
+            console.log('Delete contact:', contactId);
+        }
+    };
+
+    const handleCloseContactDialog = () => {
+        setContactDialogOpen(false);
+        setEditingContact(null);
+    };
+
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Tabs */}
@@ -276,18 +300,18 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="עיר"
-                                    value={contractor?.city || ''}
+                                    label="כתובת"
+                                    value={contractor?.address || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
-
+                            
                             {/* שורה שלישית */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
-                                    label="כתובת"
-                                    value={contractor?.address || ''}
+                                    label="עיר"
+                                    value={contractor?.city || ''}
                                     disabled={!canEdit}
                                 />
                             </Grid>
@@ -544,12 +568,82 @@ export default function ContractorTabsSimple({
 
                 {activeTab === 3 && (
                     <Box>
-                        <Typography variant="h6" gutterBottom>
-                            אנשי קשר
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            מספר אנשי קשר: {contractor?.contacts?.length || 0}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6">
+                                אנשי קשר
+                            </Typography>
+                            {canEdit && (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={handleAddContact}
+                                    size="small"
+                                >
+                                    הוספה
+                                </Button>
+                            )}
+                        </Box>
+
+                        {contractor?.contacts && contractor.contacts.length > 0 ? (
+                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>שם</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>תפקיד</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>טלפון</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>אימייל</TableCell>
+                                            {canEdit && (
+                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
+                                            )}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {contractor.contacts.map((contact: any, index: number) => (
+                                            <TableRow key={contact.id || index}>
+                                                <TableCell>{contact.name || ''}</TableCell>
+                                                <TableCell>{contact.role || ''}</TableCell>
+                                                <TableCell>{contact.phone || ''}</TableCell>
+                                                <TableCell>{contact.email || ''}</TableCell>
+                                                {canEdit && (
+                                                    <TableCell sx={{ textAlign: 'center' }}>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => handleEditContact(contact)}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            <EditIcon fontSize="small" />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => handleDeleteContact(contact.id)}
+                                                            sx={{ color: 'error.main' }}
+                                                        >
+                                                            <DeleteIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                )}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <Box sx={{ textAlign: 'center', py: 4 }}>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                    אין אנשי קשר רשומים
+                                </Typography>
+                                {canEdit && (
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<AddIcon />}
+                                        onClick={handleAddContact}
+                                    >
+                                        הוסף איש קשר ראשון
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
                     </Box>
                 )}
 
@@ -583,6 +677,52 @@ export default function ContractorTabsSimple({
                     </Box>
                 )}
             </Box>
+
+            {/* Contact Dialog */}
+            <Dialog open={contactDialogOpen} onClose={handleCloseContactDialog} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    {editingContact ? 'עריכת איש קשר' : 'הוספת איש קשר'}
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{ pt: 2 }}>
+                        <TextField
+                            fullWidth
+                            label="שם מלא"
+                            defaultValue={editingContact?.name || ''}
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="תפקיד"
+                            defaultValue={editingContact?.role || ''}
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="טלפון"
+                            defaultValue={editingContact?.phone || ''}
+                            sx={{ mb: 2 }}
+                        />
+                        <TextField
+                            fullWidth
+                            label="אימייל"
+                            type="email"
+                            defaultValue={editingContact?.email || ''}
+                            sx={{ mb: 2 }}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseContactDialog}>ביטול</Button>
+                    <Button variant="contained" onClick={() => {
+                        // TODO: Implement save contact
+                        console.log('Save contact');
+                        handleCloseContactDialog();
+                    }}>
+                        {editingContact ? 'עדכן' : 'הוסף'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             {/* Upload Dialog */}
             <Dialog open={uploadDialogOpen} onClose={handleCloseUploadDialog} maxWidth="sm" fullWidth>
