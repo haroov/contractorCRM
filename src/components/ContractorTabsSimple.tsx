@@ -29,16 +29,10 @@ export default function ContractorTabsSimple({
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [companyIdError, setCompanyIdError] = useState<string>('');
-    const [localCompanyId, setLocalCompanyId] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
-
-    // Update local company ID when contractor changes
-    useEffect(() => {
-        setLocalCompanyId(contractor?.company_id || '');
-    }, [contractor?.company_id]);
 
     const handleSave = () => {
         if (onSave && contractor) {
@@ -281,11 +275,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
-                                    value={localCompanyId}
+                                    value={contractor?.company_id || ''}
                                     disabled={!canEdit || !!contractor?._id}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        setLocalCompanyId(value);
                                         setCompanyIdError('');
                                         
                                         // Validate company ID format (9 digits)
