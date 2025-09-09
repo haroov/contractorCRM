@@ -227,7 +227,7 @@ const LoginPage: React.FC = () => {
             }}
           />
           <Typography variant="h4" sx={{ color: 'primary.main' }}>
-            מערכת ניהול קבלנים
+            ניהול סיכונים באתרי בניה
           </Typography>
         </Box>
 

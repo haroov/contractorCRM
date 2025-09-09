@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useParams } from 'react-router-dom';
-import { Box, Paper, Grid, Typography, Button, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Snackbar, Menu, MenuItem, Avatar, Chip, TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, CardActions, Divider } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Logout as LogoutIcon, Person as PersonIcon, Business as BusinessIcon, Engineering as EngineeringIcon, Assessment as AssessmentIcon, Note as NoteIcon, Close as CloseIcon } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
+import { Search as SearchIcon, Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import { Contractor } from '../types/contractor';
 import ContractorService from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
@@ -12,7 +12,7 @@ interface UnifiedContractorViewProps {
 }
 
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
-  const [searchParams] = useSearchParams();
+  
   const { id } = useParams();
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,106 +41,61 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   // Load contractors from MongoDB
   useEffect(() => {
-    const loadContractors = async () => {
-      try {
-        console.log('Loading contractors from localStorage...');
-
-        // Initialize sample data if needed
-        await ContractorService.initializeSampleData();
-
-        const data = await ContractorService.getAll();
-        console.log('Contractors from localStorage:', data);
-        setContractors(data);
-
-        // Check if this is a contact user and auto-select their contractor
-        const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
-        const contactUserData = localStorage.getItem('contactUser');
-        
-        if (contactUserAuthenticated === 'true' && contactUserData) {
-          try {
-            const contactUser = JSON.parse(contactUserData);
-            console.log('🔍 Contact user detected:', contactUser);
-            
-            // Find the contractor for this contact user
-            const userContractor = data.find(c => c._id === contactUser.contractorId);
-            if (userContractor) {
-              console.log('✅ Found contractor for contact user:', userContractor.name);
-              setSelectedContractor(userContractor);
-              setContractorMode('view');
-              setShowContractorDetails(true);
-            }
-          } catch (error) {
-            console.error('❌ Error parsing contact user data:', error);
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error loading contractors from localStorage:', error);
-        // Fallback to empty array if localStorage fails
-        setContractors([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadContractors();
   }, []);
 
-  // Load user data from App.tsx context
+  // Handle URL parameters for contractor selection
   useEffect(() => {
-    if (currentUser) {
-      setUser(currentUser);
-      setProfileData({
-        name: currentUser.name || '',
-        email: currentUser.email || '',
-        role: currentUser.role || 'user',
-        phone: currentUser.phone || ''
-      });
-    }
-  }, [currentUser]);
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const contractorId = urlParams.get('contractor_id');
 
-  // Handle URL parameters for contractor editing
-  useEffect(() => {
-    const handleUrlParams = async () => {
-      const mode = searchParams.get('mode') as 'view' | 'edit' | 'new';
-      const contractorId = searchParams.get('contractor_id') || id;
-      
-      if (mode && contractorId && contractors.length > 0) {
-        console.log('🔍 URL params detected:', { mode, contractorId });
-        
-        // Find the contractor by ID
-        const contractor = contractors.find(c => 
-          c.contractor_id === contractorId || 
-          c._id === contractorId ||
-          c.id === contractorId
-        );
-        
+    if (mode && contractorId && contractors.length > 0) {
+      if (mode === 'new') {
+        handleAddNewContractor();
+      } else {
+        const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
         if (contractor) {
-          console.log('✅ Found contractor for URL params:', contractor.name);
-          setSelectedContractor(contractor);
-          setContractorMode(mode);
-          setShowContractorDetails(true);
-          
-          // Clean up URL parameters
-          const newUrl = window.location.pathname;
-          window.history.replaceState({}, document.title, newUrl);
-        } else {
-          console.log('❌ Contractor not found for ID:', contractorId);
+          handleContractorSelect(contractor, mode as 'view' | 'edit');
         }
       }
-    };
-
-    if (contractors.length > 0) {
-      handleUrlParams();
+      
+      // Clean up URL parameters
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
     }
-  }, [contractors, searchParams, id]);
+  }, [contractors]);
 
-  // Filter contractors based on search term
-  const filteredContractors = contractors.filter(contractor =>
-    contractor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contractor.contractor_id?.toString().includes(searchTerm) ||
-    contractor.company_id?.toString().includes(searchTerm) ||
-    contractor.nameEnglish?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Auto-select contact user's contractor
+  useEffect(() => {
+    const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
+    if (contactUserAuthenticated === 'true' && contractors.length > 0) {
+      const contactUserData = localStorage.getItem('contactUser');
+      if (contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          const contractor = contractors.find(c => c._id === contactUser.contractorId);
+          if (contractor) {
+            handleContractorSelect(contractor, 'view');
+          }
+        } catch (error) {
+          console.error('Error parsing contact user data:', error);
+        }
+      }
+    }
+  }, [contractors]);
+
+  const loadContractors = async () => {
+    try {
+      setLoading(true);
+      const contractorsData = await ContractorService.getAll();
+      setContractors(contractorsData);
+    } catch (error) {
+      console.error('Error loading contractors:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -157,41 +112,35 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 State updated successfully');
   };
 
-
   const handleDeleteContractor = (contractor: Contractor) => {
     setContractorToDelete(contractor);
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (contractorToDelete) {
-      try {
-        await ContractorService.delete(contractorToDelete.contractor_id);
-        setContractors(prev => prev.filter(c => c.contractor_id !== contractorToDelete.contractor_id));
-        setDeleteDialogOpen(false);
-        setContractorToDelete(null);
-        
-        // If we're viewing the deleted contractor, close the details
-        if (selectedContractor?.contractor_id === contractorToDelete.contractor_id) {
-          setShowContractorDetails(false);
-          setSelectedContractor(null);
-        }
-        
+  const confirmDeleteContractor = async () => {
+    if (!contractorToDelete) return;
+
+    try {
+      const success = await ContractorService.delete(contractorToDelete.contractor_id);
+      if (success) {
+        setContractors(contractors.filter(c => c.contractor_id !== contractorToDelete.contractor_id));
         setSnackbarMessage('הקבלן נמחק בהצלחה');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-      } catch (error) {
-        console.error('❌ Error deleting contractor:', error);
+      } else {
         setSnackbarMessage('שגיאה במחיקת הקבלן');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
       }
+    } catch (error) {
+      console.error('Error deleting contractor:', error);
+      setSnackbarMessage('שגיאה במחיקת הקבלן');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } finally {
+      setDeleteDialogOpen(false);
+      setContractorToDelete(null);
     }
-  };
-
-  const cancelDelete = () => {
-    setDeleteDialogOpen(false);
-    setContractorToDelete(null);
   };
 
   const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -227,24 +176,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setIsSaving(true);
     try {
       if (contractorMode === 'new') {
-        // Create new contractor
         const newContractor = await ContractorService.create(updatedContractor);
-        setContractors(prev => [...prev, newContractor]);
-        setSelectedContractor(newContractor);
-        setContractorMode('view');
+        setContractors([...contractors, newContractor]);
         setSnackbarMessage('הקבלן נוצר בהצלחה');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
       } else {
-        // Update existing contractor
         const updated = await ContractorService.update(updatedContractor.contractor_id, updatedContractor);
-        setContractors(prev => prev.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
-        setSelectedContractor(updated);
-        setContractorMode('view');
-        setSnackbarMessage('הקבלן עודכן בהצלחה');
+        if (updated) {
+          setContractors(contractors.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
+          setSelectedContractor(updated);
+          setSnackbarMessage('הקבלן עודכן בהצלחה');
+          setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+        }
       }
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
     } catch (error) {
-      console.error('❌ Error saving contractor:', error);
+      console.error('Error saving contractor:', error);
       setSnackbarMessage('שגיאה בשמירת הקבלן');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -299,6 +247,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     );
   }
 
+  // Filter contractors based on search term
+  const filteredContractors = contractors.filter(contractor =>
+    contractor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contractor.company_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contractor.city?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
       {/* Header with Profile */}
@@ -308,51 +263,34 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             <Box sx={{ 
               width: 40, 
               height: 40, 
-              borderRadius: '50%', 
-              bgcolor: '#882DD7', 
               display: 'flex', 
               alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '1.2rem'
+              justifyContent: 'center'
             }}>
-              C
+              <img src="/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
             </Box>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-              מאגר קבלנים ויזמים
+            <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+              ניהול סיכונים באתרי בניה
             </Typography>
           </Box>
           
-          {/* Statistics Cards */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#e3f2fd' }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                {contractors.length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                סך הכל קבלנים
-              </Typography>
-            </Paper>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#e8f5e8' }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>
-                {contractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                פרויקטים פעילים
-              </Typography>
-            </Paper>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: '#fff3e0' }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#f57c00' }}>
-                ₪{contractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                שווי מצרפי
-              </Typography>
-            </Paper>
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {user && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
+              <Typography variant="body2">{user.name}</Typography>
+              <IconButton onClick={handleUserMenuClick}>
+                <MoreVertIcon />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
+      </Paper>
+
+      {!showContractorDetails ? (
+        /* Contractor List View */
+        <Box sx={{ p: 2 }}>
+          {/* Search and Add Button */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <TextField
               size="small"
               placeholder="חיפוש קבלנים..."
@@ -366,7 +304,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 ),
               }}
               sx={{ 
-                bgcolor: 'grey.50', 
+                bgcolor: 'white', 
                 borderRadius: 1,
                 minWidth: 200
               }}
@@ -376,34 +314,53 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddNewContractor}
-              sx={{ bgcolor: '#1976d2' }}
+              sx={{ bgcolor: '#882DD7' }}
             >
               הוסף קבלן
             </Button>
-            
-            {user && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
-                <Typography variant="body2">{user.name}</Typography>
-                <IconButton onClick={handleUserMenuClick}>
-                  <MoreVertIcon />
-                </IconButton>
-              </Box>
-            )}
           </Box>
-        </Box>
-      </Paper>
 
-      {/* Main Content */}
-      {!showContractorDetails ? (
-        /* Contractor List View */
-        <Box sx={{ p: 2 }}>
+          {/* Statistics Cards */}
+          <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                {contractors.length}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                סה״כ קבלנים
+              </Typography>
+            </Paper>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                {contractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                פרויקטים פעילים
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ₪{contractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
+              </Typography>
+            </Paper>
+            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                {contractors.reduce((sum, c) => sum + (c.forcast_projects || 0), 0)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                פרויקטים עתידיים
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ₪{contractors.reduce((sum, c) => sum + (c.forcast_projects_value_nis || 0), 0).toLocaleString()}
+              </Typography>
+            </Paper>
+          </Box>
+
+          {/* Contractor List */}
           <Paper elevation={1} sx={{ p: 2, height: 'calc(100vh - 120px)', overflow: 'auto' }}>
             <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <EngineeringIcon />
               רשימת קבלנים ({filteredContractors.length})
             </Typography>
-            
+
             {filteredContractors.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
                 <Typography variant="body1" color="text.secondary">
@@ -429,25 +386,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   </TableHead>
                   <TableBody>
                     {filteredContractors.map((contractor) => (
-                      <TableRow 
-                        key={contractor.contractor_id} 
-                        sx={{ 
+                      <TableRow
+                        key={contractor.contractor_id}
+                        sx={{
                           '&:hover': { backgroundColor: '#f5f5f5' },
                           cursor: 'pointer',
                           backgroundColor: selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : 'inherit'
                         }}
                         onClick={(e) => {
                           console.log('🔥 Contractor row clicked!', contractor.name);
-                          console.log('🔥 Event target:', e.target);
-                          console.log('🔥 Current target:', e.currentTarget);
-                          
-                          // Prevent event bubbling
                           e.preventDefault();
                           e.stopPropagation();
                           
-                          // Determine mode based on user permissions
                           const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
                           const contactUserData = localStorage.getItem('contactUser');
+                          
+                          console.log('🔥 Contact user check:', { isContactUser, hasContactUserData: !!contactUserData });
+
                           let mode: 'view' | 'edit' = 'view';
                           
                           if (isContactUser && contactUserData) {
@@ -484,10 +439,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Chip 
-                            label={contractor.company_id} 
-                            size="small" 
-                            color="primary" 
+                          <Chip
+                            label={contractor.company_id}
+                            size="small"
+                            color="primary"
                             variant="outlined"
                           />
                         </TableCell>
@@ -505,9 +460,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         {/* פרויקטים */}
                         <TableCell sx={{ textAlign: 'center' }}>
                           <Box>
-                            <Chip 
-                              label={`${contractor.current_projects || 0} פעילים`} 
-                              size="small" 
+                            <Chip
+                              label={`${contractor.current_projects || 0} פעילים`}
+                              size="small"
                               color="success"
                             />
                             <br />
@@ -519,17 +474,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         
                         {/* דירוג בטיחות */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Chip 
-                            label={`${contractor.safetyRating || 0} כוכבים`} 
-                            size="small" 
+                          <Chip
+                            label={`${contractor.safetyRating || 0} כוכבים`}
+                            size="small"
                             color={contractor.safetyRating >= 4 ? 'success' : contractor.safetyRating >= 3 ? 'warning' : 'error'}
                           />
                         </TableCell>
                         
                         {/* פעולות */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <IconButton 
-                            size="small" 
+                          <IconButton
+                            size="small"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteContractor(contractor);
@@ -552,17 +507,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         <Box sx={{ p: 2 }}>
           <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', overflow: 'auto' }}>
             {/* Contractor Header */}
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              p: 2, 
-              bgcolor: '#1976d2', 
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              p: 2,
+              bgcolor: '#882DD7',
               color: 'white',
               borderRadius: '4px 4px 0 0'
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton 
+                <IconButton
                   onClick={handleCloseContractorDetails}
                   sx={{ color: 'white' }}
                 >
@@ -586,10 +541,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     const contactUser = JSON.parse(contactUserData);
                     return contactUser.permissions;
                   } catch (error) {
-                    console.error('Error parsing contact user permissions:', error);
+                    console.error('Error parsing contact user data:', error);
+                    return 'contact_user';
                   }
                 }
-                return 'admin';
+                return 'contact_user';
               })()}
               isSaving={isSaving}
             />
@@ -604,33 +560,30 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         onClose={handleUserMenuClose}
       >
         <MenuItem onClick={handleProfileClick}>
-          <PersonIcon sx={{ mr: 1 }} />
+          <AccountCircleIcon sx={{ mr: 1 }} />
           פרופיל
         </MenuItem>
-        {user?.role === 'admin' && (
-          <MenuItem onClick={handleUserManagementClick}>
-            <AccountCircleIcon sx={{ mr: 1 }} />
-            ניהול משתמשים
-          </MenuItem>
-        )}
+        <MenuItem onClick={handleUserManagementClick}>
+          <AccountCircleIcon sx={{ mr: 1 }} />
+          ניהול משתמשים
+        </MenuItem>
         <MenuItem onClick={handleLogout}>
-          <LogoutIcon sx={{ mr: 1 }} />
-          התנתק
+          <AccountCircleIcon sx={{ mr: 1 }} />
+          התנתקות
         </MenuItem>
       </Menu>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>מחיקת קבלן</DialogTitle>
         <DialogContent>
           <Typography>
             האם אתה בטוח שברצונך למחוק את הקבלן "{contractorToDelete?.name}"?
-            פעולה זו לא ניתנת לביטול.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={cancelDelete}>ביטול</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
+          <Button onClick={() => setDeleteDialogOpen(false)}>ביטול</Button>
+          <Button onClick={confirmDeleteContractor} color="error" variant="contained">
             מחק
           </Button>
         </DialogActions>
@@ -638,10 +591,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
       {/* User Management Dialog */}
       {userManagementOpen && (
-        <UserManagement
-          open={userManagementOpen}
-          onClose={() => setUserManagementOpen(false)}
-        />
+        <UserManagement />
       )}
 
       {/* Snackbar for notifications */}
@@ -650,8 +600,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         autoHideDuration={6000}
         onClose={() => setSnackbarOpen(false)}
       >
-        <Alert 
-          onClose={() => setSnackbarOpen(false)} 
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
           severity={snackbarSeverity}
           sx={{ width: '100%' }}
         >
