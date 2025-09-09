@@ -238,7 +238,21 @@ export default function ContractorTabsSimple({
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Tabs */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
-                <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
+                <Tabs 
+                    value={activeTab} 
+                    onChange={(e, newValue) => setActiveTab(newValue)}
+                    sx={{
+                        '& .MuiTab-root': {
+                            color: 'text.secondary',
+                            '&.Mui-selected': {
+                                color: '#9c27b0' // סגול שוקו
+                            }
+                        },
+                        '& .MuiTabs-indicator': {
+                            backgroundColor: '#9c27b0' // סגול שוקו
+                        }
+                    }}
+                >
                     <Tab label="פרטי חברה" />
                     <Tab label="מידע עסקי" />
                     <Tab label="פרויקטים" />
@@ -362,6 +376,13 @@ export default function ContractorTabsSimple({
                                     type="date"
                                     value={contractor?.foundationDate || ''}
                                     disabled={true}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: {
+                                            backgroundColor: 'white',
+                                            px: 1
+                                        }
+                                    }}
                                 />
                             </Grid>
 
@@ -478,15 +499,19 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     <IconButton
-                                        color="primary"
                                         disabled={!canEdit}
                                         title="העלאת תעודת הסמכת כוכבי בטיחות"
                                         onClick={() => handleUploadClick('safety')}
-                                        sx={{
+                                        sx={{ 
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
-                                            width: '56px'
+                                            width: '56px',
+                                            color: '#9c27b0', // סגול שוקו
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                borderColor: '#9c27b0'
+                                            }
                                         }}
                                     >
                                         <CloudUploadIcon />
@@ -558,15 +583,19 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     <IconButton
-                                        color="primary"
                                         disabled={!canEdit}
                                         title="העלאת תעודת ISO45001"
                                         onClick={() => handleUploadClick('iso')}
-                                        sx={{
+                                        sx={{ 
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
-                                            width: '56px'
+                                            width: '56px',
+                                            color: '#9c27b0', // סגול שוקו
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                borderColor: '#9c27b0'
+                                            }
                                         }}
                                     >
                                         <CloudUploadIcon />
@@ -655,6 +684,12 @@ export default function ContractorTabsSimple({
                                     startIcon={<AddIcon />}
                                     onClick={handleAddContact}
                                     size="small"
+                                    sx={{
+                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        '&:hover': {
+                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                        }
+                                    }}
                                 >
                                     הוספה
                                 </Button>
@@ -724,6 +759,14 @@ export default function ContractorTabsSimple({
                                         variant="outlined"
                                         startIcon={<AddIcon />}
                                         onClick={handleAddContact}
+                                        sx={{
+                                            borderColor: '#9c27b0', // סגול שוקו
+                                            color: '#9c27b0',
+                                            '&:hover': {
+                                                borderColor: '#7b1fa2',
+                                                backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                            }
+                                        }}
                                     >
                                         הוסף איש קשר ראשון
                                     </Button>
@@ -820,11 +863,20 @@ export default function ContractorTabsSimple({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseContactDialog}>ביטול</Button>
-                    <Button variant="contained" onClick={() => {
-                        // TODO: Implement save contact
-                        console.log('Save contact');
-                        handleCloseContactDialog();
-                    }}>
+                    <Button 
+                        variant="contained" 
+                        onClick={() => {
+                            // TODO: Implement save contact
+                            console.log('Save contact');
+                            handleCloseContactDialog();
+                        }}
+                        sx={{
+                            backgroundColor: '#9c27b0', // סגול שוקו
+                            '&:hover': {
+                                backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                            }
+                        }}
+                    >
                         {editingContact ? 'עדכן' : 'הוסף'}
                     </Button>
                 </DialogActions>
@@ -863,7 +915,13 @@ export default function ContractorTabsSimple({
                                     variant="contained"
                                     component="label"
                                     startIcon={<CloudUploadIcon />}
-                                    sx={{ mb: 2 }}
+                                    sx={{ 
+                                        mb: 2,
+                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        '&:hover': {
+                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                        }
+                                    }}
                                 >
                                     בחר קובץ
                                     <input
