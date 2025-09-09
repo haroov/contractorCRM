@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import ProjectsList from './ProjectsList';
 import RiskIndicator from './RiskIndicator';
-import { projectsAPI } from '../services/api';
+// import { projectsAPI } from '../services/api';
 import type { ProjectDocument } from '../types/database';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
@@ -263,6 +263,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     projects = await response.json();
                 } else {
                     // Use regular endpoint for regular users
+                    const { projectsAPI } = await import('../services/api');
                     projects = await projectsAPI.getByContractor(contractor._id);
                 }
 
@@ -295,6 +296,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 status: projectStatus
             };
 
+            const { projectsAPI } = await import('../services/api');
             const savedProject = await projectsAPI.create(projectToSave);
 
             // Update contractor statistics automatically
@@ -313,6 +315,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
     const updateProject = async (project: Project) => {
         try {
             // Update project via API
+            const { projectsAPI } = await import('../services/api');
             await projectsAPI.update(project.id, project);
 
             // Update contractor statistics automatically
@@ -335,6 +338,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 return;
             }
 
+            const { projectsAPI } = await import('../services/api');
             await projectsAPI.delete(projectId);
 
             // Update contractor statistics automatically
