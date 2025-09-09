@@ -680,39 +680,53 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               flexShrink: 0
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton
+                <Button
+                  variant="outlined"
+                  size="small"
                   onClick={handleCloseContractorDetails}
-                  sx={{ color: 'black', p: 0.5 }}
+                  sx={{ minWidth: 'auto', px: 2 }}
                 >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-                <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
-                  {selectedContractor?.name || 'קבלן חדש'}
-                </Typography>
+                  סגירה
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => {
+                    // Trigger save from ContractorTabs
+                    const saveEvent = new CustomEvent('saveContractor');
+                    window.dispatchEvent(saveEvent);
+                  }}
+                  sx={{ minWidth: 'auto', px: 2 }}
+                >
+                  שמירה
+                </Button>
               </Box>
+              <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                {selectedContractor?.name || 'קבלן חדש'}
+              </Typography>
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
               <ContractorTabs
-              contractor={selectedContractor!}
-              onSave={handleSaveContractor}
-              onClose={handleCloseContractorDetails}
-              isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
-              contactUserPermissions={(() => {
-                const contactUserData = localStorage.getItem('contactUser');
-                if (contactUserData) {
-                  try {
-                    const contactUser = JSON.parse(contactUserData);
-                    return contactUser.permissions;
-                  } catch (error) {
-                    console.error('Error parsing contact user data:', error);
-                    return 'contact_user';
+                contractor={selectedContractor!}
+                onSave={handleSaveContractor}
+                onClose={handleCloseContractorDetails}
+                isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
+                contactUserPermissions={(() => {
+                  const contactUserData = localStorage.getItem('contactUser');
+                  if (contactUserData) {
+                    try {
+                      const contactUser = JSON.parse(contactUserData);
+                      return contactUser.permissions;
+                    } catch (error) {
+                      console.error('Error parsing contact user data:', error);
+                      return 'contact_user';
+                    }
                   }
-                }
-                return 'contact_user';
-              })()}
-              isSaving={isSaving}
-            />
+                  return 'contact_user';
+                })()}
+                isSaving={isSaving}
+              />
             </Box>
           </Paper>
         </Box>

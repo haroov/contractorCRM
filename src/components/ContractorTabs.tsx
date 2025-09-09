@@ -150,6 +150,18 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
         }
     }, [initialContractor]);
 
+    // Listen for save event from header
+    useEffect(() => {
+        const handleSaveEvent = () => {
+            if (canEdit) {
+                handleSave();
+            }
+        };
+
+        window.addEventListener('saveContractor', handleSaveEvent);
+        return () => window.removeEventListener('saveContractor', handleSaveEvent);
+    }, [canEdit, handleSave]);
+
     // Load projects when contractor changes
     useEffect(() => {
         if (contractor._id) {
@@ -1405,23 +1417,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </CardContent>
                     </Card>
 
-                    {/* Action Buttons */}
-                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        {onClose && (
-                            <Button onClick={onClose} variant="outlined">
-                                ביטול
-                            </Button>
-                        )}
-                        {canEdit && (
-                            <Button 
-                                onClick={handleSave} 
-                                variant="contained"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? 'שומר...' : 'שמור'}
-                            </Button>
-                        )}
-                    </Box>
                 </Box>
             )}
 
@@ -1671,23 +1666,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </TableContainer>
                     )}
 
-                    {/* Action Buttons */}
-                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        {onClose && (
-                            <Button onClick={onClose} variant="outlined">
-                                ביטול
-                            </Button>
-                        )}
-                        {canEdit && (
-                            <Button 
-                                onClick={handleSave} 
-                                variant="contained"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? 'שומר...' : 'שמור'}
-                            </Button>
-                        )}
-                    </Box>
                 </Box>
             )}
 
@@ -1883,23 +1861,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         </DialogActions>
                     </Dialog>
 
-                    {/* Action Buttons */}
-                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        {onClose && (
-                            <Button onClick={onClose} variant="outlined">
-                                ביטול
-                            </Button>
-                        )}
-                        {canEdit && (
-                            <Button 
-                                onClick={handleSave} 
-                                variant="contained"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? 'שומר...' : 'שמור'}
-                            </Button>
-                        )}
-                    </Box>
                 </Box>
             )}
 
@@ -1946,23 +1907,6 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                         helperText={errors.notes}
                     />
 
-                    {/* Action Buttons */}
-                    <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                        {onClose && (
-                            <Button onClick={onClose} variant="outlined">
-                                ביטול
-                            </Button>
-                        )}
-                        {canEdit && (
-                            <Button 
-                                onClick={handleSave} 
-                                variant="contained"
-                                disabled={isSaving}
-                            >
-                                {isSaving ? 'שומר...' : 'שמור'}
-                            </Button>
-                        )}
-                    </Box>
                 </Box>
             )}
 
