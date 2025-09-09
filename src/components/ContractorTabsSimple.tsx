@@ -195,69 +195,118 @@ export default function ContractorTabsSimple({
                             מידע עסקי
                         </Typography>
 
-                        <Box sx={{ mb: 2 }}>
-                            <FormControl fullWidth sx={{ mb: 1 }}>
-                                <InputLabel>מספר כוכבי בטיחות</InputLabel>
-                                <Select
-                                    value={contractor?.safetyRating || contractor?.safetyStars || ''}
-                                    disabled={!canEdit}
-                                >
-                                    <MenuItem value={1}>1 כוכב</MenuItem>
-                                    <MenuItem value={2}>2 כוכבים</MenuItem>
-                                    <MenuItem value={3}>3 כוכבים</MenuItem>
-                                    <MenuItem value={4}>4 כוכבים</MenuItem>
-                                    <MenuItem value={5}>5 כוכבים</MenuItem>
-                                    <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
-                                </Select>
-                            </FormControl>
+                        <Grid container spacing={2}>
+                            {/* שורה ראשונה */}
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FormControl fullWidth>
+                                    <InputLabel sx={{ 
+                                        backgroundColor: 'white', 
+                                        px: 1,
+                                        '&.Mui-focused': {
+                                            backgroundColor: 'white'
+                                        }
+                                    }}>
+                                        מספר כוכבי בטיחות
+                                    </InputLabel>
+                                    <Select
+                                        value={contractor?.safetyRating || contractor?.safetyStars || ''}
+                                        disabled={!canEdit}
+                                        sx={{
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#d0d0d0'
+                                            },
+                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#9c27b0'
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#9c27b0'
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem value={1}>1 כוכב</MenuItem>
+                                        <MenuItem value={2}>2 כוכבים</MenuItem>
+                                        <MenuItem value={3}>3 כוכבים</MenuItem>
+                                        <MenuItem value={4}>4 כוכבים</MenuItem>
+                                        <MenuItem value={5}>5 כוכבים</MenuItem>
+                                        <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Grid item xs={12} sm={6} md={3}>
                                 <TextField
-                                    label="תאריך תוקף"
+                                    fullWidth
+                                    label="תאריך תוקף כוכבי בטיחות"
                                     type="date"
                                     value={contractor?.safetyRatingExpiry || ''}
-                                    sx={{ flex: 1 }}
                                     disabled={!canEdit}
                                 />
-                                <IconButton
-                                    color="primary"
-                                    disabled={!canEdit}
-                                    title="העלאת תעודת הסמכת כוכבי בטיחות"
-                                >
-                                    <CloudUploadIcon />
-                                </IconButton>
-                            </Box>
-                        </Box>
+                            </Grid>
 
-                        <Box sx={{ mb: 2 }}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={contractor?.iso45001 || false}
+                            <Grid item xs={12} sm={6} md={3}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                    <IconButton
+                                        color="primary"
                                         disabled={!canEdit}
-                                    />
-                                }
-                                label="ISO45001"
-                                sx={{ mb: 1 }}
-                            />
+                                        title="העלאת תעודת הסמכת כוכבי בטיחות"
+                                        sx={{ 
+                                            border: '1px solid #d0d0d0',
+                                            borderRadius: 1,
+                                            height: '56px',
+                                            width: '56px'
+                                        }}
+                                    >
+                                        <CloudUploadIcon />
+                                    </IconButton>
+                                </Box>
+                            </Grid>
 
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={contractor?.iso45001 || false}
+                                            disabled={!canEdit}
+                                        />
+                                    }
+                                    label="ISO45001"
+                                    sx={{ 
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                />
+                            </Grid>
+
+                            {/* שורה שנייה */}
+                            <Grid item xs={12} sm={6} md={3}>
                                 <TextField
+                                    fullWidth
                                     label="תאריך תוקף ISO45001"
                                     type="date"
                                     value={contractor?.iso45001Expiry || ''}
-                                    sx={{ flex: 1 }}
                                     disabled={!canEdit}
                                 />
-                                <IconButton
-                                    color="primary"
-                                    disabled={!canEdit}
-                                    title="העלאת תעודת ISO45001"
-                                >
-                                    <CloudUploadIcon />
-                                </IconButton>
-                            </Box>
-                        </Box>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                    <IconButton
+                                        color="primary"
+                                        disabled={!canEdit}
+                                        title="העלאת תעודת ISO45001"
+                                        sx={{ 
+                                            border: '1px solid #d0d0d0',
+                                            borderRadius: 1,
+                                            height: '56px',
+                                            width: '56px'
+                                        }}
+                                    >
+                                        <CloudUploadIcon />
+                                    </IconButton>
+                                </Box>
+                            </Grid>
+                        </Grid>
 
                         {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
