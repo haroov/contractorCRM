@@ -379,96 +379,131 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 </Typography>
               </Box>
             ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {filteredContractors.map((contractor) => (
-                  <Card 
-                    key={contractor.contractor_id} 
-                    sx={{ 
-                      cursor: 'pointer',
-                      border: selectedContractor?.contractor_id === contractor.contractor_id ? '2px solid' : '1px solid',
-                      borderColor: selectedContractor?.contractor_id === contractor.contractor_id ? 'primary.main' : 'divider',
-                      '&:hover': { bgcolor: 'action.hover' }
-                    }}
-                    onClick={() => {
-                      console.log('🔥 Contractor card clicked!', contractor.name);
-                      // Determine mode based on user permissions
-                      const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
-                      const contactUserData = localStorage.getItem('contactUser');
-                      let mode: 'view' | 'edit' = 'view';
-                      
-                      if (isContactUser && contactUserData) {
-                        try {
-                          const userData = JSON.parse(contactUserData);
-                          const permissions = userData.permissions;
-                          // Contact managers and admins can edit, contact users can only view
-                          mode = (permissions === 'contact_manager' || permissions === 'admin') ? 'edit' : 'view';
-                        } catch (error) {
-                          console.error('Error parsing contact user data:', error);
-                          mode = 'view';
-                        }
-                      } else {
-                        // Regular users can edit
-                        mode = 'edit';
-                      }
-                      
-                      console.log('🔥 Opening contractor in mode:', mode);
-                      handleContractorSelect(contractor, mode);
-                    }}
-                  >
-                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          {contractor.name}
-                        </Typography>
-                        <Chip 
-                          label={contractor.status || 'פעילה'} 
-                          size="small" 
-                          color={contractor.status === 'פעילה' ? 'success' : 'default'}
-                        />
-                      </Box>
-                      
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {contractor.nameEnglish}
-                      </Typography>
-                      
-                      <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
-                        <Typography variant="caption" color="text.secondary">
-                          מספר קבלן: {contractor.contractor_id}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          ח"פ: {contractor.company_id}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <Chip 
-                          label={contractor.sector || 'לא מוגדר'} 
-                          size="small" 
-                          variant="outlined"
-                        />
-                        <Chip 
-                          label={`${contractor.current_projects || 0} פרויקטים`} 
-                          size="small" 
-                          variant="outlined"
-                        />
-                      </Box>
-                    </CardContent>
-                    
-                    <CardActions sx={{ p: 1, pt: 0 }}>
-                      <IconButton 
-                        size="small" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteContractor(contractor);
+              <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {['פעולות', 'דירוג בטיחות', 'פרויקטים', 'כתובת', 'ח"פ', 'קבלן'].map((header, index) => (
+                        <TableCell key={index} sx={{
+                          fontWeight: 'bold',
+                          backgroundColor: '#f8f9fa',
+                          textAlign: 'center',
+                          borderBottom: '2px solid #e0e0e0'
+                        }}>
+                          {header}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredContractors.map((contractor) => (
+                      <TableRow 
+                        key={contractor.contractor_id} 
+                        sx={{ 
+                          '&:hover': { backgroundColor: '#f5f5f5' },
+                          cursor: 'pointer',
+                          backgroundColor: selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : 'inherit'
                         }}
-                        color="error"
+                        onClick={() => {
+                          console.log('🔥 Contractor row clicked!', contractor.name);
+                          // Determine mode based on user permissions
+                          const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+                          const contactUserData = localStorage.getItem('contactUser');
+                          let mode: 'view' | 'edit' = 'view';
+                          
+                          if (isContactUser && contactUserData) {
+                            try {
+                              const userData = JSON.parse(contactUserData);
+                              const permissions = userData.permissions;
+                              // Contact managers and admins can edit, contact users can only view
+                              mode = (permissions === 'contact_manager' || permissions === 'admin') ? 'edit' : 'view';
+                            } catch (error) {
+                              console.error('Error parsing contact user data:', error);
+                              mode = 'view';
+                            }
+                          } else {
+                            // Regular users can edit
+                            mode = 'edit';
+                          }
+                          
+                          console.log('🔥 Opening contractor in mode:', mode);
+                          handleContractorSelect(contractor, mode);
+                        }}
                       >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </CardActions>
-                  </Card>
-                ))}
-              </Box>
+                        {/* קבלן */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                              {contractor.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {contractor.nameEnglish}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        
+                        {/* ח"פ */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <Chip 
+                            label={contractor.company_id} 
+                            size="small" 
+                            color="primary" 
+                            variant="outlined"
+                          />
+                        </TableCell>
+                        
+                        {/* כתובת */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <Typography variant="body2">
+                            {contractor.city}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {contractor.address}
+                          </Typography>
+                        </TableCell>
+                        
+                        {/* פרויקטים */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <Box>
+                            <Chip 
+                              label={`${contractor.current_projects || 0} פעילים`} 
+                              size="small" 
+                              color="success"
+                            />
+                            <br />
+                            <Typography variant="caption" color="text.secondary">
+                              ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        
+                        {/* דירוג בטיחות */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <Chip 
+                            label={`${contractor.safetyRating || 0} כוכבים`} 
+                            size="small" 
+                            color={contractor.safetyRating >= 4 ? 'success' : contractor.safetyRating >= 3 ? 'warning' : 'error'}
+                          />
+                        </TableCell>
+                        
+                        {/* פעולות */}
+                        <TableCell sx={{ textAlign: 'center' }}>
+                          <IconButton 
+                            size="small" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteContractor(contractor);
+                            }}
+                            color="error"
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             )}
           </Paper>
         </Box>
