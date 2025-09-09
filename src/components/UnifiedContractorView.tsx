@@ -318,7 +318,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <img src="/src/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
+              <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
             </Box>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
               ניהול סיכונים באתרי בניה
