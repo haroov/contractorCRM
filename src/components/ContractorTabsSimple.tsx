@@ -28,6 +28,7 @@ export default function ContractorTabsSimple({
     const [isUploading, setIsUploading] = useState(false);
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
+    const [companyIdError, setCompanyIdError] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -181,6 +182,58 @@ export default function ContractorTabsSimple({
         setEditingContact(null);
     };
 
+    const fetchCompanyData = async (companyId: string) => {
+        try {
+            // Fetch from Companies Registry API
+            const companiesResponse = await fetch(`https://api.gov.il/he/companies-registry/companies/${companyId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (companiesResponse.ok) {
+                const companiesData = await companiesResponse.json();
+                
+                // Fetch from Contractors Registry API
+                const contractorsResponse = await fetch(`https://api.gov.il/he/contractors-registry/contractors/${companyId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                let contractorsData = null;
+                if (contractorsResponse.ok) {
+                    contractorsData = await contractorsResponse.json();
+                }
+
+                // Update contractor with fetched data
+                if (contractor && onSave) {
+                    const updatedContractor = {
+                        ...contractor,
+                        name: companiesData.name || contractor.name,
+                        nameEnglish: companiesData.nameEnglish || contractor.nameEnglish,
+                        companyType: companiesData.companyType || contractor.companyType,
+                        foundationDate: companiesData.foundationDate || contractor.foundationDate,
+                        address: companiesData.address || contractor.address,
+                        city: companiesData.city || contractor.city,
+                        email: companiesData.email || contractor.email,
+                        phone: companiesData.phone || contractor.phone,
+                        contractor_id: contractorsData?.contractor_id || contractor.contractor_id,
+                        safetyRating: contractorsData?.safetyRating || contractor.safetyRating,
+                        iso45001: contractorsData?.iso45001 || contractor.iso45001,
+                        classifications: contractorsData?.classifications || contractor.classifications,
+                        activities: contractorsData?.activities || contractor.activities
+                    };
+                    onSave(updatedContractor);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching company data:', error);
+        }
+    };
+
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Tabs */}
@@ -209,7 +262,32 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
                                     value={contractor?.company_id || ''}
-                                    disabled={!canEdit || !!contractor?.contractor_id}
+                                    disabled={!canEdit || (!!contractor?.contractor_id && contractor?.contractor_id !== 'new')}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setCompanyIdError('');
+                                        
+                                        // Validate company ID format (9 digits)
+                                        if (value && !/^\d{9}$/.test(value)) {
+                                            setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
+                                        }
+                                        
+                                        if (contractor && onSave) {
+                                            const updatedContractor = {
+                                                ...contractor,
+                                                company_id: value
+                                            };
+                                            onSave(updatedContractor);
+                                        }
+                                    }}
+                                    onBlur={async (e) => {
+                                        const companyId = e.target.value;
+                                        if (companyId && companyId.length === 9 && /^\d{9}$/.test(companyId)) {
+                                            await fetchCompanyData(companyId);
+                                        }
+                                    }}
+                                    error={!!companyIdError}
+                                    helperText={companyIdError}
                                 />
                             </Grid>
 
