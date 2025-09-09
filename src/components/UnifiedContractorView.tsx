@@ -299,11 +299,26 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   }
 
   // Filter contractors based on search term
-  const filteredContractors = contractors.filter(contractor =>
-    contractor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contractor.company_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contractor.city?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredContractors = contractors.filter(contractor => {
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Search in basic contractor info
+    const basicMatch = 
+      contractor.name?.toLowerCase().includes(searchLower) ||
+      contractor.company_id?.toLowerCase().includes(searchLower) ||
+      contractor.city?.toLowerCase().includes(searchLower) ||
+      contractor.nameEnglish?.toLowerCase().includes(searchLower);
+    
+    // Search in contacts
+    const contactMatch = contractor.contacts?.some(contact => 
+      contact.fullName?.toLowerCase().includes(searchLower) ||
+      contact.email?.toLowerCase().includes(searchLower) ||
+      contact.mobile?.includes(searchTerm) ||
+      contact.role?.toLowerCase().includes(searchLower)
+    );
+    
+    return basicMatch || contactMatch;
+  });
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
@@ -348,7 +363,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <TextField
               size="small"
-              placeholder="חיפוש קבלנים..."
+              placeholder="חיפוש קבלנים, אנשי קשר, עיר..."
               value={searchTerm}
               onChange={handleSearchChange}
               InputProps={{
@@ -379,32 +394,32 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
             <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {contractors.length}
+                {filteredContractors.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                סה״כ קבלנים
+                {searchTerm ? 'קבלנים נמצאו' : 'סה״כ קבלנים'}
               </Typography>
             </Paper>
             <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {contractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
+                {filteredContractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 פרויקטים פעילים
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ₪{contractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
+                ₪{filteredContractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
               </Typography>
             </Paper>
             <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {contractors.reduce((sum, c) => sum + (c.forcast_projects || 0), 0)}
+                {filteredContractors.reduce((sum, c) => sum + (c.forcast_projects || 0), 0)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 פרויקטים עתידיים
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ₪{contractors.reduce((sum, c) => sum + (c.forcast_projects_value_nis || 0), 0).toLocaleString()}
+                ₪{filteredContractors.reduce((sum, c) => sum + (c.forcast_projects_value_nis || 0), 0).toLocaleString()}
               </Typography>
             </Paper>
           </Box>
