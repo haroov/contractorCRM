@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import { Contractor } from '../types/contractor';
 import ContractorService from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
@@ -163,9 +163,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 State updated successfully');
   };
 
-  const handleDeleteContractor = (contractor: Contractor) => {
-    setContractorToDelete(contractor);
-    setDeleteDialogOpen(true);
+  const handleArchiveContractor = async (contractor: Contractor) => {
+    const confirmed = window.confirm(`האם אתה בטוח שברצונך לארכב את הקבלן "${contractor.name}"?`);
+    if (confirmed) {
+      try {
+        await ContractorService.updateContractor(contractor._id, { status: 'archived' });
+        setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
+        // Refresh the contractors list
+        loadContractors();
+      } catch (error) {
+        console.error('Error archiving contractor:', error);
+        setSnackbar({ open: true, message: 'שגיאה בארכוב הקבלן', severity: 'error' });
+      }
+    }
   };
 
   const confirmDeleteContractor = async () => {
@@ -300,6 +310,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   // Filter contractors based on search term
   const filteredContractors = contractors.filter(contractor => {
+    // Filter out archived contractors (unless user is admin)
+    const isAdmin = currentUser?.permissions === 'admin';
+    if (contractor.status === 'archived' && !isAdmin) {
+      return false;
+    }
+    
+    if (!searchTerm) return true;
+    
     const searchLower = searchTerm.toLowerCase();
 
     // Search in basic contractor info
@@ -484,11 +502,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.name}
                             </Typography>
                             {contractor.email && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
-                                  display: 'block', 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: 'block',
                                   cursor: 'pointer',
                                   '&:hover': { color: 'primary.main' }
                                 }}
@@ -501,11 +519,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
-                                  display: 'block', 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: 'block',
                                   cursor: 'pointer',
                                   '&:hover': { color: 'primary.main' }
                                 }}
@@ -521,7 +539,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         </TableCell>
 
                         {/* ח"פ */}
-                        <TableCell sx={{ textAlign: 'right' }}>
+                        <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
                           <Typography variant="body2">
                             {contractor.company_id}
                           </Typography>
@@ -565,9 +583,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           <Typography variant="body2">
                             {contractor.safetyRating || 0} כוכבים
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {contractor.iso45001 ? 'יש ISO45001' : 'אין ISO45001'}
-                          </Typography>
+                          {contractor.iso45001 && (
+                            <Typography variant="caption" color="text.secondary">
+                              ISO45001
+                            </Typography>
+                          )}
                         </TableCell>
 
                         {/* פעולות */}
@@ -576,11 +596,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             size="small"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDeleteContractor(contractor);
+                              handleArchiveContractor(contractor);
                             }}
-                            color="error"
+                            color="default"
                           >
-                            <DeleteIcon fontSize="small" />
+                            <ArchiveIcon fontSize="small" />
                           </IconButton>
                         </TableCell>
                       </TableRow>
