@@ -150,7 +150,7 @@ export default function ContractorTabsSimple({
                             fullWidth
                             label="מספר כוכבי בטיחות"
                             type="number"
-                            value={contractor?.safetyRating || contractor?.safetyStars || ''}
+                            value={contractor?.safetyRating || contractor?.safetyStars || 0}
                             sx={{ mb: 2 }}
                             disabled={!canEdit}
                             inputProps={{ min: 0, max: 5 }}
@@ -167,27 +167,27 @@ export default function ContractorTabsSimple({
                             sx={{ mb: 2 }}
                         />
                         
-                        {contractor?.classifications && contractor.classifications.length > 0 && (
+                        {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     סוגי רישיונות:
                                 </Typography>
                                 {contractor.classifications.map((classification: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {classification}
+                                        • {String(classification || '')}
                                     </Typography>
                                 ))}
                             </Box>
                         )}
                         
-                        {contractor?.activities && contractor.activities.length > 0 && (
+                        {contractor?.activities && Array.isArray(contractor.activities) && contractor.activities.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     פעילויות:
                                 </Typography>
                                 {contractor.activities.map((activity: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {activity}
+                                        • {String(activity || '')}
                                     </Typography>
                                 ))}
                             </Box>
