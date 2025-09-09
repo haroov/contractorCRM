@@ -1157,7 +1157,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 position: 'sticky',
                 top: 0,
                 zIndex: 9,
-                backgroundColor: 'white'
+                backgroundColor: 'white',
+                flexShrink: 0
             }}>
                 <Tabs value={activeTab} onChange={handleTabChange} aria-label="contractor tabs">
                     <Tab label="פרטי חברה" />

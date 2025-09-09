@@ -517,10 +517,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.name}
                             </Typography>
                             {contractor.email && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
                                   display: 'inline-block',
                                   cursor: 'pointer'
                                 }}
@@ -529,17 +529,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 <span style={{ 
+                                📧 <span style={{
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.email}</span>
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography 
-                                variant="caption" 
-                                color="text.secondary" 
-                                sx={{ 
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
                                   display: 'inline-block',
                                   cursor: 'pointer'
                                 }}
@@ -548,7 +548,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 <span style={{ 
+                                📞 <span style={{
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.phone}</span>
@@ -662,7 +662,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       ) : (
         /* Contractor Details View */
         <Box sx={{ p: 2 }}>
-          <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', overflow: 'auto' }}>
+          <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
             {/* Contractor Header */}
             <Box sx={{
               display: 'flex',
@@ -676,7 +676,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               borderRadius: '4px 4px 0 0',
               position: 'sticky',
               top: 0,
-              zIndex: 10
+              zIndex: 10,
+              flexShrink: 0
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <IconButton
@@ -691,7 +692,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               </Box>
             </Box>
 
-            <ContractorTabs
+            <Box sx={{ flex: 1, overflow: 'auto' }}>
+              <ContractorTabs
               contractor={selectedContractor!}
               onSave={handleSaveContractor}
               onClose={handleCloseContractorDetails}
@@ -711,6 +713,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               })()}
               isSaving={isSaving}
             />
+            </Box>
           </Paper>
         </Box>
       )}
