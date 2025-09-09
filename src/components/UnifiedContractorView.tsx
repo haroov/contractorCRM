@@ -12,7 +12,7 @@ interface UnifiedContractorViewProps {
 }
 
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
-  
+
   const { id } = useParams();
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,7 +59,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           handleContractorSelect(contractor, mode as 'view' | 'edit');
         }
       }
-      
+
       // Clean up URL parameters
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
@@ -260,29 +260,29 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ 
-              width: 40, 
-              height: 40, 
-              display: 'flex', 
-              alignItems: 'center', 
+            <Box sx={{
+              width: 40,
+              height: 40,
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <img src="/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
+              <img src="/src/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
             </Box>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
               ניהול סיכונים באתרי בניה
             </Typography>
           </Box>
-          
-          {user && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
-              <Typography variant="body2">{user.name}</Typography>
-              <IconButton onClick={handleUserMenuClick}>
-                <MoreVertIcon />
-              </IconButton>
-            </Box>
-          )}
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
+              <AccountCircleIcon />
+            </Avatar>
+            <Typography variant="body2">משתמש</Typography>
+            <IconButton onClick={handleUserMenuClick}>
+              <MoreVertIcon />
+            </IconButton>
+          </Box>
         </Box>
       </Paper>
 
@@ -306,10 +306,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               sx={{ 
                 bgcolor: 'white', 
                 borderRadius: 1,
-                minWidth: 200
+                minWidth: 800
               }}
             />
-            
+
             <Button
               variant="contained"
               startIcon={<AddIcon />}
@@ -358,7 +358,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Paper elevation={1} sx={{ p: 2, height: 'calc(100vh - 120px)', overflow: 'auto' }}>
             <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
               <EngineeringIcon />
-              רשימת קבלנים ({filteredContractors.length})
+              רשימת קבלנים
             </Typography>
 
             {filteredContractors.length === 0 ? (
@@ -397,14 +397,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           console.log('🔥 Contractor row clicked!', contractor.name);
                           e.preventDefault();
                           e.stopPropagation();
-                          
+
                           const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
                           const contactUserData = localStorage.getItem('contactUser');
-                          
+
                           console.log('🔥 Contact user check:', { isContactUser, hasContactUserData: !!contactUserData });
 
                           let mode: 'view' | 'edit' = 'view';
-                          
+
                           if (isContactUser && contactUserData) {
                             try {
                               const userData = JSON.parse(contactUserData);
@@ -419,7 +419,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             // Regular users can edit
                             mode = 'edit';
                           }
-                          
+
                           console.log('🔥 Opening contractor in mode:', mode);
                           console.log('🔥 Calling handleContractorSelect with:', { contractor: contractor.name, mode });
                           handleContractorSelect(contractor, mode);
@@ -436,17 +436,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             </Typography>
                           </Box>
                         </TableCell>
-                        
+
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'center' }}>
-                          <Chip
-                            label={contractor.company_id}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                          />
+                          <Box>
+                            <Chip
+                              label={contractor.company_id}
+                              size="small"
+                              color="primary"
+                              variant="outlined"
+                            />
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                              קבלן {contractor.contractor_id}
+                            </Typography>
+                          </Box>
                         </TableCell>
-                        
+
                         {/* כתובת */}
                         <TableCell sx={{ textAlign: 'center' }}>
                           <Typography variant="body2">
@@ -456,7 +461,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             {contractor.address}
                           </Typography>
                         </TableCell>
-                        
+
                         {/* פרויקטים */}
                         <TableCell sx={{ textAlign: 'center' }}>
                           <Box>
@@ -471,7 +476,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             </Typography>
                           </Box>
                         </TableCell>
-                        
+
                         {/* דירוג בטיחות */}
                         <TableCell sx={{ textAlign: 'center' }}>
                           <Chip
@@ -480,7 +485,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             color={contractor.safetyRating >= 4 ? 'success' : contractor.safetyRating >= 3 ? 'warning' : 'error'}
                           />
                         </TableCell>
-                        
+
                         {/* פעולות */}
                         <TableCell sx={{ textAlign: 'center' }}>
                           <IconButton
@@ -528,7 +533,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 </Typography>
               </Box>
             </Box>
-            
+
             <ContractorTabs
               contractor={selectedContractor!}
               onSave={handleSaveContractor}

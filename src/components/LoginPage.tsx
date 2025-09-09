@@ -30,7 +30,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  
+
   // Force deployment update
   console.log('LoginPage component loaded with email validation');
 
@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
     const savedEmail = localStorage.getItem('userEmail');
     localStorage.clear();
     sessionStorage.clear();
-    
+
     // Restore the saved email if it exists
     if (savedEmail) {
       localStorage.setItem('userEmail', savedEmail);
@@ -121,7 +121,7 @@ const LoginPage: React.FC = () => {
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setEmail(value);
-    
+
     if (value && !validateEmail(value)) {
       setEmailError('כתובת אימייל לא תקינה');
     } else {
