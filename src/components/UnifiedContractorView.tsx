@@ -693,7 +693,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   variant="outlined"
                   size="small"
                   onClick={handleCloseContractorDetails}
-                  sx={{ minWidth: 'auto', px: 2 }}
+                  sx={{ 
+                    minWidth: 'auto', 
+                    px: 2,
+                    borderColor: '#9c27b0', // סגול שוקו
+                    color: '#9c27b0',
+                    '&:hover': {
+                      borderColor: '#7b1fa2',
+                      backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                    }
+                  }}
                 >
                   סגירה
                 </Button>
@@ -705,7 +714,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     const saveEvent = new CustomEvent('saveContractor');
                     window.dispatchEvent(saveEvent);
                   }}
-                  sx={{ minWidth: 'auto', px: 2 }}
+                  sx={{ 
+                    minWidth: 'auto', 
+                    px: 2,
+                    backgroundColor: '#9c27b0', // סגול שוקו
+                    '&:hover': {
+                      backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                    }
+                  }}
                 >
                   שמירה
                 </Button>

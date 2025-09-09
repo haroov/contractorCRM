@@ -84,7 +84,7 @@ export default function ContractorTabsSimple({
                 };
 
                 // Call API to save file
-                const headers: {[key: string]: string} = {
+                const headers: { [key: string]: string } = {
                     'Content-Type': 'application/json'
                 };
 
@@ -96,11 +96,11 @@ export default function ContractorTabsSimple({
                 if (token) {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
-                
+
                 if (contactUser) {
                     headers['Contact-User'] = contactUser;
                 }
-                
+
                 if (contactSessionId) {
                     headers['Contact-Session'] = contactSessionId;
                 }
@@ -194,7 +194,7 @@ export default function ContractorTabsSimple({
 
             if (companiesResponse.ok) {
                 const companiesData = await companiesResponse.json();
-                
+
                 // Fetch from Contractors Registry API
                 const contractorsResponse = await fetch(`https://api.gov.il/he/contractors-registry/contractors/${companyId}`, {
                     method: 'GET',
@@ -238,8 +238,8 @@ export default function ContractorTabsSimple({
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Tabs */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
-                <Tabs 
-                    value={activeTab} 
+                <Tabs
+                    value={activeTab}
                     onChange={(e, newValue) => setActiveTab(newValue)}
                     sx={{
                         '& .MuiTab-root': {
@@ -276,16 +276,16 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
                                     value={contractor?.company_id || ''}
-                                    disabled={!canEdit || (contractor?.contractor_id && contractor?.contractor_id !== 'new' && contractor?.contractor_id !== '')}
+                                    disabled={!canEdit || !!contractor?._id}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         setCompanyIdError('');
-                                        
+
                                         // Validate company ID format (9 digits)
                                         if (value && !/^\d{9}$/.test(value)) {
                                             setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
                                         }
-                                        
+
                                         if (contractor && onSave) {
                                             const updatedContractor = {
                                                 ...contractor,
@@ -404,7 +404,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -413,7 +413,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -422,7 +422,7 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
@@ -502,7 +502,7 @@ export default function ContractorTabsSimple({
                                         disabled={!canEdit}
                                         title="העלאת תעודת הסמכת כוכבי בטיחות"
                                         onClick={() => handleUploadClick('safety')}
-                                        sx={{ 
+                                        sx={{
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
@@ -586,7 +586,7 @@ export default function ContractorTabsSimple({
                                         disabled={!canEdit}
                                         title="העלאת תעודת ISO45001"
                                         onClick={() => handleUploadClick('iso')}
-                                        sx={{ 
+                                        sx={{
                                             border: '1px solid #d0d0d0',
                                             borderRadius: 1,
                                             height: '56px',
@@ -719,7 +719,7 @@ export default function ContractorTabsSimple({
                                                 <TableCell>{contact.phone || contact.phoneNumber || ''}</TableCell>
                                                 <TableCell>{contact.email || contact.emailAddress || ''}</TableCell>
                                                 <TableCell>
-                                                    <Typography variant="body2" sx={{ 
+                                                    <Typography variant="body2" sx={{
                                                         color: contact.permissions === 'contact_manager' ? 'primary.main' : 'text.secondary',
                                                         fontWeight: contact.permissions === 'contact_manager' ? 'bold' : 'normal'
                                                     }}>
@@ -863,8 +863,8 @@ export default function ContractorTabsSimple({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseContactDialog}>ביטול</Button>
-                    <Button 
-                        variant="contained" 
+                    <Button
+                        variant="contained"
                         onClick={() => {
                             // TODO: Implement save contact
                             console.log('Save contact');
@@ -915,7 +915,7 @@ export default function ContractorTabsSimple({
                                     variant="contained"
                                     component="label"
                                     startIcon={<CloudUploadIcon />}
-                                    sx={{ 
+                                    sx={{
                                         mb: 2,
                                         backgroundColor: '#9c27b0', // סגול שוקו
                                         '&:hover': {
