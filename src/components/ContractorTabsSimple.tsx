@@ -174,7 +174,7 @@ export default function ContractorTabsSimple({
                                 </Typography>
                                 {contractor.classifications.map((classification: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {String(classification || '')}
+                                        • {classification?.classification_type || ''} - {classification?.classification || ''}
                                     </Typography>
                                 ))}
                             </Box>
