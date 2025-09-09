@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
-import { Contractor } from '../types/contractor';
+import type { Contractor } from '../types/contractor';
 import ContractorService from '../services/contractorService';
 import ContractorTabs from './ContractorTabs';
 import UserManagement from './UserManagement';
@@ -517,11 +517,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.name}
                             </Typography>
                             {contractor.email && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'inline-block',
+                              <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                  display: 'block',
                                   cursor: 'pointer'
                                 }}
                                 onClick={(e) => {
@@ -529,18 +529,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 <span style={{
+                                📧 <span style={{ 
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.email}</span>
                               </Typography>
                             )}
                             {contractor.phone && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'inline-block',
+                              <Typography 
+                                variant="caption" 
+                                color="text.secondary" 
+                                sx={{ 
+                                  display: 'block',
                                   cursor: 'pointer'
                                 }}
                                 onClick={(e) => {
@@ -548,7 +548,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 <span style={{
+                                📞 <span style={{ 
                                   textDecoration: 'underline',
                                   '&:hover': { color: 'primary.main' }
                                 }}>{contractor.phone}</span>
