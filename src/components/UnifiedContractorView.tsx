@@ -693,8 +693,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   variant="outlined"
                   size="small"
                   onClick={handleCloseContractorDetails}
-                  sx={{ 
-                    minWidth: 'auto', 
+                  sx={{
+                    minWidth: 'auto',
                     px: 2,
                     borderColor: '#9c27b0', // סגול שוקו
                     color: '#9c27b0',
@@ -714,8 +714,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     const saveEvent = new CustomEvent('saveContractor');
                     window.dispatchEvent(saveEvent);
                   }}
-                  sx={{ 
-                    minWidth: 'auto', 
+                  sx={{
+                    minWidth: 'auto',
                     px: 2,
                     backgroundColor: '#9c27b0', // סגול שוקו
                     '&:hover': {

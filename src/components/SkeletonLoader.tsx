@@ -58,20 +58,6 @@ const SkeletonLoader: React.FC = () => {
             }}>
                 <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                     <Table>
-                        <TableHead>
-                            <TableRow>
-                                {['קבלן', 'ח"פ', 'כתובת', 'פרויקטים', 'דירוג בטיחות', 'פעולות'].map((header, index) => (
-                                    <TableCell key={index} sx={{
-                                        fontWeight: 'bold',
-                                        backgroundColor: '#f8f9fa',
-                                        textAlign: 'center',
-                                        borderBottom: '2px solid #e0e0e0'
-                                    }}>
-                                        {header}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
                         <TableBody>
                             {[1, 2, 3, 4, 5].map((rowIndex) => (
                                 <TableRow key={rowIndex} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
