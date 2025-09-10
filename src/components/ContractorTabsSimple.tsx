@@ -921,22 +921,53 @@ export default function ContractorTabsSimple({
                             
                             <Grid container spacing={2} alignItems="flex-start">
                                 <Grid item xs={12} md={8}>
-                                    <TextField
-                                        fullWidth
-                                        multiline
-                                        rows={4}
-                                        label="אודות החברה"
-                                        value={companyAbout}
-                                        disabled={!canEdit}
-                                        sx={textFieldSx}
-                                        onChange={(e) => setCompanyAbout(e.target.value)}
-                                        placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
-                                        InputProps={{
-                                            endAdornment: isLoadingAbout && (
-                                                <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
-                                            )
-                                        }}
-                                    />
+                                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={4}
+                                            label="אודות החברה"
+                                            value={companyAbout}
+                                            disabled={!canEdit}
+                                            sx={textFieldSx}
+                                            onChange={(e) => setCompanyAbout(e.target.value)}
+                                            placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
+                                            InputProps={{
+                                                endAdornment: isLoadingAbout && (
+                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                )
+                                            }}
+                                        />
+                                        {localWebsite && canEdit && (
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => scrapeCompanyInfo(localWebsite)}
+                                                disabled={isLoadingAbout}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    height: '56px',
+                                                    borderColor: '#9c27b0',
+                                                    color: '#9c27b0',
+                                                    '&:hover': {
+                                                        borderColor: '#7b1fa2',
+                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                                    },
+                                                    '&:disabled': {
+                                                        borderColor: '#d0d0d0',
+                                                        color: '#d0d0d0'
+                                                    }
+                                                }}
+                                            >
+                                                {isLoadingAbout ? (
+                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                ) : (
+                                                    'סרוק מחדש'
+                                                )}
+                                            </Button>
+                                        )}
+                                    </Box>
                                 </Grid>
                                 
                                 <Grid item xs={12} md={4}>

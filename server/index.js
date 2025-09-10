@@ -2670,6 +2670,7 @@ app.get('/test', (req, res) => {
 
 // Scrape company information from website
 app.post('/api/scrape-company-info', async (req, res) => {
+  let browser = null;
   try {
     const { website } = req.body;
     
@@ -2679,20 +2680,186 @@ app.post('/api/scrape-company-info', async (req, res) => {
 
     console.log('🌐 Scraping company info from:', website);
 
-    // For now, return mock data - in production, you would use a web scraping service
-    // or implement actual web scraping with libraries like puppeteer or cheerio
-    const mockData = {
+    // Import puppeteer dynamically
+    const puppeteer = require('puppeteer');
+    
+    // Launch browser
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
+    const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+    
+    // Navigate to the website
+    await page.goto(website, { waitUntil: 'networkidle2', timeout: 10000 });
+    
+    // Extract company information
+    const companyInfo = await page.evaluate(() => {
+      const result = {
+        about: '',
+        logo: ''
+      };
+      
+      // Try to find about page links
+      const aboutLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+        const text = link.textContent.toLowerCase();
+        const href = link.href.toLowerCase();
+        return text.includes('about') || text.includes('אודות') || 
+               text.includes('company') || text.includes('חברה') ||
+               href.includes('about') || href.includes('אודות');
+      });
+      
+      // Try to find logo
+      const logoSelectors = [
+        'img[alt*="logo" i]',
+        'img[src*="logo" i]',
+        'img[class*="logo" i]',
+        'img[id*="logo" i]',
+        '.logo img',
+        '#logo img',
+        'header img',
+        '.header img',
+        'nav img'
+      ];
+      
+      for (const selector of logoSelectors) {
+        const logoImg = document.querySelector(selector);
+        if (logoImg && logoImg.src) {
+          result.logo = logoImg.src;
+          break;
+        }
+      }
+      
+      // Try to find company description on current page
+      const descriptionSelectors = [
+        'meta[name="description"]',
+        'meta[property="og:description"]',
+        '.about',
+        '.company-description',
+        '.intro',
+        'p'
+      ];
+      
+      for (const selector of descriptionSelectors) {
+        const element = document.querySelector(selector);
+        if (element) {
+          let text = '';
+          if (element.tagName === 'META') {
+            text = element.content || '';
+          } else {
+            text = element.textContent || '';
+          }
+          
+          if (text.length > 50 && text.length < 500) {
+            result.about = text.trim();
+            break;
+          }
+        }
+      }
+      
+      return result;
+    });
+    
+    // If we found about links, try to scrape the about page
+    if (!companyInfo.about) {
+      try {
+        const aboutLinks = await page.evaluate(() => {
+          return Array.from(document.querySelectorAll('a')).map(link => ({
+            text: link.textContent.toLowerCase(),
+            href: link.href
+          })).filter(link => 
+            link.text.includes('about') || link.text.includes('אודות') || 
+            link.text.includes('company') || link.text.includes('חברה') ||
+            link.href.includes('about') || link.href.includes('אודות')
+          ).slice(0, 3); // Take first 3 about links
+        });
+        
+        for (const aboutLink of aboutLinks) {
+          try {
+            await page.goto(aboutLink.href, { waitUntil: 'networkidle2', timeout: 5000 });
+            
+            const aboutInfo = await page.evaluate(() => {
+              const paragraphs = Array.from(document.querySelectorAll('p'));
+              for (const p of paragraphs) {
+                const text = p.textContent.trim();
+                if (text.length > 100 && text.length < 1000) {
+                  return text;
+                }
+              }
+              return '';
+            });
+            
+            if (aboutInfo) {
+              companyInfo.about = aboutInfo;
+              break;
+            }
+          } catch (e) {
+            console.log('Failed to scrape about page:', aboutLink.href);
+          }
+        }
+      } catch (e) {
+        console.log('Failed to find about pages');
+      }
+    }
+    
+    // If still no about info, try to get any meaningful text
+    if (!companyInfo.about) {
+      const fallbackText = await page.evaluate(() => {
+        const paragraphs = Array.from(document.querySelectorAll('p, div, span'));
+        for (const element of paragraphs) {
+          const text = element.textContent.trim();
+          if (text.length > 50 && text.length < 300 && 
+              !text.includes('©') && !text.includes('כל הזכויות') &&
+              !text.includes('privacy') && !text.includes('terms')) {
+            return text;
+          }
+        }
+        return '';
+      });
+      
+      if (fallbackText) {
+        companyInfo.about = fallbackText;
+      }
+    }
+    
+    // Clean up the about text
+    if (companyInfo.about) {
+      companyInfo.about = companyInfo.about
+        .replace(/\s+/g, ' ')
+        .replace(/\n+/g, ' ')
+        .trim()
+        .substring(0, 500); // Limit to 500 characters
+    }
+    
+    // If no logo found, create a placeholder
+    if (!companyInfo.logo) {
+      const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
+      companyInfo.logo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
+    }
+    
+    console.log('✅ Company info scraped successfully:', {
+      about: companyInfo.about ? companyInfo.about.substring(0, 100) + '...' : 'No about info',
+      logo: companyInfo.logo
+    });
+    
+    res.json({
       success: true,
-      about: `מידע על החברה ${website} - זהו מידע דמה שיוחלף במידע אמיתי מאתר החברה. החברה מתמחה בתחום הבנייה והתשתיות ומספקת שירותים מקצועיים ללקוחותיה.`,
-      logo: `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(website.split('//')[1]?.split('.')[0] || 'LOGO')}`
-    };
-
-    console.log('✅ Mock company info generated:', mockData);
-    res.json(mockData);
+      about: companyInfo.about || `מידע על החברה ${website} - לא נמצא מידע זמין באתר החברה.`,
+      logo: companyInfo.logo
+    });
 
   } catch (error) {
     console.error('❌ Error scraping company info:', error);
-    res.status(500).json({ error: 'Failed to scrape company info' });
+    res.status(500).json({ 
+      error: 'Failed to scrape company info',
+      details: error.message 
+    });
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
