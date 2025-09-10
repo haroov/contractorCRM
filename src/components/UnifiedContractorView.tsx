@@ -124,7 +124,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
       // Filter out archived contractors from the main list
-      const activeContractors = contractorsData.filter(contractor => contractor.status !== 'ארכיב');
+      // Use isActive field for CRM status (not company status from Companies Registry)
+      const activeContractors = contractorsData.filter(contractor => contractor.isActive !== false);
       setContractors(activeContractors);
     } catch (error) {
       console.error('Error loading contractors:', error);
@@ -228,7 +229,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (confirmed) {
       try {
         const { default: ContractorService } = await import('../services/contractorService');
-        await ContractorService.update(String(contractor._id), { status: 'ארכיב' });
+        // Archive contractor by setting isActive to false (CRM status)
+        // Note: This is different from company status from Companies Registry
+        await ContractorService.update(String(contractor._id), { isActive: false });
         setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
         // Refresh the contractors list
         loadContractors();
