@@ -525,8 +525,9 @@ export default function ContractorTabsSimple({
                                     label="תאריך התאגדות"
                                     type="date"
                                     value={localFoundationDate}
-                                    disabled={true}
+                                    disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalFoundationDate(e.target.value)}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
