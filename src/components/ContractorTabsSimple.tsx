@@ -137,7 +137,7 @@ export default function ContractorTabsSimple({
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
-    
+
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
         isContactUser,
@@ -207,7 +207,7 @@ export default function ContractorTabsSimple({
         };
 
         window.addEventListener('saveContractor', handleSaveEvent);
-        
+
         return () => {
             window.removeEventListener('saveContractor', handleSaveEvent);
         };
@@ -270,7 +270,7 @@ export default function ContractorTabsSimple({
     const handleSave = () => {
         if (onSave && contractor) {
             console.log('💾 Starting save process...');
-            
+
             // Update contractor with local values before saving
             const updatedContractor = {
                 ...contractor,
@@ -300,13 +300,13 @@ export default function ContractorTabsSimple({
                 isoCertificate: localIsoCertificate,
                 classifications: localClassifications
             };
-            
+
             console.log('💾 Saving contractor data:', {
                 company_id: updatedContractor.company_id,
                 name: updatedContractor.name,
                 contractor_id: updatedContractor.contractor_id
             });
-            
+
             onSave(updatedContractor);
         }
     };

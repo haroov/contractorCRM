@@ -1920,13 +1920,13 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
     // If not found in MongoDB, search in Companies Registry API
     console.log('🔍 Company not found in MongoDB, searching Companies Registry API...');
-    
+
     const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
     const companiesData = await companiesResponse.json();
-    
+
     const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
     const contractorsData = await contractorsResponse.json();
-    
+
     console.log('📋 Contractors Registry API response:', {
       success: contractorsData.success,
       recordsCount: contractorsData.result?.records?.length || 0,
@@ -1946,10 +1946,10 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       let phone = '';
       let email = '';
       let licenseTypes = [];
-      
+
       if (contractorData) {
         contractorId = contractorData['MISPAR_KABLAN'] || '';
-        
+
         // Format phone number - add 0 prefix if needed
         const rawPhone = contractorData['MISPAR_TEL'] || '';
         if (rawPhone && !rawPhone.startsWith('0')) {
@@ -1957,9 +1957,9 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         } else {
           phone = rawPhone;
         }
-        
+
         email = contractorData['EMAIL'] || '';
-        
+
         // Extract website domain from email
         let website = '';
         if (email && email.includes('@')) {
@@ -1968,7 +1968,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             website = `https://www.${domain}`;
           }
         }
-        
+
         // Extract license types from contractors registry
         if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
           licenseTypes.push({
@@ -1976,7 +1976,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
           });
         }
-        
+
         console.log('📋 Extracted contractor data:', {
           contractorId,
           phone: rawPhone + ' -> ' + phone,
@@ -2017,12 +2017,12 @@ app.get('/api/search-company/:companyId', async (req, res) => {
     // If not found in Companies Registry, try Contractors Registry only
     if (contractorsData.success && contractorsData.result.records.length > 0) {
       const contractorData = contractorsData.result.records[0];
-      
+
       console.log('✅ Found contractor in Contractors Registry:', contractorData['SHEM_YESHUT']);
-      
+
       // Extract contractor data
       const contractorId = contractorData['MISPAR_KABLAN'] || '';
-      
+
       // Format phone number - add 0 prefix if needed
       const rawPhone = contractorData['MISPAR_TEL'] || '';
       let phone = '';
@@ -2031,12 +2031,12 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       } else {
         phone = rawPhone;
       }
-      
+
       const email = contractorData['EMAIL'] || '';
       const contractorName = contractorData['SHEM_YESHUT'] || '';
       const city = contractorData['SHEM_YISHUV'] || '';
       const address = `${contractorData['SHEM_REHOV'] || ''} ${contractorData['MISPAR_BAIT'] || ''}`.trim();
-      
+
       // Extract website domain from email
       let website = '';
       if (email && email.includes('@')) {
@@ -2045,7 +2045,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           website = `https://www.${domain}`;
         }
       }
-      
+
       // Extract license types from contractors registry
       let licenseTypes = [];
       if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
@@ -2054,7 +2054,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
         });
       }
-      
+
       console.log('📋 Extracted contractor-only data:', {
         contractorId,
         phone: rawPhone + ' -> ' + phone,
@@ -2064,7 +2064,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         address,
         licenseTypes
       });
-      
+
       return res.json({
         success: true,
         source: 'contractors_registry_only',
