@@ -1938,7 +1938,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         data: {
           name: companyData['שם חברה'] || '',
           nameEnglish: companyData['שם באנגלית'] || '',
-          companyType: companyData['סוג תאגיד'] || getCompanyTypeFromId(companyId), // API data takes priority
+            companyType: mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId), // API data takes priority
           foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
           address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
           city: companyData['שם עיר'] || '',
@@ -1980,6 +1980,26 @@ function getCompanyTypeFromId(companyId) {
     case '52': return 'חברה ציבורית';
     case '57': return 'אגודה שיתופית';
     default: return 'עוסק מורשה';
+  }
+}
+
+// Helper function to map company type from API to display value
+function mapCompanyTypeFromAPI(apiCompanyType) {
+  if (!apiCompanyType) return 'חברה פרטית';
+  
+  const type = apiCompanyType.toLowerCase();
+  if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
+    return 'חברה פרטית';
+  } else if (type.includes('ישראלית חברה ציבורית') || type.includes('חברה ציבורית')) {
+    return 'חברה ציבורית';
+  } else if (type.includes('אגודה שיתופית')) {
+    return 'אגודה שיתופית';
+  } else if (type.includes('עוסק מורשה')) {
+    return 'עוסק מורשה';
+  } else if (type.includes('עוסק פטור')) {
+    return 'עוסק פטור';
+  } else {
+    return apiCompanyType; // Return original if no mapping found
   }
 }
 

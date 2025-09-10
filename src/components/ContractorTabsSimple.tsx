@@ -48,6 +48,26 @@ export default function ContractorTabsSimple({
         }
     };
 
+    // Function to map company type from API to display value
+    const mapCompanyTypeFromAPI = (apiCompanyType: string): string => {
+        if (!apiCompanyType) return 'חברה פרטית';
+        
+        const type = apiCompanyType.toLowerCase();
+        if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
+            return 'חברה פרטית';
+        } else if (type.includes('ישראלית חברה ציבורית') || type.includes('חברה ציבורית')) {
+            return 'חברה ציבורית';
+        } else if (type.includes('אגודה שיתופית')) {
+            return 'אגודה שיתופית';
+        } else if (type.includes('עוסק מורשה')) {
+            return 'עוסק מורשה';
+        } else if (type.includes('עוסק פטור')) {
+            return 'עוסק פטור';
+        } else {
+            return apiCompanyType; // Return original if no mapping found
+        }
+    };
+
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
     const [localNameEnglish, setLocalNameEnglish] = useState<string>(contractor?.nameEnglish || '');
@@ -400,7 +420,7 @@ export default function ContractorTabsSimple({
                     .trim();
 
                 // Update local states with cleaned data
-                setLocalCompanyType(companyData.companyType);
+                setLocalCompanyType(mapCompanyTypeFromAPI(companyData.companyType));
                 setLocalName(cleanName);
                 setLocalNameEnglish(cleanNameEnglish);
                 setLocalFoundationDate(companyData.foundationDate || '');
