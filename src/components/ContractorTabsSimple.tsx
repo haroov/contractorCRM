@@ -76,6 +76,7 @@ export default function ContractorTabsSimple({
     const [localCity, setLocalCity] = useState<string>(contractor?.city || '');
     const [localEmail, setLocalEmail] = useState<string>(contractor?.email || '');
     const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
+    const [localWebsite, setLocalWebsite] = useState<string>(contractor?.website || '');
     const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
     const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || contractor?.numberOfEmployees || '');
 
@@ -94,6 +95,13 @@ export default function ContractorTabsSimple({
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
+    
+    // Debug logging for canEdit
+    console.log('🔧 canEdit debug:', {
+        isContactUser,
+        contactUserPermissions,
+        canEdit
+    });
 
     // Common styling for TextFields with choco purple focus
     const textFieldSx = {
@@ -127,6 +135,7 @@ export default function ContractorTabsSimple({
         setLocalCity(contractor?.city || '');
         setLocalEmail(contractor?.email || '');
         setLocalPhone(contractor?.phone || '');
+        setLocalWebsite(contractor?.website || '');
         setLocalContractorId(contractor?.contractor_id || '');
         setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
 
@@ -160,7 +169,7 @@ export default function ContractorTabsSimple({
         return () => {
             window.removeEventListener('saveContractor', handleSaveEvent);
         };
-    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate, localClassifications]);
+    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localWebsite, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate, localClassifications]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
@@ -233,6 +242,7 @@ export default function ContractorTabsSimple({
                 city: localCity,
                 email: localEmail,
                 phone: localPhone,
+                website: localWebsite,
                 contractor_id: localContractorId,
                 employees: localEmployees,
                 numberOfEmployees: localEmployees ? parseInt(localEmployees) : undefined,
@@ -455,6 +465,7 @@ export default function ContractorTabsSimple({
                 setLocalCity(companyData.city || '');
                 setLocalEmail(companyData.email || '');
                 setLocalPhone(companyData.phone || '');
+                setLocalWebsite(companyData.website || '');
                 setLocalContractorId(companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
 
@@ -470,7 +481,10 @@ export default function ContractorTabsSimple({
                 if (companyData.iso45001 !== undefined) setLocalIso45001(companyData.iso45001);
                 if (companyData.isoExpiry !== undefined) setLocalIsoExpiry(companyData.isoExpiry);
                 if (companyData.isoCertificate !== undefined) setLocalIsoCertificate(companyData.isoCertificate);
-                if (companyData.classifications !== undefined) setLocalClassifications(companyData.classifications);
+                if (companyData.classifications !== undefined) {
+                    console.log('📋 Loading classifications from API:', companyData.classifications);
+                    setLocalClassifications(companyData.classifications);
+                }
 
                 console.log('✅ Updated local states with cleaned company data:', {
                     name: cleanName,
@@ -747,6 +761,17 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <TextField
                                     fullWidth
+                                    label="אתר אינטרנט"
+                                    value={localWebsite}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalWebsite(e.target.value)}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
                                     label="טלפון"
                                     value={localPhone}
                                     disabled={!canEdit}
@@ -780,6 +805,12 @@ export default function ContractorTabsSimple({
                                     <Select
                                         value={contractor?.safetyRating || contractor?.safetyStars || ''}
                                         disabled={!canEdit}
+                                        onChange={(e) => {
+                                            if (onSave && contractor) {
+                                                const updatedContractor = { ...contractor, safetyRating: e.target.value };
+                                                onSave(updatedContractor);
+                                            }
+                                        }}
                                         sx={{
                                             '& .MuiOutlinedInput-notchedOutline': {
                                                 borderColor: '#d0d0d0'
@@ -792,6 +823,7 @@ export default function ContractorTabsSimple({
                                             }
                                         }}
                                     >
+                                        <MenuItem value="">ללא כוכבים</MenuItem>
                                         <MenuItem value={1}>1 כוכב</MenuItem>
                                         <MenuItem value={2}>2 כוכבים</MenuItem>
                                         <MenuItem value={3}>3 כוכבים</MenuItem>

@@ -1960,6 +1960,15 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         
         email = contractorData['EMAIL'] || '';
         
+        // Extract website domain from email
+        let website = '';
+        if (email && email.includes('@')) {
+          const domain = email.split('@')[1];
+          if (domain) {
+            website = `https://www.${domain}`;
+          }
+        }
+        
         // Extract license types from contractors registry
         if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
           licenseTypes.push({
@@ -1988,6 +1997,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           city: companyData['שם עיר'] || '',
           email: email,
           phone: phone,
+          website: website,
           contractor_id: contractorId,
           // License types from contractors registry
           classifications: licenseTypes,
@@ -2027,6 +2037,15 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const city = contractorData['SHEM_YISHUV'] || '';
       const address = `${contractorData['SHEM_REHOV'] || ''} ${contractorData['MISPAR_BAIT'] || ''}`.trim();
       
+      // Extract website domain from email
+      let website = '';
+      if (email && email.includes('@')) {
+        const domain = email.split('@')[1];
+        if (domain) {
+          website = `https://www.${domain}`;
+        }
+      }
+      
       // Extract license types from contractors registry
       let licenseTypes = [];
       if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
@@ -2058,6 +2077,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           city: city,
           email: email,
           phone: phone,
+          website: website,
           contractor_id: contractorId,
           // License types from contractors registry
           classifications: licenseTypes,
