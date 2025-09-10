@@ -32,6 +32,16 @@ export default function ContractorTabsSimple({
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
+    
+    // Local states for company data fields
+    const [localName, setLocalName] = useState<string>(contractor?.name || '');
+    const [localNameEnglish, setLocalNameEnglish] = useState<string>(contractor?.nameEnglish || '');
+    const [localFoundationDate, setLocalFoundationDate] = useState<string>(contractor?.foundationDate || '');
+    const [localAddress, setLocalAddress] = useState<string>(contractor?.address || '');
+    const [localCity, setLocalCity] = useState<string>(contractor?.city || '');
+    const [localEmail, setLocalEmail] = useState<string>(contractor?.email || '');
+    const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
+    const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -49,6 +59,12 @@ export default function ContractorTabsSimple({
             '&.Mui-focused fieldset': {
                 borderColor: '#9c27b0'
             }
+        },
+        '& .MuiInputLabel-root': {
+            color: '#666666',
+            '&.Mui-focused': {
+                color: '#9c27b0'
+            }
         }
     };
 
@@ -56,7 +72,15 @@ export default function ContractorTabsSimple({
     useEffect(() => {
         setLocalCompanyId(contractor?.company_id || '');
         setLocalCompanyType(contractor?.companyType || '');
-    }, [contractor?.company_id, contractor?.companyType]);
+        setLocalName(contractor?.name || '');
+        setLocalNameEnglish(contractor?.nameEnglish || '');
+        setLocalFoundationDate(contractor?.foundationDate || '');
+        setLocalAddress(contractor?.address || '');
+        setLocalCity(contractor?.city || '');
+        setLocalEmail(contractor?.email || '');
+        setLocalPhone(contractor?.phone || '');
+        setLocalContractorId(contractor?.contractor_id || '');
+    }, [contractor]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
@@ -118,7 +142,15 @@ export default function ContractorTabsSimple({
             const updatedContractor = {
                 ...contractor,
                 company_id: localCompanyId || undefined, // Use undefined instead of empty string
-                companyType: localCompanyType
+                companyType: localCompanyType,
+                name: localName,
+                nameEnglish: localNameEnglish,
+                foundationDate: localFoundationDate,
+                address: localAddress,
+                city: localCity,
+                email: localEmail,
+                phone: localPhone,
+                contractor_id: localContractorId
             };
             onSave(updatedContractor);
         }
@@ -280,27 +312,23 @@ export default function ContractorTabsSimple({
                 const companyData = result.data;
                 console.log(`✅ Found company in ${result.source}:`, companyData.name);
                 
-                // Update local states with fetched data
+                // Update local states with fetched data directly
                 setLocalCompanyType(companyData.companyType);
+                setLocalName(companyData.name || '');
+                setLocalNameEnglish(companyData.nameEnglish || '');
+                setLocalFoundationDate(companyData.foundationDate || '');
+                setLocalAddress(companyData.address || '');
+                setLocalCity(companyData.city || '');
+                setLocalEmail(companyData.email || '');
+                setLocalPhone(companyData.phone || '');
+                setLocalContractorId(companyData.contractor_id || '');
                 
-                // Update contractor with fetched data and trigger UI update
-                if (contractor && onSave) {
-                    const updatedContractor = {
-                        ...contractor,
-                        name: companyData.name || contractor.name,
-                        nameEnglish: companyData.nameEnglish || contractor.nameEnglish,
-                        foundationDate: companyData.foundationDate || contractor.foundationDate,
-                        address: companyData.address || contractor.address,
-                        city: companyData.city || contractor.city,
-                        email: companyData.email || contractor.email,
-                        phone: companyData.phone || contractor.phone,
-                        companyType: companyData.companyType,
-                        contractor_id: companyData.contractor_id || contractor.contractor_id
-                    };
-                    
-                    // Call onSave to update the parent component and trigger UI refresh
-                    onSave(updatedContractor);
-                }
+                console.log('✅ Updated local states with company data:', {
+                    name: companyData.name,
+                    nameEnglish: companyData.nameEnglish,
+                    address: companyData.address,
+                    city: companyData.city
+                });
             } else {
                 console.log('No company data found for ID:', companyId);
             }
@@ -410,7 +438,7 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="מספר קבלן"
-                                    value={contractor?.contractor_id || ''}
+                                    value={localContractorId}
                                     disabled={true}
                                     sx={textFieldSx}
                                 />
@@ -420,9 +448,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="שם החברה (עברית)"
-                                    value={contractor?.name || ''}
+                                    value={localName}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalName(e.target.value)}
                                 />
                             </Grid>
 
@@ -430,9 +459,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="שם החברה (אנגלית)"
-                                    value={contractor?.nameEnglish || ''}
+                                    value={localNameEnglish}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalNameEnglish(e.target.value)}
                                 />
                             </Grid>
 
@@ -478,7 +508,7 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="תאריך התאגדות"
                                     type="date"
-                                    value={contractor?.foundationDate || ''}
+                                    value={localFoundationDate}
                                     disabled={true}
                                     sx={textFieldSx}
                                     InputLabelProps={{
@@ -506,9 +536,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="עיר"
-                                    value={contractor?.city || ''}
+                                    value={localCity}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalCity(e.target.value)}
                                 />
                             </Grid>
 
@@ -516,9 +547,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="כתובת"
-                                    value={contractor?.address || ''}
+                                    value={localAddress}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalAddress(e.target.value)}
                                 />
                             </Grid>
 
@@ -526,9 +558,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="אימייל"
-                                    value={contractor?.email || ''}
+                                    value={localEmail}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalEmail(e.target.value)}
                                 />
                             </Grid>
 
@@ -536,9 +569,10 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="טלפון"
-                                    value={contractor?.phone || ''}
+                                    value={localPhone}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalPhone(e.target.value)}
                                 />
                             </Grid>
                         </Grid>
