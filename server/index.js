@@ -1945,6 +1945,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       let contractorId = '';
       let phone = '';
       let email = '';
+      let licenseTypes = [];
       
       if (contractorData) {
         contractorId = contractorData['MISPAR_KABLAN'] || '';
@@ -1959,10 +1960,19 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         
         email = contractorData['EMAIL'] || '';
         
+        // Extract license types from contractors registry
+        if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
+          licenseTypes.push({
+            classification_type: contractorData['TEUR_ANAF'],
+            classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
+          });
+        }
+        
         console.log('📋 Extracted contractor data:', {
           contractorId,
           phone: rawPhone + ' -> ' + phone,
-          email
+          email,
+          licenseTypes
         });
       }
 
@@ -1979,6 +1989,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           email: email,
           phone: phone,
           contractor_id: contractorId,
+          // License types from contractors registry
+          classifications: licenseTypes,
           // Company status data for indicator
           companyStatus: companyData['סטטוס חברה'] || '',
           violations: companyData['מפרה'] || '',
@@ -2015,13 +2027,23 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const city = contractorData['SHEM_YISHUV'] || '';
       const address = `${contractorData['SHEM_REHOV'] || ''} ${contractorData['MISPAR_BAIT'] || ''}`.trim();
       
+      // Extract license types from contractors registry
+      let licenseTypes = [];
+      if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
+        licenseTypes.push({
+          classification_type: contractorData['TEUR_ANAF'],
+          classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
+        });
+      }
+      
       console.log('📋 Extracted contractor-only data:', {
         contractorId,
         phone: rawPhone + ' -> ' + phone,
         email,
         name: contractorName,
         city,
-        address
+        address,
+        licenseTypes
       });
       
       return res.json({
@@ -2037,6 +2059,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           email: email,
           phone: phone,
           contractor_id: contractorId,
+          // License types from contractors registry
+          classifications: licenseTypes,
           // No company status data available from contractors registry
           companyStatus: '',
           violations: '',

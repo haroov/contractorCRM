@@ -89,6 +89,7 @@ export default function ContractorTabsSimple({
     const [localIso45001, setLocalIso45001] = useState<boolean>(contractor?.iso45001 || false);
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
+    const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -139,6 +140,7 @@ export default function ContractorTabsSimple({
         setLocalIso45001(contractor?.iso45001 || false);
         setLocalIsoExpiry(contractor?.isoExpiry || '');
         setLocalIsoCertificate(contractor?.isoCertificate || '');
+        setLocalClassifications(contractor?.classifications || []);
 
         // Load status indicator for existing contractors
         if (contractor?.company_id && contractor._id) {
@@ -158,7 +160,7 @@ export default function ContractorTabsSimple({
         return () => {
             window.removeEventListener('saveContractor', handleSaveEvent);
         };
-    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate]);
+    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate, localClassifications]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
@@ -243,7 +245,8 @@ export default function ContractorTabsSimple({
                 safetyCertificate: localSafetyCertificate,
                 iso45001: localIso45001,
                 isoExpiry: localIsoExpiry,
-                isoCertificate: localIsoCertificate
+                isoCertificate: localIsoCertificate,
+                classifications: localClassifications
             };
             
             console.log('💾 Saving contractor data:', {
@@ -467,6 +470,7 @@ export default function ContractorTabsSimple({
                 if (companyData.iso45001 !== undefined) setLocalIso45001(companyData.iso45001);
                 if (companyData.isoExpiry !== undefined) setLocalIsoExpiry(companyData.isoExpiry);
                 if (companyData.isoCertificate !== undefined) setLocalIsoCertificate(companyData.isoCertificate);
+                if (companyData.classifications !== undefined) setLocalClassifications(companyData.classifications);
 
                 console.log('✅ Updated local states with cleaned company data:', {
                     name: cleanName,
@@ -870,8 +874,11 @@ export default function ContractorTabsSimple({
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={contractor?.iso45001 || false}
+                                            checked={localIso45001}
                                             disabled={!canEdit}
+                                            onChange={(e) => {
+                                                setLocalIso45001(e.target.checked);
+                                            }}
                                             sx={{
                                                 color: '#9c27b0',
                                                 '&.Mui-checked': {
@@ -957,12 +964,12 @@ export default function ContractorTabsSimple({
                             </Grid>
                         </Grid>
 
-                        {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 && (
+                        {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     סוגי רישיונות:
                                 </Typography>
-                                {contractor.classifications.map((classification: any, index: number) => (
+                                {localClassifications.map((classification: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
                                         • {classification?.classification_type || ''} - {classification?.classification || ''}
                                     </Typography>
