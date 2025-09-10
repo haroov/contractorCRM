@@ -39,14 +39,16 @@ export default function ContractorTabsSimple({
 
     // Common styling for TextFields with choco purple focus
     const textFieldSx = {
-        '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#d0d0d0'
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#9c27b0'
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#9c27b0'
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: '#d0d0d0'
+            },
+            '&:hover fieldset': {
+                borderColor: '#9c27b0'
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: '#9c27b0'
+            }
         }
     };
 
@@ -269,41 +271,32 @@ export default function ContractorTabsSimple({
         try {
             console.log('Fetching data for company ID:', companyId);
 
-            // Fetch from Companies Registry API
-            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
-            const companiesData = await companiesResponse.json();
-            console.log('Companies Registry response:', companiesData);
+            // Use our new API endpoint that checks MongoDB first, then external APIs
+            const response = await fetch(`/api/search-company/${companyId}`);
+            const result = await response.json();
+            console.log('Company search response:', result);
 
-            // Fetch from Contractors Registry API
-            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
-            const contractorsData = await contractorsResponse.json();
-            console.log('Contractors Registry response:', contractorsData);
-
-            if (companiesData.success && companiesData.result.records.length > 0) {
-                const companyData = companiesData.result.records[0];
+            if (result.success) {
+                const companyData = result.data;
+                console.log(`✅ Found company in ${result.source}:`, companyData.name);
                 
                 // Update local states with fetched data
-                if (companyData['שם חברה']) {
-                    setLocalCompanyType(getCompanyTypeFromId(companyId));
-                }
+                setLocalCompanyType(companyData.companyType);
                 
                 // Update contractor with fetched data and trigger UI update
                 if (contractor && onSave) {
                     const updatedContractor = {
                         ...contractor,
-                        name: companyData['שם חברה'] || contractor.name,
-                        nameEnglish: companyData['שם באנגלית'] || contractor.nameEnglish,
-                        foundationDate: companyData['תאריך התאגדות'] || contractor.foundationDate,
-                        address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || contractor.address,
-                        city: companyData['שם עיר'] || contractor.city,
-                        companyType: getCompanyTypeFromId(companyId)
+                        name: companyData.name || contractor.name,
+                        nameEnglish: companyData.nameEnglish || contractor.nameEnglish,
+                        foundationDate: companyData.foundationDate || contractor.foundationDate,
+                        address: companyData.address || contractor.address,
+                        city: companyData.city || contractor.city,
+                        email: companyData.email || contractor.email,
+                        phone: companyData.phone || contractor.phone,
+                        companyType: companyData.companyType,
+                        contractor_id: companyData.contractor_id || contractor.contractor_id
                     };
-                    
-                    // Update contractor_id from contractors registry if available
-                    if (contractorsData.success && contractorsData.result.records.length > 0) {
-                        const contractorData = contractorsData.result.records[0];
-                        updatedContractor.contractor_id = contractorData['מספר קבלן'] || contractor.contractor_id;
-                    }
                     
                     // Call onSave to update the parent component and trigger UI refresh
                     onSave(updatedContractor);

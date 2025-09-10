@@ -1753,6 +1753,97 @@ app.get('/add-specific-users', async (req, res) => {
   }
 });
 
+// Search company by company_id - check MongoDB first, then external API
+app.get('/api/search-company/:companyId', async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const db = client.db('contractor-crm');
+    
+    console.log('🔍 Searching for company ID:', companyId);
+    
+    // First, check if company exists in MongoDB Atlas
+    const existingContractor = await db.collection('contractors').findOne({ 
+      company_id: companyId 
+    });
+    
+    if (existingContractor) {
+      console.log('✅ Found company in MongoDB Atlas:', existingContractor.name);
+      return res.json({
+        success: true,
+        source: 'mongodb',
+        data: {
+          name: existingContractor.name,
+          nameEnglish: existingContractor.nameEnglish,
+          companyType: existingContractor.companyType,
+          foundationDate: existingContractor.foundationDate,
+          address: existingContractor.address,
+          city: existingContractor.city,
+          email: existingContractor.email,
+          phone: existingContractor.phone,
+          contractor_id: existingContractor.contractor_id
+        }
+      });
+    }
+    
+    // If not found in MongoDB, search in Companies Registry API
+    console.log('🔍 Company not found in MongoDB, searching Companies Registry API...');
+    
+    const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+    const companiesData = await companiesResponse.json();
+    
+    const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+    const contractorsData = await contractorsResponse.json();
+    
+    if (companiesData.success && companiesData.result.records.length > 0) {
+      const companyData = companiesData.result.records[0];
+      const contractorData = contractorsData.success && contractorsData.result.records.length > 0 
+        ? contractorsData.result.records[0] 
+        : null;
+      
+      console.log('✅ Found company in Companies Registry:', companyData['שם חברה']);
+      
+      return res.json({
+        success: true,
+        source: 'companies_registry',
+        data: {
+          name: companyData['שם חברה'] || '',
+          nameEnglish: companyData['שם באנגלית'] || '',
+          companyType: getCompanyTypeFromId(companyId),
+          foundationDate: companyData['תאריך התאגדות'] || '',
+          address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
+          city: companyData['שם עיר'] || '',
+          email: '',
+          phone: '',
+          contractor_id: contractorData ? contractorData['מספר קבלן'] || '' : ''
+        }
+      });
+    }
+    
+    // Company not found in either source
+    console.log('❌ Company not found in any source');
+    return res.json({
+      success: false,
+      message: 'Company not found'
+    });
+    
+  } catch (error) {
+    console.error('❌ Error searching for company:', error);
+    res.status(500).json({ error: 'Failed to search for company' });
+  }
+});
+
+// Helper function to determine company type from company ID
+function getCompanyTypeFromId(companyId) {
+  if (!companyId || companyId.length < 2) return 'בע"מ';
+  const prefix = companyId.substring(0, 2);
+  switch (prefix) {
+    case '51': return 'חברה פרטית';
+    case '52': return 'חברה ציבורית';
+    case '57': return 'אגודה שיתופית';
+    default: return 'עוסק מורשה';
+  }
+}
+
 // Cleanup contractors without names
 app.get('/api/cleanup-contractors', async (req, res) => {
   try {
