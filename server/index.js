@@ -1794,7 +1794,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             statusIndicator: existingContractor.statusIndicator,
             statusLastUpdated: existingContractor.statusLastUpdated,
             // Complete contractor data
-            employees: existingContractor.employees || '',
+            employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
+            numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
             contacts: existingContractor.contacts || [],
             projects: existingContractor.projects || [],
             notes: existingContractor.notes || { general: '', internal: '' },
@@ -1863,7 +1864,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             statusIndicator: statusIndicator,
             statusLastUpdated: statusData.statusLastUpdated,
             // Complete contractor data
-            employees: existingContractor.employees || '',
+            employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
+            numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
             contacts: existingContractor.contacts || [],
             projects: existingContractor.projects || [],
             notes: existingContractor.notes || { general: '', internal: '' },
@@ -1898,7 +1900,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             statusIndicator: existingContractor.statusIndicator || '',
             statusLastUpdated: existingContractor.statusLastUpdated,
             // Complete contractor data
-            employees: existingContractor.employees || '',
+            employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
+            numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
             contacts: existingContractor.contacts || [],
             projects: existingContractor.projects || [],
             notes: existingContractor.notes || { general: '', internal: '' },

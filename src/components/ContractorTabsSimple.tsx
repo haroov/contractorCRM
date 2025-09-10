@@ -77,7 +77,7 @@ export default function ContractorTabsSimple({
     const [localEmail, setLocalEmail] = useState<string>(contractor?.email || '');
     const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
     const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
-    const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || '');
+    const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || contractor?.numberOfEmployees || '');
     
     // Local states for additional contractor data
     const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
@@ -127,7 +127,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractor?.email || '');
         setLocalPhone(contractor?.phone || '');
         setLocalContractorId(contractor?.contractor_id || '');
-        setLocalEmployees(contractor?.employees || '');
+        setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
         
         // Update additional contractor data
         setLocalContacts(contractor?.contacts || []);
@@ -217,6 +217,7 @@ export default function ContractorTabsSimple({
                 phone: localPhone,
                 contractor_id: localContractorId,
                 employees: localEmployees,
+                numberOfEmployees: localEmployees ? parseInt(localEmployees) : undefined,
                 // Additional contractor data
                 contacts: localContacts,
                 projects: localProjects,
@@ -433,6 +434,7 @@ export default function ContractorTabsSimple({
                 
                 // Update additional contractor data if available
                 if (companyData.employees !== undefined) setLocalEmployees(companyData.employees);
+                if (companyData.numberOfEmployees !== undefined) setLocalEmployees(companyData.numberOfEmployees.toString());
                 if (companyData.contacts !== undefined) setLocalContacts(companyData.contacts);
                 if (companyData.projects !== undefined) setLocalProjects(companyData.projects);
                 if (companyData.notes !== undefined) setLocalNotes(companyData.notes);
