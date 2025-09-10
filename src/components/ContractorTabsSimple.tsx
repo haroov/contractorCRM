@@ -73,6 +73,27 @@ export default function ContractorTabsSimple({
         return checkDigit === lastDigit;
     };
 
+    // Function to determine company type based on company ID
+    const getCompanyTypeFromId = (companyId: string): string => {
+        if (!companyId || companyId.length < 2) {
+            return 'בע"מ';
+        }
+
+        const prefix = companyId.substring(0, 2);
+        
+        switch (prefix) {
+            case '51':
+                return 'חברה פרטית';
+            case '52':
+                return 'חברה ציבורית';
+            case '57':
+                return 'אגודה שיתופית';
+            default:
+                // If doesn't start with 5, it's usually עוסק מורשה
+                return 'עוסק מורשה';
+        }
+    };
+
     const handleSave = () => {
         if (onSave && contractor) {
             // Update contractor with local company_id value before saving
@@ -329,13 +350,25 @@ export default function ContractorTabsSimple({
                                         const numericValue = value.replace(/\D/g, '').slice(0, 9);
                                         setLocalCompanyId(numericValue);
                                         
+                                        // Auto-set company type based on company ID prefix
+                                        if (numericValue && numericValue.length >= 2) {
+                                            const companyType = getCompanyTypeFromId(numericValue);
+                                            if (contractor && onSave) {
+                                                const updatedContractor = {
+                                                    ...contractor,
+                                                    companyType: companyType
+                                                };
+                                                onSave(updatedContractor);
+                                            }
+                                        }
+                                        
                                         // Validate company ID format and checksum
                                         if (numericValue && numericValue.length === 9) {
                                             if (!validateIsraeliCompanyId(numericValue)) {
-                                                setCompanyIdError('מספר חברה לא תקין - בדוק את הספרות');
+                                                setCompanyIdError('מספר חברה לא תקין');
                                             }
                                         } else if (numericValue && numericValue.length > 0) {
-                                            setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
+                                            setCompanyIdError('נא להזין 9 ספרות');
                                         }
                                     }}
                                     onBlur={async (e) => {
