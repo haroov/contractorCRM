@@ -34,6 +34,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
+  // Snackbar helper function
+  const setSnackbar = (options: { open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' }) => {
+    setSnackbarOpen(options.open);
+    setSnackbarMessage(options.message);
+    setSnackbarSeverity(options.severity);
+  };
+
   // New state for contractor details
   const [selectedContractor, setSelectedContractor] = useState<Contractor | null>(null);
   const [contractorMode, setContractorMode] = useState<'view' | 'edit' | 'new'>('view');
@@ -219,7 +226,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (confirmed) {
       try {
         const { default: ContractorService } = await import('../services/contractorService');
-        await ContractorService.updateContractor(contractor._id, { status: 'archived' });
+        await ContractorService.update(String(contractor._id), { status: 'archived' });
         setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
         // Refresh the contractors list
         loadContractors();
@@ -235,7 +242,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (confirmed) {
       try {
         const { default: ContractorService } = await import('../services/contractorService');
-        await ContractorService.deleteContractor(contractor._id);
+        await ContractorService.delete(String(contractor._id));
         setSnackbar({ open: true, message: 'הקבלן נמחק בהצלחה', severity: 'success' });
         // Refresh the contractors list
         loadContractors();
@@ -405,7 +412,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   };
 
   const handleAddNewContractor = () => {
-    const newContractor: Contractor = {
+    const newContractor: any = {
       contractor_id: Date.now().toString(),
       company_id: undefined, // Don't set empty string to avoid duplicate key error
       name: '',
@@ -420,13 +427,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       website: '',
       sector: '',
       segment: '',
-      activities: [],
+      activityType: '',
+      description: '',
       contacts: [],
       notes: '',
       safetyRating: 1,
       classifications: [],
       iso45001: false,
-      fullAddress: '',
+      isActive: true,
       projectIds: [],
       projects: [],
       current_projects: 0,
@@ -436,8 +444,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       status: 'פעילה',
       violator: false,
       restrictions: null,
-      temp: '',
-      updatedAt: new Date().toISOString()
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      _id: ''
     };
     handleContractorSelect(newContractor, 'new');
   };
@@ -669,9 +678,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `mailto:${contractor.email}`;
                                 }}
                               >
-                                📧 <span style={{
-                                  textDecoration: 'underline',
-                                  '&:hover': { color: 'primary.main' }
+                                📧                                 <span style={{
+                                  textDecoration: 'underline'
                                 }}>{contractor.email}</span>
                               </Typography>
                             )}
@@ -688,9 +696,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                   window.location.href = `tel:${contractor.phone}`;
                                 }}
                               >
-                                📞 <span style={{
-                                  textDecoration: 'underline',
-                                  '&:hover': { color: 'primary.main' }
+                                📞                                 <span style={{
+                                  textDecoration: 'underline'
                                 }}>{contractor.phone}</span>
                               </Typography>
                             )}
