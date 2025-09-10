@@ -39,12 +39,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [contractorMode, setContractorMode] = useState<'view' | 'edit' | 'new'>('view');
   const [showContractorDetails, setShowContractorDetails] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // State for API status indicators
+  const [contractorStatusIndicators, setContractorStatusIndicators] = useState<{[key: string]: string}>({});
 
   // Load contractors from MongoDB
   useEffect(() => {
     loadContractors();
     loadUserData();
   }, []);
+
+  // Load status indicators for all contractors
+  useEffect(() => {
+    if (contractors.length > 0) {
+      loadAllContractorStatusIndicators();
+    }
+  }, [contractors]);
 
   // Handle URL parameters for contractor selection
   useEffect(() => {
@@ -98,6 +108,31 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     } finally {
       setLoading(false);
     }
+  };
+
+  // Load status indicators for all contractors
+  const loadAllContractorStatusIndicators = async () => {
+    const indicators: {[key: string]: string} = {};
+    
+    // Load indicators for all contractors with company_id
+    const promises = contractors
+      .filter(contractor => contractor.company_id)
+      .map(async (contractor) => {
+        try {
+          const response = await fetch(`/api/search-company/${contractor.company_id}`);
+          const result = await response.json();
+          
+          if (result.success && result.data.statusIndicator) {
+            indicators[contractor.company_id!] = result.data.statusIndicator;
+          }
+        } catch (error) {
+          console.error(`Error loading status for contractor ${contractor.company_id}:`, error);
+        }
+      });
+    
+    await Promise.all(promises);
+    setContractorStatusIndicators(indicators);
+    console.log('✅ Loaded status indicators for all contractors:', indicators);
   };
 
   const loadUserData = async () => {
@@ -268,6 +303,50 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
 
       if (contractorMode === 'new') {
+        // Check if company_id already exists in the database
+        const existingContractor = contractors.find(c => c.company_id === updatedContractor.company_id);
+        
+        if (existingContractor) {
+          // Company ID already exists - load existing contractor for editing
+          console.log('✅ Company ID already exists, loading existing contractor for editing:', existingContractor.name);
+          setSelectedContractor(existingContractor);
+          setContractorMode('edit');
+          setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${existingContractor.name}" לעריכה.`);
+          setSnackbarSeverity('info');
+          setSnackbarOpen(true);
+          setIsSaving(false);
+          return;
+        }
+
+        // Double-check with API to see if company exists in MongoDB
+        try {
+          const response = await fetch(`/api/search-company/${updatedContractor.company_id}`);
+          const result = await response.json();
+          
+          if (result.success && result.source === 'mongodb') {
+            // Company exists in MongoDB but not in current contractors list - reload contractors
+            console.log('✅ Company exists in MongoDB, reloading contractors list');
+            await loadContractors();
+            
+            // Find the contractor again after reload
+            const reloadedContractors = await ContractorService.getAll();
+            const foundContractor = reloadedContractors.find(c => c.company_id === updatedContractor.company_id);
+            
+            if (foundContractor) {
+              setSelectedContractor(foundContractor);
+              setContractorMode('edit');
+              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${foundContractor.name}" לעריכה.`);
+              setSnackbarSeverity('info');
+              setSnackbarOpen(true);
+              setIsSaving(false);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error checking company existence:', error);
+          // Continue with creating new contractor if API check fails
+        }
+
         const newContractor = await ContractorService.create(updatedContractor);
         setContractors([...contractors, newContractor]);
         setSnackbarMessage('הקבלן נוצר בהצלחה');
@@ -575,9 +654,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
-                          <Typography variant="body2">
-                            {contractor.company_id}
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
+                            <Typography variant="body2">
+                              {contractor.company_id}
+                            </Typography>
+                            {contractor.company_id && contractorStatusIndicators[contractor.company_id] && (
+                              <Box sx={{ fontSize: '16px', lineHeight: 1 }}>
+                                {contractorStatusIndicators[contractor.company_id]}
+                              </Box>
+                            )}
+                          </Box>
                           <Typography variant="caption" color="text.secondary">
                             קבלן {contractor.contractor_id}
                           </Typography>
