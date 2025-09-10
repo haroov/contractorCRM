@@ -36,6 +36,19 @@ export default function ContractorTabsSimple({
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
+    // Common styling for TextFields with choco purple focus
+    const textFieldSx = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#d0d0d0'
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#9c27b0'
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#9c27b0'
+        }
+    };
+
     // Update local states when contractor changes
     useEffect(() => {
         setLocalCompanyId(contractor?.company_id || '');
@@ -252,49 +265,40 @@ export default function ContractorTabsSimple({
 
     const fetchCompanyData = async (companyId: string) => {
         try {
+            console.log('Fetching data for company ID:', companyId);
+
             // Fetch from Companies Registry API
-            const companiesResponse = await fetch(`https://api.gov.il/he/companies-registry/companies/${companyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
+            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+            const companiesData = await companiesResponse.json();
+            console.log('Companies Registry response:', companiesData);
+
+            // Fetch from Contractors Registry API
+            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+            const contractorsData = await contractorsResponse.json();
+            console.log('Contractors Registry response:', contractorsData);
+
+            if (companiesData.success && companiesData.result.records.length > 0) {
+                const companyData = companiesData.result.records[0];
+                
+                // Update local states with fetched data
+                if (companyData['שם חברה']) {
+                    setLocalCompanyType(getCompanyTypeFromId(companyId));
                 }
-            });
-
-            if (companiesResponse.ok) {
-                const companiesData = await companiesResponse.json();
-
-                // Fetch from Contractors Registry API
-                const contractorsResponse = await fetch(`https://api.gov.il/he/contractors-registry/contractors/${companyId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
+                
+                // Update contractor with fetched data (local state only)
+                if (contractor) {
+                    // Update the contractor object directly without calling onSave
+                    contractor.name = companyData['שם חברה'] || contractor.name;
+                    contractor.nameEnglish = companyData['שם באנגלית'] || contractor.nameEnglish;
+                    contractor.foundationDate = companyData['תאריך התאגדות'] || contractor.foundationDate;
+                    contractor.address = `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || contractor.address;
+                    contractor.city = companyData['שם עיר'] || contractor.city;
+                    
+                    // Update contractor_id from contractors registry if available
+                    if (contractorsData.success && contractorsData.result.records.length > 0) {
+                        const contractorData = contractorsData.result.records[0];
+                        contractor.contractor_id = contractorData['מספר קבלן'] || contractor.contractor_id;
                     }
-                });
-
-                let contractorsData = null;
-                if (contractorsResponse.ok) {
-                    contractorsData = await contractorsResponse.json();
-                }
-
-                // Update contractor with fetched data
-                if (contractor && onSave) {
-                    const updatedContractor = {
-                        ...contractor,
-                        name: companiesData.name || contractor.name,
-                        nameEnglish: companiesData.nameEnglish || contractor.nameEnglish,
-                        companyType: companiesData.companyType || contractor.companyType,
-                        foundationDate: companiesData.foundationDate || contractor.foundationDate,
-                        address: companiesData.address || contractor.address,
-                        city: companiesData.city || contractor.city,
-                        email: companiesData.email || contractor.email,
-                        phone: companiesData.phone || contractor.phone,
-                        contractor_id: contractorsData?.contractor_id || contractor.contractor_id,
-                        safetyRating: contractorsData?.safetyRating || contractor.safetyRating,
-                        iso45001: contractorsData?.iso45001 || contractor.iso45001,
-                        classifications: contractorsData?.classifications || contractor.classifications,
-                        activities: contractorsData?.activities || contractor.activities
-                    };
-                    onSave(updatedContractor);
                 }
             }
         } catch (error) {
@@ -345,6 +349,7 @@ export default function ContractorTabsSimple({
                                     label="מספר חברה (ח״פ)"
                                     value={localCompanyId}
                                     disabled={!canEdit || !!contractor?._id}
+                                    sx={textFieldSx}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         
@@ -390,6 +395,7 @@ export default function ContractorTabsSimple({
                                     label="מספר קבלן"
                                     value={contractor?.contractor_id || ''}
                                     disabled={true}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -399,6 +405,7 @@ export default function ContractorTabsSimple({
                                     label="שם החברה (עברית)"
                                     value={contractor?.name || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -408,6 +415,7 @@ export default function ContractorTabsSimple({
                                     label="שם החברה (אנגלית)"
                                     value={contractor?.nameEnglish || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -455,6 +463,7 @@ export default function ContractorTabsSimple({
                                     type="date"
                                     value={contractor?.foundationDate || ''}
                                     disabled={true}
+                                    sx={textFieldSx}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
@@ -472,6 +481,7 @@ export default function ContractorTabsSimple({
                                     type="number"
                                     value={contractor?.numberOfEmployees || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -481,6 +491,7 @@ export default function ContractorTabsSimple({
                                     label="עיר"
                                     value={contractor?.city || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -490,6 +501,7 @@ export default function ContractorTabsSimple({
                                     label="כתובת"
                                     value={contractor?.address || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -499,6 +511,7 @@ export default function ContractorTabsSimple({
                                     label="אימייל"
                                     value={contractor?.email || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
 
@@ -508,6 +521,7 @@ export default function ContractorTabsSimple({
                                     label="טלפון"
                                     value={contractor?.phone || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                 />
                             </Grid>
                         </Grid>
@@ -631,6 +645,12 @@ export default function ContractorTabsSimple({
                                         <Checkbox
                                             checked={contractor?.iso45001 || false}
                                             disabled={!canEdit}
+                                            sx={{
+                                                color: '#9c27b0',
+                                                '&.Mui-checked': {
+                                                    color: '#9c27b0'
+                                                }
+                                            }}
                                         />
                                     }
                                     label="ISO45001"
