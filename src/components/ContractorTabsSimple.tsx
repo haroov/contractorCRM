@@ -48,6 +48,28 @@ export default function ContractorTabsSimple({
         }
     };
 
+    // Function to get Hebrew text for safety rating value
+    const getSafetyRatingText = (value: string): string => {
+        switch (value) {
+            case '0':
+                return 'ללא כוכבים';
+            case '1':
+                return '1 כוכב';
+            case '2':
+                return '2 כוכבים';
+            case '3':
+                return '3 כוכבים';
+            case '4':
+                return '4 כוכבים';
+            case '5':
+                return '5 כוכבים';
+            case '6':
+                return '6 כוכבים (זהב)';
+            default:
+                return 'ללא כוכבים';
+        }
+    };
+
     // Function to map company type from API to display value
     const mapCompanyTypeFromAPI = (apiCompanyType: string): string => {
         if (!apiCompanyType) return 'חברה פרטית';
@@ -84,7 +106,7 @@ export default function ContractorTabsSimple({
     const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
     const [localProjects, setLocalProjects] = useState<any[]>(contractor?.projects || []);
     const [localNotes, setLocalNotes] = useState<{ general: string, internal: string }>(contractor?.notes || { general: '', internal: '' });
-    const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '');
+    const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '0');
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
     const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
     const [localIso45001, setLocalIso45001] = useState<boolean>(contractor?.iso45001 || false);
@@ -143,7 +165,7 @@ export default function ContractorTabsSimple({
         setLocalContacts(contractor?.contacts || []);
         setLocalProjects(contractor?.projects || []);
         setLocalNotes(contractor?.notes || { general: '', internal: '' });
-        setLocalSafetyRating(contractor?.safetyRating || '');
+        setLocalSafetyRating(contractor?.safetyRating || '0');
         setLocalSafetyExpiry(contractor?.safetyExpiry || '');
         setLocalSafetyCertificate(contractor?.safetyCertificate || '');
         setLocalIso45001(contractor?.iso45001 || false);
@@ -476,6 +498,7 @@ export default function ContractorTabsSimple({
                 if (companyData.projects !== undefined) setLocalProjects(companyData.projects);
                 if (companyData.notes !== undefined) setLocalNotes(companyData.notes);
                 if (companyData.safetyRating !== undefined) setLocalSafetyRating(companyData.safetyRating);
+                else setLocalSafetyRating('0'); // Default to "ללא כוכבים"
                 if (companyData.safetyExpiry !== undefined) setLocalSafetyExpiry(companyData.safetyExpiry);
                 if (companyData.safetyCertificate !== undefined) setLocalSafetyCertificate(companyData.safetyCertificate);
                 if (companyData.iso45001 !== undefined) setLocalIso45001(companyData.iso45001);
@@ -806,6 +829,10 @@ export default function ContractorTabsSimple({
                                         value={localSafetyRating}
                                         disabled={!canEdit}
                                         onChange={(e) => {
+                                            console.log('🔧 Safety rating changed:', {
+                                                value: e.target.value,
+                                                text: getSafetyRatingText(e.target.value)
+                                            });
                                             setLocalSafetyRating(e.target.value);
                                         }}
                                         sx={{
@@ -820,13 +847,13 @@ export default function ContractorTabsSimple({
                                             }
                                         }}
                                     >
-                                        <MenuItem value="">ללא כוכבים</MenuItem>
-                                        <MenuItem value={1}>1 כוכב</MenuItem>
-                                        <MenuItem value={2}>2 כוכבים</MenuItem>
-                                        <MenuItem value={3}>3 כוכבים</MenuItem>
-                                        <MenuItem value={4}>4 כוכבים</MenuItem>
-                                        <MenuItem value={5}>5 כוכבים</MenuItem>
-                                        <MenuItem value={6}>6 כוכבים (זהב)</MenuItem>
+                                        <MenuItem value="0">ללא כוכבים</MenuItem>
+                                        <MenuItem value="1">1 כוכב</MenuItem>
+                                        <MenuItem value="2">2 כוכבים</MenuItem>
+                                        <MenuItem value="3">3 כוכבים</MenuItem>
+                                        <MenuItem value="4">4 כוכבים</MenuItem>
+                                        <MenuItem value="5">5 כוכבים</MenuItem>
+                                        <MenuItem value="6">6 כוכבים (זהב)</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
