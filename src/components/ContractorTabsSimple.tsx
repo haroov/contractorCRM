@@ -579,6 +579,7 @@ export default function ContractorTabsSimple({
                                     type="date"
                                     value={contractor?.safetyRatingExpiry || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
@@ -669,6 +670,7 @@ export default function ContractorTabsSimple({
                                     type="date"
                                     value={contractor?.iso45001Expiry || ''}
                                     disabled={!canEdit}
+                                    sx={textFieldSx}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
@@ -887,7 +889,7 @@ export default function ContractorTabsSimple({
                             rows={8}
                             label="הערות כלליות"
                             value={contractor?.notes || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                             disabled={!canEdit}
                             placeholder="הוסף הערות על הקבלן..."
                         />
@@ -898,7 +900,7 @@ export default function ContractorTabsSimple({
                             rows={4}
                             label="הערות פנימיות"
                             value={contractor?.internalNotes || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                             disabled={!canEdit}
                             placeholder="הערות פנימיות לצוות..."
                         />
@@ -917,26 +919,26 @@ export default function ContractorTabsSimple({
                             fullWidth
                             label="שם מלא"
                             defaultValue={editingContact?.name || editingContact?.fullName || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
                             fullWidth
                             label="תפקיד"
                             defaultValue={editingContact?.role || editingContact?.position || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
                             fullWidth
                             label="טלפון"
                             defaultValue={editingContact?.phone || editingContact?.phoneNumber || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
                             fullWidth
                             label="אימייל"
                             type="email"
                             defaultValue={editingContact?.email || editingContact?.emailAddress || ''}
-                            sx={{ mb: 2 }}
+                            sx={{ mb: 2, ...textFieldSx }}
                         />
                         <FormControl fullWidth sx={{ mb: 2 }}>
                             <InputLabel>הרשאות</InputLabel>

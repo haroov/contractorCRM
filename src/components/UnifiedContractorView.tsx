@@ -257,7 +257,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setIsSaving(true);
     try {
       const { default: ContractorService } = await import('../services/contractorService');
-      
+
       // Don't save if company_id is empty or undefined
       if (!updatedContractor.company_id || updatedContractor.company_id.trim() === '') {
         setSnackbarMessage('נא להזין מספר חברה לפני השמירה');
@@ -266,7 +266,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         setIsSaving(false);
         return;
       }
-      
+
       if (contractorMode === 'new') {
         const newContractor = await ContractorService.create(updatedContractor);
         setContractors([...contractors, newContractor]);
