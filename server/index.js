@@ -1769,24 +1769,16 @@ app.get('/api/search-company/:companyId', async (req, res) => {
     if (existingContractor) {
       console.log('✅ Found company in MongoDB Atlas:', existingContractor.name);
       
-      // For existing contractors, also fetch fresh data from Companies Registry for status indicator
-      try {
-        const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
-        const companiesData = await companiesResponse.json();
-        
-        let statusIndicator = '';
-        if (companiesData.success && companiesData.result.records.length > 0) {
-          const companyData = companiesData.result.records[0];
-          statusIndicator = getCompanyStatusIndicator(
-            companyData['סטטוס חברה'] || '',
-            companyData['מפרה'] || '',
-            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
-          );
-        }
-        
+      // Check if we have cached status data that's less than 24 hours old
+      const now = new Date();
+      const lastStatusUpdate = existingContractor.statusLastUpdated ? new Date(existingContractor.statusLastUpdated) : null;
+      const isStatusDataFresh = lastStatusUpdate && (now - lastStatusUpdate) < 24 * 60 * 60 * 1000; // 24 hours
+      
+      if (isStatusDataFresh && existingContractor.statusIndicator) {
+        console.log('✅ Using cached status data (less than 24 hours old)');
         return res.json({
           success: true,
-          source: 'mongodb',
+          source: 'mongodb_cached',
           data: {
             name: existingContractor.name,
             nameEnglish: existingContractor.nameEnglish,
@@ -1797,7 +1789,62 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             email: existingContractor.email,
             phone: existingContractor.phone,
             contractor_id: existingContractor.contractor_id,
-            statusIndicator: statusIndicator
+            statusIndicator: existingContractor.statusIndicator,
+            statusLastUpdated: existingContractor.statusLastUpdated
+          }
+        });
+      }
+      
+      // Fetch fresh data from Companies Registry for status indicator
+      try {
+        console.log('🔄 Fetching fresh status data from Companies Registry API');
+        const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+        const companiesData = await companiesResponse.json();
+        
+        let statusIndicator = '';
+        let statusData = {};
+        
+        if (companiesData.success && companiesData.result.records.length > 0) {
+          const companyData = companiesData.result.records[0];
+          statusIndicator = getCompanyStatusIndicator(
+            companyData['סטטוס חברה'] || '',
+            companyData['מפרה'] || '',
+            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+          );
+          
+          // Store status data for caching
+          statusData = {
+            statusIndicator: statusIndicator,
+            statusLastUpdated: now.toISOString(),
+            companyStatus: companyData['סטטוס חברה'] || '',
+            violations: companyData['מפרה'] || '',
+            lastAnnualReport: companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+          };
+          
+          // Update the contractor document with fresh status data
+          await db.collection('contractors').updateOne(
+            { company_id: companyId },
+            { $set: statusData }
+          );
+          
+          console.log('✅ Updated contractor with fresh status data:', statusData);
+        }
+        
+        return res.json({
+          success: true,
+          source: 'mongodb_updated',
+          data: {
+            name: existingContractor.name,
+            nameEnglish: existingContractor.nameEnglish,
+            companyType: existingContractor.companyType,
+            foundationDate: existingContractor.foundationDate,
+            address: existingContractor.address,
+            city: existingContractor.city,
+            email: existingContractor.email,
+            phone: existingContractor.phone,
+            contractor_id: existingContractor.contractor_id,
+            statusIndicator: statusIndicator,
+            statusLastUpdated: statusData.statusLastUpdated
           }
         });
       } catch (error) {
@@ -1816,7 +1863,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             email: existingContractor.email,
             phone: existingContractor.phone,
             contractor_id: existingContractor.contractor_id,
-            statusIndicator: ''
+            statusIndicator: existingContractor.statusIndicator || '',
+            statusLastUpdated: existingContractor.statusLastUpdated
           }
         });
       }

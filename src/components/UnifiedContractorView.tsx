@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from '@mui/material';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
@@ -39,9 +39,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [contractorMode, setContractorMode] = useState<'view' | 'edit' | 'new'>('view');
   const [showContractorDetails, setShowContractorDetails] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // State for API status indicators
-  const [contractorStatusIndicators, setContractorStatusIndicators] = useState<{[key: string]: string}>({});
+  const [contractorStatusIndicators, setContractorStatusIndicators] = useState<{ [key: string]: string }>({});
+
+  // Function to get tooltip text for status indicator
+  const getStatusTooltipText = (statusIndicator: string): string => {
+    switch (statusIndicator) {
+      case '🔴':
+        return 'חברה לא פעילה - סטטוס החברה ברשם החברות אינו "פעילה"';
+      case '🟡':
+        return 'חברה עם בעיות - יש הפרות או דוח שנתי ישן (מעל שנתיים)';
+      case '🟢':
+        return 'חברה תקינה - פעילה, ללא הפרות, דוח שנתי עדכני';
+      default:
+        return 'אין מידע זמין על מצב החברה';
+    }
+  };
 
   // Load contractors from MongoDB
   useEffect(() => {
@@ -112,8 +126,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   // Load status indicators for all contractors
   const loadAllContractorStatusIndicators = async () => {
-    const indicators: {[key: string]: string} = {};
-    
+    const indicators: { [key: string]: string } = {};
+
     // Load indicators for all contractors with company_id
     const promises = contractors
       .filter(contractor => contractor.company_id)
@@ -121,7 +135,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const response = await fetch(`/api/search-company/${contractor.company_id}`);
           const result = await response.json();
-          
+
           if (result.success && result.data.statusIndicator) {
             indicators[contractor.company_id!] = result.data.statusIndicator;
           }
@@ -129,7 +143,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           console.error(`Error loading status for contractor ${contractor.company_id}:`, error);
         }
       });
-    
+
     await Promise.all(promises);
     setContractorStatusIndicators(indicators);
     console.log('✅ Loaded status indicators for all contractors:', indicators);
@@ -305,7 +319,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (contractorMode === 'new') {
         // Check if company_id already exists in the database
         const existingContractor = contractors.find(c => c.company_id === updatedContractor.company_id);
-        
+
         if (existingContractor) {
           // Company ID already exists - load existing contractor for editing
           console.log('✅ Company ID already exists, loading existing contractor for editing:', existingContractor.name);
@@ -322,16 +336,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const response = await fetch(`/api/search-company/${updatedContractor.company_id}`);
           const result = await response.json();
-          
+
           if (result.success && result.source === 'mongodb') {
             // Company exists in MongoDB but not in current contractors list - reload contractors
             console.log('✅ Company exists in MongoDB, reloading contractors list');
             await loadContractors();
-            
+
             // Find the contractor again after reload
             const reloadedContractors = await ContractorService.getAll();
             const foundContractor = reloadedContractors.find(c => c.company_id === updatedContractor.company_id);
-            
+
             if (foundContractor) {
               setSelectedContractor(foundContractor);
               setContractorMode('edit');
@@ -659,9 +673,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.company_id}
                             </Typography>
                             {contractor.company_id && contractorStatusIndicators[contractor.company_id] && (
-                              <Box sx={{ fontSize: '16px', lineHeight: 1 }}>
-                                {contractorStatusIndicators[contractor.company_id]}
-                              </Box>
+                              <Tooltip 
+                                title={getStatusTooltipText(contractorStatusIndicators[contractor.company_id])}
+                                arrow
+                                placement="top"
+                              >
+                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help' }}>
+                                  {contractorStatusIndicators[contractor.company_id]}
+                                </Box>
+                              </Tooltip>
                             )}
                           </Box>
                           <Typography variant="caption" color="text.secondary">

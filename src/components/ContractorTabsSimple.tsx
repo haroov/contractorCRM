@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
@@ -33,6 +33,20 @@ export default function ContractorTabsSimple({
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>('');
+
+    // Function to get tooltip text for status indicator
+    const getStatusTooltipText = (statusIndicator: string): string => {
+        switch (statusIndicator) {
+            case '🔴':
+                return 'חברה לא פעילה - סטטוס החברה ברשם החברות אינו "פעילה"';
+            case '🟡':
+                return 'חברה עם בעיות - יש הפרות או דוח שנתי ישן (מעל שנתיים)';
+            case '🟢':
+                return 'חברה תקינה - פעילה, ללא הפרות, דוח שנתי עדכני';
+            default:
+                return 'אין מידע זמין על מצב החברה';
+        }
+    };
     
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
@@ -439,15 +453,22 @@ export default function ContractorTabsSimple({
                                                 <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
                                             </Box>
                                         ) : companyStatusIndicator ? (
-                                            <Box sx={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
-                                                marginLeft: '10px',
-                                                marginRight: '8px',
-                                                fontSize: '18px'
-                                            }}>
-                                                {companyStatusIndicator}
-                                            </Box>
+                                            <Tooltip 
+                                                title={getStatusTooltipText(companyStatusIndicator)}
+                                                arrow
+                                                placement="top"
+                                            >
+                                                <Box sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    marginLeft: '10px',
+                                                    marginRight: '8px',
+                                                    fontSize: '18px',
+                                                    cursor: 'help'
+                                                }}>
+                                                    {companyStatusIndicator}
+                                                </Box>
+                                            </Tooltip>
                                         ) : null
                                     }}
                                     onChange={(e) => {
