@@ -1768,21 +1768,58 @@ app.get('/api/search-company/:companyId', async (req, res) => {
     
     if (existingContractor) {
       console.log('✅ Found company in MongoDB Atlas:', existingContractor.name);
-      return res.json({
-        success: true,
-        source: 'mongodb',
-        data: {
-          name: existingContractor.name,
-          nameEnglish: existingContractor.nameEnglish,
-          companyType: existingContractor.companyType,
-          foundationDate: existingContractor.foundationDate,
-          address: existingContractor.address,
-          city: existingContractor.city,
-          email: existingContractor.email,
-          phone: existingContractor.phone,
-          contractor_id: existingContractor.contractor_id
+      
+      // For existing contractors, also fetch fresh data from Companies Registry for status indicator
+      try {
+        const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+        const companiesData = await companiesResponse.json();
+        
+        let statusIndicator = '';
+        if (companiesData.success && companiesData.result.records.length > 0) {
+          const companyData = companiesData.result.records[0];
+          statusIndicator = getCompanyStatusIndicator(
+            companyData['סטטוס חברה'] || '',
+            companyData['מפרה'] || '',
+            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+          );
         }
-      });
+        
+        return res.json({
+          success: true,
+          source: 'mongodb',
+          data: {
+            name: existingContractor.name,
+            nameEnglish: existingContractor.nameEnglish,
+            companyType: existingContractor.companyType,
+            foundationDate: existingContractor.foundationDate,
+            address: existingContractor.address,
+            city: existingContractor.city,
+            email: existingContractor.email,
+            phone: existingContractor.phone,
+            contractor_id: existingContractor.contractor_id,
+            statusIndicator: statusIndicator
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching status for existing contractor:', error);
+        // Return existing contractor data without status indicator
+        return res.json({
+          success: true,
+          source: 'mongodb',
+          data: {
+            name: existingContractor.name,
+            nameEnglish: existingContractor.nameEnglish,
+            companyType: existingContractor.companyType,
+            foundationDate: existingContractor.foundationDate,
+            address: existingContractor.address,
+            city: existingContractor.city,
+            email: existingContractor.email,
+            phone: existingContractor.phone,
+            contractor_id: existingContractor.contractor_id,
+            statusIndicator: ''
+          }
+        });
+      }
     }
     
     // If not found in MongoDB, search in Companies Registry API

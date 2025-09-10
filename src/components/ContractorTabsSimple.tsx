@@ -81,6 +81,11 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractor?.email || '');
         setLocalPhone(contractor?.phone || '');
         setLocalContractorId(contractor?.contractor_id || '');
+        
+        // Load status indicator for existing contractors
+        if (contractor?.company_id && contractor._id) {
+            loadStatusForExistingContractor(contractor.company_id);
+        }
     }, [contractor]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
@@ -297,6 +302,22 @@ export default function ContractorTabsSimple({
     const handleCloseContactDialog = () => {
         setContactDialogOpen(false);
         setEditingContact(null);
+    };
+
+    // Load status indicator for existing contractors
+    const loadStatusForExistingContractor = async (companyId: string) => {
+        try {
+            console.log('Loading status for existing contractor:', companyId);
+            const response = await fetch(`/api/search-company/${companyId}`);
+            const result = await response.json();
+            
+            if (result.success && result.data.statusIndicator) {
+                setCompanyStatusIndicator(result.data.statusIndicator);
+                console.log('✅ Loaded status indicator for existing contractor:', result.data.statusIndicator);
+            }
+        } catch (error) {
+            console.error('Error loading status for existing contractor:', error);
+        }
     };
 
     const fetchCompanyData = async (companyId: string) => {
