@@ -114,7 +114,7 @@ export default function ContractorTabsSimple({
             // Update contractor with local values before saving
             const updatedContractor = {
                 ...contractor,
-                company_id: localCompanyId,
+                company_id: localCompanyId || undefined, // Use undefined instead of empty string
                 companyType: localCompanyType
             };
             onSave(updatedContractor);
