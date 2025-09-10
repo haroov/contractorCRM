@@ -499,12 +499,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 backgroundColor: (user?.role === 'user' || user?.role === 'admin') ? 'rgba(156, 39, 176, 0.04)' : 'transparent'
               }
             }}
-            onClick={() => {
-              // Navigate to CRM for user and admin types
-              if (user?.role === 'user' || user?.role === 'admin') {
-                handleCloseContractorDetails();
-              }
-            }}
+              onClick={() => {
+                // Navigate to CRM for user and admin types
+                if (user?.role === 'user' || user?.role === 'admin') {
+                  handleCloseContractorDetails();
+                }
+              }}
             >
               <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
             </Box>

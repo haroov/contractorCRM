@@ -803,13 +803,10 @@ export default function ContractorTabsSimple({
                                         מספר כוכבי בטיחות
                                     </InputLabel>
                                     <Select
-                                        value={contractor?.safetyRating || contractor?.safetyStars || ''}
+                                        value={localSafetyRating}
                                         disabled={!canEdit}
                                         onChange={(e) => {
-                                            if (onSave && contractor) {
-                                                const updatedContractor = { ...contractor, safetyRating: e.target.value };
-                                                onSave(updatedContractor);
-                                            }
+                                            setLocalSafetyRating(e.target.value);
                                         }}
                                         sx={{
                                             '& .MuiOutlinedInput-notchedOutline': {
