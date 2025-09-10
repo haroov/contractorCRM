@@ -32,6 +32,7 @@ export default function ContractorTabsSimple({
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
+    const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>('');
     
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
@@ -337,13 +338,15 @@ export default function ContractorTabsSimple({
                 setLocalEmail(companyData.email || '');
                 setLocalPhone(companyData.phone || '');
                 setLocalContractorId(companyData.contractor_id || '');
+                setCompanyStatusIndicator(companyData.statusIndicator || '');
                 
                 console.log('✅ Updated local states with cleaned company data:', {
                     name: cleanName,
                     nameEnglish: cleanNameEnglish,
                     address: cleanAddress,
                     city: companyData.city,
-                    foundationDate: companyData.foundationDate
+                    foundationDate: companyData.foundationDate,
+                    statusIndicator: companyData.statusIndicator
                 });
             } else {
                 console.log('No company data found for ID:', companyId);
@@ -409,6 +412,16 @@ export default function ContractorTabsSimple({
                                             }}>
                                                 <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
                                             </Box>
+                                        ) : companyStatusIndicator ? (
+                                            <Box sx={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                marginLeft: '10px',
+                                                marginRight: '8px',
+                                                fontSize: '18px'
+                                            }}>
+                                                {companyStatusIndicator}
+                                            </Box>
                                         ) : null
                                     }}
                                     onChange={(e) => {
@@ -424,9 +437,12 @@ export default function ContractorTabsSimple({
                                             setLocalCompanyType(companyType);
                                         }
                                         
-                                        // Clear error when user starts typing
+                                        // Clear error and status indicator when user starts typing
                                         if (companyIdError) {
                                             setCompanyIdError('');
+                                        }
+                                        if (companyStatusIndicator) {
+                                            setCompanyStatusIndicator('');
                                         }
                                     }}
                                     onBlur={async (e) => {

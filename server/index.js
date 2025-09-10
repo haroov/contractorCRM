@@ -1814,7 +1814,16 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           city: companyData['שם עיר'] || '',
           email: '',
           phone: '',
-          contractor_id: contractorData ? contractorData['מספר קבלן'] || '' : ''
+          contractor_id: contractorData ? contractorData['מספר קבלן'] || '' : '',
+          // Company status data for indicator
+          companyStatus: companyData['סטטוס חברה'] || '',
+          violations: companyData['מפרה'] || '',
+          lastAnnualReport: companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
+          statusIndicator: getCompanyStatusIndicator(
+            companyData['סטטוס חברה'] || '',
+            companyData['מפרה'] || '',
+            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+          )
         }
       });
     }
@@ -1877,6 +1886,40 @@ function formatDateForInput(dateString) {
     console.error('Error formatting date:', error);
     return '';
   }
+}
+
+// Helper function to determine company status indicator
+function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport) {
+  const currentYear = new Date().getFullYear();
+  
+  // 🔴 Red: Company status is not "פעילה" (Active)
+  if (companyStatus && companyStatus !== 'פעילה') {
+    return '🔴';
+  }
+  
+  // 🟡 Yellow: Has violations or annual report is more than 2 years old
+  if (violations && violations.trim() !== '') {
+    return '🟡';
+  }
+  
+  if (lastAnnualReport) {
+    const reportYear = parseInt(lastAnnualReport);
+    if (!isNaN(reportYear) && (currentYear - reportYear) > 2) {
+      return '🟡';
+    }
+  }
+  
+  // 🟢 Green: All good - active status, no violations, recent annual report
+  if (companyStatus === 'פעילה' && 
+      (!violations || violations.trim() === '') && 
+      lastAnnualReport && 
+      !isNaN(parseInt(lastAnnualReport)) && 
+      (currentYear - parseInt(lastAnnualReport)) <= 2) {
+    return '🟢';
+  }
+  
+  // No indicator if no data
+  return '';
 }
 
 // Cleanup contractors without names
