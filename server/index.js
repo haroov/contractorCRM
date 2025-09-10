@@ -1809,7 +1809,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           name: companyData['שם חברה'] || '',
           nameEnglish: companyData['שם באנגלית'] || '',
           companyType: getCompanyTypeFromId(companyId),
-          foundationDate: companyData['תאריך התאגדות'] || '',
+          foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
           address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
           city: companyData['שם עיר'] || '',
           email: '',
@@ -1841,6 +1841,41 @@ function getCompanyTypeFromId(companyId) {
     case '52': return 'חברה ציבורית';
     case '57': return 'אגודה שיתופית';
     default: return 'עוסק מורשה';
+  }
+}
+
+// Helper function to format date for HTML input (YYYY-MM-DD)
+function formatDateForInput(dateString) {
+  if (!dateString) return '';
+  
+  try {
+    // Handle different date formats from the API
+    // Format: "22/10/1995" -> "1995-10-22"
+    if (dateString.includes('/')) {
+      const parts = dateString.split('/');
+      if (parts.length === 3) {
+        const day = parts[0].padStart(2, '0');
+        const month = parts[1].padStart(2, '0');
+        const year = parts[2];
+        return `${year}-${month}-${day}`;
+      }
+    }
+    
+    // If already in YYYY-MM-DD format, return as is
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return dateString;
+    }
+    
+    // Try to parse as Date object
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split('T')[0];
+    }
+    
+    return '';
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
   }
 }
 

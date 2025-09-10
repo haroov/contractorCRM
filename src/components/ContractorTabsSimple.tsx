@@ -312,22 +312,38 @@ export default function ContractorTabsSimple({
                 const companyData = result.data;
                 console.log(`✅ Found company in ${result.source}:`, companyData.name);
                 
-                // Update local states with fetched data directly
+                // Clean up company name - replace בע~מ with בע״מ and remove double spaces
+                const cleanName = (companyData.name || '')
+                    .replace(/בע~מ/g, 'בע״מ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                
+                const cleanNameEnglish = (companyData.nameEnglish || '')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                
+                // Clean up address - remove double spaces
+                const cleanAddress = (companyData.address || '')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                
+                // Update local states with cleaned data
                 setLocalCompanyType(companyData.companyType);
-                setLocalName(companyData.name || '');
-                setLocalNameEnglish(companyData.nameEnglish || '');
+                setLocalName(cleanName);
+                setLocalNameEnglish(cleanNameEnglish);
                 setLocalFoundationDate(companyData.foundationDate || '');
-                setLocalAddress(companyData.address || '');
+                setLocalAddress(cleanAddress);
                 setLocalCity(companyData.city || '');
                 setLocalEmail(companyData.email || '');
                 setLocalPhone(companyData.phone || '');
                 setLocalContractorId(companyData.contractor_id || '');
                 
-                console.log('✅ Updated local states with company data:', {
-                    name: companyData.name,
-                    nameEnglish: companyData.nameEnglish,
-                    address: companyData.address,
-                    city: companyData.city
+                console.log('✅ Updated local states with cleaned company data:', {
+                    name: cleanName,
+                    nameEnglish: cleanNameEnglish,
+                    address: cleanAddress,
+                    city: companyData.city,
+                    foundationDate: companyData.foundationDate
                 });
             } else {
                 console.log('No company data found for ID:', companyId);
