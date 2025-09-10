@@ -57,6 +57,9 @@ export interface Contractor extends Document {
     status?: string;
     violator?: boolean;
     restrictions?: string[];
+    // Company about section
+    companyAbout?: string;
+    companyLogo?: string;
     // Project statistics
     current_projects?: number;
     current_projects_value_nis?: number;
@@ -95,6 +98,9 @@ export interface ContractorDocument extends Document {
     status?: string;
     violator?: boolean;
     restrictions?: string[];
+    // Company about section
+    companyAbout?: string;
+    companyLogo?: string;
     // Project statistics
     current_projects?: number;
     current_projects_value_nis?: number;

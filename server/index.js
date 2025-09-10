@@ -2668,6 +2668,34 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
 });
 
+// Scrape company information from website
+app.post('/api/scrape-company-info', async (req, res) => {
+  try {
+    const { website } = req.body;
+    
+    if (!website) {
+      return res.status(400).json({ error: 'Website URL is required' });
+    }
+
+    console.log('🌐 Scraping company info from:', website);
+
+    // For now, return mock data - in production, you would use a web scraping service
+    // or implement actual web scraping with libraries like puppeteer or cheerio
+    const mockData = {
+      success: true,
+      about: `מידע על החברה ${website} - זהו מידע דמה שיוחלף במידע אמיתי מאתר החברה. החברה מתמחה בתחום הבנייה והתשתיות ומספקת שירותים מקצועיים ללקוחותיה.`,
+      logo: `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(website.split('//')[1]?.split('.')[0] || 'LOGO')}`
+    };
+
+    console.log('✅ Mock company info generated:', mockData);
+    res.json(mockData);
+
+  } catch (error) {
+    console.error('❌ Error scraping company info:', error);
+    res.status(500).json({ error: 'Failed to scrape company info' });
+  }
+});
+
 // Force server restart
 app.get('/restart', (req, res) => {
   res.json({ message: 'Server restart requested', timestamp: new Date().toISOString() });

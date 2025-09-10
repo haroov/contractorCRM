@@ -124,6 +124,35 @@ export default function ContractorTabsSimple({
         return `https://www.${domain}`;
     };
 
+    // Function to scrape company information from website
+    const scrapeCompanyInfo = async (websiteUrl: string) => {
+        if (!websiteUrl) return;
+        
+        setIsLoadingAbout(true);
+        try {
+            const response = await fetch('/api/scrape-company-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ website: websiteUrl })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    setCompanyAbout(data.about || '');
+                    setCompanyLogo(data.logo || '');
+                    console.log('✅ Company info scraped successfully:', { about: data.about, logo: data.logo });
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error scraping company info:', error);
+        } finally {
+            setIsLoadingAbout(false);
+        }
+    };
+
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
     const [localNameEnglish, setLocalNameEnglish] = useState<string>(contractor?.nameEnglish || '');
@@ -147,6 +176,12 @@ export default function ContractorTabsSimple({
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
+    
+    // Company about section states
+    const [companyAbout, setCompanyAbout] = useState<string>(contractor?.companyAbout || '');
+    const [companyLogo, setCompanyLogo] = useState<string>(contractor?.companyLogo || '');
+    const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
+    
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -206,6 +241,10 @@ export default function ContractorTabsSimple({
         setLocalIsoExpiry(contractor?.isoExpiry || '');
         setLocalIsoCertificate(contractor?.isoCertificate || '');
         setLocalClassifications(contractor?.classifications || []);
+        
+        // Update company about section
+        setCompanyAbout(contractor?.companyAbout || '');
+        setCompanyLogo(contractor?.companyLogo || '');
 
         // Load status indicator for existing contractors
         if (contractor?.company_id && contractor._id) {
@@ -227,6 +266,14 @@ export default function ContractorTabsSimple({
         }
     }, [localEmail, localWebsite]);
 
+    // Auto-scrape company info when website changes
+    useEffect(() => {
+        if (localWebsite && localWebsite.startsWith('http')) {
+            console.log('🌐 Website changed, scraping company info:', localWebsite);
+            scrapeCompanyInfo(localWebsite);
+        }
+    }, [localWebsite]);
+
     // Listen for save events from the header button
     useEffect(() => {
         const handleSaveEvent = () => {
@@ -239,7 +286,7 @@ export default function ContractorTabsSimple({
         return () => {
             window.removeEventListener('saveContractor', handleSaveEvent);
         };
-    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localWebsite, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate, localClassifications]);
+    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localWebsite, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate, localClassifications, companyAbout, companyLogo]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
@@ -326,7 +373,10 @@ export default function ContractorTabsSimple({
                 iso45001: localIso45001,
                 isoExpiry: localIsoExpiry,
                 isoCertificate: localIsoCertificate,
-                classifications: localClassifications
+                classifications: localClassifications,
+                // Company about section
+                companyAbout: companyAbout,
+                companyLogo: companyLogo
             };
 
             console.log('💾 Saving contractor data:', {
@@ -538,6 +588,10 @@ export default function ContractorTabsSimple({
                 setLocalWebsite(companyData.website || '');
                 setLocalContractorId(companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
+                
+                // Update company about section if available
+                if (companyData.companyAbout !== undefined) setCompanyAbout(companyData.companyAbout);
+                if (companyData.companyLogo !== undefined) setCompanyLogo(companyData.companyLogo);
 
                 // Update additional contractor data if available
                 if (companyData.employees !== undefined) setLocalEmployees(companyData.employees);
@@ -858,6 +912,63 @@ export default function ContractorTabsSimple({
                                 />
                             </Grid>
                         </Grid>
+
+                        {/* אודות החברה */}
+                        <Box sx={{ mt: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                אודות החברה
+                            </Typography>
+                            
+                            <Grid container spacing={2} alignItems="flex-start">
+                                <Grid item xs={12} md={8}>
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        rows={4}
+                                        label="אודות החברה"
+                                        value={companyAbout}
+                                        disabled={!canEdit}
+                                        sx={textFieldSx}
+                                        onChange={(e) => setCompanyAbout(e.target.value)}
+                                        placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
+                                        InputProps={{
+                                            endAdornment: isLoadingAbout && (
+                                                <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                            )
+                                        }}
+                                    />
+                                </Grid>
+                                
+                                <Grid item xs={12} md={4}>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        alignItems: 'center',
+                                        p: 2,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 1,
+                                        minHeight: '120px',
+                                        justifyContent: 'center'
+                                    }}>
+                                        {companyLogo ? (
+                                            <img 
+                                                src={companyLogo} 
+                                                alt="לוגו החברה" 
+                                                style={{ 
+                                                    maxWidth: '100%', 
+                                                    maxHeight: '100px',
+                                                    objectFit: 'contain'
+                                                }}
+                                            />
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                {isLoadingAbout ? 'טוען לוגו...' : 'לוגו החברה יופיע כאן אוטומטית'}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Box>
                     </Box>
                 )}
 
