@@ -226,7 +226,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     if (confirmed) {
       try {
         const { default: ContractorService } = await import('../services/contractorService');
-        await ContractorService.update(String(contractor._id), { status: 'archived' });
+        await ContractorService.update(String(contractor._id), { status: 'ארכיב' });
         setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
         // Refresh the contractors list
         loadContractors();
