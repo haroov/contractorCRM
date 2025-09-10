@@ -123,7 +123,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       setLoading(true);
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
-      setContractors(contractorsData);
+      // Filter out archived contractors from the main list
+      const activeContractors = contractorsData.filter(contractor => contractor.status !== 'ארכיב');
+      setContractors(activeContractors);
     } catch (error) {
       console.error('Error loading contractors:', error);
     } finally {
