@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
@@ -29,14 +29,25 @@ export default function ContractorTabsSimple({
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [companyIdError, setCompanyIdError] = useState<string>('');
+    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
+    // Update local company_id when contractor changes
+    useEffect(() => {
+        setLocalCompanyId(contractor?.company_id || '');
+    }, [contractor?.company_id]);
+
     const handleSave = () => {
         if (onSave && contractor) {
-            onSave(contractor);
+            // Update contractor with local company_id value before saving
+            const updatedContractor = {
+                ...contractor,
+                company_id: localCompanyId
+            };
+            onSave(updatedContractor);
         }
     };
 
@@ -275,24 +286,16 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
-                                    value={contractor?.company_id || ''}
+                                    value={localCompanyId}
                                     disabled={!canEdit || !!contractor?._id}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         setCompanyIdError('');
+                                        setLocalCompanyId(value);
                                         
                                         // Validate company ID format (9 digits)
                                         if (value && !/^\d{9}$/.test(value)) {
                                             setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
-                                        }
-                                        
-                                        // Update contractor state immediately
-                                        if (contractor && onSave) {
-                                            const updatedContractor = {
-                                                ...contractor,
-                                                company_id: value
-                                            };
-                                            onSave(updatedContractor);
                                         }
                                     }}
                                     onBlur={async (e) => {
