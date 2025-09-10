@@ -401,7 +401,12 @@ export default function ContractorTabsSimple({
                                     label="מספר חברה (ח״פ)"
                                     value={localCompanyId}
                                     disabled={!canEdit || !!contractor?._id}
-                                    sx={textFieldSx}
+                                    sx={{
+                                        ...textFieldSx,
+                                        '& .MuiInputBase-input': {
+                                            textAlign: 'right'  // יישור הטקסט לימין
+                                        }
+                                    }}
                                     InputProps={{
                                         startAdornment: isLoadingCompanyData ? (
                                             <Box sx={{ 
