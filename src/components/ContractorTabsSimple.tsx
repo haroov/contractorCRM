@@ -51,7 +51,7 @@ export default function ContractorTabsSimple({
     // Function to map company type from API to display value
     const mapCompanyTypeFromAPI = (apiCompanyType: string): string => {
         if (!apiCompanyType) return 'חברה פרטית';
-        
+
         const type = apiCompanyType.toLowerCase();
         if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
             return 'חברה פרטית';
@@ -78,11 +78,11 @@ export default function ContractorTabsSimple({
     const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
     const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
     const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || contractor?.numberOfEmployees || '');
-    
+
     // Local states for additional contractor data
     const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
     const [localProjects, setLocalProjects] = useState<any[]>(contractor?.projects || []);
-    const [localNotes, setLocalNotes] = useState<{general: string, internal: string}>(contractor?.notes || { general: '', internal: '' });
+    const [localNotes, setLocalNotes] = useState<{ general: string, internal: string }>(contractor?.notes || { general: '', internal: '' });
     const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '');
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
     const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
@@ -128,7 +128,7 @@ export default function ContractorTabsSimple({
         setLocalPhone(contractor?.phone || '');
         setLocalContractorId(contractor?.contractor_id || '');
         setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
-        
+
         // Update additional contractor data
         setLocalContacts(contractor?.contacts || []);
         setLocalProjects(contractor?.projects || []);
@@ -139,7 +139,7 @@ export default function ContractorTabsSimple({
         setLocalIso45001(contractor?.iso45001 || false);
         setLocalIsoExpiry(contractor?.isoExpiry || '');
         setLocalIsoCertificate(contractor?.isoCertificate || '');
-        
+
         // Load status indicator for existing contractors
         if (contractor?.company_id && contractor._id) {
             loadStatusForExistingContractor(contractor.company_id);
@@ -431,7 +431,7 @@ export default function ContractorTabsSimple({
                 setLocalPhone(companyData.phone || '');
                 setLocalContractorId(companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
-                
+
                 // Update additional contractor data if available
                 if (companyData.employees !== undefined) setLocalEmployees(companyData.employees);
                 if (companyData.numberOfEmployees !== undefined) setLocalEmployees(companyData.numberOfEmployees.toString());

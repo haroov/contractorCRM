@@ -112,7 +112,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -1920,12 +1920,18 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
     // If not found in MongoDB, search in Companies Registry API
     console.log('🔍 Company not found in MongoDB, searching Companies Registry API...');
-
+    
     const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
     const companiesData = await companiesResponse.json();
-
+    
     const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
     const contractorsData = await contractorsResponse.json();
+    
+    console.log('📋 Contractors Registry API response:', {
+      success: contractorsData.success,
+      recordsCount: contractorsData.result?.records?.length || 0,
+      total: contractorsData.result?.total || 0
+    });
 
     if (companiesData.success && companiesData.result.records.length > 0) {
       const companyData = companiesData.result.records[0];
@@ -1935,19 +1941,44 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
       console.log('✅ Found company in Companies Registry:', companyData['שם חברה']);
 
+      // Extract contractor data from Contractors Registry
+      let contractorId = '';
+      let phone = '';
+      let email = '';
+      
+      if (contractorData) {
+        contractorId = contractorData['MISPAR_KABLAN'] || '';
+        
+        // Format phone number - add 0 prefix if needed
+        const rawPhone = contractorData['MISPAR_TEL'] || '';
+        if (rawPhone && !rawPhone.startsWith('0')) {
+          phone = '0' + rawPhone;
+        } else {
+          phone = rawPhone;
+        }
+        
+        email = contractorData['EMAIL'] || '';
+        
+        console.log('📋 Extracted contractor data:', {
+          contractorId,
+          phone: rawPhone + ' -> ' + phone,
+          email
+        });
+      }
+
       return res.json({
         success: true,
         source: 'companies_registry',
         data: {
           name: companyData['שם חברה'] || '',
           nameEnglish: companyData['שם באנגלית'] || '',
-            companyType: mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId), // API data takes priority
+          companyType: mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId), // API data takes priority
           foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
           address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
           city: companyData['שם עיר'] || '',
-          email: '',
-          phone: '',
-          contractor_id: contractorData ? contractorData['מספר קבלן'] || '' : '',
+          email: email,
+          phone: phone,
+          contractor_id: contractorId,
           // Company status data for indicator
           companyStatus: companyData['סטטוס חברה'] || '',
           violations: companyData['מפרה'] || '',
@@ -1957,6 +1988,60 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             companyData['מפרה'] || '',
             companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
           )
+        }
+      });
+    }
+
+    // If not found in Companies Registry, try Contractors Registry only
+    if (contractorsData.success && contractorsData.result.records.length > 0) {
+      const contractorData = contractorsData.result.records[0];
+      
+      console.log('✅ Found contractor in Contractors Registry:', contractorData['SHEM_YESHUT']);
+      
+      // Extract contractor data
+      const contractorId = contractorData['MISPAR_KABLAN'] || '';
+      
+      // Format phone number - add 0 prefix if needed
+      const rawPhone = contractorData['MISPAR_TEL'] || '';
+      let phone = '';
+      if (rawPhone && !rawPhone.startsWith('0')) {
+        phone = '0' + rawPhone;
+      } else {
+        phone = rawPhone;
+      }
+      
+      const email = contractorData['EMAIL'] || '';
+      const contractorName = contractorData['SHEM_YESHUT'] || '';
+      const city = contractorData['SHEM_YISHUV'] || '';
+      const address = `${contractorData['SHEM_REHOV'] || ''} ${contractorData['MISPAR_BAIT'] || ''}`.trim();
+      
+      console.log('📋 Extracted contractor-only data:', {
+        contractorId,
+        phone: rawPhone + ' -> ' + phone,
+        email,
+        name: contractorName,
+        city,
+        address
+      });
+      
+      return res.json({
+        success: true,
+        source: 'contractors_registry_only',
+        data: {
+          name: contractorName,
+          nameEnglish: '',
+          companyType: getCompanyTypeFromId(companyId), // Use prefix logic
+          foundationDate: '',
+          address: address,
+          city: city,
+          email: email,
+          phone: phone,
+          contractor_id: contractorId,
+          // No company status data available from contractors registry
+          companyStatus: '',
+          violations: '',
+          lastAnnualReport: '',
+          statusIndicator: ''
         }
       });
     }
@@ -1989,7 +2074,7 @@ function getCompanyTypeFromId(companyId) {
 // Helper function to map company type from API to display value
 function mapCompanyTypeFromAPI(apiCompanyType) {
   if (!apiCompanyType) return 'חברה פרטית';
-  
+
   const type = apiCompanyType.toLowerCase();
   if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
     return 'חברה פרטית';
