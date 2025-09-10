@@ -202,6 +202,8 @@ export default function ContractorTabsSimple({
 
     const handleSave = () => {
         if (onSave && contractor) {
+            console.log('💾 Starting save process...');
+            
             // Update contractor with local values before saving
             const updatedContractor = {
                 ...contractor,
@@ -229,6 +231,13 @@ export default function ContractorTabsSimple({
                 isoExpiry: localIsoExpiry,
                 isoCertificate: localIsoCertificate
             };
+            
+            console.log('💾 Saving contractor data:', {
+                company_id: updatedContractor.company_id,
+                name: updatedContractor.name,
+                contractor_id: updatedContractor.contractor_id
+            });
+            
             onSave(updatedContractor);
         }
     };

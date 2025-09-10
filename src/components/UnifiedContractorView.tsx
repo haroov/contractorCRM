@@ -303,12 +303,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   };
 
   const handleSaveContractor = async (updatedContractor: Contractor) => {
+    console.log('💾 Starting save process for contractor:', {
+      company_id: updatedContractor.company_id,
+      name: updatedContractor.name,
+      contractor_id: updatedContractor.contractor_id,
+      mode: contractorMode
+    });
+    
     setIsSaving(true);
     try {
       const { default: ContractorService } = await import('../services/contractorService');
 
       // Don't save if company_id is empty or undefined
       if (!updatedContractor.company_id || updatedContractor.company_id.trim() === '') {
+        console.log('❌ Save failed: Company ID is empty');
         setSnackbarMessage('נא להזין מספר חברה לפני השמירה');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
@@ -361,18 +369,27 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           // Continue with creating new contractor if API check fails
         }
 
+        console.log('💾 Creating new contractor in MongoDB...');
         const newContractor = await ContractorService.create(updatedContractor);
+        console.log('✅ New contractor created successfully:', newContractor);
         setContractors([...contractors, newContractor]);
         setSnackbarMessage('הקבלן נוצר בהצלחה');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
       } else {
+        console.log('💾 Updating existing contractor in MongoDB...');
         const updated = await ContractorService.update(updatedContractor.contractor_id, updatedContractor);
         if (updated) {
+          console.log('✅ Contractor updated successfully:', updated);
           setContractors(contractors.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
           setSelectedContractor(updated);
           setSnackbarMessage('הקבלן עודכן בהצלחה');
           setSnackbarSeverity('success');
+          setSnackbarOpen(true);
+        } else {
+          console.log('❌ Failed to update contractor');
+          setSnackbarMessage('שגיאה בעדכון הקבלן');
+          setSnackbarSeverity('error');
           setSnackbarOpen(true);
         }
       }
@@ -382,6 +399,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {
+      console.log('💾 Save process completed, setting isSaving to false');
       setIsSaving(false);
     }
   };
@@ -830,16 +848,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     const saveEvent = new CustomEvent('saveContractor');
                     window.dispatchEvent(saveEvent);
                   }}
+                  disabled={isSaving}
+                  startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
                   sx={{
                     minWidth: 'auto',
                     px: 2,
                     backgroundColor: '#9c27b0', // סגול שוקו
                     '&:hover': {
                       backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                    },
+                    '&:disabled': {
+                      backgroundColor: '#9c27b0',
+                      opacity: 0.7
                     }
                   }}
                 >
-                  שמירה
+                  {isSaving ? 'שומר...' : 'שמירה'}
                 </Button>
               </Box>
             </Box>
