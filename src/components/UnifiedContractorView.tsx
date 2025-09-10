@@ -325,7 +325,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           console.log('✅ Company ID already exists, loading existing contractor for editing:', existingContractor.name);
           setSelectedContractor(existingContractor);
           setContractorMode('edit');
-          setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${existingContractor.name}" לעריכה.`);
+          setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${existingContractor.name}" עם כל הנתונים לעריכה.`);
           setSnackbarSeverity('info');
           setSnackbarOpen(true);
           setIsSaving(false);
@@ -349,7 +349,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             if (foundContractor) {
               setSelectedContractor(foundContractor);
               setContractorMode('edit');
-              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${foundContractor.name}" לעריכה.`);
+              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${foundContractor.name}" עם כל הנתונים לעריכה.`);
               setSnackbarSeverity('info');
               setSnackbarOpen(true);
               setIsSaving(false);
@@ -673,7 +673,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               {contractor.company_id}
                             </Typography>
                             {contractor.company_id && contractorStatusIndicators[contractor.company_id] && (
-                              <Tooltip 
+                              <Tooltip
                                 title={getStatusTooltipText(contractorStatusIndicators[contractor.company_id])}
                                 arrow
                                 placement="top"

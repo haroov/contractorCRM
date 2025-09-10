@@ -47,7 +47,7 @@ export default function ContractorTabsSimple({
                 return 'אין מידע זמין על מצב החברה';
         }
     };
-    
+
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
     const [localNameEnglish, setLocalNameEnglish] = useState<string>(contractor?.nameEnglish || '');
@@ -57,6 +57,18 @@ export default function ContractorTabsSimple({
     const [localEmail, setLocalEmail] = useState<string>(contractor?.email || '');
     const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
     const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
+    const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || '');
+    
+    // Local states for additional contractor data
+    const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
+    const [localProjects, setLocalProjects] = useState<any[]>(contractor?.projects || []);
+    const [localNotes, setLocalNotes] = useState<{general: string, internal: string}>(contractor?.notes || { general: '', internal: '' });
+    const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '');
+    const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
+    const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
+    const [localIso45001, setLocalIso45001] = useState<boolean>(contractor?.iso45001 || false);
+    const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
+    const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -95,6 +107,18 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractor?.email || '');
         setLocalPhone(contractor?.phone || '');
         setLocalContractorId(contractor?.contractor_id || '');
+        setLocalEmployees(contractor?.employees || '');
+        
+        // Update additional contractor data
+        setLocalContacts(contractor?.contacts || []);
+        setLocalProjects(contractor?.projects || []);
+        setLocalNotes(contractor?.notes || { general: '', internal: '' });
+        setLocalSafetyRating(contractor?.safetyRating || '');
+        setLocalSafetyExpiry(contractor?.safetyExpiry || '');
+        setLocalSafetyCertificate(contractor?.safetyCertificate || '');
+        setLocalIso45001(contractor?.iso45001 || false);
+        setLocalIsoExpiry(contractor?.isoExpiry || '');
+        setLocalIsoCertificate(contractor?.isoCertificate || '');
         
         // Load status indicator for existing contractors
         if (contractor?.company_id && contractor._id) {
@@ -119,12 +143,12 @@ export default function ContractorTabsSimple({
             let digit = parseInt(companyId[i]);
             let multiplier = (i % 2) + 1;
             let product = digit * multiplier;
-            
+
             // If product is greater than 9, sum the digits
             if (product > 9) {
                 product = Math.floor(product / 10) + (product % 10);
             }
-            
+
             sum += product;
         }
 
@@ -142,7 +166,7 @@ export default function ContractorTabsSimple({
         }
 
         const prefix = companyId.substring(0, 2);
-        
+
         switch (prefix) {
             case '51':
                 return 'חברה פרטית';
@@ -161,6 +185,7 @@ export default function ContractorTabsSimple({
             // Update contractor with local values before saving
             const updatedContractor = {
                 ...contractor,
+                // Basic company info
                 company_id: localCompanyId || undefined, // Use undefined instead of empty string
                 companyType: localCompanyType,
                 name: localName,
@@ -170,7 +195,18 @@ export default function ContractorTabsSimple({
                 city: localCity,
                 email: localEmail,
                 phone: localPhone,
-                contractor_id: localContractorId
+                contractor_id: localContractorId,
+                employees: localEmployees,
+                // Additional contractor data
+                contacts: localContacts,
+                projects: localProjects,
+                notes: localNotes,
+                safetyRating: localSafetyRating,
+                safetyExpiry: localSafetyExpiry,
+                safetyCertificate: localSafetyCertificate,
+                iso45001: localIso45001,
+                isoExpiry: localIsoExpiry,
+                isoCertificate: localIsoCertificate
             };
             onSave(updatedContractor);
         }
@@ -324,7 +360,7 @@ export default function ContractorTabsSimple({
             console.log('Loading status for existing contractor:', companyId);
             const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
-            
+
             if (result.success && result.data.statusIndicator) {
                 setCompanyStatusIndicator(result.data.statusIndicator);
                 console.log('✅ Loaded status indicator for existing contractor:', result.data.statusIndicator);
@@ -347,22 +383,22 @@ export default function ContractorTabsSimple({
             if (result.success) {
                 const companyData = result.data;
                 console.log(`✅ Found company in ${result.source}:`, companyData.name);
-                
+
                 // Clean up company name - replace בע~מ with בע״מ and remove double spaces
                 const cleanName = (companyData.name || '')
                     .replace(/בע~מ/g, 'בע״מ')
                     .replace(/\s+/g, ' ')
                     .trim();
-                
+
                 const cleanNameEnglish = (companyData.nameEnglish || '')
                     .replace(/\s+/g, ' ')
                     .trim();
-                
+
                 // Clean up address - remove double spaces
                 const cleanAddress = (companyData.address || '')
                     .replace(/\s+/g, ' ')
                     .trim();
-                
+
                 // Update local states with cleaned data
                 setLocalCompanyType(companyData.companyType);
                 setLocalName(cleanName);
@@ -375,6 +411,18 @@ export default function ContractorTabsSimple({
                 setLocalContractorId(companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
                 
+                // Update additional contractor data if available
+                if (companyData.employees !== undefined) setLocalEmployees(companyData.employees);
+                if (companyData.contacts !== undefined) setLocalContacts(companyData.contacts);
+                if (companyData.projects !== undefined) setLocalProjects(companyData.projects);
+                if (companyData.notes !== undefined) setLocalNotes(companyData.notes);
+                if (companyData.safetyRating !== undefined) setLocalSafetyRating(companyData.safetyRating);
+                if (companyData.safetyExpiry !== undefined) setLocalSafetyExpiry(companyData.safetyExpiry);
+                if (companyData.safetyCertificate !== undefined) setLocalSafetyCertificate(companyData.safetyCertificate);
+                if (companyData.iso45001 !== undefined) setLocalIso45001(companyData.iso45001);
+                if (companyData.isoExpiry !== undefined) setLocalIsoExpiry(companyData.isoExpiry);
+                if (companyData.isoCertificate !== undefined) setLocalIsoCertificate(companyData.isoCertificate);
+
                 console.log('✅ Updated local states with cleaned company data:', {
                     name: cleanName,
                     nameEnglish: cleanNameEnglish,
@@ -444,23 +492,23 @@ export default function ContractorTabsSimple({
                                     }}
                                     InputProps={{
                                         startAdornment: isLoadingCompanyData ? (
-                                            <Box sx={{ 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 marginLeft: '10px',
                                                 marginRight: '8px'
                                             }}>
                                                 <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
                                             </Box>
                                         ) : companyStatusIndicator ? (
-                                            <Tooltip 
+                                            <Tooltip
                                                 title={getStatusTooltipText(companyStatusIndicator)}
                                                 arrow
                                                 placement="top"
                                             >
-                                                <Box sx={{ 
-                                                    display: 'flex', 
-                                                    alignItems: 'center', 
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
                                                     marginLeft: '10px',
                                                     marginRight: '8px',
                                                     fontSize: '18px',
@@ -473,18 +521,18 @@ export default function ContractorTabsSimple({
                                     }}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        
+
                                         // Allow only digits and limit to 9 characters
                                         const numericValue = value.replace(/\D/g, '').slice(0, 9);
                                         setLocalCompanyId(numericValue);
-                                        
+
                                         // Auto-set company type based on company ID prefix (local state only)
                                         // Only if we don't have data from API yet
                                         if (numericValue && numericValue.length >= 2 && !companyStatusIndicator) {
                                             const companyType = getCompanyTypeFromId(numericValue);
                                             setLocalCompanyType(companyType);
                                         }
-                                        
+
                                         // Clear error and status indicator when user starts typing
                                         if (companyIdError) {
                                             setCompanyIdError('');
@@ -495,7 +543,7 @@ export default function ContractorTabsSimple({
                                     }}
                                     onBlur={async (e) => {
                                         const companyId = e.target.value;
-                                        
+
                                         // Validate company ID format and checksum only on blur
                                         if (companyId && companyId.length === 9) {
                                             if (validateIsraeliCompanyId(companyId)) {
@@ -607,9 +655,10 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר עובדים"
                                     type="number"
-                                    value={contractor?.numberOfEmployees || ''}
+                                    value={localEmployees}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalEmployees(e.target.value)}
                                 />
                             </Grid>
 

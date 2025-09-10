@@ -112,7 +112,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -1758,28 +1758,29 @@ app.get('/api/search-company/:companyId', async (req, res) => {
   try {
     const { companyId } = req.params;
     const db = client.db('contractor-crm');
-    
+
     console.log('🔍 Searching for company ID:', companyId);
-    
+
     // First, check if company exists in MongoDB Atlas
-    const existingContractor = await db.collection('contractors').findOne({ 
-      company_id: companyId 
+    const existingContractor = await db.collection('contractors').findOne({
+      company_id: companyId
     });
-    
+
     if (existingContractor) {
       console.log('✅ Found company in MongoDB Atlas:', existingContractor.name);
-      
+
       // Check if we have cached status data that's less than 24 hours old
       const now = new Date();
       const lastStatusUpdate = existingContractor.statusLastUpdated ? new Date(existingContractor.statusLastUpdated) : null;
       const isStatusDataFresh = lastStatusUpdate && (now - lastStatusUpdate) < 24 * 60 * 60 * 1000; // 24 hours
-      
+
       if (isStatusDataFresh && existingContractor.statusIndicator) {
         console.log('✅ Using cached status data (less than 24 hours old)');
         return res.json({
           success: true,
           source: 'mongodb_cached',
           data: {
+            // Basic company info
             name: existingContractor.name,
             nameEnglish: existingContractor.nameEnglish,
             companyType: existingContractor.companyType,
@@ -1789,21 +1790,35 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             email: existingContractor.email,
             phone: existingContractor.phone,
             contractor_id: existingContractor.contractor_id,
+            // Status data
             statusIndicator: existingContractor.statusIndicator,
-            statusLastUpdated: existingContractor.statusLastUpdated
+            statusLastUpdated: existingContractor.statusLastUpdated,
+            // Complete contractor data
+            employees: existingContractor.employees || '',
+            contacts: existingContractor.contacts || [],
+            projects: existingContractor.projects || [],
+            notes: existingContractor.notes || { general: '', internal: '' },
+            safetyRating: existingContractor.safetyRating || '',
+            safetyExpiry: existingContractor.safetyExpiry || '',
+            safetyCertificate: existingContractor.safetyCertificate || '',
+            iso45001: existingContractor.iso45001 || false,
+            isoExpiry: existingContractor.isoExpiry || '',
+            isoCertificate: existingContractor.isoCertificate || '',
+            // All other fields
+            ...existingContractor
           }
         });
       }
-      
+
       // Fetch fresh data from Companies Registry for status indicator
       try {
         console.log('🔄 Fetching fresh status data from Companies Registry API');
         const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
         const companiesData = await companiesResponse.json();
-        
+
         let statusIndicator = '';
         let statusData = {};
-        
+
         if (companiesData.success && companiesData.result.records.length > 0) {
           const companyData = companiesData.result.records[0];
           statusIndicator = getCompanyStatusIndicator(
@@ -1811,7 +1826,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             companyData['מפרה'] || '',
             companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
           );
-          
+
           // Store status data for caching
           statusData = {
             statusIndicator: statusIndicator,
@@ -1820,20 +1835,21 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             violations: companyData['מפרה'] || '',
             lastAnnualReport: companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
           };
-          
+
           // Update the contractor document with fresh status data
           await db.collection('contractors').updateOne(
             { company_id: companyId },
             { $set: statusData }
           );
-          
+
           console.log('✅ Updated contractor with fresh status data:', statusData);
         }
-        
+
         return res.json({
           success: true,
           source: 'mongodb_updated',
           data: {
+            // Basic company info
             name: existingContractor.name,
             nameEnglish: existingContractor.nameEnglish,
             companyType: existingContractor.companyType,
@@ -1843,8 +1859,22 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             email: existingContractor.email,
             phone: existingContractor.phone,
             contractor_id: existingContractor.contractor_id,
+            // Status data
             statusIndicator: statusIndicator,
-            statusLastUpdated: statusData.statusLastUpdated
+            statusLastUpdated: statusData.statusLastUpdated,
+            // Complete contractor data
+            employees: existingContractor.employees || '',
+            contacts: existingContractor.contacts || [],
+            projects: existingContractor.projects || [],
+            notes: existingContractor.notes || { general: '', internal: '' },
+            safetyRating: existingContractor.safetyRating || '',
+            safetyExpiry: existingContractor.safetyExpiry || '',
+            safetyCertificate: existingContractor.safetyCertificate || '',
+            iso45001: existingContractor.iso45001 || false,
+            isoExpiry: existingContractor.isoExpiry || '',
+            isoCertificate: existingContractor.isoCertificate || '',
+            // All other fields
+            ...existingContractor
           }
         });
       } catch (error) {
@@ -1854,6 +1884,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           success: true,
           source: 'mongodb',
           data: {
+            // Basic company info
             name: existingContractor.name,
             nameEnglish: existingContractor.nameEnglish,
             companyType: existingContractor.companyType,
@@ -1863,30 +1894,44 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             email: existingContractor.email,
             phone: existingContractor.phone,
             contractor_id: existingContractor.contractor_id,
+            // Status data
             statusIndicator: existingContractor.statusIndicator || '',
-            statusLastUpdated: existingContractor.statusLastUpdated
+            statusLastUpdated: existingContractor.statusLastUpdated,
+            // Complete contractor data
+            employees: existingContractor.employees || '',
+            contacts: existingContractor.contacts || [],
+            projects: existingContractor.projects || [],
+            notes: existingContractor.notes || { general: '', internal: '' },
+            safetyRating: existingContractor.safetyRating || '',
+            safetyExpiry: existingContractor.safetyExpiry || '',
+            safetyCertificate: existingContractor.safetyCertificate || '',
+            iso45001: existingContractor.iso45001 || false,
+            isoExpiry: existingContractor.isoExpiry || '',
+            isoCertificate: existingContractor.isoCertificate || '',
+            // All other fields
+            ...existingContractor
           }
         });
       }
     }
-    
+
     // If not found in MongoDB, search in Companies Registry API
     console.log('🔍 Company not found in MongoDB, searching Companies Registry API...');
-    
+
     const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
     const companiesData = await companiesResponse.json();
-    
+
     const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
     const contractorsData = await contractorsResponse.json();
-    
+
     if (companiesData.success && companiesData.result.records.length > 0) {
       const companyData = companiesData.result.records[0];
-      const contractorData = contractorsData.success && contractorsData.result.records.length > 0 
-        ? contractorsData.result.records[0] 
+      const contractorData = contractorsData.success && contractorsData.result.records.length > 0
+        ? contractorsData.result.records[0]
         : null;
-      
+
       console.log('✅ Found company in Companies Registry:', companyData['שם חברה']);
-      
+
       return res.json({
         success: true,
         source: 'companies_registry',
@@ -1912,14 +1957,14 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         }
       });
     }
-    
+
     // Company not found in either source
     console.log('❌ Company not found in any source');
     return res.json({
       success: false,
       message: 'Company not found'
     });
-    
+
   } catch (error) {
     console.error('❌ Error searching for company:', error);
     res.status(500).json({ error: 'Failed to search for company' });
@@ -1941,7 +1986,7 @@ function getCompanyTypeFromId(companyId) {
 // Helper function to format date for HTML input (YYYY-MM-DD)
 function formatDateForInput(dateString) {
   if (!dateString) return '';
-  
+
   try {
     // Handle different date formats from the API
     // Format: "22/10/1995" -> "1995-10-22"
@@ -1954,18 +1999,18 @@ function formatDateForInput(dateString) {
         return `${year}-${month}-${day}`;
       }
     }
-    
+
     // If already in YYYY-MM-DD format, return as is
     if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
       return dateString;
     }
-    
+
     // Try to parse as Date object
     const date = new Date(dateString);
     if (!isNaN(date.getTime())) {
       return date.toISOString().split('T')[0];
     }
-    
+
     return '';
   } catch (error) {
     console.error('Error formatting date:', error);
@@ -1976,33 +2021,33 @@ function formatDateForInput(dateString) {
 // Helper function to determine company status indicator
 function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport) {
   const currentYear = new Date().getFullYear();
-  
+
   // 🔴 Red: Company status is not "פעילה" (Active)
   if (companyStatus && companyStatus !== 'פעילה') {
     return '🔴';
   }
-  
+
   // 🟡 Yellow: Has violations or annual report is more than 2 years old
   if (violations && violations.trim() !== '') {
     return '🟡';
   }
-  
+
   if (lastAnnualReport) {
     const reportYear = parseInt(lastAnnualReport);
     if (!isNaN(reportYear) && (currentYear - reportYear) > 2) {
       return '🟡';
     }
   }
-  
+
   // 🟢 Green: All good - active status, no violations, recent annual report
-  if (companyStatus === 'פעילה' && 
-      (!violations || violations.trim() === '') && 
-      lastAnnualReport && 
-      !isNaN(parseInt(lastAnnualReport)) && 
-      (currentYear - parseInt(lastAnnualReport)) <= 2) {
+  if (companyStatus === 'פעילה' &&
+    (!violations || violations.trim() === '') &&
+    lastAnnualReport &&
+    !isNaN(parseInt(lastAnnualReport)) &&
+    (currentYear - parseInt(lastAnnualReport)) <= 2) {
     return '🟢';
   }
-  
+
   // No indicator if no data
   return '';
 }
@@ -2011,56 +2056,56 @@ function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport) 
 app.get('/api/cleanup-contractors', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all contractors
     const allContractors = await db.collection('contractors').find({}).toArray();
     console.log(`📊 Found ${allContractors.length} contractors in database`);
-    
+
     // Find contractors without names or with empty names
-    const invalidContractors = allContractors.filter(contractor => 
-      !contractor.name || 
-      contractor.name.trim() === '' || 
+    const invalidContractors = allContractors.filter(contractor =>
+      !contractor.name ||
+      contractor.name.trim() === '' ||
       contractor.name === 'undefined' ||
       contractor.name === 'null'
     );
-    
+
     console.log(`🗑️ Found ${invalidContractors.length} invalid contractors to delete:`);
     invalidContractors.forEach(contractor => {
       console.log(`  - ID: ${contractor._id}, Name: "${contractor.name}", Company ID: ${contractor.company_id}`);
     });
-    
+
     let deletedCount = 0;
     if (invalidContractors.length > 0) {
       // Delete invalid contractors
       const deleteResult = await db.collection('contractors').deleteMany({
         _id: { $in: invalidContractors.map(c => c._id) }
       });
-      
+
       deletedCount = deleteResult.deletedCount;
       console.log(`✅ Deleted ${deletedCount} invalid contractors`);
     }
-    
+
     // Get remaining contractors
     const remainingContractors = await db.collection('contractors').find({}).toArray();
     console.log(`📊 Remaining contractors: ${remainingContractors.length}`);
-    
+
     // If we have more than 15 contractors, keep only the first 15
     let excessDeleted = 0;
     if (remainingContractors.length > 15) {
       console.log(`⚠️ More than 15 contractors found. Keeping only the first 15.`);
-      
+
       const contractorsToDelete = remainingContractors.slice(15);
       const deleteResult = await db.collection('contractors').deleteMany({
         _id: { $in: contractorsToDelete.map(c => c._id) }
       });
-      
+
       excessDeleted = deleteResult.deletedCount;
       console.log(`✅ Deleted ${excessDeleted} excess contractors`);
     }
-    
+
     // Get final contractors
     const finalContractors = await db.collection('contractors').find({}).toArray();
-    
+
     res.json({
       success: true,
       message: 'Contractors cleaned up successfully',
@@ -2076,7 +2121,7 @@ app.get('/api/cleanup-contractors', async (req, res) => {
         company_id: c.company_id
       }))
     });
-    
+
   } catch (error) {
     console.error('❌ Error cleaning up contractors:', error);
     res.status(500).json({ error: 'Failed to cleanup contractors' });
