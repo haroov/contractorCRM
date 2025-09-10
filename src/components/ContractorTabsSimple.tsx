@@ -144,10 +144,22 @@ export default function ContractorTabsSimple({
                     setCompanyAbout(data.about || '');
                     setCompanyLogo(data.logo || '');
                     console.log('✅ Company info scraped successfully:', { about: data.about, logo: data.logo });
+                } else {
+                    console.warn('⚠️ Scraping returned unsuccessful:', data);
+                }
+            } else {
+                // Handle rate limiting and other HTTP errors
+                if (response.status === 429) {
+                    console.warn('⚠️ Rate limit exceeded for scraping. Please wait before trying again.');
+                    setCompanyAbout('מידע זמנית לא זמין - יותר מדי בקשות. נסה שוב בעוד כמה דקות.');
+                } else {
+                    console.error('❌ HTTP error scraping company info:', response.status, response.statusText);
+                    setCompanyAbout('שגיאה בטעינת מידע מהאתר. נסה שוב מאוחר יותר.');
                 }
             }
         } catch (error) {
             console.error('❌ Error scraping company info:', error);
+            setCompanyAbout('שגיאה בטעינת מידע מהאתר. נסה שוב מאוחר יותר.');
         } finally {
             setIsLoadingAbout(false);
         }

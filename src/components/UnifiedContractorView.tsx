@@ -407,7 +407,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
     } catch (error) {
       console.error('Error saving contractor:', error);
-      setSnackbarMessage('שגיאה בשמירת הקבלן');
+      
+      // More detailed error handling
+      let errorMessage = 'שגיאה בשמירת הקבלן';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('429') || error.message.includes('Too many requests')) {
+          errorMessage = 'יותר מדי בקשות לשרת. נסה שוב בעוד כמה דקות.';
+        } else if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
+          errorMessage = 'שגיאה בעיבוד הנתונים. נסה שוב.';
+        } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+          errorMessage = 'שגיאת רשת. בדוק את החיבור לאינטרנט.';
+        } else {
+          errorMessage = `שגיאה בשמירת הקבלן: ${error.message}`;
+        }
+      }
+      
+      setSnackbarMessage(errorMessage);
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {

@@ -72,7 +72,13 @@ console.log('✅ Passport configured');
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 1000, // limit each IP to 1000 requests per windowMs (increased for development)
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 app.use(limiter);
 
@@ -2668,8 +2674,18 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Server is working', timestamp: new Date().toISOString() });
 });
 
+// Rate limiting for scraping endpoint (more restrictive)
+const scrapingLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 10, // limit each IP to 10 scraping requests per 5 minutes
+  message: {
+    error: 'Too many scraping requests. Please wait before trying again.',
+    retryAfter: '5 minutes'
+  }
+});
+
 // Scrape company information from website
-app.post('/api/scrape-company-info', async (req, res) => {
+app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
   let browser = null;
   try {
     const { website } = req.body;

@@ -104,8 +104,17 @@ class ContractorService {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to update contractor');
+                let errorMessage = 'Failed to update contractor';
+                
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (jsonError) {
+                    // If response is not JSON, use status text
+                    errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                }
+                
+                throw new Error(errorMessage);
             }
 
             const updatedContractor = await response.json();
@@ -113,7 +122,13 @@ class ContractorService {
             return updatedContractor;
         } catch (error) {
             console.error('Error updating contractor:', error);
-            throw new Error('Failed to update contractor');
+            
+            // Re-throw with more context
+            if (error instanceof Error) {
+                throw new Error(`Failed to update contractor: ${error.message}`);
+            } else {
+                throw new Error('Failed to update contractor: Unknown error');
+            }
         }
     }
 
