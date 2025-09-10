@@ -309,7 +309,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       contractor_id: updatedContractor.contractor_id,
       mode: contractorMode
     });
-    
+
     setIsSaving(true);
     try {
       const { default: ContractorService } = await import('../services/contractorService');
@@ -844,6 +844,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   variant="contained"
                   size="small"
                   onClick={() => {
+                    console.log('🔘 Save button clicked');
                     // Trigger save from ContractorTabs
                     const saveEvent = new CustomEvent('saveContractor');
                     window.dispatchEvent(saveEvent);

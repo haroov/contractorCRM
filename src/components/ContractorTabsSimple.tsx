@@ -146,6 +146,20 @@ export default function ContractorTabsSimple({
         }
     }, [contractor]);
 
+    // Listen for save events from the header button
+    useEffect(() => {
+        const handleSaveEvent = () => {
+            console.log('🔘 Save event received in ContractorTabsSimple');
+            handleSave();
+        };
+
+        window.addEventListener('saveContractor', handleSaveEvent);
+        
+        return () => {
+            window.removeEventListener('saveContractor', handleSaveEvent);
+        };
+    }, [contractor, localCompanyId, localCompanyType, localName, localNameEnglish, localFoundationDate, localAddress, localCity, localEmail, localPhone, localContractorId, localEmployees, localContacts, localProjects, localNotes, localSafetyRating, localSafetyExpiry, localSafetyCertificate, localIso45001, localIsoExpiry, localIsoCertificate]);
+
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
         if (!companyId || companyId.length !== 9) {
