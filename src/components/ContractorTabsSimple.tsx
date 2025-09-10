@@ -30,15 +30,17 @@ export default function ContractorTabsSimple({
     const [editingContact, setEditingContact] = useState<any>(null);
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
+    const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
 
-    // Update local company_id when contractor changes
+    // Update local states when contractor changes
     useEffect(() => {
         setLocalCompanyId(contractor?.company_id || '');
-    }, [contractor?.company_id]);
+        setLocalCompanyType(contractor?.companyType || '');
+    }, [contractor?.company_id, contractor?.companyType]);
 
     // Function to validate Israeli company ID (ח״פ) like Israeli ID
     const validateIsraeliCompanyId = (companyId: string): boolean => {
@@ -96,10 +98,11 @@ export default function ContractorTabsSimple({
 
     const handleSave = () => {
         if (onSave && contractor) {
-            // Update contractor with local company_id value before saving
+            // Update contractor with local values before saving
             const updatedContractor = {
                 ...contractor,
-                company_id: localCompanyId
+                company_id: localCompanyId,
+                companyType: localCompanyType
             };
             onSave(updatedContractor);
         }
@@ -350,16 +353,10 @@ export default function ContractorTabsSimple({
                                         const numericValue = value.replace(/\D/g, '').slice(0, 9);
                                         setLocalCompanyId(numericValue);
                                         
-                                        // Auto-set company type based on company ID prefix
+                                        // Auto-set company type based on company ID prefix (local state only)
                                         if (numericValue && numericValue.length >= 2) {
                                             const companyType = getCompanyTypeFromId(numericValue);
-                                            if (contractor && onSave) {
-                                                const updatedContractor = {
-                                                    ...contractor,
-                                                    companyType: companyType
-                                                };
-                                                onSave(updatedContractor);
-                                            }
+                                            setLocalCompanyType(companyType);
                                         }
                                         
                                         // Validate company ID format and checksum
@@ -422,7 +419,7 @@ export default function ContractorTabsSimple({
                                         סוג חברה
                                     </InputLabel>
                                     <Select
-                                        value={contractor?.companyType || ''}
+                                        value={localCompanyType}
                                         disabled={!canEdit}
                                         sx={{
                                             '& .MuiOutlinedInput-notchedOutline': {
