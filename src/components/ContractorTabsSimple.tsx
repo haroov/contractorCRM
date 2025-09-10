@@ -110,6 +110,20 @@ export default function ContractorTabsSimple({
         }
     };
 
+    // Function to generate website from email
+    const generateWebsiteFromEmail = (email: string): string => {
+        if (!email) return '';
+        const domain = email.split('@')[1];
+        if (!domain) return '';
+
+        const freeEmailProviders = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'walla.co.il', 'nana10.co.il'];
+        if (freeEmailProviders.includes(domain?.toLowerCase() || '')) {
+            return '';
+        }
+
+        return `https://www.${domain}`;
+    };
+
     // Local states for company data fields
     const [localName, setLocalName] = useState<string>(contractor?.name || '');
     const [localNameEnglish, setLocalNameEnglish] = useState<string>(contractor?.nameEnglish || '');
@@ -198,6 +212,20 @@ export default function ContractorTabsSimple({
             loadStatusForExistingContractor(contractor.company_id);
         }
     }, [contractor]);
+
+    // Auto-generate website from email when website is empty
+    useEffect(() => {
+        if (localEmail && !localWebsite) {
+            const generatedWebsite = generateWebsiteFromEmail(localEmail);
+            if (generatedWebsite) {
+                console.log('🌐 Auto-generating website from email:', {
+                    email: localEmail,
+                    generatedWebsite
+                });
+                setLocalWebsite(generatedWebsite);
+            }
+        }
+    }, [localEmail, localWebsite]);
 
     // Listen for save events from the header button
     useEffect(() => {
