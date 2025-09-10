@@ -347,7 +347,6 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit || !!contractor?._id}
                                     onChange={(e) => {
                                         const value = e.target.value;
-                                        setCompanyIdError('');
                                         
                                         // Allow only digits and limit to 9 characters
                                         const numericValue = value.replace(/\D/g, '').slice(0, 9);
@@ -359,19 +358,25 @@ export default function ContractorTabsSimple({
                                             setLocalCompanyType(companyType);
                                         }
                                         
-                                        // Validate company ID format and checksum
-                                        if (numericValue && numericValue.length === 9) {
-                                            if (!validateIsraeliCompanyId(numericValue)) {
-                                                setCompanyIdError('מספר חברה לא תקין');
-                                            }
-                                        } else if (numericValue && numericValue.length > 0) {
-                                            setCompanyIdError('נא להזין 9 ספרות');
+                                        // Clear error when user starts typing
+                                        if (companyIdError) {
+                                            setCompanyIdError('');
                                         }
                                     }}
                                     onBlur={async (e) => {
                                         const companyId = e.target.value;
-                                        if (companyId && companyId.length === 9 && validateIsraeliCompanyId(companyId)) {
-                                            await fetchCompanyData(companyId);
+                                        
+                                        // Validate company ID format and checksum only on blur
+                                        if (companyId && companyId.length === 9) {
+                                            if (validateIsraeliCompanyId(companyId)) {
+                                                // Valid company ID - fetch data from API
+                                                await fetchCompanyData(companyId);
+                                                setCompanyIdError(''); // Clear any previous errors
+                                            } else {
+                                                setCompanyIdError('מספר חברה לא תקין');
+                                            }
+                                        } else if (companyId && companyId.length > 0) {
+                                            setCompanyIdError('נא להזין 9 ספרות');
                                         }
                                     }}
                                     error={!!companyIdError}
