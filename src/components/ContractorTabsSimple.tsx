@@ -31,6 +31,7 @@ export default function ContractorTabsSimple({
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
+    const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -264,6 +265,7 @@ export default function ContractorTabsSimple({
     };
 
     const fetchCompanyData = async (companyId: string) => {
+        setIsLoadingCompanyData(true);
         try {
             console.log('Fetching data for company ID:', companyId);
 
@@ -285,24 +287,34 @@ export default function ContractorTabsSimple({
                     setLocalCompanyType(getCompanyTypeFromId(companyId));
                 }
                 
-                // Update contractor with fetched data (local state only)
-                if (contractor) {
-                    // Update the contractor object directly without calling onSave
-                    contractor.name = companyData['שם חברה'] || contractor.name;
-                    contractor.nameEnglish = companyData['שם באנגלית'] || contractor.nameEnglish;
-                    contractor.foundationDate = companyData['תאריך התאגדות'] || contractor.foundationDate;
-                    contractor.address = `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || contractor.address;
-                    contractor.city = companyData['שם עיר'] || contractor.city;
+                // Update contractor with fetched data and trigger UI update
+                if (contractor && onSave) {
+                    const updatedContractor = {
+                        ...contractor,
+                        name: companyData['שם חברה'] || contractor.name,
+                        nameEnglish: companyData['שם באנגלית'] || contractor.nameEnglish,
+                        foundationDate: companyData['תאריך התאגדות'] || contractor.foundationDate,
+                        address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim() || contractor.address,
+                        city: companyData['שם עיר'] || contractor.city,
+                        companyType: getCompanyTypeFromId(companyId)
+                    };
                     
                     // Update contractor_id from contractors registry if available
                     if (contractorsData.success && contractorsData.result.records.length > 0) {
                         const contractorData = contractorsData.result.records[0];
-                        contractor.contractor_id = contractorData['מספר קבלן'] || contractor.contractor_id;
+                        updatedContractor.contractor_id = contractorData['מספר קבלן'] || contractor.contractor_id;
                     }
+                    
+                    // Call onSave to update the parent component and trigger UI refresh
+                    onSave(updatedContractor);
                 }
+            } else {
+                console.log('No company data found for ID:', companyId);
             }
         } catch (error) {
             console.error('Error fetching company data:', error);
+        } finally {
+            setIsLoadingCompanyData(false);
         }
     };
 
@@ -350,6 +362,18 @@ export default function ContractorTabsSimple({
                                     value={localCompanyId}
                                     disabled={!canEdit || !!contractor?._id}
                                     sx={textFieldSx}
+                                    InputProps={{
+                                        startAdornment: isLoadingCompanyData ? (
+                                            <Box sx={{ 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                marginLeft: '10px',
+                                                marginRight: '8px'
+                                            }}>
+                                                <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                            </Box>
+                                        ) : null
+                                    }}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         
