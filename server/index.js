@@ -2105,33 +2105,33 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
 // Helper function to determine company type from company ID
 function getCompanyTypeFromId(companyId) {
-  if (!companyId || companyId.length < 2) return 'בע"מ';
+  if (!companyId || companyId.length < 2) return 'authorized_dealer';
   const prefix = companyId.substring(0, 2);
   switch (prefix) {
-    case '51': return 'חברה פרטית';
-    case '52': return 'חברה ציבורית';
-    case '57': return 'אגודה שיתופית';
-    default: return 'עוסק מורשה';
+    case '51': return 'private_company';
+    case '52': return 'public_company';
+    case '57': return 'cooperative';
+    default: return 'authorized_dealer';
   }
 }
 
-// Helper function to map company type from API to display value
+// Helper function to map company type from API to English value
 function mapCompanyTypeFromAPI(apiCompanyType) {
-  if (!apiCompanyType) return 'חברה פרטית';
+  if (!apiCompanyType) return 'private_company';
 
   const type = apiCompanyType.toLowerCase();
   if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
-    return 'חברה פרטית';
+    return 'private_company';
   } else if (type.includes('ישראלית חברה ציבורית') || type.includes('חברה ציבורית')) {
-    return 'חברה ציבורית';
+    return 'public_company';
   } else if (type.includes('אגודה שיתופית')) {
-    return 'אגודה שיתופית';
+    return 'cooperative';
   } else if (type.includes('עוסק מורשה')) {
-    return 'עוסק מורשה';
+    return 'authorized_dealer';
   } else if (type.includes('עוסק פטור')) {
-    return 'עוסק פטור';
+    return 'exempt_dealer';
   } else {
-    return apiCompanyType; // Return original if no mapping found
+    return 'private_company'; // Default fallback
   }
 }
 

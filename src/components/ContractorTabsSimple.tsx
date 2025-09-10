@@ -30,7 +30,7 @@ export default function ContractorTabsSimple({
     const [editingContact, setEditingContact] = useState<any>(null);
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
-    const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || '');
+    const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>('');
 
@@ -70,23 +70,43 @@ export default function ContractorTabsSimple({
         }
     };
 
-    // Function to map company type from API to display value
+    // Function to get Hebrew text for company type value
+    const getCompanyTypeText = (value: string): string => {
+        switch (value) {
+            case 'private_company':
+                return 'חברה פרטית';
+            case 'public_company':
+                return 'חברה ציבורית';
+            case 'authorized_dealer':
+                return 'עוסק מורשה';
+            case 'exempt_dealer':
+                return 'עוסק פטור';
+            case 'cooperative':
+                return 'אגודה שיתופית';
+            case 'non_profit':
+                return 'עמותה רשומה';
+            default:
+                return 'חברה פרטית';
+        }
+    };
+
+    // Function to map company type from API to English value
     const mapCompanyTypeFromAPI = (apiCompanyType: string): string => {
-        if (!apiCompanyType) return 'חברה פרטית';
+        if (!apiCompanyType) return 'private_company';
 
         const type = apiCompanyType.toLowerCase();
         if (type.includes('ישראלית חברה פרטית') || type.includes('חברה פרטית')) {
-            return 'חברה פרטית';
+            return 'private_company';
         } else if (type.includes('ישראלית חברה ציבורית') || type.includes('חברה ציבורית')) {
-            return 'חברה ציבורית';
+            return 'public_company';
         } else if (type.includes('אגודה שיתופית')) {
-            return 'אגודה שיתופית';
+            return 'cooperative';
         } else if (type.includes('עוסק מורשה')) {
-            return 'עוסק מורשה';
+            return 'authorized_dealer';
         } else if (type.includes('עוסק פטור')) {
-            return 'עוסק פטור';
+            return 'exempt_dealer';
         } else {
-            return apiCompanyType; // Return original if no mapping found
+            return 'private_company'; // Default fallback
         }
     };
 
@@ -149,7 +169,7 @@ export default function ContractorTabsSimple({
     // Update local states when contractor changes
     useEffect(() => {
         setLocalCompanyId(contractor?.company_id || '');
-        setLocalCompanyType(contractor?.companyType || '');
+        setLocalCompanyType(contractor?.companyType || 'private_company');
         setLocalName(contractor?.name || '');
         setLocalNameEnglish(contractor?.nameEnglish || '');
         setLocalFoundationDate(contractor?.foundationDate || '');
@@ -695,6 +715,13 @@ export default function ContractorTabsSimple({
                                     <Select
                                         value={localCompanyType}
                                         disabled={!canEdit}
+                                        onChange={(e) => {
+                                            console.log('🔧 Company type changed:', {
+                                                value: e.target.value,
+                                                text: getCompanyTypeText(e.target.value)
+                                            });
+                                            setLocalCompanyType(e.target.value);
+                                        }}
                                         sx={{
                                             '& .MuiOutlinedInput-notchedOutline': {
                                                 borderColor: '#d0d0d0'
@@ -707,12 +734,12 @@ export default function ContractorTabsSimple({
                                             }
                                         }}
                                     >
-                                        <MenuItem value="חברה פרטית">חברה פרטית</MenuItem>
-                                        <MenuItem value="חברה ציבורית">חברה ציבורית</MenuItem>
-                                        <MenuItem value="עוסק מורשה">עוסק מורשה</MenuItem>
-                                        <MenuItem value="עוסק פטור">עוסק פטור</MenuItem>
-                                        <MenuItem value="אגודה שיתופית">אגודה שיתופית</MenuItem>
-                                        <MenuItem value="עמותה רשומה">עמותה רשומה</MenuItem>
+                                        <MenuItem value="private_company">חברה פרטית</MenuItem>
+                                        <MenuItem value="public_company">חברה ציבורית</MenuItem>
+                                        <MenuItem value="authorized_dealer">עוסק מורשה</MenuItem>
+                                        <MenuItem value="exempt_dealer">עוסק פטור</MenuItem>
+                                        <MenuItem value="cooperative">אגודה שיתופית</MenuItem>
+                                        <MenuItem value="non_profit">עמותה רשומה</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
