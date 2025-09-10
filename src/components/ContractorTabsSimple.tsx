@@ -291,10 +291,13 @@ export default function ContractorTabsSimple({
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         setCompanyIdError('');
-                                        setLocalCompanyId(value);
+                                        
+                                        // Allow only digits and limit to 9 characters
+                                        const numericValue = value.replace(/\D/g, '').slice(0, 9);
+                                        setLocalCompanyId(numericValue);
                                         
                                         // Validate company ID format (9 digits)
-                                        if (value && !/^\d{9}$/.test(value)) {
+                                        if (numericValue && numericValue.length !== 9) {
                                             setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
                                         }
                                     }}
