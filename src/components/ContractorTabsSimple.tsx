@@ -437,7 +437,8 @@ export default function ContractorTabsSimple({
                                         setLocalCompanyId(numericValue);
                                         
                                         // Auto-set company type based on company ID prefix (local state only)
-                                        if (numericValue && numericValue.length >= 2) {
+                                        // Only if we don't have data from API yet
+                                        if (numericValue && numericValue.length >= 2 && !companyStatusIndicator) {
                                             const companyType = getCompanyTypeFromId(numericValue);
                                             setLocalCompanyType(companyType);
                                         }

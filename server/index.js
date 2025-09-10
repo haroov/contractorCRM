@@ -1808,7 +1808,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         data: {
           name: companyData['שם חברה'] || '',
           nameEnglish: companyData['שם באנגלית'] || '',
-          companyType: getCompanyTypeFromId(companyId),
+          companyType: companyData['סוג תאגיד'] || getCompanyTypeFromId(companyId), // API data takes priority
           foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
           address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
           city: companyData['שם עיר'] || '',
