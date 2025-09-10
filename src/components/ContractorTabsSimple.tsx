@@ -40,6 +40,39 @@ export default function ContractorTabsSimple({
         setLocalCompanyId(contractor?.company_id || '');
     }, [contractor?.company_id]);
 
+    // Function to validate Israeli company ID (ח״פ) like Israeli ID
+    const validateIsraeliCompanyId = (companyId: string): boolean => {
+        if (!companyId || companyId.length !== 9) {
+            return false;
+        }
+
+        // Check if all characters are digits
+        if (!/^\d{9}$/.test(companyId)) {
+            return false;
+        }
+
+        // Israeli company ID validation algorithm (similar to Israeli ID)
+        let sum = 0;
+        for (let i = 0; i < 8; i++) {
+            let digit = parseInt(companyId[i]);
+            let multiplier = (i % 2) + 1;
+            let product = digit * multiplier;
+            
+            // If product is greater than 9, sum the digits
+            if (product > 9) {
+                product = Math.floor(product / 10) + (product % 10);
+            }
+            
+            sum += product;
+        }
+
+        // Calculate check digit
+        const checkDigit = (10 - (sum % 10)) % 10;
+        const lastDigit = parseInt(companyId[8]);
+
+        return checkDigit === lastDigit;
+    };
+
     const handleSave = () => {
         if (onSave && contractor) {
             // Update contractor with local company_id value before saving
@@ -296,14 +329,18 @@ export default function ContractorTabsSimple({
                                         const numericValue = value.replace(/\D/g, '').slice(0, 9);
                                         setLocalCompanyId(numericValue);
                                         
-                                        // Validate company ID format (9 digits)
-                                        if (numericValue && numericValue.length !== 9) {
+                                        // Validate company ID format and checksum
+                                        if (numericValue && numericValue.length === 9) {
+                                            if (!validateIsraeliCompanyId(numericValue)) {
+                                                setCompanyIdError('מספר חברה לא תקין - בדוק את הספרות');
+                                            }
+                                        } else if (numericValue && numericValue.length > 0) {
                                             setCompanyIdError('מספר חברה חייב להכיל 9 ספרות בדיוק');
                                         }
                                     }}
                                     onBlur={async (e) => {
                                         const companyId = e.target.value;
-                                        if (companyId && companyId.length === 9 && /^\d{9}$/.test(companyId)) {
+                                        if (companyId && companyId.length === 9 && validateIsraeliCompanyId(companyId)) {
                                             await fetchCompanyData(companyId);
                                         }
                                     }}
