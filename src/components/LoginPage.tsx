@@ -85,10 +85,12 @@ const LoginPage: React.FC = () => {
     try {
       // Build Google OAuth URL to open Google authentication
       const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+      // Use absolute URL for redirect_uri - this is the key fix!
+      const redirectUri = 'https://contractorcrm-api.onrender.com/auth/google/callback';
       const params = new URLSearchParams({
         response_type: 'code',
         client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
-        redirect_uri: '/auth/google/callback',
+        redirect_uri: redirectUri,
         scope: 'profile email',
         access_type: 'offline',
         prompt: 'select_account consent' // Force account selection and password entry
@@ -96,6 +98,7 @@ const LoginPage: React.FC = () => {
 
       const fullUrl = `${googleAuthUrl}?${params.toString()}`;
       console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
+      console.log('🔐 Using absolute redirect_uri:', redirectUri);
 
       // Redirect to Google OAuth
       window.location.href = fullUrl;
