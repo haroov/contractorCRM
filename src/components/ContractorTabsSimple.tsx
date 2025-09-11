@@ -127,7 +127,7 @@ export default function ContractorTabsSimple({
     // Function to scrape company information from website
     const scrapeCompanyInfo = async (websiteUrl: string) => {
         if (!websiteUrl) return;
-        
+
         setIsLoadingAbout(true);
         try {
             const response = await fetch('/api/scrape-company-info', {
@@ -137,7 +137,7 @@ export default function ContractorTabsSimple({
                 },
                 body: JSON.stringify({ website: websiteUrl })
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 if (data.success) {
@@ -188,12 +188,12 @@ export default function ContractorTabsSimple({
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
-    
+
     // Company about section states
     const [companyAbout, setCompanyAbout] = useState<string>(contractor?.companyAbout || '');
     const [companyLogo, setCompanyLogo] = useState<string>(contractor?.companyLogo || '');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
-    
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
@@ -253,7 +253,7 @@ export default function ContractorTabsSimple({
         setLocalIsoExpiry(contractor?.isoExpiry || '');
         setLocalIsoCertificate(contractor?.isoCertificate || '');
         setLocalClassifications(contractor?.classifications || []);
-        
+
         // Update company about section
         setCompanyAbout(contractor?.companyAbout || '');
         setCompanyLogo(contractor?.companyLogo || '');
@@ -559,6 +559,122 @@ export default function ContractorTabsSimple({
         }
     };
 
+    // New function to handle the complete validation and data fetching flow
+    const validateAndFetchCompanyData = async (companyId: string) => {
+        setIsLoadingCompanyData(true);
+        try {
+            console.log('🔍 Starting validation flow for company ID:', companyId);
+
+            // Step 2: Check MongoDB Atlas first for existing contractor
+            console.log('📊 Step 2: Checking MongoDB Atlas for existing contractor...');
+            const response = await fetch(`/api/search-company/${companyId}`);
+            const result = await response.json();
+            console.log('📊 MongoDB search response:', result);
+
+            if (result.success) {
+                const companyData = result.data;
+                console.log(`✅ Found company in ${result.source}:`, companyData.name);
+
+                if (result.source === 'mongodb_cached') {
+                    // Step 2a: Found existing contractor in MongoDB - load all contractor data
+                    console.log('📊 Step 2a: Loading existing contractor data from MongoDB...');
+                    await loadExistingContractorData(companyData);
+                } else {
+                    // Step 2b: Found in external API - populate form with API data
+                    console.log('📊 Step 2b: Populating form with API data...');
+                    await populateFormWithApiData(companyData);
+                }
+            } else {
+                // Step 3: Not found in MongoDB - check Companies Registry API
+                console.log('📊 Step 3: Not found in MongoDB, checking Companies Registry API...');
+                setCompanyIdError('חברה לא נמצאה במאגרי המידע');
+            }
+        } catch (error) {
+            console.error('❌ Error in validation flow:', error);
+            setCompanyIdError('שגיאה בטעינת נתוני החברה');
+        } finally {
+            setIsLoadingCompanyData(false);
+        }
+    };
+
+    // Function to load existing contractor data from MongoDB
+    const loadExistingContractorData = async (contractorData: any) => {
+        console.log('📊 Loading existing contractor data:', contractorData);
+        
+        // Update all local states with existing contractor data
+        setLocalName(contractorData.name || '');
+        setLocalNameEnglish(contractorData.nameEnglish || '');
+        setLocalFoundationDate(contractorData.foundationDate || '');
+        setLocalAddress(contractorData.address || '');
+        setLocalCity(contractorData.city || '');
+        setLocalEmail(contractorData.email || '');
+        setLocalPhone(contractorData.phone || '');
+        setLocalWebsite(contractorData.website || '');
+        setLocalContractorId(contractorData.contractorId || '');
+        setLocalEmployees(contractorData.employees || '');
+        setLocalCompanyType(contractorData.companyType || 'private_company');
+        setLocalSafetyRating(contractorData.safetyRating || '0');
+        setLocalIso45001(contractorData.iso45001 || false);
+        setLocalClassifications(contractorData.classifications || []);
+        setCompanyAbout(contractorData.companyAbout || '');
+        setCompanyLogo(contractorData.companyLogo || '');
+        
+        // Load status indicator
+        if (contractorData.companyStatus) {
+            setCompanyStatusIndicator(contractorData.companyStatus);
+        }
+        
+        console.log('✅ Existing contractor data loaded successfully');
+    };
+
+    // Function to populate form with API data
+    const populateFormWithApiData = async (companyData: any) => {
+        console.log('📊 Populating form with API data:', companyData);
+        
+        // Clean up company name - replace בע~מ with בע״מ and remove double spaces
+        const cleanName = (companyData.name || '')
+            .replace(/בע~מ/g, 'בע״מ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        const cleanNameEnglish = (companyData.nameEnglish || '')
+            .replace(/בע~מ/g, 'בע״מ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        // Update form fields with API data
+        setLocalName(cleanName);
+        setLocalNameEnglish(cleanNameEnglish);
+        setLocalFoundationDate(companyData.foundationDate || '');
+        setLocalAddress(companyData.address || '');
+        setLocalCity(companyData.city || '');
+        setLocalEmail(companyData.email || '');
+        setLocalPhone(companyData.phone || '');
+        setLocalWebsite(companyData.website || '');
+        setLocalContractorId(companyData.contractorId || '');
+        setLocalEmployees(companyData.employees || '');
+        
+        // Set company type from API (prioritize over local logic)
+        if (companyData.companyType) {
+            setLocalCompanyType(companyData.companyType);
+        }
+        
+        // Set status indicator
+        if (companyData.companyStatus) {
+            setCompanyStatusIndicator(companyData.companyStatus);
+        }
+        
+        // Set about and logo if available
+        if (companyData.companyAbout) {
+            setCompanyAbout(companyData.companyAbout);
+        }
+        if (companyData.companyLogo) {
+            setCompanyLogo(companyData.companyLogo);
+        }
+        
+        console.log('✅ Form populated with API data successfully');
+    };
+
     const fetchCompanyData = async (companyId: string) => {
         setIsLoadingCompanyData(true);
         try {
@@ -600,7 +716,7 @@ export default function ContractorTabsSimple({
                 setLocalWebsite(companyData.website || '');
                 setLocalContractorId(companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
-                
+
                 // Update company about section if available
                 if (companyData.companyAbout !== undefined) setCompanyAbout(companyData.companyAbout);
                 if (companyData.companyLogo !== undefined) setCompanyLogo(companyData.companyLogo);
@@ -744,15 +860,20 @@ export default function ContractorTabsSimple({
                                     onBlur={async (e) => {
                                         const companyId = e.target.value;
 
-                                        // Validate company ID format and checksum only on blur
+                                        // Clear previous errors and status
+                                        setCompanyIdError('');
+                                        setCompanyStatusIndicator('');
+
+                                        // Step 1: Validate Israeli ID checksum
                                         if (companyId && companyId.length === 9) {
-                                            if (validateIsraeliCompanyId(companyId)) {
-                                                // Valid company ID - fetch data from API
-                                                await fetchCompanyData(companyId);
-                                                setCompanyIdError(''); // Clear any previous errors
-                                            } else {
+                                            if (!validateIsraeliCompanyId(companyId)) {
                                                 setCompanyIdError('מספר חברה לא תקין');
+                                                return;
                                             }
+                                            
+                                            // Step 2: Check MongoDB Atlas first for existing contractor
+                                            await validateAndFetchCompanyData(companyId);
+                                            
                                         } else if (companyId && companyId.length > 0) {
                                             setCompanyIdError('נא להזין 9 ספרות');
                                         }
@@ -931,7 +1052,7 @@ export default function ContractorTabsSimple({
                             <Typography variant="h6" gutterBottom>
                                 אודות החברה
                             </Typography>
-                            
+
                             <Grid container spacing={2} alignItems="flex-start">
                                 <Grid item xs={12} md={8}>
                                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
@@ -982,11 +1103,11 @@ export default function ContractorTabsSimple({
                                         )}
                                     </Box>
                                 </Grid>
-                                
+
                                 <Grid item xs={12} md={4}>
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
+                                    <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         alignItems: 'center',
                                         p: 2,
                                         border: '1px solid #e0e0e0',
@@ -995,11 +1116,11 @@ export default function ContractorTabsSimple({
                                         justifyContent: 'center'
                                     }}>
                                         {companyLogo ? (
-                                            <img 
-                                                src={companyLogo} 
-                                                alt="לוגו החברה" 
-                                                style={{ 
-                                                    maxWidth: '100%', 
+                                            <img
+                                                src={companyLogo}
+                                                alt="לוגו החברה"
+                                                style={{
+                                                    maxWidth: '100%',
                                                     maxHeight: '100px',
                                                     objectFit: 'contain'
                                                 }}
@@ -1137,7 +1258,7 @@ export default function ContractorTabsSimple({
                         </Grid>
 
                         {/* שורה שנייה - ISO45001 */}
-                        <Grid container spacing={2} sx={{ mt: 1 }}>
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControlLabel
                                     control={
