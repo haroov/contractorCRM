@@ -1493,11 +1493,11 @@ export default function ContractorTabsSimple({
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ fontWeight: 'bold' }}>שם</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold' }}>תפקיד</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold' }}>טלפון</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold' }}>אימייל</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold' }}>הרשאות</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תפקיד</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>טלפון</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>אימייל</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>הרשאות</TableCell>
                                             {canEdit && (
                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                             )}
@@ -1506,14 +1506,14 @@ export default function ContractorTabsSimple({
                                     <TableBody>
                                         {contractor.contacts.map((contact: any, index: number) => (
                                             <TableRow key={contact.id || index}>
-                                                <TableCell>{contact.name || contact.fullName || ''}</TableCell>
-                                                <TableCell>{contact.role || contact.position || ''}</TableCell>
-                                                <TableCell>{contact.phone || contact.phoneNumber || contact.mobile || ''}</TableCell>
-                                                <TableCell>{contact.email || contact.emailAddress || ''}</TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.name || contact.fullName || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.phone || contact.phoneNumber || contact.mobile || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.email || contact.emailAddress || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>
                                                     <Typography variant="body2" sx={{
-                                                        color: contact.permissions === 'contactAdmin' ? 'primary.main' : 'text.secondary',
-                                                        fontWeight: contact.permissions === 'contactAdmin' ? 'bold' : 'normal'
+                                                        color: 'text.secondary',
+                                                        fontWeight: 'normal'
                                                     }}>
                                                         {contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
                                                     </Typography>
@@ -1530,7 +1530,7 @@ export default function ContractorTabsSimple({
                                                         <IconButton
                                                             size="small"
                                                             onClick={() => handleDeleteContact(contact.id)}
-                                                            sx={{ color: 'error.main' }}
+                                                            sx={{ color: 'text.secondary' }}
                                                         >
                                                             <DeleteIcon fontSize="small" />
                                                         </IconButton>
