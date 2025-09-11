@@ -2008,6 +2008,109 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       }
     }
 
+    // If force_refresh is true for existing contractor, fetch fresh data from external APIs
+    if (existingContractor && force_refresh) {
+      console.log('🔄 Force refresh requested for existing contractor - fetching fresh data from external APIs');
+      
+      // Fetch fresh data from both APIs
+      const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+      const companiesData = await companiesResponse.json();
+
+      const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+      const contractorsData = await contractorsResponse.json();
+
+      console.log('📋 Contractors Registry API response:', {
+        success: contractorsData.success,
+        recordsCount: contractorsData.result?.records?.length || 0,
+        total: contractorsData.result?.total || 0
+      });
+
+      if (companiesData.success && companiesData.result.records.length > 0) {
+        const companyData = companiesData.result.records[0];
+        const contractorData = contractorsData.success && contractorsData.result.records.length > 0
+          ? contractorsData.result.records[0]
+          : null;
+
+        console.log('✅ Found company in Companies Registry:', companyData['שם חברה']);
+
+        // Extract contractor data from Contractors Registry
+        let contractorId = '';
+        let phone = '';
+        let email = '';
+        let licenseTypes = [];
+
+        if (contractorData) {
+          contractorId = contractorData['MISPAR_KABLAN'] || '';
+
+          // Format phone number - add 0 prefix if needed
+          const rawPhone = contractorData['MISPAR_TEL'] || '';
+          if (rawPhone && !rawPhone.startsWith('0')) {
+            phone = '0' + rawPhone;
+          } else {
+            phone = rawPhone;
+          }
+
+          email = contractorData['EMAIL'] || '';
+
+          // Extract website domain from email
+          let website = '';
+          if (email && email.includes('@')) {
+            const domain = email.split('@')[1];
+            if (domain) {
+              website = `https://www.${domain}`;
+            }
+          }
+
+          // Extract license types
+          if (contractorsData.result.records.length > 0) {
+            licenseTypes = contractorsData.result.records.map(record => 
+              `${record.TEUR_ANAF} - ${record.KVUTZA}${record.SIVUG}`
+            );
+          }
+        }
+
+        // Prepare response data
+        const responseData = {
+          // Basic company info
+          name: companyData['שם חברה'] || existingContractor.name,
+          nameEnglish: companyData['שם חברה באנגלית'] || existingContractor.nameEnglish,
+          companyType: companyData['סוג חברה'] || existingContractor.companyType,
+          foundationDate: companyData['תאריך התאגדות'] || existingContractor.foundationDate,
+          address: companyData['כתובת'] || existingContractor.address,
+          city: companyData['עיר'] || existingContractor.city,
+          email: email || existingContractor.email,
+          phone: phone || existingContractor.phone,
+          website: website || existingContractor.website,
+          contractor_id: contractorId || existingContractor.contractor_id,
+          // Status data
+          statusIndicator: existingContractor.statusIndicator || '',
+          statusLastUpdated: existingContractor.statusLastUpdated,
+          // Complete contractor data
+          employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
+          numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
+          contacts: existingContractor.contacts || [],
+          projects: existingContractor.projects || [],
+          notes: existingContractor.notes || { general: '', internal: '' },
+          safetyRating: existingContractor.safetyRating || '',
+          safetyExpiry: existingContractor.safetyExpiry || '',
+          safetyCertificate: existingContractor.safetyCertificate || '',
+          iso45001: existingContractor.iso45001 || false,
+          isoExpiry: existingContractor.isoExpiry || '',
+          isoCertificate: existingContractor.isoCertificate || '',
+          // License types from Contractors Registry
+          classifications: licenseTypes,
+          // All other fields
+          ...existingContractor
+        };
+
+        return res.json({
+          success: true,
+          source: 'api_refresh',
+          data: responseData
+        });
+      }
+    }
+
     // If not found in MongoDB, search in Companies Registry API
     console.log('🔍 Company not found in MongoDB, searching Companies Registry API...');
 

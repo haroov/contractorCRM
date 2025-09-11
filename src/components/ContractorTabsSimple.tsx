@@ -1086,7 +1086,6 @@ export default function ContractorTabsSimple({
                                                                 try {
                                                                     // Load from both APIs
                                                                     await syncDataFromBothAPIs(localCompanyId);
-                                                                    alert('נתונים נטענו בהצלחה מרשם החברות ופנקס הקבלנים');
                                                                 } catch (error) {
                                                                     console.error('Error syncing data:', error);
                                                                     alert('שגיאה בסנכרון הנתונים');
