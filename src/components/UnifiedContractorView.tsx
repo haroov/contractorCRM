@@ -124,10 +124,35 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       setLoading(true);
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
-      // Filter out archived contractors from the main list
-      // Use isActive field for CRM status (not company status from Companies Registry)
-      const activeContractors = contractorsData.filter(contractor => contractor.isActive === true);
-      setContractors(activeContractors);
+      
+      // Check if user is a contact user
+      const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+      
+      let filteredContractors;
+      if (isContactUser) {
+        // For contact users, show only their associated contractor
+        const contactUserData = localStorage.getItem('contactUser');
+        if (contactUserData) {
+          try {
+            const contactUser = JSON.parse(contactUserData);
+            filteredContractors = contractorsData.filter(contractor => 
+              contractor._id === contactUser.contractorId && contractor.isActive === true
+            );
+            console.log('📋 Filtered contractors for contact user:', filteredContractors.length);
+          } catch (error) {
+            console.error('Error parsing contact user data:', error);
+            filteredContractors = [];
+          }
+        } else {
+          filteredContractors = [];
+        }
+      } else {
+        // For regular users, show all active contractors
+        filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
+        console.log('📋 Loaded all active contractors:', filteredContractors.length);
+      }
+      
+      setContractors(filteredContractors);
     } catch (error) {
       console.error('Error loading contractors:', error);
     } finally {

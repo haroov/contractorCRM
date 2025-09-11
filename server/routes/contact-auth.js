@@ -106,8 +106,12 @@ router.post('/send-otp', async (req, res) => {
             <!-- Header with Logo -->
             <div style="text-align: center; margin-bottom: 30px;">
               <div style="display: inline-flex; align-items: center; background-color: #882DD7; color: white; padding: 15px 25px; border-radius: 50px; margin-bottom: 20px;">
-                <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center;">
-                  <span style="color: #882DD7; font-size: 20px; font-weight: bold;">C</span>
+                <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center; padding: 8px;">
+                  <svg width="24" height="24" viewBox="0 0 669.3 669.3" style="fill: #882DD7;">
+                    <circle cx="334.6" cy="334.6" r="334.6" fill="#FFFFFF"/>
+                    <path d="M445.8,158.7c-9.2-7.2-19.1-13.4-29.5-18.6c-20.5-10-44.1-15.2-71-15.6c-40.9-0.4-76.9,12.4-107.8,38.5c-32,26.5-48.4,69.4-49.3,128.5c0.9,58.5,17.3,100.9,49.3,127c30.9,26.1,66.8,39.2,107.6,39.2c26.9-0.4,50.6-5.9,71.1-16.5c7.7-3.8,15.1-8.2,22.2-13v0.1c9-6.6,10.7-6.6,27.2-22.2c1.3-1.3,2.4-2.6,3.6-4l0.4-0.4l0,0c11.7-15.2,10.4-33.8-2.1-46.8c-13.2-13.7-32.9-12.7-48.3,2.3c-9.1,8.8-18.6,17.2-28.6,25c-12.5,6.8-26.8,10.3-42.9,10.5c-59.2,1-89.2-32.6-90.1-101c0.9-68.7,30.9-102.7,90.1-101.9c21.9,0.6,37.2,6.3,52.6,18.7c4.1,3.3,10.3,9.3,22.1,20.3c16.7,14.6,37.5,13,50.6-1.7c11.9-13.4,10.3-31.7-3.5-45.8h0.1c-6.8-7.7-14.4-14.8-22.4-21.2" fill="#424242"/>
+                    <path d="M485.3,475c11.2,10.1,10.4,24.8-2.3,36.1c-40,35.4-88.4,52.4-143.5,53.4h0c-55.6-1-103.5-18.1-143.5-53c-10.2-8.9-12.1-20.5-5.6-30.4c6.4-9.9,19-14.2,31-10.8c5.3,1.5,9.2,4.7,13.1,8c61.7,51.4,150.6,50.7,211.8-1.6C458.6,466,474.6,465.3,485.3,475z" fill="#882DD7"/>
+                  </svg>
                 </div>
                 <span style="font-size: 18px; font-weight: bold;">שוקו ביטוח</span>
               </div>
