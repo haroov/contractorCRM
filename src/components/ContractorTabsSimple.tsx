@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip } from '@mui/material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 interface ContractorTabsSimpleProps {
@@ -1416,41 +1416,28 @@ export default function ContractorTabsSimple({
                             defaultValue={editingContact?.name || editingContact?.fullName || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
-                        <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel sx={{
-                                backgroundColor: 'white',
-                                px: 1,
-                                '&.Mui-focused': {
-                                    backgroundColor: 'white'
-                                }
-                            }}>
-                                תפקיד
-                            </InputLabel>
-                            <Select
-                                defaultValue={editingContact?.role || editingContact?.position || ''}
-                                sx={{
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#d0d0d0'
-                                    },
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#9c27b0'
-                                    },
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#9c27b0'
-                                    }
-                                }}
-                            >
-                                <MenuItem value="מנכ״ל">מנכ״ל</MenuItem>
-                                <MenuItem value="סמנכ״ל כספים">סמנכ״ל כספים</MenuItem>
-                                <MenuItem value="גזבר">גזבר</MenuItem>
-                                <MenuItem value="ממונה ביטוח">ממונה ביטוח</MenuItem>
-                                <MenuItem value="יועץ ביטוח">יועץ ביטוח</MenuItem>
-                                <MenuItem value="ממונה בטיחות">ממונה בטיחות</MenuItem>
-                                <MenuItem value="סמנכ״ל תפעול">סמנכ״ל תפעול</MenuItem>
-                                <MenuItem value="סמנכ״ל הנדסה">סמנכ״ל הנדסה</MenuItem>
-                                <MenuItem value="סמנכ״ל תכנון">סמנכ״ל תכנון</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <Autocomplete
+                            freeSolo
+                            options={[
+                                'מנכ״ל',
+                                'סמנכ״ל כספים',
+                                'גזבר',
+                                'ממונה ביטוח',
+                                'יועץ ביטוח',
+                                'ממונה בטיחות',
+                                'סמנכ״ל תפעול',
+                                'סמנכ״ל הנדסה',
+                                'סמנכ״ל תכנון'
+                            ]}
+                            defaultValue={editingContact?.role || editingContact?.position || ''}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="תפקיד"
+                                    sx={{ mb: 2, ...textFieldSx }}
+                                />
+                            )}
+                        />
                         <TextField
                             fullWidth
                             label="טלפון"
