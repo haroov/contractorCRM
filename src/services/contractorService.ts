@@ -73,7 +73,7 @@ class ContractorService {
             if (!projectIds || projectIds.length === 0) {
                 return [];
             }
-            
+
             const response = await authenticatedFetch(`${API_CONFIG.PROJECTS_URL()}?ids=${projectIds.join(',')}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -125,7 +125,7 @@ class ContractorService {
 
             if (!response.ok) {
                 let errorMessage = 'Failed to update contractor';
-                
+
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
@@ -133,7 +133,7 @@ class ContractorService {
                     // If response is not JSON, use status text
                     errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                 }
-                
+
                 throw new Error(errorMessage);
             }
 
@@ -142,7 +142,7 @@ class ContractorService {
             return updatedContractor;
         } catch (error) {
             console.error('Error updating contractor:', error);
-            
+
             // Re-throw with more context
             if (error instanceof Error) {
                 throw new Error(`Failed to update contractor: ${error.message}`);

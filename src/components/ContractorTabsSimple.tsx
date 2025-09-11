@@ -284,7 +284,7 @@ export default function ContractorTabsSimple({
         // 1. contractor has meaningful data AND
         // 2. we're not in the middle of loading from API/DB AND
         // 3. the contractor's company_id is different from current local state (to prevent overriding loaded data)
-        if (contractor && contractor.company_id && !isLoadingCompanyData && 
+        if (contractor && contractor.company_id && !isLoadingCompanyData &&
             contractor.company_id !== localCompanyId) {
             console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
             setLocalCompanyId(contractor?.company_id || '');
@@ -455,7 +455,86 @@ export default function ContractorTabsSimple({
 
     const handleUploadClick = (type: 'safety' | 'iso') => {
         setUploadType(type);
-        setUploadDialogOpen(true);
+        // Open file browser directly instead of dialog
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.pdf,.jpg,.jpeg,.png';
+        input.onchange = (event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.files && target.files[0]) {
+                handleFileUploadDirect(target.files[0], type);
+            }
+        };
+        input.click();
+    };
+
+    const handleFileUploadDirect = async (file: File, type: 'safety' | 'iso') => {
+        // Check file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('אנא בחר קובץ PDF או תמונה (JPG, PNG)');
+            return;
+        }
+
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('גודל הקובץ גדול מדי. מקסימום 10MB');
+            return;
+        }
+
+        setIsUploading(true);
+
+        try {
+            // Create FormData for file upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+            formData.append('companyId', localCompanyId);
+            formData.append('contractorId', contractor?._id || '');
+
+            // Call API to upload file
+            const response = await fetch('/api/upload-certificate', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    // Don't set Content-Type, let browser set it with boundary for FormData
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update local state with the uploaded file URL
+                if (type === 'safety') {
+                    setLocalSafetyCertificate(result.fileUrl);
+                } else if (type === 'iso') {
+                    setLocalIsoCertificate(result.fileUrl);
+                }
+
+                // Update contractor data
+                if (onSave) {
+                    const updatedContractor = {
+                        ...contractor,
+                        company_id: localCompanyId,
+                        [type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: result.fileUrl
+                    };
+                    onSave(updatedContractor);
+                }
+
+                alert('הקובץ הועלה בהצלחה!');
+            } else {
+                throw new Error(result.message || 'שגיאה בהעלאת הקובץ');
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('שגיאה בהעלאת הקובץ: ' + (error as Error).message);
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -813,9 +892,9 @@ export default function ContractorTabsSimple({
         console.log('📊 Notes:', contractorData.notes);
         console.log('📊 Safety Rating:', contractorData.safetyRating);
         console.log('📊 Classifications:', contractorData.classifications);
-        
+
         setLocalContacts(contractorData.contacts || []);
-        
+
         // Load projects if projectIds exist
         if (contractorData.projectIds && contractorData.projectIds.length > 0) {
             console.log('📊 Loading projects for IDs:', contractorData.projectIds);
@@ -830,7 +909,7 @@ export default function ContractorTabsSimple({
         } else {
             setLocalProjects(contractorData.projects || []);
         }
-        
+
         setLocalNotes(contractorData.notes || { general: '', internal: '' });
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalSafetyExpiry(contractorData.safetyExpiry || '');
@@ -1600,24 +1679,60 @@ export default function ContractorTabsSimple({
 
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
-                                    <IconButton
-                                        disabled={!canEdit}
-                                        title="העלאת תעודת הסמכת כוכבי בטיחות"
-                                        onClick={() => handleUploadClick('safety')}
-                                        sx={{
-                                            border: '1px solid #d0d0d0',
-                                            borderRadius: 1,
-                                            height: '56px',
-                                            width: '56px',
-                                            color: '#9c27b0', // סגול שוקו
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                borderColor: '#9c27b0'
-                                            }
-                                        }}
-                                    >
-                                        <CloudUploadIcon />
-                                    </IconButton>
+                                    {localSafetyCertificate ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <img 
+                                                src={localSafetyCertificate} 
+                                                alt="תעודת בטיחות" 
+                                                style={{ 
+                                                    width: 40, 
+                                                    height: 40, 
+                                                    objectFit: 'cover',
+                                                    borderRadius: 4,
+                                                    cursor: 'pointer',
+                                                    border: '1px solid #d0d0d0'
+                                                }}
+                                                onClick={() => window.open(localSafetyCertificate, '_blank')}
+                                            />
+                                            <IconButton
+                                                disabled={!canEdit || isUploading}
+                                                title="העלאת תעודת הסמכת כוכבי בטיחות"
+                                                onClick={() => handleUploadClick('safety')}
+                                                sx={{
+                                                    border: '1px solid #d0d0d0',
+                                                    borderRadius: 1,
+                                                    height: '56px',
+                                                    width: '56px',
+                                                    color: '#9c27b0',
+                                                    '&:hover': {
+                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                        borderColor: '#9c27b0'
+                                                    }
+                                                }}
+                                            >
+                                                {isUploading && uploadType === 'safety' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                                            </IconButton>
+                                        </Box>
+                                    ) : (
+                                        <IconButton
+                                            disabled={!canEdit || isUploading}
+                                            title="העלאת תעודת הסמכת כוכבי בטיחות"
+                                            onClick={() => handleUploadClick('safety')}
+                                            sx={{
+                                                border: '1px solid #d0d0d0',
+                                                borderRadius: 1,
+                                                height: '56px',
+                                                width: '56px',
+                                                color: '#9c27b0',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                    borderColor: '#9c27b0'
+                                                }
+                                            }}
+                                        >
+                                            {isUploading && uploadType === 'safety' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                                        </IconButton>
+                                    )}
                                     {uploadedFiles.safety && (
                                         <Box sx={{
                                             width: 40,
@@ -1696,24 +1811,60 @@ export default function ContractorTabsSimple({
 
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
-                                    <IconButton
-                                        disabled={!canEdit}
-                                        title="העלאת תעודת ISO45001"
-                                        onClick={() => handleUploadClick('iso')}
-                                        sx={{
-                                            border: '1px solid #d0d0d0',
-                                            borderRadius: 1,
-                                            height: '56px',
-                                            width: '56px',
-                                            color: '#9c27b0', // סגול שוקו
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                borderColor: '#9c27b0'
-                                            }
-                                        }}
-                                    >
-                                        <CloudUploadIcon />
-                                    </IconButton>
+                                    {localIsoCertificate ? (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <img 
+                                                src={localIsoCertificate} 
+                                                alt="תעודת ISO45001" 
+                                                style={{ 
+                                                    width: 40, 
+                                                    height: 40, 
+                                                    objectFit: 'cover',
+                                                    borderRadius: 4,
+                                                    cursor: 'pointer',
+                                                    border: '1px solid #d0d0d0'
+                                                }}
+                                                onClick={() => window.open(localIsoCertificate, '_blank')}
+                                            />
+                                            <IconButton
+                                                disabled={!canEdit || isUploading}
+                                                title="העלאת תעודת ISO45001"
+                                                onClick={() => handleUploadClick('iso')}
+                                                sx={{
+                                                    border: '1px solid #d0d0d0',
+                                                    borderRadius: 1,
+                                                    height: '56px',
+                                                    width: '56px',
+                                                    color: '#9c27b0',
+                                                    '&:hover': {
+                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                        borderColor: '#9c27b0'
+                                                    }
+                                                }}
+                                            >
+                                                {isUploading && uploadType === 'iso' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                                            </IconButton>
+                                        </Box>
+                                    ) : (
+                                        <IconButton
+                                            disabled={!canEdit || isUploading}
+                                            title="העלאת תעודת ISO45001"
+                                            onClick={() => handleUploadClick('iso')}
+                                            sx={{
+                                                border: '1px solid #d0d0d0',
+                                                borderRadius: 1,
+                                                height: '56px',
+                                                width: '56px',
+                                                color: '#9c27b0',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                    borderColor: '#9c27b0'
+                                                }
+                                            }}
+                                        >
+                                            {isUploading && uploadType === 'iso' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                                        </IconButton>
+                                    )}
                                     {uploadedFiles.iso && (
                                         <Box sx={{
                                             width: 40,

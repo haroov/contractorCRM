@@ -10,6 +10,9 @@ const { MongoClient, ObjectId } = require('mongodb');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 dotenv.config();
 
@@ -43,6 +46,42 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const { type, companyId } = req.body;
+    const timestamp = Date.now();
+    const extension = path.extname(file.originalname);
+    const filename = `${type}-${companyId}-${timestamp}${extension}`;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only PDF and image files are allowed.'));
+    }
+  }
+});
 
 // Session configuration
 app.use(session({
@@ -2892,6 +2931,52 @@ const scrapingLimiter = rateLimit({
   message: {
     error: 'Too many scraping requests. Please wait before trying again.',
     retryAfter: '5 minutes'
+  }
+});
+
+// Upload certificate file
+app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const { type, companyId, contractorId } = req.body;
+    
+    if (!type || !companyId) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    // Create file URL
+    const fileUrl = `/uploads/${req.file.filename}`;
+    
+    // Update contractor in database with file URL
+    const db = client.db('contractor-crm');
+    const updateField = type === 'safety' ? 'safetyCertificate' : 'isoCertificate';
+    
+    const result = await db.collection('contractors').updateOne(
+      { _id: new ObjectId(contractorId) },
+      { 
+        $set: { 
+          [updateField]: fileUrl,
+          [`${updateField}UploadDate`]: new Date().toISOString()
+        } 
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ success: false, message: 'Contractor not found' });
+    }
+
+    res.json({ 
+      success: true, 
+      fileUrl: fileUrl,
+      message: 'File uploaded successfully' 
+    });
+
+  } catch (error) {
+    console.error('Error uploading certificate:', error);
+    res.status(500).json({ success: false, message: 'Error uploading file' });
   }
 });
 
