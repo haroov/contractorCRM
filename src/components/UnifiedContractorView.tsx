@@ -767,11 +767,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           </Typography>
                           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
                             {contractor.companyType === 'private_company' ? 'חברה פרטית' :
-                             contractor.companyType === 'public_company' ? 'חברה ציבורית' :
-                             contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
-                             contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
-                             contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
-                             contractor.companyType || 'לא צוין'}
+                              contractor.companyType === 'public_company' ? 'חברה ציבורית' :
+                                contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
+                                  contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
+                                    contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
+                                      contractor.companyType || 'לא צוין'}
                           </Typography>
                         </TableCell>
 

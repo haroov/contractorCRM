@@ -90,14 +90,14 @@ export default function ContractorTabsSimple({
     // Function to check if email domain is a company domain (not personal email providers)
     const isCompanyDomain = (email: string): boolean => {
         if (!email || !email.includes('@')) return false;
-        
+
         const domain = email.split('@')[1].toLowerCase();
         const personalEmailProviders = [
             'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'walla.co.il',
             'nana.co.il', 'bezeqint.net', 'netvision.net.il', '012.net.il',
             'aol.com', 'icloud.com', 'me.com', 'mac.com', 'live.com', 'msn.com'
         ];
-        
+
         return !personalEmailProviders.includes(domain);
     };
 
@@ -106,7 +106,7 @@ export default function ContractorTabsSimple({
         if (!email || !email.includes('@')) {
             return '';
         }
-        
+
         const domain = email.split('@')[1];
         if (!domain) return '';
 
@@ -704,22 +704,22 @@ export default function ContractorTabsSimple({
     // Function to sync data from both Companies Registry and Contractors Registry APIs
     const syncDataFromBothAPIs = async (companyId: string) => {
         console.log('🔄 Syncing data from both APIs for company ID:', companyId);
-        
+
         try {
             // Use our backend API endpoint that handles external API calls
             console.log('📊 Fetching data through backend API...');
             const response = await fetch(`http://localhost:3001/api/search-company/${companyId}?force_refresh=true`);
             const result = await response.json();
-            
+
             if (result.success && result.data) {
                 console.log('✅ Data fetched successfully:', result.data);
-                
+
                 // Populate form with the data
                 await populateFormWithApiData(result.data);
             } else {
                 throw new Error('לא נמצאו נתונים במאגרים החיצוניים');
             }
-            
+
         } catch (error) {
             console.error('❌ Error syncing data:', error);
             throw error;
@@ -772,6 +772,13 @@ export default function ContractorTabsSimple({
         console.log('📊 Loading existing contractor data:', contractorData);
         console.log('📊 Contractor name:', contractorData.name);
         console.log('📊 Contractor phone:', contractorData.phone);
+        console.log('📊 Contractor email:', contractorData.email);
+        console.log('📊 Contractor address:', contractorData.address);
+        console.log('📊 Contractor city:', contractorData.city);
+        console.log('📊 Contractor website:', contractorData.website);
+        console.log('📊 Contractor foundationDate:', contractorData.foundationDate);
+        console.log('📊 Contractor employees:', contractorData.employees, contractorData.numberOfEmployees);
+        console.log('📊 Contractor companyType:', contractorData.companyType);
 
         // Check if contractor is archived
         if (contractorData.isActive === false) {
@@ -781,18 +788,27 @@ export default function ContractorTabsSimple({
         // Update all local states with existing contractor data
         console.log('📊 Setting local name:', contractorData.name);
         setLocalName(contractorData.name || '');
+        console.log('📊 Setting local nameEnglish:', contractorData.nameEnglish);
         setLocalNameEnglish(contractorData.nameEnglish || '');
+        console.log('📊 Setting local foundationDate:', contractorData.foundationDate);
         setLocalFoundationDate(contractorData.foundationDate || '');
+        console.log('📊 Setting local address:', contractorData.address);
         setLocalAddress(contractorData.address || '');
+        console.log('📊 Setting local city:', contractorData.city);
         setLocalCity(contractorData.city || '');
+        console.log('📊 Setting local email:', contractorData.email);
         setLocalEmail(contractorData.email || '');
         console.log('📊 Setting local phone:', contractorData.phone);
         setLocalPhone(contractorData.phone || '');
+        console.log('📊 Setting local website:', contractorData.website);
         setLocalWebsite(contractorData.website || '');
+        console.log('📊 Setting local contractorId:', contractorData.contractor_id || contractorData.contractorId);
         setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
+        console.log('📊 Setting local employees:', contractorData.employees || contractorData.numberOfEmployees);
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
+        console.log('📊 Setting local companyType:', contractorData.companyType);
         setLocalCompanyType(contractorData.companyType || 'private_company');
-        
+
         // IMPORTANT: Set the company ID from existing contractor data
         if (contractorData.company_id) {
             console.log('📊 Setting local company ID:', contractorData.company_id);
@@ -873,7 +889,7 @@ export default function ContractorTabsSimple({
         setLocalWebsite(companyData.website || '');
         setLocalContractorId(companyData.contractor_id || '');
         setLocalEmployees(companyData.employees || '');
-        
+
         // IMPORTANT: Keep the company ID alive during sync
         if (companyData.company_id) {
             setLocalCompanyId(companyData.company_id);
@@ -1151,7 +1167,7 @@ export default function ContractorTabsSimple({
                                                                 'פעולה זו תטען נתונים חדשים מרשם החברות ופנקס הקבלנים ותעדכן את הטופס.\n\n' +
                                                                 'נתונים קיימים בטופס יוחלפו בנתונים מהמאגרים החיצוניים.'
                                                             );
-                                                            
+
                                                             if (confirmed) {
                                                                 setIsLoadingCompanyData(true);
                                                                 try {
@@ -1167,7 +1183,7 @@ export default function ContractorTabsSimple({
                                                         }
                                                     }}
                                                     disabled={isLoadingCompanyData}
-                                                    sx={{ 
+                                                    sx={{
                                                         color: '#9c27b0',
                                                         '&:hover': {
                                                             backgroundColor: 'rgba(156, 39, 176, 0.04)'
@@ -1178,7 +1194,7 @@ export default function ContractorTabsSimple({
                                                         <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
                                                     ) : (
                                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                                                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
                                                         </svg>
                                                     )}
                                                 </IconButton>
