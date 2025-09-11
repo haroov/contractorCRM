@@ -1439,14 +1439,14 @@ export default function ContractorTabsSimple({
                                             <TableRow key={contact.id || index}>
                                                 <TableCell>{contact.name || contact.fullName || ''}</TableCell>
                                                 <TableCell>{contact.role || contact.position || ''}</TableCell>
-                                                <TableCell>{contact.phone || contact.phoneNumber || ''}</TableCell>
+                                                <TableCell>{contact.phone || contact.phoneNumber || contact.mobile || ''}</TableCell>
                                                 <TableCell>{contact.email || contact.emailAddress || ''}</TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" sx={{
-                                                        color: contact.permissions === 'contact_manager' ? 'primary.main' : 'text.secondary',
-                                                        fontWeight: contact.permissions === 'contact_manager' ? 'bold' : 'normal'
+                                                        color: contact.permissions === 'contactAdmin' ? 'primary.main' : 'text.secondary',
+                                                        fontWeight: contact.permissions === 'contactAdmin' ? 'bold' : 'normal'
                                                     }}>
-                                                        {contact.permissions === 'contact_manager' ? 'מנהל קשר' : 'משתמש קשר'}
+                                                        {contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
                                                     </Typography>
                                                 </TableCell>
                                                 {canEdit && (

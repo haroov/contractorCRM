@@ -118,7 +118,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -1759,6 +1759,79 @@ app.get('/add-specific-users', async (req, res) => {
   }
 });
 
+// Daily cache update for contractors registry data
+app.post('/api/contractors/update-licenses-cache', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const contractors = await db.collection('contractors').find({
+      company_id: { $exists: true, $ne: '' }
+    }).toArray();
+
+    console.log(`🔄 Starting daily license cache update for ${contractors.length} contractors`);
+
+    let updatedCount = 0;
+    let errorCount = 0;
+
+    for (const contractor of contractors) {
+      try {
+        console.log(`🔍 Updating licenses for ${contractor.name} (${contractor.company_id})`);
+        
+        // Fetch fresh data from Contractors Registry
+        const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${contractor.company_id}`);
+        const contractorsData = await contractorsResponse.json();
+
+        if (contractorsData.success && contractorsData.result.records.length > 0) {
+          const licenseTypes = [];
+          
+          contractorsData.result.records.forEach((record) => {
+            if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+              const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+              licenseTypes.push({
+                classification_type: record['TEUR_ANAF'],
+                classification: `${record['KVUTZA']}${record['SIVUG']}`,
+                description: licenseDescription,
+                kod_anaf: record['KOD_ANAF'] || '',
+                tarich_sug: record['TARICH_SUG'] || '',
+                hekef: record['HEKEF'] || '',
+                lastUpdated: new Date().toISOString()
+              });
+            }
+          });
+
+          // Update contractor with fresh license data
+          await db.collection('contractors').updateOne(
+            { _id: contractor._id },
+            { 
+              $set: { 
+                classifications: licenseTypes,
+                licensesLastUpdated: new Date().toISOString()
+              }
+            }
+          );
+
+          console.log(`✅ Updated ${contractor.name} with ${licenseTypes.length} licenses`);
+          updatedCount++;
+        }
+      } catch (error) {
+        console.error(`❌ Error updating ${contractor.name}:`, error.message);
+        errorCount++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Daily license cache update completed`,
+      updatedCount,
+      errorCount,
+      totalProcessed: contractors.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error in daily license cache update:', error);
+    res.status(500).json({ error: 'Failed to update license cache' });
+  }
+});
+
 // Search company by company_id - check MongoDB first, then external API
 app.get('/api/search-company/:companyId', async (req, res) => {
   try {
@@ -1779,8 +1852,12 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const now = new Date();
       const lastStatusUpdate = existingContractor.statusLastUpdated ? new Date(existingContractor.statusLastUpdated) : null;
       const isStatusDataFresh = lastStatusUpdate && (now - lastStatusUpdate) < 24 * 60 * 60 * 1000; // 24 hours
+      
+      // Check if we have cached license data that's less than 24 hours old
+      const lastLicenseUpdate = existingContractor.licensesLastUpdated ? new Date(existingContractor.licensesLastUpdated) : null;
+      const isLicenseDataFresh = lastLicenseUpdate && (now - lastLicenseUpdate) < 24 * 60 * 60 * 1000; // 24 hours
 
-      if (isStatusDataFresh && existingContractor.statusIndicator) {
+      if (isStatusDataFresh && existingContractor.statusIndicator && isLicenseDataFresh) {
         console.log('✅ Using cached status data (less than 24 hours old)');
         return res.json({
           success: true,
@@ -1974,16 +2051,26 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             website = `https://www.${domain}`;
           }
         }
+      }
 
-        // Extract license types from contractors registry
-        if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
-          const licenseDescription = `${contractorData['TEUR_ANAF']} - ${contractorData['KVUTZA']}${contractorData['SIVUG']}`;
-          licenseTypes.push({
-            classification_type: contractorData['TEUR_ANAF'],
-            classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`,
-            description: licenseDescription
-          });
-        }
+      // Extract ALL license types from contractors registry (multiple records)
+      if (contractorsData.success && contractorsData.result.records.length > 0) {
+        console.log(`📋 Processing ${contractorsData.result.records.length} license records`);
+        
+        contractorsData.result.records.forEach((record, index) => {
+          if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+            const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+            licenseTypes.push({
+              classification_type: record['TEUR_ANAF'],
+              classification: `${record['KVUTZA']}${record['SIVUG']}`,
+              description: licenseDescription,
+              kod_anaf: record['KOD_ANAF'] || '',
+              tarich_sug: record['TARICH_SUG'] || '',
+              hekef: record['HEKEF'] || ''
+            });
+            console.log(`📋 License ${index + 1}: ${licenseDescription}`);
+          }
+        });
 
         console.log('📋 Extracted contractor data:', {
           contractorId,
@@ -2054,14 +2141,24 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         }
       }
 
-      // Extract license types from contractors registry
+      // Extract ALL license types from contractors registry (multiple records)
       let licenseTypes = [];
-      if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
-        const licenseDescription = `${contractorData['TEUR_ANAF']} - ${contractorData['KVUTZA']}${contractorData['SIVUG']}`;
-        licenseTypes.push({
-          classification_type: contractorData['TEUR_ANAF'],
-          classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`,
-          description: licenseDescription
+      if (contractorsData.success && contractorsData.result.records.length > 0) {
+        console.log(`📋 Processing ${contractorsData.result.records.length} license records (contractor-only)`);
+        
+        contractorsData.result.records.forEach((record, index) => {
+          if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+            const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+            licenseTypes.push({
+              classification_type: record['TEUR_ANAF'],
+              classification: `${record['KVUTZA']}${record['SIVUG']}`,
+              description: licenseDescription,
+              kod_anaf: record['KOD_ANAF'] || '',
+              tarich_sug: record['TARICH_SUG'] || '',
+              hekef: record['HEKEF'] || ''
+            });
+            console.log(`📋 License ${index + 1}: ${licenseDescription}`);
+          }
         });
       }
 
