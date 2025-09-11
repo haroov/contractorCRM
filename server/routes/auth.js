@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
+const bcrypt = require('bcryptjs');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const User = require('../models/User');
 const router = express.Router();
 
 // Google OAuth login
@@ -34,6 +36,151 @@ router.get('/google', (req, res, next) => {
   console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
 
   res.redirect(fullUrl);
+});
+
+// Email/Password login
+router.post('/login', async (req, res) => {
+  try {
+    console.log('🔐 Email/Password login attempt:', req.body.email);
+    
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'אימייל וסיסמה נדרשים' 
+      });
+    }
+    
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
+    if (!user) {
+      console.log('❌ User not found:', email);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.' 
+      });
+    }
+    
+    if (!user.isActive) {
+      console.log('❌ User inactive:', email);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'חשבון לא פעיל. אנא פנה למנהל המערכת.' 
+      });
+    }
+    
+    // Check if user has password (for email/password login)
+    if (!user.password) {
+      console.log('❌ User has no password set:', email);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'חשבון זה משתמש בהתחברות Google בלבד. אנא התחבר עם Google.' 
+      });
+    }
+    
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      console.log('❌ Invalid password for:', email);
+      return res.status(401).json({ 
+        success: false, 
+        message: 'סיסמה שגויה' 
+      });
+    }
+    
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+    
+    // Create session
+    req.login(user, (err) => {
+      if (err) {
+        console.error('❌ Session creation error:', err);
+        return res.status(500).json({ 
+          success: false, 
+          message: 'שגיאה ביצירת הפעלה' 
+        });
+      }
+      
+      console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
+      
+      res.json({
+        success: true,
+        message: 'התחברת בהצלחה',
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          picture: user.picture
+        }
+      });
+    });
+    
+  } catch (error) {
+    console.error('❌ Login error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'שגיאה בשרת' 
+    });
+  }
+});
+
+// Set password for existing user (admin only)
+router.post('/set-password', requireAuth, async (req, res) => {
+  try {
+    console.log('🔐 Set password request for:', req.body.email);
+    
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'אימייל וסיסמה נדרשים' 
+      });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'סיסמה חייבת להכיל לפחות 6 תווים' 
+      });
+    }
+    
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'משתמש לא נמצא' 
+      });
+    }
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Update user password
+    user.password = hashedPassword;
+    await user.save();
+    
+    console.log('✅ Password set for user:', user.email);
+    
+    res.json({
+      success: true,
+      message: 'סיסמה הוגדרה בהצלחה'
+    });
+    
+  } catch (error) {
+    console.error('❌ Set password error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'שגיאה בשרת' 
+    });
+  }
 });
 
 // Google OAuth callback

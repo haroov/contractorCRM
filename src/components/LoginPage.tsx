@@ -29,7 +29,9 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Force deployment update
   console.log('LoginPage component loaded with email validation');
@@ -126,6 +128,55 @@ const LoginPage: React.FC = () => {
       setEmailError('כתובת אימייל לא תקינה');
     } else {
       setEmailError('');
+    }
+  };
+
+  const handleEmailPasswordLogin = async () => {
+    if (!email) {
+      setEmailError('נא להזין כתובת אימייל');
+      return;
+    }
+
+    if (!password) {
+      setError('נא להזין סיסמה');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('כתובת אימייל לא תקינה');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Login with email and password
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Login successful - store user data and redirect
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('userAuthenticated', 'true');
+        window.location.href = '/';
+      } else {
+        // Login failed - show error message
+        setError(data.message || 'שגיאה בהתחברות');
+      }
+    } catch (error) {
+      console.error('Error with email/password login:', error);
+      setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -303,11 +354,50 @@ const LoginPage: React.FC = () => {
               autoComplete="email"
               sx={{ mb: 1 }}
             />
+            <TextField
+              fullWidth
+              label="סיסמה"
+              type={showPassword ? 'text' : 'password'}
+              variant="outlined"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="הזן את הסיסמה שלך"
+              autoComplete="current-password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
             {error && (
               <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
                 {error}
               </Alert>
             )}
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+              onClick={handleEmailPasswordLogin}
+              disabled={loading}
+              sx={{
+                py: 1.5,
+                bgcolor: '#9c27b0',
+                '&:hover': {
+                  bgcolor: '#7b1fa2'
+                }
+              }}
+            >
+              {loading ? 'מתחבר...' : 'התחבר עם אימייל וסיסמה'}
+            </Button>
             <Button
               variant="outlined"
               size="large"
@@ -325,7 +415,7 @@ const LoginPage: React.FC = () => {
                 }
               }}
             >
-              {loading ? 'מתחבר...' : 'התחבר'}
+              {loading ? 'מתחבר...' : 'התחבר כלקוח'}
             </Button>
           </Box>
         </Box>

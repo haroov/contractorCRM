@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true
   },
+  password: {
+    type: String,
+    required: false, // Not required for Google OAuth users
+    minlength: 6
+  },
   name: {
     type: String,
     required: true
