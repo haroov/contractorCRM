@@ -1,7 +1,9 @@
 // API Configuration
 const getBaseUrl = () => {
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-        return import.meta.env.VITE_API_BASE_URL || '/api';
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+        // Remove trailing /api if it exists to avoid duplication
+        return baseUrl.endsWith('/api') ? baseUrl.slice(0, -4) : baseUrl;
     }
     return '/api';
 };
