@@ -360,7 +360,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           if (result.success && result.source === 'mongodb') {
             // Company exists in MongoDB - load it for editing
             console.log('✅ Company exists in MongoDB, loading for editing:', result.data.name);
-            
+
             // If contractor is archived (isActive: false), we'll make it active when saving
             const contractorData = result.data;
             if (contractorData.status === 'archived' || !contractorData.isActive) {
@@ -373,7 +373,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               setSnackbarSeverity('info');
               setSnackbarOpen(true);
             }
-            
+
             // Set the contractor data and switch to edit mode
             setSelectedContractor(contractorData);
             setContractorMode('edit');
@@ -394,18 +394,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         setSnackbarOpen(true);
       } else {
         console.log('💾 Updating existing contractor in MongoDB...');
-        
+
         // Ensure contractor is active when saving
         const contractorToUpdate = {
           ...updatedContractor,
           isActive: true, // Always make contractor active when saving
           status: 'פעילה' // Set status to active
         };
-        
+
         const updated = await ContractorService.update(contractorToUpdate.contractor_id, contractorToUpdate);
         if (updated) {
           console.log('✅ Contractor updated successfully:', updated);
-          
+
           // Update contractors list - add if not exists, update if exists
           const existingIndex = contractors.findIndex(c => c.contractor_id === updatedContractor.contractor_id);
           if (existingIndex >= 0) {
@@ -415,7 +415,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             // Add contractor to list (was archived, now active)
             setContractors([...contractors, updated]);
           }
-          
+
           setSelectedContractor(updated);
           setSnackbarMessage('הקבלן עודכן בהצלחה');
           setSnackbarSeverity('success');

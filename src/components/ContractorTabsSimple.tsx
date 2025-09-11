@@ -1131,10 +1131,6 @@ export default function ContractorTabsSimple({
                                 </Box>
                             </Grid>
 
-                            <Grid item xs={12} sm={6} md={3}>
-                                {/* מקום ריק לשורה הראשונה */}
-                            </Grid>
-
                             {/* שורה שנייה - ISO45001 */}
                             <Grid item xs={12} sm={6} md={3}>
                                 <FormControlLabel
