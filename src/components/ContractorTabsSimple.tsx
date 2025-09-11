@@ -684,14 +684,25 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractorData.email || '');
         setLocalPhone(contractorData.phone || '');
         setLocalWebsite(contractorData.website || '');
-        setLocalContractorId(contractorData.contractorId || '');
-        setLocalEmployees(contractorData.employees || '');
+        setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
+        setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
         setLocalCompanyType(contractorData.companyType || 'private_company');
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalIso45001(contractorData.iso45001 || false);
         setLocalClassifications(contractorData.classifications || []);
         setCompanyAbout(contractorData.companyAbout || '');
         setCompanyLogo(contractorData.companyLogo || '');
+        
+        // Update contacts and projects if they exist
+        if (contractorData.contacts) {
+            setLocalContacts(contractorData.contacts);
+        }
+        if (contractorData.projects) {
+            setLocalProjects(contractorData.projects);
+        }
+        if (contractorData.notes) {
+            setLocalNotes(contractorData.notes);
+        }
 
         // Load status indicator
         if (contractorData.statusIndicator) {

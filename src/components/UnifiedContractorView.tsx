@@ -125,7 +125,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const contractorsData = await ContractorService.getAll();
       // Filter out archived contractors from the main list
       // Use isActive field for CRM status (not company status from Companies Registry)
-      const activeContractors = contractorsData.filter(contractor => contractor.isActive !== false);
+      const activeContractors = contractorsData.filter(contractor => contractor.isActive === true);
       setContractors(activeContractors);
     } catch (error) {
       console.error('Error loading contractors:', error);
@@ -506,7 +506,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const filteredContractors = contractors.filter(contractor => {
     // Filter out archived contractors (unless user is admin)
     const isAdmin = currentUser?.permissions === 'admin';
-    if (contractor.status === 'archived' && !isAdmin) {
+    if (contractor.isActive === false && !isAdmin) {
       return false;
     }
 
