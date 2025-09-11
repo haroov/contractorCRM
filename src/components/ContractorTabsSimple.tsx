@@ -846,30 +846,6 @@ export default function ContractorTabsSimple({
         }
     };
 
-    // Function to sync data from both Companies Registry and Contractors Registry APIs
-    const syncDataFromBothAPIs = async (companyId: string) => {
-        console.log('🔄 Syncing data from both APIs for company ID:', companyId);
-
-        try {
-            // Use our backend API endpoint that handles external API calls
-            console.log('📊 Fetching data through backend API...');
-            const response = await fetch(`/api/search-company/${companyId}?force_refresh=true`);
-            const result = await response.json();
-
-            if (result.success && result.data) {
-                console.log('✅ Data fetched successfully:', result.data);
-
-                // Populate form with the data
-                await populateFormWithApiData(result.data);
-            } else {
-                throw new Error('לא נמצאו נתונים במאגרים החיצוניים');
-            }
-
-        } catch (error) {
-            console.error('❌ Error syncing data:', error);
-            throw error;
-        }
-    };
 
     // New function to handle the complete validation and data fetching flow
     const validateAndFetchCompanyData = async (companyId: string, forceRefresh: boolean = false) => {
@@ -1345,53 +1321,6 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                     sx={textFieldSx}
                                     onChange={(e) => setLocalName(e.target.value)}
-                                    InputProps={{
-                                        endAdornment: localCompanyId && localCompanyId.length === 9 ? (
-                                            <Tooltip title="סנכרן נתונים מרשם החברות ופנקס הקבלנים">
-                                                <IconButton
-                                                    onClick={async () => {
-                                                        if (localCompanyId && localCompanyId.length === 9) {
-                                                            // Show confirmation dialog
-                                                            const confirmed = window.confirm(
-                                                                'האם אתה בטוח שאתה רוצה לסנכרן נתונים?\n\n' +
-                                                                'הח״פ ' + localCompanyId + ' כבר קיים במערכת.\n\n' +
-                                                                'פעולה זו תטען נתונים חדשים מרשם החברות ופנקס הקבלנים ותעדכן את הטופס.\n\n' +
-                                                                'נתונים קיימים בטופס יוחלפו בנתונים מהמאגרים החיצוניים.'
-                                                            );
-
-                                                            if (confirmed) {
-                                                                setIsLoadingCompanyData(true);
-                                                                try {
-                                                                    // Load from both APIs
-                                                                    await syncDataFromBothAPIs(localCompanyId);
-                                                                } catch (error) {
-                                                                    console.error('Error syncing data:', error);
-                                                                    alert('שגיאה בסנכרון הנתונים');
-                                                                } finally {
-                                                                    setIsLoadingCompanyData(false);
-                                                                }
-                                                            }
-                                                        }
-                                                    }}
-                                                    disabled={isLoadingCompanyData}
-                                                    sx={{
-                                                        color: '#9c27b0',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                                        }
-                                                    }}
-                                                >
-                                                    {isLoadingCompanyData ? (
-                                                        <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
-                                                    ) : (
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
-                                                        </svg>
-                                                    )}
-                                                </IconButton>
-                                            </Tooltip>
-                                        ) : null
-                                    }}
                                 />
                             </Grid>
 
