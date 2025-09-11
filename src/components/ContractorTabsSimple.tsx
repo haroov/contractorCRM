@@ -237,6 +237,7 @@ export default function ContractorTabsSimple({
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
+    const [localIsActive, setLocalIsActive] = useState<boolean>(contractor?.isActive ?? true);
 
     // Company about section states
     const [companyAbout, setCompanyAbout] = useState<string>(contractor?.companyAbout || '');
