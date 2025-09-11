@@ -1836,9 +1836,11 @@ app.post('/api/contractors/update-licenses-cache', async (req, res) => {
 app.get('/api/search-company/:companyId', async (req, res) => {
   try {
     const { companyId } = req.params;
+    const { force_refresh } = req.query;
     const db = client.db('contractor-crm');
 
     console.log('🔍 Searching for company ID:', companyId);
+    console.log('🔍 Force refresh:', force_refresh);
 
     // First, check if company exists in MongoDB Atlas (including archived contractors)
     const existingContractor = await db.collection('contractors').findOne({
@@ -1860,7 +1862,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const lastLicenseUpdate = existingContractor.licensesLastUpdated ? new Date(existingContractor.licensesLastUpdated) : null;
       const isLicenseDataFresh = lastLicenseUpdate && (now - lastLicenseUpdate) < 24 * 60 * 60 * 1000; // 24 hours
 
-      if (isStatusDataFresh && existingContractor.statusIndicator && isLicenseDataFresh) {
+      if (isStatusDataFresh && existingContractor.statusIndicator && isLicenseDataFresh && !force_refresh) {
         console.log('✅ Using cached status data (less than 24 hours old)');
         return res.json({
           success: true,

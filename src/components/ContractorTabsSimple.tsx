@@ -670,63 +670,19 @@ export default function ContractorTabsSimple({
         console.log('🔄 Syncing data from both APIs for company ID:', companyId);
         
         try {
-            // Step 1: Get data from Contractors Registry API (data.gov.il)
-            console.log('📊 Step 1: Fetching from Contractors Registry API...');
-            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
-            const contractorsData = await contractorsResponse.json();
+            // Use our backend API endpoint that handles external API calls
+            console.log('📊 Fetching data through backend API...');
+            const response = await fetch(`http://localhost:3001/api/search-company/${companyId}?force_refresh=true`);
+            const result = await response.json();
             
-            let contractorsInfo = null;
-            if (contractorsData.success && contractorsData.result.records.length > 0) {
-                const record = contractorsData.result.records[0];
-                contractorsInfo = {
-                    name: record.SHEM_YESHUT || '',
-                    phone: record.MISPAR_TEL || '',
-                    email: record.EMAIL || '',
-                    address: record.SHEM_REHOV || '',
-                    city: record.SHEM_YISHUV || '',
-                    contractor_id: record.MISPAR_KABLAN || '',
-                    classifications: contractorsData.result.records.map((r: any) => 
-                        `${r.TEUR_ANAF} - ${r.KVUTZA}${r.SIVUG}`
-                    )
-                };
-                console.log('✅ Contractors Registry data:', contractorsInfo);
-            }
-            
-            // Step 2: Get data from Companies Registry API (data.gov.il)
-            console.log('📊 Step 2: Fetching from Companies Registry API...');
-            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b9d0b97-8f9c-4f7b-9f9c-e166dfa0a2d8&q=${companyId}`);
-            const companiesData = await companiesResponse.json();
-            
-            let companiesInfo = null;
-            if (companiesData.success && companiesData.result.records.length > 0) {
-                const record = companiesData.result.records[0];
-                companiesInfo = {
-                    nameEnglish: record.SHEM_TAATZMAI || '',
-                    foundationDate: record.TAARICH_HITAGDUT || '',
-                    companyType: record.SUG_TAATZMAI || '',
-                    status: record.STATUS_TAATZMAI || '',
-                    lastAnnualReport: record.DOCH_SHNATI_ACHARON || ''
-                };
-                console.log('✅ Companies Registry data:', companiesInfo);
-            }
-            
-            // Check if we have any data from external APIs
-            if (!contractorsInfo && !companiesInfo) {
+            if (result.success && result.data) {
+                console.log('✅ Data fetched successfully:', result.data);
+                
+                // Populate form with the data
+                await populateFormWithApiData(result.data);
+            } else {
                 throw new Error('לא נמצאו נתונים במאגרים החיצוניים');
             }
-            
-            // Merge data from both sources
-            const mergedData = {
-                ...companiesInfo,
-                ...contractorsInfo,
-                // Ensure we have the company ID
-                company_id: companyId
-            };
-            
-            console.log('🔄 Merged data:', mergedData);
-            
-            // Populate form with merged data
-            await populateFormWithApiData(mergedData);
             
         } catch (error) {
             console.error('❌ Error syncing data:', error);
