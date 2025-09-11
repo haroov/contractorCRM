@@ -609,9 +609,22 @@ export default function ContractorTabsSimple({
             permissions: formData.get('permissions') as string
         };
 
-        // Validate email and phone
+        // Validate required fields
         let hasErrors = false;
 
+        // Validate name (required)
+        if (!contactData.fullName || contactData.fullName.trim() === '') {
+            alert('שם מלא הוא שדה חובה');
+            hasErrors = true;
+        }
+
+        // Validate role (required)
+        if (!contactData.role || contactData.role.trim() === '') {
+            alert('תפקיד הוא שדה חובה');
+            hasErrors = true;
+        }
+
+        // Validate email and phone
         if (contactData.email && !validateEmail(contactData.email)) {
             setContactEmailError('כתובת אימייל לא תקינה');
             hasErrors = true;
@@ -658,6 +671,7 @@ export default function ContractorTabsSimple({
             if (onSave) {
                 const updatedContractor = {
                     ...contractor,
+                    company_id: localCompanyId, // Ensure company_id is preserved
                     contacts: updatedContacts
                 };
                 onSave(updatedContractor);
