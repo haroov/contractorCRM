@@ -1942,15 +1942,118 @@ export default function ContractorTabsSimple({
 
                 {activeTab === 2 && (
                     <Box>
-                        <Typography variant="h6" gutterBottom>
-                            פרויקטים
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active')?.length || 0}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6">
+                                פרויקטים
+                            </Typography>
+                            {canEdit && (
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => {/* TODO: Add project handler */}}
+                                    size="small"
+                                    sx={{
+                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        '&:hover': {
+                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                        }
+                                    }}
+                                >
+                                    הוספה
+                                </Button>
+                            )}
+                        </Box>
+
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active' || p.status === 'current')?.length || 0} | 
                             פרויקטים עתידיים: {localProjects?.filter((p: any) => p.status === 'future')?.length || 0}
                         </Typography>
+
+                        {localProjects && localProjects.length > 0 ? (
+                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם פרויקט</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תיאור</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך התחלה</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עיר</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>ערך (₪)</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סטטוס</TableCell>
+                                            {canEdit && (
+                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
+                                            )}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {localProjects.map((project: any, index: number) => (
+                                            <TableRow key={project._id || project.id || index}>
+                                                <TableCell sx={{ textAlign: 'right' }}>{project.projectName || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{project.description || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{project.startDate || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{project.city || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>
+                                                    {project.value ? `₪${project.value.toLocaleString()}` : ''}
+                                                </TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>
+                                                    <Typography 
+                                                        variant="body2" 
+                                                        sx={{ 
+                                                            color: project.status === 'active' || project.status === 'current' ? 'green' : 
+                                                                  project.status === 'future' ? 'orange' : 'gray'
+                                                        }}
+                                                    >
+                                                        {project.status === 'active' || project.status === 'current' ? 'פעיל' :
+                                                         project.status === 'future' ? 'עתידי' : 'הושלם'}
+                                                    </Typography>
+                                                </TableCell>
+                                                {canEdit && (
+                                                    <TableCell sx={{ textAlign: 'center' }}>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => {/* TODO: Edit project handler */}}
+                                                            sx={{ color: '#9c27b0' }}
+                                                        >
+                                                            <EditIcon fontSize="small" />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => {/* TODO: Archive project handler */}}
+                                                            sx={{ color: 'gray' }}
+                                                        >
+                                                            <DeleteIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </TableCell>
+                                                )}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <Box sx={{ textAlign: 'center', py: 4 }}>
+                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                    אין פרויקטים רשומים
+                                </Typography>
+                                {canEdit && (
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => {/* TODO: Add project handler */}}
+                                        sx={{
+                                            borderColor: '#9c27b0', // סגול שוקו
+                                            color: '#9c27b0',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                                borderColor: '#9c27b0'
+                                            }
+                                        }}
+                                    >
+                                        הוסף פרויקט ראשון
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
                     </Box>
                 )}
 
