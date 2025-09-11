@@ -278,38 +278,45 @@ export default function ContractorTabsSimple({
 
     // Update local states when contractor changes
     useEffect(() => {
-        setLocalCompanyId(contractor?.company_id || '');
-        setLocalCompanyType(contractor?.companyType || 'private_company');
-        setLocalName(contractor?.name || '');
-        setLocalNameEnglish(contractor?.nameEnglish || '');
-        setLocalFoundationDate(contractor?.foundationDate || '');
-        setLocalAddress(contractor?.address || '');
-        setLocalCity(contractor?.city || '');
-        setLocalEmail(contractor?.email || '');
-        setLocalPhone(contractor?.phone || '');
-        setLocalWebsite(contractor?.website || '');
-        setLocalContractorId(contractor?.contractor_id || '');
-        setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
+        // Only update state if contractor has meaningful data
+        // Don't reset fields that were already populated from API/DB
+        if (contractor && contractor.company_id) {
+            console.log('🔄 useEffect: Updating state with contractor data:', contractor);
+            setLocalCompanyId(contractor?.company_id || '');
+            setLocalCompanyType(contractor?.companyType || 'private_company');
+            setLocalName(contractor?.name || '');
+            setLocalNameEnglish(contractor?.nameEnglish || '');
+            setLocalFoundationDate(contractor?.foundationDate || '');
+            setLocalAddress(contractor?.address || '');
+            setLocalCity(contractor?.city || '');
+            setLocalEmail(contractor?.email || '');
+            setLocalPhone(contractor?.phone || '');
+            setLocalWebsite(contractor?.website || '');
+            setLocalContractorId(contractor?.contractor_id || '');
+            setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
 
-        // Update additional contractor data
-        setLocalContacts(contractor?.contacts || []);
-        setLocalProjects(contractor?.projects || []);
-        setLocalNotes(contractor?.notes || { general: '', internal: '' });
-        setLocalSafetyRating(contractor?.safetyRating || '0');
-        setLocalSafetyExpiry(contractor?.safetyExpiry || '');
-        setLocalSafetyCertificate(contractor?.safetyCertificate || '');
-        setLocalIso45001(contractor?.iso45001 || false);
-        setLocalIsoExpiry(contractor?.isoExpiry || '');
-        setLocalIsoCertificate(contractor?.isoCertificate || '');
-        setLocalClassifications(contractor?.classifications || []);
+            // Update additional contractor data
+            setLocalContacts(contractor?.contacts || []);
+            setLocalProjects(contractor?.projects || []);
+            setLocalNotes(contractor?.notes || { general: '', internal: '' });
+            setLocalSafetyRating(contractor?.safetyRating || '0');
+            setLocalSafetyExpiry(contractor?.safetyExpiry || '');
+            setLocalSafetyCertificate(contractor?.safetyCertificate || '');
+            setLocalIso45001(contractor?.iso45001 || false);
+            setLocalIsoExpiry(contractor?.isoExpiry || '');
+            setLocalIsoCertificate(contractor?.isoCertificate || '');
+            setLocalClassifications(contractor?.classifications || []);
 
-        // Update company about section
-        setCompanyAbout(contractor?.companyAbout || '');
-        setCompanyLogo(contractor?.companyLogo || '');
+            // Update company about section
+            setCompanyAbout(contractor?.companyAbout || '');
+            setCompanyLogo(contractor?.companyLogo || '');
 
-        // Load status indicator for existing contractors
-        if (contractor?.company_id && contractor._id) {
-            loadStatusForExistingContractor(contractor.company_id);
+            // Load status indicator for existing contractors
+            if (contractor?.company_id && contractor._id) {
+                loadStatusForExistingContractor(contractor.company_id);
+            }
+        } else {
+            console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
         }
     }, [contractor]);
 
