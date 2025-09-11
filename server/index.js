@@ -1840,13 +1840,16 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
     console.log('🔍 Searching for company ID:', companyId);
 
-    // First, check if company exists in MongoDB Atlas
+    // First, check if company exists in MongoDB Atlas (including archived contractors)
     const existingContractor = await db.collection('contractors').findOne({
       company_id: companyId
     });
 
     if (existingContractor) {
       console.log('✅ Found company in MongoDB Atlas:', existingContractor.name);
+      if (existingContractor.isActive === false) {
+        console.log('📋 Company is archived (isActive: false)');
+      }
 
       // Check if we have cached status data that's less than 24 hours old
       const now = new Date();
@@ -1876,6 +1879,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             // Status data
             statusIndicator: existingContractor.statusIndicator,
             statusLastUpdated: existingContractor.statusLastUpdated,
+            isActive: existingContractor.isActive,
             // Complete contractor data
             employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
             numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
@@ -1946,6 +1950,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             // Status data
             statusIndicator: statusIndicator,
             statusLastUpdated: statusData.statusLastUpdated,
+            isActive: existingContractor.isActive,
             // Complete contractor data
             employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
             numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',

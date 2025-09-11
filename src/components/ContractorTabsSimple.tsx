@@ -670,6 +670,11 @@ export default function ContractorTabsSimple({
     const loadExistingContractorData = async (contractorData: any) => {
         console.log('📊 Loading existing contractor data:', contractorData);
 
+        // Check if contractor is archived
+        if (contractorData.isActive === false) {
+            console.log('📋 Loading archived contractor - will be reactivated on save');
+        }
+
         // Update all local states with existing contractor data
         setLocalName(contractorData.name || '');
         setLocalNameEnglish(contractorData.nameEnglish || '');
@@ -689,8 +694,8 @@ export default function ContractorTabsSimple({
         setCompanyLogo(contractorData.companyLogo || '');
 
         // Load status indicator
-        if (contractorData.companyStatus) {
-            setCompanyStatusIndicator(contractorData.companyStatus);
+        if (contractorData.statusIndicator) {
+            setCompanyStatusIndicator(contractorData.statusIndicator);
         }
 
         console.log('✅ Existing contractor data loaded successfully');
