@@ -739,6 +739,7 @@ export default function ContractorTabsSimple({
         setIsLoadingCompanyData(true);
         try {
             console.log('🔍 Starting validation flow for company ID:', companyId);
+            console.log('🔍 Force refresh:', forceRefresh);
 
             // Step 2: Check MongoDB Atlas first for existing contractor
             console.log('📊 Step 2: Checking MongoDB Atlas for existing contractor...');
@@ -749,6 +750,8 @@ export default function ContractorTabsSimple({
             if (result.success) {
                 const companyData = result.data;
                 console.log(`✅ Found company in ${result.source}:`, companyData.name);
+                console.log('🔍 result.source:', result.source);
+                console.log('🔍 forceRefresh:', forceRefresh);
 
                 if (result.source === 'mongodb_cached' && !forceRefresh) {
                     // Step 2a: Found existing contractor in MongoDB - load all contractor data
@@ -775,6 +778,8 @@ export default function ContractorTabsSimple({
     // Function to load existing contractor data from MongoDB
     const loadExistingContractorData = async (contractorData: any) => {
         console.log('📊 Loading existing contractor data:', contractorData);
+        console.log('📊 Contractor name:', contractorData.name);
+        console.log('📊 Contractor phone:', contractorData.phone);
 
         // Check if contractor is archived
         if (contractorData.isActive === false) {
@@ -782,12 +787,14 @@ export default function ContractorTabsSimple({
         }
 
         // Update all local states with existing contractor data
+        console.log('📊 Setting local name:', contractorData.name);
         setLocalName(contractorData.name || '');
         setLocalNameEnglish(contractorData.nameEnglish || '');
         setLocalFoundationDate(contractorData.foundationDate || '');
         setLocalAddress(contractorData.address || '');
         setLocalCity(contractorData.city || '');
         setLocalEmail(contractorData.email || '');
+        console.log('📊 Setting local phone:', contractorData.phone);
         setLocalPhone(contractorData.phone || '');
         setLocalWebsite(contractorData.website || '');
         setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
