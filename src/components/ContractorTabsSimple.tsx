@@ -1815,7 +1815,9 @@ export default function ContractorTabsSimple({
                                 'ממונה בטיחות',
                                 'סמנכ״ל תפעול',
                                 'סמנכ״ל הנדסה',
-                                'סמנכ״ל תכנון'
+                                'סמנכ״ל תכנון',
+                                'מנהל פרוייקטים',
+                                'מנהל עבודה'
                             ]}
                             defaultValue={editingContact?.role || editingContact?.position || ''}
                             renderInput={(params) => (
