@@ -1007,7 +1007,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       {userManagementOpen && (
         <Box sx={{ 
           position: 'fixed', 
-          top: 0, 
+          top: '80px', // Start below the header
           left: 0, 
           right: 0, 
           bottom: 0, 
@@ -1017,7 +1017,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Box sx={{ 
             display: 'flex', 
             flexDirection: 'column', 
-            height: '100vh',
+            height: 'calc(100vh - 80px)', // Full height minus header
             p: 2
           }}>
             <Box sx={{ 
