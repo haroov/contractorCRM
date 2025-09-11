@@ -543,6 +543,42 @@ export default function ContractorTabsSimple({
         setEditingContact(null);
     };
 
+    const handleSaveContact = () => {
+        // Get form data from the dialog
+        const form = document.querySelector('#contact-dialog-form') as HTMLFormElement;
+        if (!form) return;
+
+        const formData = new FormData(form);
+        const contactData = {
+            name: formData.get('name') as string,
+            role: formData.get('role') as string,
+            phone: formData.get('phone') as string,
+            email: formData.get('email') as string,
+            permissions: formData.get('permissions') as string
+        };
+
+        console.log('Saving contact:', contactData);
+
+        if (editingContact) {
+            // Update existing contact
+            const updatedContacts = localContacts.map(contact => 
+                contact.id === editingContact.id 
+                    ? { ...contact, ...contactData }
+                    : contact
+            );
+            setLocalContacts(updatedContacts);
+        } else {
+            // Add new contact
+            const newContact = {
+                id: Date.now().toString(),
+                ...contactData
+            };
+            setLocalContacts([...localContacts, newContact]);
+        }
+
+        handleCloseContactDialog();
+    };
+
     // Load status indicator for existing contractors
     const loadStatusForExistingContractor = async (companyId: string) => {
         try {
@@ -1536,9 +1572,10 @@ export default function ContractorTabsSimple({
                     {editingContact ? 'עריכת איש קשר' : 'הוספת איש קשר'}
                 </DialogTitle>
                 <DialogContent>
-                    <Box sx={{ pt: 2 }}>
+                    <Box id="contact-dialog-form" component="form" sx={{ pt: 2 }}>
                         <TextField
                             fullWidth
+                            name="name"
                             label="שם מלא"
                             defaultValue={editingContact?.name || editingContact?.fullName || ''}
                             sx={{ mb: 2, ...textFieldSx }}
@@ -1560,6 +1597,7 @@ export default function ContractorTabsSimple({
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    name="role"
                                     label="תפקיד"
                                     sx={{ mb: 2, ...textFieldSx }}
                                 />
@@ -1567,12 +1605,14 @@ export default function ContractorTabsSimple({
                         />
                         <TextField
                             fullWidth
+                            name="phone"
                             label="טלפון"
                             defaultValue={editingContact?.phone || editingContact?.phoneNumber || editingContact?.mobile || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
                             fullWidth
+                            name="email"
                             label="אימייל"
                             type="email"
                             defaultValue={editingContact?.email || editingContact?.emailAddress || ''}
@@ -1589,6 +1629,7 @@ export default function ContractorTabsSimple({
                                 הרשאות
                             </InputLabel>
                             <Select
+                                name="permissions"
                                 defaultValue={editingContact?.permissions || 'contactUser'}
                                 sx={{
                                     '& .MuiOutlinedInput-notchedOutline': {
@@ -1612,11 +1653,7 @@ export default function ContractorTabsSimple({
                     <Button onClick={handleCloseContactDialog}>ביטול</Button>
                     <Button
                         variant="contained"
-                        onClick={() => {
-                            // TODO: Implement save contact
-                            console.log('Save contact');
-                            handleCloseContactDialog();
-                        }}
+                        onClick={handleSaveContact}
                         sx={{
                             backgroundColor: '#9c27b0', // סגול שוקו
                             '&:hover': {
