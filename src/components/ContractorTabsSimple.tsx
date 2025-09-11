@@ -1568,7 +1568,7 @@ export default function ContractorTabsSimple({
                         <TextField
                             fullWidth
                             label="טלפון"
-                            defaultValue={editingContact?.phone || editingContact?.phoneNumber || ''}
+                            defaultValue={editingContact?.phone || editingContact?.phoneNumber || editingContact?.mobile || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
