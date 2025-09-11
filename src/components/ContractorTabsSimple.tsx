@@ -1944,10 +1944,10 @@ export default function ContractorTabsSimple({
                             פרויקטים
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            פרויקטים פעילים: {contractor?.projects?.filter((p: any) => p.status === 'active')?.length || 0}
+                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active')?.length || 0}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            פרויקטים עתידיים: {contractor?.projects?.filter((p: any) => p.status === 'future')?.length || 0}
+                            פרויקטים עתידיים: {localProjects?.filter((p: any) => p.status === 'future')?.length || 0}
                         </Typography>
                     </Box>
                 )}
@@ -1976,7 +1976,7 @@ export default function ContractorTabsSimple({
                             )}
                         </Box>
 
-                        {contractor?.contacts && contractor.contacts.length > 0 ? (
+                        {localContacts && localContacts.length > 0 ? (
                             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                                 <Table>
                                     <TableHead>
@@ -1992,7 +1992,7 @@ export default function ContractorTabsSimple({
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {contractor.contacts.map((contact: any, index: number) => (
+                                        {localContacts.map((contact: any, index: number) => (
                                             <TableRow key={contact.id || index}>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.fullName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
@@ -2067,7 +2067,7 @@ export default function ContractorTabsSimple({
                             multiline
                             rows={8}
                             label="הערות כלליות"
-                            value={contractor?.notes || ''}
+                            value={localNotes?.general || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                             disabled={!canEdit}
                             placeholder="הוסף הערות על הקבלן..."
@@ -2078,7 +2078,7 @@ export default function ContractorTabsSimple({
                             multiline
                             rows={4}
                             label="הערות פנימיות"
-                            value={contractor?.internalNotes || ''}
+                            value={localNotes?.internal || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                             disabled={!canEdit}
                             placeholder="הערות פנימיות לצוות..."
