@@ -125,31 +125,41 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
 
-      // Check if user is a contact user
-      const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+      // Check user type and permissions
+      const contactUserData = localStorage.getItem('contactUser');
+      let filteredContractors = [];
 
-      let filteredContractors;
-      if (isContactUser) {
-        // For contact users, show only their associated contractor
-        const contactUserData = localStorage.getItem('contactUser');
-        if (contactUserData) {
-          try {
-            const contactUser = JSON.parse(contactUserData);
+      if (contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          console.log('👤 User data:', contactUser);
+          
+          // Check if user is admin (system user) or contact user
+          if (contactUser.userType === 'system' || contactUser.role === 'admin') {
+            // Admin users see all active contractors
+            filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
+            console.log('📋 Admin user - loaded all active contractors:', filteredContractors.length);
+          } else if (contactUser.userType === 'contractor' || contactUser.role === 'contactUser' || contactUser.role === 'contactAdmin') {
+            // Contact users see only their associated contractor
             filteredContractors = contractorsData.filter(contractor =>
               contractor._id === contactUser.contractorId && contractor.isActive === true
             );
-            console.log('📋 Filtered contractors for contact user:', filteredContractors.length);
-          } catch (error) {
-            console.error('Error parsing contact user data:', error);
-            filteredContractors = [];
+            console.log('📋 Contact user - filtered contractors:', filteredContractors.length);
+          } else {
+            // Default: show all active contractors
+            filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
+            console.log('📋 Default - loaded all active contractors:', filteredContractors.length);
           }
-        } else {
-          filteredContractors = [];
+        } catch (error) {
+          console.error('Error parsing contact user data:', error);
+          // Default: show all active contractors
+          filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
+          console.log('📋 Error fallback - loaded all active contractors:', filteredContractors.length);
         }
       } else {
-        // For regular users, show all active contractors
+        // No user data - show all active contractors
         filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
-        console.log('📋 Loaded all active contractors:', filteredContractors.length);
+        console.log('📋 No user data - loaded all active contractors:', filteredContractors.length);
       }
 
       setContractors(filteredContractors);

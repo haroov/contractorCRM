@@ -636,7 +636,8 @@ router.post('/verify-otp', async (req, res) => {
       name: userData.name,
       role: userData.role || (storedData.userType === 'system' ? 'admin' : 'user'),
       userType: storedData.userType,
-      contractorName: userData.contractorName
+      contractorName: userData.contractorName,
+      picture: userData.picture || ''
     };
     
     // Clean up OTP
