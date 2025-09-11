@@ -26,6 +26,7 @@ export default function ContractorTabsSimple({
     onUpdateContractor
 }: ContractorTabsSimpleProps) {
     const [activeTab, setActiveTab] = useState(0);
+    const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
@@ -696,6 +697,46 @@ export default function ContractorTabsSimple({
         setEditingContact(null);
         setContactEmailError('');
         setContactPhoneError('');
+    };
+
+    // Filter projects based on active filter
+    const getFilteredProjects = () => {
+        if (!localProjects || localProjects.length === 0) return [];
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        return localProjects.filter((project: any) => {
+            const startDate = new Date(project.startDate);
+            startDate.setHours(0, 0, 0, 0);
+            const isClosed = project.isClosed || project.status === 'completed';
+            
+            switch (activeProjectFilter) {
+                case 'all':
+                    return true;
+                case 'active':
+                    return !isClosed && startDate <= today;
+                case 'future':
+                    return !isClosed && startDate > today;
+                case 'closed':
+                    return isClosed;
+                default:
+                    return true;
+            }
+        });
+    };
+
+    // Format date from YYYY-MM-DD to DD/MM/YYYY
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
     };
 
     const handleSaveContact = async () => {
@@ -1965,12 +2006,36 @@ export default function ContractorTabsSimple({
                             )}
                         </Box>
 
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active' || p.status === 'current')?.length || 0} |
-                            פרויקטים עתידיים: {localProjects?.filter((p: any) => p.status === 'future')?.length || 0}
-                        </Typography>
+                        {/* Project Filter Tabs */}
+                        <Box sx={{ mb: 2 }}>
+                            <Tabs
+                                value={activeProjectFilter}
+                                onChange={(event, newValue) => setActiveProjectFilter(newValue)}
+                                sx={{
+                                    '& .MuiTab-root': {
+                                        minWidth: 'auto',
+                                        padding: '8px 16px',
+                                        fontSize: '0.875rem',
+                                        textTransform: 'none',
+                                        color: '#666',
+                                        '&.Mui-selected': {
+                                            color: '#9c27b0',
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                    '& .MuiTabs-indicator': {
+                                        backgroundColor: '#9c27b0'
+                                    }
+                                }}
+                            >
+                                <Tab label="הכל" value="all" />
+                                <Tab label="פעילים" value="active" />
+                                <Tab label="עתידיים" value="future" />
+                                <Tab label="נסגרו" value="closed" />
+                            </Tabs>
+                        </Box>
 
-                        {localProjects && localProjects.length > 0 ? (
+                        {getFilteredProjects().length > 0 ? (
                             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                                 <Table>
                                     <TableHead>
@@ -1987,11 +2052,11 @@ export default function ContractorTabsSimple({
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {localProjects.map((project: any, index: number) => (
+                                        {getFilteredProjects().map((project: any, index: number) => (
                                             <TableRow key={project._id || project.id || index}>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.projectName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.description || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{project.startDate || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{formatDate(project.startDate)}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.city || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
                                                     {project.value ? `₪${project.value.toLocaleString()}` : ''}
@@ -2034,7 +2099,10 @@ export default function ContractorTabsSimple({
                         ) : (
                             <Box sx={{ textAlign: 'center', py: 4 }}>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                    אין פרויקטים רשומים
+                                    {activeProjectFilter === 'all' ? 'אין פרויקטים רשומים' :
+                                     activeProjectFilter === 'active' ? 'אין פרויקטים פעילים' :
+                                     activeProjectFilter === 'future' ? 'אין פרויקטים עתידיים' :
+                                     'אין פרויקטים נסגרו'}
                                 </Typography>
                                 {canEdit && (
                                     <Button
