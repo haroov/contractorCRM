@@ -15,7 +15,7 @@ router.get('/google', (req, res, next) => {
   const params = new URLSearchParams({
     response_type: 'code',
     client_id: process.env.GOOGLE_CLIENT_ID,
-    redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://contractorcrm-api.onrender.com/auth/google/callback',
+    redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'https://contractor-crm-api.onrender.com/auth/google/callback',
     scope: 'profile email',
     access_type: 'offline'
   });
