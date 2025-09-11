@@ -582,16 +582,16 @@ export default function ContractorTabsSimple({
 
         const formData = new FormData(form);
         const contactData = {
-            name: formData.get('name') as string,
+            fullName: formData.get('name') as string,
             role: formData.get('role') as string,
-            phone: formData.get('phone') as string,
+            mobile: formData.get('phone') as string,
             email: formData.get('email') as string,
             permissions: formData.get('permissions') as string
         };
 
         // Validate email and phone
         let hasErrors = false;
-        
+
         if (contactData.email && !validateEmail(contactData.email)) {
             setContactEmailError('כתובת אימייל לא תקינה');
             hasErrors = true;
@@ -599,7 +599,7 @@ export default function ContractorTabsSimple({
             setContactEmailError('');
         }
 
-        if (contactData.phone && !validatePhone(contactData.phone)) {
+        if (contactData.mobile && !validatePhone(contactData.mobile)) {
             setContactPhoneError('מספר טלפון לא תקין');
             hasErrors = true;
         } else {
@@ -729,7 +729,7 @@ export default function ContractorTabsSimple({
         setLocalClassifications(contractorData.classifications || []);
         setCompanyAbout(contractorData.companyAbout || '');
         setCompanyLogo(contractorData.companyLogo || '');
-        
+
         // Update contacts and projects if they exist
         if (contractorData.contacts) {
             setLocalContacts(contractorData.contacts);
@@ -747,10 +747,10 @@ export default function ContractorTabsSimple({
         }
 
         // Show notification that contractor was loaded
-        const message = contractorData.isActive === false 
+        const message = contractorData.isActive === false
             ? `הח״פ ${localCompanyId} כבר קיים במערכת (archived). נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`
             : `הח״פ ${localCompanyId} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`;
-        
+
         // Show alert or notification
         alert(message);
 
@@ -760,7 +760,7 @@ export default function ContractorTabsSimple({
     // Function to populate form with API data
     const populateFormWithApiData = async (companyData: any) => {
         console.log('📊 Populating form with API data:', companyData);
-        
+
         // Show notification that data was loaded from API
         const message = `הח״פ ${localCompanyId} לא נמצא במערכת. נטענו נתונים מרשם החברות עבור "${companyData.name}".`;
         alert(message);
@@ -1571,9 +1571,9 @@ export default function ContractorTabsSimple({
                                     <TableBody>
                                         {contractor.contacts.map((contact: any, index: number) => (
                                             <TableRow key={contact.id || index}>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.name || contact.fullName || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.fullName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.phone || contact.phoneNumber || contact.mobile || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right' }}>{contact.mobile || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.email || contact.emailAddress || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
                                                     <Typography variant="body2" sx={{
@@ -1675,7 +1675,7 @@ export default function ContractorTabsSimple({
                             fullWidth
                             name="name"
                             label="שם מלא"
-                            defaultValue={editingContact?.name || editingContact?.fullName || ''}
+                            defaultValue={editingContact?.fullName || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <Autocomplete
@@ -1705,7 +1705,7 @@ export default function ContractorTabsSimple({
                             fullWidth
                             name="phone"
                             label="טלפון"
-                            defaultValue={editingContact?.phone || editingContact?.phoneNumber || editingContact?.mobile || ''}
+                            defaultValue={editingContact?.mobile || ''}
                             error={!!contactPhoneError}
                             helperText={contactPhoneError}
                             onChange={(e) => {
