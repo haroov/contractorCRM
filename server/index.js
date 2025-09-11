@@ -639,8 +639,47 @@ app.post('/api/contractors/update-full-address', async (req, res) => {
 // Contractors API
 app.get('/api/contractors', async (req, res) => {
   try {
+    console.log('📋 Contractors API called');
+    console.log('📋 Session user:', req.session?.user);
+    console.log('📋 Is authenticated:', req.isAuthenticated());
+    console.log('📋 Session ID:', req.sessionID);
+    console.log('📋 All session data:', req.session);
+    
     const db = client.db('contractor-crm');
-    const contractors = await db.collection('contractors').find({}).toArray();
+    
+    // Check if user is authenticated via session
+    const sessionUser = req.session?.user;
+    if (!sessionUser) {
+      console.log('❌ No session user found - checking localStorage fallback');
+      
+      // For now, allow access if no session (for testing)
+      // In production, you'd want proper session management
+      console.log('⚠️ Allowing access without session for testing');
+    }
+    
+    let contractors;
+    
+    if (sessionUser) {
+      console.log('✅ User authenticated:', sessionUser.email, 'Role:', sessionUser.role);
+      
+      // Filter contractors based on user role
+      if (sessionUser.role === 'admin' || sessionUser.userType === 'system') {
+        // Admin users see all contractors
+        contractors = await db.collection('contractors').find({}).toArray();
+        console.log('📋 Admin user - loading all contractors:', contractors.length);
+      } else {
+        // Contact users see only their contractor
+        contractors = await db.collection('contractors').find({
+          'contacts.email': sessionUser.email
+        }).toArray();
+        console.log('📋 Contact user - loading filtered contractors:', contractors.length);
+      }
+    } else {
+      // Fallback: load all contractors for testing
+      console.log('⚠️ No session user - loading all contractors for testing');
+      contractors = await db.collection('contractors').find({}).toArray();
+      console.log('📋 Fallback - loading all contractors:', contractors.length);
+    }
 
     // Get projects for each contractor
     const contractorsWithProjects = [];

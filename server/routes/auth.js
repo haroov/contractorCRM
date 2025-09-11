@@ -449,56 +449,64 @@ const otpStorage = new Map();
 router.post('/send-login-email', async (req, res) => {
   try {
     console.log('📧 Send OTP email request for:', req.body.email);
-    
+
     const { email } = req.body;
-    
+
     if (!email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'אימייל נדרש' 
+      return res.status(400).json({
+        success: false,
+        message: 'אימייל נדרש'
       });
     }
-    
+
     // Check if email exists in system users
     const systemUser = await User.findOne({ email: email.toLowerCase() });
-    
+
     // Check if email exists in contractor contacts
     const { MongoClient } = require('mongodb');
     const client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
     const db = client.db('contractor-crm');
-    
+
     const contractors = await db.collection('contractors').find({
       'contacts.email': email.toLowerCase(),
       'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser'] }
     }).toArray();
-    
+
     await client.close();
-    
+
     if (!systemUser && contractors.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.' 
+      return res.status(404).json({
+        success: false,
+        message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.'
       });
     }
-    
+
     // Generate OTP
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    
+
     // Store OTP
     otpStorage.set(email, {
       otp,
       expiresAt,
       userType: systemUser ? 'system' : 'contractor',
-      userData: systemUser || {
+      userData: systemUser ? {
+        _id: systemUser._id,
+        id: systemUser._id,
+        email: systemUser.email,
+        name: systemUser.name,
+        role: systemUser.role,
+        picture: systemUser.picture || ''
+      } : {
         email: email,
         name: contractors[0]?.contacts?.find(c => c.email === email)?.fullName || 'יקר/ה',
         role: contractors[0]?.contacts?.find(c => c.email === email)?.role || 'משתמש',
-        contractorName: contractors[0]?.companyName || contractors[0]?.name
+        contractorName: contractors[0]?.companyName || contractors[0]?.name,
+        picture: contractors[0]?.contacts?.find(c => c.email === email)?.picture || ''
       }
     });
-    
+
     // Create recipient info
     const recipient = systemUser || {
       email: email,
@@ -506,7 +514,7 @@ router.post('/send-login-email', async (req, res) => {
       role: contractors[0]?.contacts?.find(c => c.email === email)?.role || 'משתמש',
       contractorName: contractors[0]?.companyName || contractors[0]?.name
     };
-    
+
     // Send email via SendGrid with OTP
     const msg = {
       to: email,
@@ -562,7 +570,7 @@ router.post('/send-login-email', async (req, res) => {
         </div>
       `
     };
-    
+
     // Send email
     if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
       await sgMail.send(msg);
@@ -571,17 +579,17 @@ router.post('/send-login-email', async (req, res) => {
       console.log('📧 [DEV MODE] OTP email would be sent to:', email);
       console.log('🔑 OTP CODE FOR', email, ':', otp);
     }
-    
+
     res.json({
       success: true,
       message: 'נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.'
     });
-    
+
   } catch (error) {
     console.error('❌ Send OTP email error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'שגיאה בשליחת המייל' 
+    res.status(500).json({
+      success: false,
+      message: 'שגיאה בשליחת המייל'
     });
   }
 });
@@ -590,72 +598,73 @@ router.post('/send-login-email', async (req, res) => {
 router.post('/verify-otp', async (req, res) => {
   try {
     console.log('🔐 Verify OTP request for:', req.body.email);
-    
+
     const { email, otp } = req.body;
-    
+
     if (!email || !otp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'אימייל וקוד אימות נדרשים' 
+      return res.status(400).json({
+        success: false,
+        message: 'אימייל וקוד אימות נדרשים'
       });
     }
-    
+
     // Get stored OTP data
     const storedData = otpStorage.get(email);
-    
+
     if (!storedData) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'קוד אימות לא נמצא או פג תוקף' 
+      return res.status(400).json({
+        success: false,
+        message: 'קוד אימות לא נמצא או פג תוקף'
       });
     }
-    
+
     // Check if OTP expired
     if (new Date() > storedData.expiresAt) {
       otpStorage.delete(email);
-      return res.status(400).json({ 
-        success: false, 
-        message: 'קוד האימות פג תוקף' 
+      return res.status(400).json({
+        success: false,
+        message: 'קוד האימות פג תוקף'
       });
     }
-    
+
     // Verify OTP
     if (storedData.otp !== otp) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'קוד אימות שגוי' 
+      return res.status(400).json({
+        success: false,
+        message: 'קוד אימות שגוי'
       });
     }
-    
+
     // OTP is valid - create session
     const userData = storedData.userData;
-    
+
     // Store user data in session
     req.session.user = {
+      id: userData._id || userData.id, // Include user ID
       email: userData.email,
       name: userData.name,
       role: userData.role || (storedData.userType === 'system' ? 'admin' : 'user'),
       userType: storedData.userType,
       contractorName: userData.contractorName,
-      picture: userData.picture || ''
+      picture: userData.picture || '' // Include profile picture
     };
-    
+
     // Clean up OTP
     otpStorage.delete(email);
-    
+
     console.log('✅ OTP verified successfully for:', email);
-    
+
     res.json({
       success: true,
       message: 'התחברות הצליחה',
       user: req.session.user
     });
-    
+
   } catch (error) {
     console.error('❌ Verify OTP error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'שגיאה באימות הקוד' 
+    res.status(500).json({
+      success: false,
+      message: 'שגיאה באימות הקוד'
     });
   }
 });

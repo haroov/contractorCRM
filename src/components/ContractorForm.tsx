@@ -526,12 +526,12 @@ export default function ContractorForm() {
 
         if (contractor.contacts && Array.isArray(contractor.contacts)) {
             contractor.contacts.forEach((contact, index) => {
-            if (contact.email && !validateEmail(contact.email)) {
-                newErrors[`contact_${index}_email`] = "כתובת אימייל לא תקינה.";
-            }
-            if (contact.mobile && !validateMobile(contact.mobile)) {
-                newErrors[`contact_${index}_mobile`] = "מספר טלפון לא תקין.";
-            }
+                if (contact.email && !validateEmail(contact.email)) {
+                    newErrors[`contact_${index}_email`] = "כתובת אימייל לא תקינה.";
+                }
+                if (contact.mobile && !validateMobile(contact.mobile)) {
+                    newErrors[`contact_${index}_mobile`] = "מספר טלפון לא תקין.";
+                }
             });
         }
 
