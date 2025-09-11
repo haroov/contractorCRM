@@ -777,16 +777,6 @@ export default function ContractorTabsSimple({
     // Function to load existing contractor data from MongoDB
     const loadExistingContractorData = async (contractorData: any) => {
         console.log('📊 Loading existing contractor data - FULL OBJECT:', contractorData);
-        console.log('📊 Contractor name:', contractorData.name);
-        console.log('📊 Contractor nameEnglish:', contractorData.nameEnglish);
-        console.log('📊 Contractor phone:', contractorData.phone);
-        console.log('📊 Contractor email:', contractorData.email);
-        console.log('📊 Contractor address:', contractorData.address);
-        console.log('📊 Contractor city:', contractorData.city);
-        console.log('📊 Contractor website:', contractorData.website);
-        console.log('📊 Contractor foundationDate:', contractorData.foundationDate);
-        console.log('📊 Contractor employees:', contractorData.employees, contractorData.numberOfEmployees);
-        console.log('📊 Contractor companyType:', contractorData.companyType);
 
         // Check if contractor is archived
         if (contractorData.isActive === false) {
@@ -794,32 +784,20 @@ export default function ContractorTabsSimple({
         }
 
         // Update all local states with existing contractor data
-        console.log('📊 Setting local name:', contractorData.name);
         setLocalName(contractorData.name || '');
-        console.log('📊 Setting local nameEnglish:', contractorData.nameEnglish);
         setLocalNameEnglish(contractorData.nameEnglish || '');
-        console.log('📊 Setting local foundationDate:', contractorData.foundationDate);
         setLocalFoundationDate(contractorData.foundationDate || '');
-        console.log('📊 Setting local address:', contractorData.address);
         setLocalAddress(contractorData.address || '');
-        console.log('📊 Setting local city:', contractorData.city);
         setLocalCity(contractorData.city || '');
-        console.log('📊 Setting local email:', contractorData.email);
         setLocalEmail(contractorData.email || '');
-        console.log('📊 Setting local phone:', contractorData.phone);
         setLocalPhone(contractorData.phone || '');
-        console.log('📊 Setting local website:', contractorData.website);
         setLocalWebsite(contractorData.website || '');
-        console.log('📊 Setting local contractorId:', contractorData.contractor_id || contractorData.contractorId);
         setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
-        console.log('📊 Setting local employees:', contractorData.employees || contractorData.numberOfEmployees);
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
-        console.log('📊 Setting local companyType:', contractorData.companyType);
         setLocalCompanyType(contractorData.companyType || 'private_company');
 
         // IMPORTANT: Set the company ID from existing contractor data
         if (contractorData.company_id) {
-            console.log('📊 Setting local company ID:', contractorData.company_id);
             setLocalCompanyId(contractorData.company_id);
         }
 
@@ -874,23 +852,6 @@ export default function ContractorTabsSimple({
         alert(message);
 
         console.log('✅ Existing contractor data loaded successfully');
-
-        // Debug: Check if local state was actually updated
-        setTimeout(() => {
-            console.log('🔍 Debug - Current local state after loading:');
-            console.log('🔍 localName:', localName);
-            console.log('🔍 localNameEnglish:', localNameEnglish);
-            console.log('🔍 localFoundationDate:', localFoundationDate);
-            console.log('🔍 localAddress:', localAddress);
-            console.log('🔍 localCity:', localCity);
-            console.log('🔍 localEmail:', localEmail);
-            console.log('🔍 localPhone:', localPhone);
-            console.log('🔍 localWebsite:', localWebsite);
-            console.log('🔍 localEmployees:', localEmployees);
-            console.log('🔍 localCompanyType:', localCompanyType);
-            console.log('🔍 localCompanyId:', localCompanyId);
-            console.log('🔍 localContractorId:', localContractorId);
-        }, 100);
     };
 
     // Function to populate form with API data
