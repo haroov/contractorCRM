@@ -753,7 +753,7 @@ export default function ContractorTabsSimple({
                 console.log('🔍 result.source:', result.source);
                 console.log('🔍 forceRefresh:', forceRefresh);
 
-                if (result.source === 'mongodb_cached' && !forceRefresh) {
+                if ((result.source === 'mongodb_cached' || result.source === 'mongodb_updated') && !forceRefresh) {
                     // Step 2a: Found existing contractor in MongoDB - load all contractor data
                     console.log('📊 Step 2a: Loading existing contractor data from MongoDB...');
                     await loadExistingContractorData(companyData);
