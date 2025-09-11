@@ -28,6 +28,8 @@ export default function ContractorTabsSimple({
     const [isUploading, setIsUploading] = useState(false);
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
+    const [contactEmailError, setContactEmailError] = useState<string>('');
+    const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
@@ -68,6 +70,18 @@ export default function ContractorTabsSimple({
             default:
                 return 'ללא כוכבים';
         }
+    };
+
+    // Validation functions
+    const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validatePhone = (phone: string): boolean => {
+        // Israeli phone number validation (10 digits, can start with 0 or +972)
+        const phoneRegex = /^(\+972|0)?[2-9]\d{7,8}$/;
+        return phoneRegex.test(phone.replace(/[\s-]/g, ''));
     };
 
     // Function to get Hebrew text for company type value
@@ -557,6 +571,8 @@ export default function ContractorTabsSimple({
     const handleCloseContactDialog = () => {
         setContactDialogOpen(false);
         setEditingContact(null);
+        setContactEmailError('');
+        setContactPhoneError('');
     };
 
     const handleSaveContact = async () => {
@@ -572,6 +588,27 @@ export default function ContractorTabsSimple({
             email: formData.get('email') as string,
             permissions: formData.get('permissions') as string
         };
+
+        // Validate email and phone
+        let hasErrors = false;
+        
+        if (contactData.email && !validateEmail(contactData.email)) {
+            setContactEmailError('כתובת אימייל לא תקינה');
+            hasErrors = true;
+        } else {
+            setContactEmailError('');
+        }
+
+        if (contactData.phone && !validatePhone(contactData.phone)) {
+            setContactPhoneError('מספר טלפון לא תקין');
+            hasErrors = true;
+        } else {
+            setContactPhoneError('');
+        }
+
+        if (hasErrors) {
+            return; // Don't save if there are validation errors
+        }
 
         console.log('Saving contact:', contactData);
 
@@ -1669,6 +1706,13 @@ export default function ContractorTabsSimple({
                             name="phone"
                             label="טלפון"
                             defaultValue={editingContact?.phone || editingContact?.phoneNumber || editingContact?.mobile || ''}
+                            error={!!contactPhoneError}
+                            helperText={contactPhoneError}
+                            onChange={(e) => {
+                                if (contactPhoneError) {
+                                    setContactPhoneError('');
+                                }
+                            }}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <TextField
@@ -1677,6 +1721,13 @@ export default function ContractorTabsSimple({
                             label="אימייל"
                             type="email"
                             defaultValue={editingContact?.email || editingContact?.emailAddress || ''}
+                            error={!!contactEmailError}
+                            helperText={contactEmailError}
+                            onChange={(e) => {
+                                if (contactEmailError) {
+                                    setContactEmailError('');
+                                }
+                            }}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <FormControl fullWidth sx={{ mb: 2 }}>
