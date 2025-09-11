@@ -776,6 +776,12 @@ export default function ContractorTabsSimple({
         setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
         setLocalCompanyType(contractorData.companyType || 'private_company');
+        
+        // IMPORTANT: Set the company ID from existing contractor data
+        if (contractorData.company_id) {
+            console.log('📊 Setting local company ID:', contractorData.company_id);
+            setLocalCompanyId(contractorData.company_id);
+        }
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalIso45001(contractorData.iso45001 || false);
         setLocalClassifications(contractorData.classifications || []);
