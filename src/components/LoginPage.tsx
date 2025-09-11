@@ -30,9 +30,34 @@ const LoginPage: React.FC = () => {
   const [emailError, setEmailError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
+  const [canResend, setCanResend] = useState(false);
 
   // Force deployment update
   console.log('LoginPage component loaded with email validation');
+
+  // Timer effect for resend OTP
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (otpSent && resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [otpSent, resendTimer]);
 
   // Clear any session data when arriving at login page
   useEffect(() => {
@@ -161,6 +186,8 @@ const LoginPage: React.FC = () => {
 
       if (response.ok && data.success) {
         setOtpSent(true);
+        setResendTimer(120); // 2 minutes = 120 seconds
+        setCanResend(false);
         setError('נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.');
       } else {
         setError(data.message || 'שגיאה בשליחת המייל');
@@ -211,10 +238,38 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleBackToEmail = () => {
-    setOtpSent(false);
-    setOtp('');
+  const handleResendOtp = async () => {
+    if (!canResend) return;
+    
+    setLoading(true);
     setError(null);
+
+    try {
+      // Send OTP email again
+      const response = await fetch('/api/auth/send-login-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setResendTimer(120); // Reset timer to 2 minutes
+        setCanResend(false);
+        setError('נשלח לך מייל חדש עם קוד אימות. אנא בדוק את תיבת הדואר שלך.');
+      } else {
+        setError(data.message || 'שגיאה בשליחת המייל');
+      }
+    } catch (error) {
+      console.error('Error resending OTP email:', error);
+      setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Removed handleLogout - using simple localStorage clear
@@ -419,24 +474,32 @@ const LoginPage: React.FC = () => {
                 >
                   {loading ? 'מאמת...' : 'התחבר'}
                 </Button>
-                <Button
-                  variant="outlined"
-                  size="medium"
-                  fullWidth
-                  onClick={handleBackToEmail}
-                  disabled={loading}
-                  sx={{
-                    py: 1,
-                    borderColor: '#9c27b0',
-                    color: '#9c27b0',
-                    '&:hover': {
-                      borderColor: '#7b1fa2',
-                      backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                    }
-                  }}
-                >
-                  חזור לכתובת אימייל
-                </Button>
+                
+                {/* Resend OTP Section */}
+                <Box sx={{ textAlign: 'center', mt: 2 }}>
+                  {resendTimer > 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                      ניתן לשלוח קוד חדש בעוד: {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
+                    </Typography>
+                  ) : canResend ? (
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={handleResendOtp}
+                      disabled={loading}
+                      sx={{
+                        color: '#9c27b0',
+                        textDecoration: 'underline',
+                        '&:hover': {
+                          backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                          textDecoration: 'underline'
+                        }
+                      }}
+                    >
+                      שלח קוד חדש
+                    </Button>
+                  ) : null}
+                </Box>
               </>
             )}
           </Box>
