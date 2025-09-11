@@ -919,10 +919,15 @@ app.post('/api/projects/update-field-names', async (req, res) => {
 app.get('/api/projects', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const { contractorId } = req.query;
+    const { contractorId, ids } = req.query;
 
     let query = {};
-    if (contractorId) {
+    
+    // Handle multiple project IDs
+    if (ids) {
+      const projectIds = ids.split(',').map(id => new ObjectId(id.trim()));
+      query._id = { $in: projectIds };
+    } else if (contractorId) {
       query.mainContractor = contractorId;
     }
 
