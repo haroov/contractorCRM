@@ -666,7 +666,7 @@ export default function ContractorTabsSimple({
     };
 
     // New function to handle the complete validation and data fetching flow
-    const validateAndFetchCompanyData = async (companyId: string) => {
+    const validateAndFetchCompanyData = async (companyId: string, forceRefresh: boolean = false) => {
         setIsLoadingCompanyData(true);
         try {
             console.log('🔍 Starting validation flow for company ID:', companyId);
@@ -681,12 +681,12 @@ export default function ContractorTabsSimple({
                 const companyData = result.data;
                 console.log(`✅ Found company in ${result.source}:`, companyData.name);
 
-                if (result.source === 'mongodb_cached') {
+                if (result.source === 'mongodb_cached' && !forceRefresh) {
                     // Step 2a: Found existing contractor in MongoDB - load all contractor data
                     console.log('📊 Step 2a: Loading existing contractor data from MongoDB...');
                     await loadExistingContractorData(companyData);
                 } else {
-                    // Step 2b: Found in external API - populate form with API data
+                    // Step 2b: Found in external API or force refresh - populate form with API data
                     console.log('📊 Step 2b: Populating form with API data...');
                     await populateFormWithApiData(companyData);
                 }
@@ -922,9 +922,50 @@ export default function ContractorTabsSimple({
             <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
                 {activeTab === 0 && (
                     <Box>
-                        <Typography variant="h6" gutterBottom>
-                            פרטי חברה
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                            <Typography variant="h6">
+                                פרטי חברה
+                            </Typography>
+                            {localCompanyId && localCompanyId.length === 9 && (
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={async () => {
+                                        if (localCompanyId && localCompanyId.length === 9) {
+                                            setIsLoadingCompanyData(true);
+                                            try {
+                                                const response = await fetch(`/api/search-company/${localCompanyId}`);
+                                                const result = await response.json();
+                                                
+                                                if (result.success && result.data) {
+                                                    // Force refresh from API by calling the validation function
+                                                    await validateAndFetchCompanyData(localCompanyId, true);
+                                                    alert('נתונים נטענו בהצלחה מרשם החברות');
+                                                } else {
+                                                    alert('לא נמצאו נתונים ברשם החברות');
+                                                }
+                                            } catch (error) {
+                                                console.error('Error refreshing data:', error);
+                                                alert('שגיאה בטעינת הנתונים');
+                                            } finally {
+                                                setIsLoadingCompanyData(false);
+                                            }
+                                        }
+                                    }}
+                                    disabled={isLoadingCompanyData}
+                                    sx={{ 
+                                        borderColor: '#9c27b0',
+                                        color: '#9c27b0',
+                                        '&:hover': {
+                                            borderColor: '#7b1fa2',
+                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    {isLoadingCompanyData ? 'טוען...' : 'טען נתונים מרשם החברות'}
+                                </Button>
+                            )}
+                        </Box>
 
                         <Grid container spacing={2}>
                             {/* שורה ראשונה */}
