@@ -500,7 +500,7 @@ export default function ContractorTabsSimple({
             formData.append('contractorId', contractor?._id || '');
 
             // Call API to upload file using authenticatedFetch
-            const response = await authenticatedFetch('/api/upload-certificate', {
+            const response = await authenticatedFetch('/upload-certificate', {
                 method: 'POST',
                 body: formData,
                 headers: {
