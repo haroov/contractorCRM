@@ -327,6 +327,11 @@ export default function ContractorTabsSimple({
         } else {
             console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
         }
+        
+        // Debug: Log current local state values
+        console.log('🔍 Current local state values:');
+        console.log('🔍 localContacts:', localContacts);
+        console.log('🔍 localNotes:', localNotes);
     }, [contractor, isLoadingCompanyData, localCompanyId]);
 
 
@@ -887,14 +892,22 @@ export default function ContractorTabsSimple({
         // Update additional contractor data (contacts, projects, notes, etc.)
         console.log('📊 Loading additional data:');
         console.log('📊 Contacts:', contractorData.contacts);
+        console.log('📊 Contacts type:', typeof contractorData.contacts);
+        console.log('📊 Contacts length:', contractorData.contacts?.length);
         console.log('📊 Projects:', contractorData.projects);
         console.log('📊 Project IDs:', contractorData.projectIds);
         console.log('📊 Notes:', contractorData.notes);
+        console.log('📊 Notes type:', typeof contractorData.notes);
+        console.log('📊 Notes keys:', contractorData.notes ? Object.keys(contractorData.notes) : 'no notes');
         console.log('📊 Safety Rating:', contractorData.safetyRating);
         console.log('📊 Classifications:', contractorData.classifications);
+        
+        // Check all keys in contractorData
+        console.log('📊 All contractorData keys:', Object.keys(contractorData));
 
         setLocalContacts(contractorData.contacts || []);
-
+        console.log('📊 Set localContacts to:', contractorData.contacts || []);
+        
         // Load projects if projectIds exist
         if (contractorData.projectIds && contractorData.projectIds.length > 0) {
             console.log('📊 Loading projects for IDs:', contractorData.projectIds);
@@ -909,8 +922,9 @@ export default function ContractorTabsSimple({
         } else {
             setLocalProjects(contractorData.projects || []);
         }
-
+        
         setLocalNotes(contractorData.notes || { general: '', internal: '' });
+        console.log('📊 Set localNotes to:', contractorData.notes || { general: '', internal: '' });
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalSafetyExpiry(contractorData.safetyExpiry || '');
         setLocalSafetyCertificate(contractorData.safetyCertificate || '');
