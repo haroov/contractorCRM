@@ -276,12 +276,15 @@ export default function ContractorTabsSimple({
         }
     };
 
-    // Update local states when contractor changes
+    // Update local states when contractor changes - but only if it's a meaningful change
     useEffect(() => {
-        // Only update state if contractor has meaningful data AND we're not in the middle of loading from API/DB
-        // Don't reset fields that were already populated from API/DB
-        if (contractor && contractor.company_id && !isLoadingCompanyData) {
-            console.log('🔄 useEffect: Updating state with contractor data:', contractor);
+        // Only update state if:
+        // 1. contractor has meaningful data AND
+        // 2. we're not in the middle of loading from API/DB AND
+        // 3. the contractor's company_id is different from current local state (to prevent overriding loaded data)
+        if (contractor && contractor.company_id && !isLoadingCompanyData && 
+            contractor.company_id !== localCompanyId) {
+            console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
             setLocalCompanyId(contractor?.company_id || '');
             setLocalCompanyType(contractor?.companyType || 'private_company');
             setLocalName(contractor?.name || '');
@@ -315,10 +318,14 @@ export default function ContractorTabsSimple({
             if (contractor?.company_id && contractor._id) {
                 loadStatusForExistingContractor(contractor.company_id);
             }
+        } else if (isLoadingCompanyData) {
+            console.log('🔄 useEffect: Skipping state update - data is currently loading');
+        } else if (contractor && contractor.company_id === localCompanyId) {
+            console.log('🔄 useEffect: Skipping state update - contractor data matches current state');
         } else {
-            console.log('🔄 useEffect: Skipping state update - no meaningful contractor data or loading in progress');
+            console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
         }
-    }, [contractor, isLoadingCompanyData]);
+    }, [contractor, isLoadingCompanyData, localCompanyId]);
 
 
     // Auto-scrape company info when website changes
