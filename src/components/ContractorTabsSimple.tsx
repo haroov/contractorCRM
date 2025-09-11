@@ -311,7 +311,6 @@ export default function ContractorTabsSimple({
         }
     }, [contractor]);
 
-    // Note: Website generation from email is now handled in onBlur event of email field
 
     // Auto-scrape company info when website changes
     useEffect(() => {
@@ -838,7 +837,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(companyData.email || '');
         setLocalPhone(companyData.phone || '');
         setLocalWebsite(companyData.website || '');
-        setLocalContractorId(companyData.contractorId || '');
+        setLocalContractorId(companyData.contractor_id || '');
         setLocalEmployees(companyData.employees || '');
 
         // Set company type from API (prioritize over local logic)
