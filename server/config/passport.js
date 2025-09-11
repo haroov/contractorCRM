@@ -18,10 +18,15 @@ const isEmailAllowed = async (email) => {
   }
 };
 
+// Ensure we always use absolute URL for callbackURL
+const callbackURL = process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback";
+console.log('🔐 Passport callbackURL:', callbackURL);
+console.log('🔐 GOOGLE_CALLBACK_URL env var:', process.env.GOOGLE_CALLBACK_URL);
+
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback",
+  callbackURL: callbackURL,
   scope: ['profile', 'email'],
   accessType: 'offline',
   prompt: 'select_account consent' // Force account selection and password entry
