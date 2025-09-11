@@ -1003,9 +1003,45 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         </DialogActions>
       </Dialog>
 
-      {/* User Management Dialog */}
+      {/* User Management - Full Screen */}
       {userManagementOpen && (
-        <UserManagement />
+        <Box sx={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          zIndex: 1300,
+          backgroundColor: 'background.default'
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            height: '100vh',
+            p: 2
+          }}>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              mb: 2
+            }}>
+              <Typography variant="h4" component="h1">
+                ניהול משתמשים
+              </Typography>
+              <Button 
+                variant="outlined" 
+                onClick={() => setUserManagementOpen(false)}
+                startIcon={<CloseIcon />}
+              >
+                סגור
+              </Button>
+            </Box>
+            <Box sx={{ flex: 1, overflow: 'hidden' }}>
+              <UserManagement />
+            </Box>
+          </Box>
+        </Box>
       )}
 
       {/* Snackbar for notifications */}
