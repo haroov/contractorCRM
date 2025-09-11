@@ -813,8 +813,8 @@ export default function ContractorTabsSimple({
     const populateFormWithApiData = async (companyData: any) => {
         console.log('📊 Populating form with API data:', companyData);
 
-        // Show notification that data was loaded from API
-        const message = `הח״פ ${localCompanyId} לא נמצא במערכת. נטענו נתונים מרשם החברות עבור "${companyData.name}".`;
+        // Show notification that data was refreshed from API
+        const message = `נתונים עודכנו מרשם החברות ופנקס הקבלנים עבור "${companyData.name}".`;
         alert(message);
 
         // Clean up company name - replace בע~מ with בע״מ and remove double spaces
@@ -839,6 +839,11 @@ export default function ContractorTabsSimple({
         setLocalWebsite(companyData.website || '');
         setLocalContractorId(companyData.contractor_id || '');
         setLocalEmployees(companyData.employees || '');
+        
+        // IMPORTANT: Keep the company ID alive during sync
+        if (companyData.company_id) {
+            setLocalCompanyId(companyData.company_id);
+        }
 
         // Set company type from API (prioritize over local logic)
         if (companyData.companyType) {
