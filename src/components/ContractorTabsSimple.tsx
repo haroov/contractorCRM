@@ -600,7 +600,7 @@ export default function ContractorTabsSimple({
     // Function to load existing contractor data from MongoDB
     const loadExistingContractorData = async (contractorData: any) => {
         console.log('📊 Loading existing contractor data:', contractorData);
-        
+
         // Update all local states with existing contractor data
         setLocalName(contractorData.name || '');
         setLocalNameEnglish(contractorData.nameEnglish || '');
@@ -618,19 +618,19 @@ export default function ContractorTabsSimple({
         setLocalClassifications(contractorData.classifications || []);
         setCompanyAbout(contractorData.companyAbout || '');
         setCompanyLogo(contractorData.companyLogo || '');
-        
+
         // Load status indicator
         if (contractorData.companyStatus) {
             setCompanyStatusIndicator(contractorData.companyStatus);
         }
-        
+
         console.log('✅ Existing contractor data loaded successfully');
     };
 
     // Function to populate form with API data
     const populateFormWithApiData = async (companyData: any) => {
         console.log('📊 Populating form with API data:', companyData);
-        
+
         // Clean up company name - replace בע~מ with בע״מ and remove double spaces
         const cleanName = (companyData.name || '')
             .replace(/בע~מ/g, 'בע״מ')
@@ -653,17 +653,17 @@ export default function ContractorTabsSimple({
         setLocalWebsite(companyData.website || '');
         setLocalContractorId(companyData.contractorId || '');
         setLocalEmployees(companyData.employees || '');
-        
+
         // Set company type from API (prioritize over local logic)
         if (companyData.companyType) {
             setLocalCompanyType(companyData.companyType);
         }
-        
+
         // Set status indicator
         if (companyData.companyStatus) {
             setCompanyStatusIndicator(companyData.companyStatus);
         }
-        
+
         // Set about and logo if available
         if (companyData.companyAbout) {
             setCompanyAbout(companyData.companyAbout);
@@ -671,7 +671,7 @@ export default function ContractorTabsSimple({
         if (companyData.companyLogo) {
             setCompanyLogo(companyData.companyLogo);
         }
-        
+
         console.log('✅ Form populated with API data successfully');
     };
 
@@ -870,10 +870,10 @@ export default function ContractorTabsSimple({
                                                 setCompanyIdError('מספר חברה לא תקין');
                                                 return;
                                             }
-                                            
+
                                             // Step 2: Check MongoDB Atlas first for existing contractor
                                             await validateAndFetchCompanyData(companyId);
-                                            
+
                                         } else if (companyId && companyId.length > 0) {
                                             setCompanyIdError('נא להזין 9 ספרות');
                                         }
@@ -1360,7 +1360,7 @@ export default function ContractorTabsSimple({
                                 </Typography>
                                 {localClassifications.map((classification: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {classification?.classification_type || ''} - {classification?.classification || ''}
+                                        • {classification?.description || `${classification?.classification_type || ''} - ${classification?.classification || ''}`}
                                     </Typography>
                                 ))}
                             </Box>

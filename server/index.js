@@ -1977,9 +1977,11 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
         // Extract license types from contractors registry
         if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
+          const licenseDescription = `${contractorData['TEUR_ANAF']} - ${contractorData['KVUTZA']}${contractorData['SIVUG']}`;
           licenseTypes.push({
             classification_type: contractorData['TEUR_ANAF'],
-            classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
+            classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`,
+            description: licenseDescription
           });
         }
 
@@ -2055,9 +2057,11 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       // Extract license types from contractors registry
       let licenseTypes = [];
       if (contractorData['TEUR_ANAF'] && contractorData['KVUTZA'] && contractorData['SIVUG']) {
+        const licenseDescription = `${contractorData['TEUR_ANAF']} - ${contractorData['KVUTZA']}${contractorData['SIVUG']}`;
         licenseTypes.push({
           classification_type: contractorData['TEUR_ANAF'],
-          classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`
+          classification: `${contractorData['KVUTZA']}${contractorData['SIVUG']}`,
+          description: licenseDescription
         });
       }
 
