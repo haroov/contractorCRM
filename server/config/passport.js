@@ -21,7 +21,7 @@ const isEmailAllowed = async (email) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractor-crm-api.onrender.com/auth/google/callback",
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback",
   scope: ['profile', 'email'],
   accessType: 'offline',
   prompt: 'select_account consent' // Force account selection and password entry

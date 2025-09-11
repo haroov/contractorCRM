@@ -18,12 +18,12 @@
 **Authorized JavaScript origins:**
 ```
 https://dash.chocoinsurance.com
-https://contractor-crm-api.onrender.com
+https://contractorcrm-api.onrender.com
 ```
 
 **Authorized redirect URIs:**
 ```
-https://contractor-crm-api.onrender.com/auth/google/callback
+https://contractorcrm-api.onrender.com/auth/google/callback
 https://dash.chocoinsurance.com/auth/google/callback
 ```
 
@@ -46,7 +46,7 @@ https://dash.chocoinsurance.com/auth/google/callback
 **Authorized domains:**
 ```
 chocoinsurance.com
-contractor-crm-api.onrender.com
+contractorcrm-api.onrender.com
 ```
 
 3. **לחץ "Save"**
@@ -61,7 +61,7 @@ contractor-crm-api.onrender.com
 ```
 GOOGLE_CLIENT_ID = [YOUR_GOOGLE_CLIENT_ID]
 GOOGLE_CLIENT_SECRET = [YOUR_GOOGLE_CLIENT_SECRET]
-GOOGLE_CALLBACK_URL = https://contractor-crm-api.onrender.com/auth/google/callback
+GOOGLE_CALLBACK_URL = https://contractorcrm-api.onrender.com/auth/google/callback
 ```
 
 5. **לחץ "Save Changes"**
