@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { GridFSBucket } = require('mongodb');
 
 dotenv.config();
 
@@ -50,23 +51,8 @@ app.use(cookieParser());
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const { type, companyId } = req.body;
-    const timestamp = Date.now();
-    const extension = path.extname(file.originalname);
-    const filename = `${type}-${companyId}-${timestamp}${extension}`;
-    cb(null, filename);
-  }
-});
+// Configure multer for file uploads using memory storage
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage: storage,
@@ -157,7 +143,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -2934,7 +2920,7 @@ const scrapingLimiter = rateLimit({
   }
 });
 
-// Upload certificate file
+// Upload certificate file using GridFS
 app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
@@ -2947,36 +2933,104 @@ app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
 
-    // Create file URL
-    const fileUrl = `/uploads/${req.file.filename}`;
-    
-    // Update contractor in database with file URL
+    // Create filename
+    const timestamp = Date.now();
+    const extension = path.extname(req.file.originalname);
+    const filename = `${type}-${companyId}-${timestamp}${extension}`;
+
+    // Store file in GridFS
     const db = client.db('contractor-crm');
-    const updateField = type === 'safety' ? 'safetyCertificate' : 'isoCertificate';
+    const bucket = new GridFSBucket(db, { bucketName: 'certificates' });
     
-    const result = await db.collection('contractors').updateOne(
-      { _id: new ObjectId(contractorId) },
-      { 
-        $set: { 
-          [updateField]: fileUrl,
-          [`${updateField}UploadDate`]: new Date().toISOString()
-        } 
+    const uploadStream = bucket.openUploadStream(filename, {
+      metadata: {
+        type: type,
+        companyId: companyId,
+        contractorId: contractorId,
+        originalName: req.file.originalname,
+        contentType: req.file.mimetype,
+        uploadDate: new Date()
       }
-    );
+    });
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ success: false, message: 'Contractor not found' });
-    }
+    uploadStream.end(req.file.buffer);
 
-    res.json({ 
-      success: true, 
-      fileUrl: fileUrl,
-      message: 'File uploaded successfully' 
+    uploadStream.on('error', (error) => {
+      console.error('GridFS upload error:', error);
+      res.status(500).json({ success: false, message: 'Error uploading file to database' });
+    });
+
+    uploadStream.on('finish', async () => {
+      try {
+        // Create file URL for GridFS
+        const fileUrl = `/api/certificates/${uploadStream.id}`;
+        
+        // Update contractor in database with file URL
+        const updateField = type === 'safety' ? 'safetyCertificate' : 'isoCertificate';
+        const result = await db.collection('contractors').updateOne(
+          { _id: new ObjectId(contractorId) },
+          { 
+            $set: { 
+              [updateField]: fileUrl,
+              [`${updateField}UploadDate`]: new Date().toISOString()
+            } 
+          }
+        );
+
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ success: false, message: 'Contractor not found' });
+        }
+
+        res.json({ 
+          success: true, 
+          fileUrl: fileUrl,
+          message: 'File uploaded successfully' 
+        });
+      } catch (error) {
+        console.error('Error updating contractor:', error);
+        res.status(500).json({ success: false, message: 'Error updating contractor' });
+      }
     });
 
   } catch (error) {
     console.error('Error uploading certificate:', error);
     res.status(500).json({ success: false, message: 'Error uploading file' });
+  }
+});
+
+// Serve certificate files from GridFS
+app.get('/api/certificates/:id', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    const bucket = new GridFSBucket(db, { bucketName: 'certificates' });
+    
+    const fileId = new ObjectId(req.params.id);
+    const downloadStream = bucket.openDownloadStream(fileId);
+    
+    downloadStream.on('error', (error) => {
+      console.error('GridFS download error:', error);
+      res.status(404).json({ success: false, message: 'File not found' });
+    });
+    
+    downloadStream.on('data', (chunk) => {
+      res.write(chunk);
+    });
+    
+    downloadStream.on('end', () => {
+      res.end();
+    });
+    
+    // Set appropriate headers
+    downloadStream.on('file', (file) => {
+      res.set({
+        'Content-Type': file.metadata?.contentType || 'application/octet-stream',
+        'Content-Disposition': `inline; filename="${file.metadata?.originalName || file.filename}"`
+      });
+    });
+    
+  } catch (error) {
+    console.error('Error serving certificate:', error);
+    res.status(500).json({ success: false, message: 'Error serving file' });
   }
 });
 
