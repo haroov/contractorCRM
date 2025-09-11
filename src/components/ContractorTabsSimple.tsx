@@ -577,11 +577,11 @@ export default function ContractorTabsSimple({
 
         try {
             let updatedContacts;
-            
+
             if (editingContact) {
                 // Update existing contact
-                updatedContacts = localContacts.map(contact => 
-                    contact.id === editingContact.id 
+                updatedContacts = localContacts.map(contact =>
+                    contact.id === editingContact.id
                         ? { ...contact, ...contactData }
                         : contact
                 );
@@ -698,12 +698,24 @@ export default function ContractorTabsSimple({
             setCompanyStatusIndicator(contractorData.statusIndicator);
         }
 
+        // Show notification that contractor was loaded
+        const message = contractorData.isActive === false 
+            ? `הח״פ ${localCompanyId} כבר קיים במערכת (archived). נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`
+            : `הח״פ ${localCompanyId} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`;
+        
+        // Show alert or notification
+        alert(message);
+
         console.log('✅ Existing contractor data loaded successfully');
     };
 
     // Function to populate form with API data
     const populateFormWithApiData = async (companyData: any) => {
         console.log('📊 Populating form with API data:', companyData);
+        
+        // Show notification that data was loaded from API
+        const message = `הח״פ ${localCompanyId} לא נמצא במערכת. נטענו נתונים מרשם החברות עבור "${companyData.name}".`;
+        alert(message);
 
         // Clean up company name - replace בע~מ with בע״מ and remove double spaces
         const cleanName = (companyData.name || '')

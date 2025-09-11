@@ -118,7 +118,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -1775,14 +1775,14 @@ app.post('/api/contractors/update-licenses-cache', async (req, res) => {
     for (const contractor of contractors) {
       try {
         console.log(`🔍 Updating licenses for ${contractor.name} (${contractor.company_id})`);
-        
+
         // Fetch fresh data from Contractors Registry
         const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${contractor.company_id}`);
         const contractorsData = await contractorsResponse.json();
 
         if (contractorsData.success && contractorsData.result.records.length > 0) {
           const licenseTypes = [];
-          
+
           contractorsData.result.records.forEach((record) => {
             if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
               const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
@@ -1801,8 +1801,8 @@ app.post('/api/contractors/update-licenses-cache', async (req, res) => {
           // Update contractor with fresh license data
           await db.collection('contractors').updateOne(
             { _id: contractor._id },
-            { 
-              $set: { 
+            {
+              $set: {
                 classifications: licenseTypes,
                 licensesLastUpdated: new Date().toISOString()
               }
@@ -1855,7 +1855,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const now = new Date();
       const lastStatusUpdate = existingContractor.statusLastUpdated ? new Date(existingContractor.statusLastUpdated) : null;
       const isStatusDataFresh = lastStatusUpdate && (now - lastStatusUpdate) < 24 * 60 * 60 * 1000; // 24 hours
-      
+
       // Check if we have cached license data that's less than 24 hours old
       const lastLicenseUpdate = existingContractor.licensesLastUpdated ? new Date(existingContractor.licensesLastUpdated) : null;
       const isLicenseDataFresh = lastLicenseUpdate && (now - lastLicenseUpdate) < 24 * 60 * 60 * 1000; // 24 hours
@@ -2061,7 +2061,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       // Extract ALL license types from contractors registry (multiple records)
       if (contractorsData.success && contractorsData.result.records.length > 0) {
         console.log(`📋 Processing ${contractorsData.result.records.length} license records`);
-        
+
         contractorsData.result.records.forEach((record, index) => {
           if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
             const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
@@ -2150,7 +2150,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       let licenseTypes = [];
       if (contractorsData.success && contractorsData.result.records.length > 0) {
         console.log(`📋 Processing ${contractorsData.result.records.length} license records (contractor-only)`);
-        
+
         contractorsData.result.records.forEach((record, index) => {
           if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
             const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
