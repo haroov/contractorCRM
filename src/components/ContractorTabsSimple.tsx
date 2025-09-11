@@ -531,10 +531,26 @@ export default function ContractorTabsSimple({
         setContactDialogOpen(true);
     };
 
-    const handleDeleteContact = (contactId: string) => {
+    const handleDeleteContact = async (contactId: string) => {
         if (window.confirm('האם אתה בטוח שברצונך למחוק את איש הקשר?')) {
-            // TODO: Implement delete contact
-            console.log('Delete contact:', contactId);
+            try {
+                // Remove from local state
+                const updatedContacts = localContacts.filter(contact => contact.id !== contactId);
+                setLocalContacts(updatedContacts);
+
+                // Save to server by triggering the main save
+                if (onSave) {
+                    const updatedContractor = {
+                        ...contractor,
+                        contacts: updatedContacts
+                    };
+                    onSave(updatedContractor);
+                }
+
+                console.log('Contact deleted successfully:', contactId);
+            } catch (error) {
+                console.error('Error deleting contact:', error);
+            }
         }
     };
 
