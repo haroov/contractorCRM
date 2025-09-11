@@ -776,11 +776,12 @@ export default function ContractorTabsSimple({
                     ...contractor,
                     contacts: updatedContacts
                 };
-                onSave(updatedContractor);
+                // Skip company ID check to prevent redundant loading
+                onSave(updatedContractor, true);
             }
 
             // Show success message for contact save
-            alert(editingContact ? 'איש הקשר עודכן בהצלחה' : 'איש הקשר נוסף בהצלחה');
+            alert(editingContact ? 'הקבלן עודכן בהצלחה' : 'הקבלן עודכן בהצלחה');
 
             handleCloseContactDialog();
         } catch (error) {
@@ -1950,7 +1951,7 @@ export default function ContractorTabsSimple({
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
-                                    onClick={() => {/* TODO: Add project handler */}}
+                                    onClick={() => {/* TODO: Add project handler */ }}
                                     size="small"
                                     sx={{
                                         backgroundColor: '#9c27b0', // סגול שוקו
@@ -1965,7 +1966,7 @@ export default function ContractorTabsSimple({
                         </Box>
 
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active' || p.status === 'current')?.length || 0} | 
+                            פרויקטים פעילים: {localProjects?.filter((p: any) => p.status === 'active' || p.status === 'current')?.length || 0} |
                             פרויקטים עתידיים: {localProjects?.filter((p: any) => p.status === 'future')?.length || 0}
                         </Typography>
 
@@ -1996,29 +1997,29 @@ export default function ContractorTabsSimple({
                                                     {project.value ? `₪${project.value.toLocaleString()}` : ''}
                                                 </TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
-                                                    <Typography 
-                                                        variant="body2" 
-                                                        sx={{ 
-                                                            color: project.status === 'active' || project.status === 'current' ? 'green' : 
-                                                                  project.status === 'future' ? 'orange' : 'gray'
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{
+                                                            color: project.status === 'active' || project.status === 'current' ? 'green' :
+                                                                project.status === 'future' ? 'orange' : 'gray'
                                                         }}
                                                     >
                                                         {project.status === 'active' || project.status === 'current' ? 'פעיל' :
-                                                         project.status === 'future' ? 'עתידי' : 'הושלם'}
+                                                            project.status === 'future' ? 'עתידי' : 'הושלם'}
                                                     </Typography>
                                                 </TableCell>
                                                 {canEdit && (
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => {/* TODO: Edit project handler */}}
+                                                            onClick={() => {/* TODO: Edit project handler */ }}
                                                             sx={{ color: '#9c27b0' }}
                                                         >
                                                             <EditIcon fontSize="small" />
                                                         </IconButton>
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => {/* TODO: Archive project handler */}}
+                                                            onClick={() => {/* TODO: Archive project handler */ }}
                                                             sx={{ color: 'gray' }}
                                                         >
                                                             <DeleteIcon fontSize="small" />
@@ -2039,7 +2040,7 @@ export default function ContractorTabsSimple({
                                     <Button
                                         variant="outlined"
                                         startIcon={<AddIcon />}
-                                        onClick={() => {/* TODO: Add project handler */}}
+                                        onClick={() => {/* TODO: Add project handler */ }}
                                         sx={{
                                             borderColor: '#9c27b0', // סגול שוקו
                                             color: '#9c27b0',
