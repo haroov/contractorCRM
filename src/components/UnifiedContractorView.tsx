@@ -358,23 +358,27 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           const result = await response.json();
 
           if (result.success && result.source === 'mongodb') {
-            // Company exists in MongoDB but not in current contractors list - reload contractors
-            console.log('✅ Company exists in MongoDB, reloading contractors list');
-            await loadContractors();
-
-            // Find the contractor again after reload
-            const reloadedContractors = await ContractorService.getAll();
-            const foundContractor = reloadedContractors.find(c => c.company_id === updatedContractor.company_id);
-
-            if (foundContractor) {
-              setSelectedContractor(foundContractor);
-              setContractorMode('edit');
-              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${foundContractor.name}" עם כל הנתונים לעריכה.`);
+            // Company exists in MongoDB - load it for editing
+            console.log('✅ Company exists in MongoDB, loading for editing:', result.data.name);
+            
+            // If contractor is archived (isActive: false), we'll make it active when saving
+            const contractorData = result.data;
+            if (contractorData.status === 'archived' || !contractorData.isActive) {
+              console.log('📋 Contractor is archived, will be made active on save');
+              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} קיים במערכת אך ארכיב. הקבלן יופעל מחדש בעת השמירה.`);
               setSnackbarSeverity('info');
               setSnackbarOpen(true);
-              setIsSaving(false);
-              return;
+            } else {
+              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`);
+              setSnackbarSeverity('info');
+              setSnackbarOpen(true);
             }
+            
+            // Set the contractor data and switch to edit mode
+            setSelectedContractor(contractorData);
+            setContractorMode('edit');
+            setIsSaving(false);
+            return;
           }
         } catch (error) {
           console.error('Error checking company existence:', error);
@@ -390,10 +394,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         setSnackbarOpen(true);
       } else {
         console.log('💾 Updating existing contractor in MongoDB...');
-        const updated = await ContractorService.update(updatedContractor.contractor_id, updatedContractor);
+        
+        // Ensure contractor is active when saving
+        const contractorToUpdate = {
+          ...updatedContractor,
+          isActive: true, // Always make contractor active when saving
+          status: 'פעילה' // Set status to active
+        };
+        
+        const updated = await ContractorService.update(contractorToUpdate.contractor_id, contractorToUpdate);
         if (updated) {
           console.log('✅ Contractor updated successfully:', updated);
-          setContractors(contractors.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
+          
+          // Update contractors list - add if not exists, update if exists
+          const existingIndex = contractors.findIndex(c => c.contractor_id === updatedContractor.contractor_id);
+          if (existingIndex >= 0) {
+            // Update existing contractor in list
+            setContractors(contractors.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
+          } else {
+            // Add contractor to list (was archived, now active)
+            setContractors([...contractors, updated]);
+          }
+          
           setSelectedContractor(updated);
           setSnackbarMessage('הקבלן עודכן בהצלחה');
           setSnackbarSeverity('success');
@@ -407,10 +429,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
     } catch (error) {
       console.error('Error saving contractor:', error);
-      
+
       // More detailed error handling
       let errorMessage = 'שגיאה בשמירת הקבלן';
-      
+
       if (error instanceof Error) {
         if (error.message.includes('429') || error.message.includes('Too many requests')) {
           errorMessage = 'יותר מדי בקשות לשרת. נסה שוב בעוד כמה דקות.';
@@ -422,7 +444,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           errorMessage = `שגיאה בשמירת הקבלן: ${error.message}`;
         }
       }
-      
+
       setSnackbarMessage(errorMessage);
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -438,7 +460,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       company_id: undefined, // Don't set empty string to avoid duplicate key error
       name: '',
       nameEnglish: '',
-      companyType: 'חברה פרטית',
+      companyType: 'private_company',
       numberOfEmployees: 0,
       foundationDate: '',
       city: '',

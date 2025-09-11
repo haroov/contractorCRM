@@ -336,21 +336,21 @@ export default function ContractorTabsSimple({
     // Function to determine company type based on company ID
     const getCompanyTypeFromId = (companyId: string): string => {
         if (!companyId || companyId.length < 2) {
-            return 'בע"מ';
+            return 'private_company'; // Default to private company
         }
 
         const prefix = companyId.substring(0, 2);
 
         switch (prefix) {
             case '51':
-                return 'חברה פרטית';
+                return 'private_company';
             case '52':
-                return 'חברה ציבורית';
+                return 'public_company';
             case '57':
-                return 'אגודה שיתופית';
+                return 'cooperative_association';
             default:
                 // If doesn't start with 5, it's usually עוסק מורשה
-                return 'עוסק מורשה';
+                return 'authorized_dealer';
         }
     };
 
@@ -817,6 +817,7 @@ export default function ContractorTabsSimple({
                                             setLocalCompanyType(e.target.value);
                                         }}
                                         sx={{
+                                            minWidth: '200px', // Fixed width for company type field
                                             '& .MuiOutlinedInput-notchedOutline': {
                                                 borderColor: '#d0d0d0'
                                             },
