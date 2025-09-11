@@ -1,16 +1,16 @@
 // API Configuration
 const getBaseUrl = () => {
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-        return import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com/api';
+        return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
     }
-    return 'https://contractorcrm-api.onrender.com/api';
+    return 'http://localhost:3001/api';
 };
 
 const getAuthBaseUrl = () => {
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-        return import.meta.env.VITE_AUTH_BASE_URL || 'https://contractorcrm-api.onrender.com';
+        return import.meta.env.VITE_AUTH_BASE_URL || 'http://localhost:3001';
     }
-    return 'https://contractorcrm-api.onrender.com';
+    return 'http://localhost:3001';
 };
 
 export const API_CONFIG = {
