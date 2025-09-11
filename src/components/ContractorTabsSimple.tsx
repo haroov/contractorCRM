@@ -703,7 +703,7 @@ export default function ContractorTabsSimple({
     const loadStatusForExistingContractor = async (companyId: string) => {
         try {
             console.log('Loading status for existing contractor:', companyId);
-            const response = await fetch(`http://localhost:3001/api/search-company/${companyId}`);
+            const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
 
             if (result.success && result.data.statusIndicator) {
@@ -722,7 +722,7 @@ export default function ContractorTabsSimple({
         try {
             // Use our backend API endpoint that handles external API calls
             console.log('📊 Fetching data through backend API...');
-            const response = await fetch(`http://localhost:3001/api/search-company/${companyId}?force_refresh=true`);
+            const response = await fetch(`/api/search-company/${companyId}?force_refresh=true`);
             const result = await response.json();
 
             if (result.success && result.data) {
@@ -749,7 +749,7 @@ export default function ContractorTabsSimple({
 
             // Step 2: Check MongoDB Atlas first for existing contractor
             console.log('📊 Step 2: Checking MongoDB Atlas for existing contractor...');
-            const response = await fetch(`http://localhost:3001/api/search-company/${companyId}`);
+            const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
             console.log('📊 MongoDB search response:', result);
 
@@ -945,7 +945,7 @@ export default function ContractorTabsSimple({
             console.log('Fetching data for company ID:', companyId);
 
             // Use our new API endpoint that checks MongoDB first, then external APIs
-            const response = await fetch(`http://localhost:3001/api/search-company/${companyId}`);
+            const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
             console.log('Company search response:', result);
 

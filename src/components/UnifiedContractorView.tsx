@@ -181,7 +181,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       // For regular users, try to get from server
       const sessionId = localStorage.getItem('sessionId');
       if (sessionId) {
-        const response = await fetch(`http://localhost:3001/auth/me`, {
+        const response = await fetch(`/auth/me`, {
           credentials: 'include',
           headers: {
             'X-Session-ID': sessionId

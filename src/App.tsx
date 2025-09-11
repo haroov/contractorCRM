@@ -123,7 +123,7 @@ function App() {
 
       // Try to get user info from server first
       try {
-        const response = await fetch(`http://localhost:3001/auth/me`, {
+        const response = await fetch(`/auth/me`, {
           credentials: 'include',
           headers: {
             'X-Session-ID': sessionId
@@ -166,7 +166,7 @@ function App() {
       console.log('✅ User already authenticated with sessionId:', storedSessionId);
       // Try to get user info from server
       try {
-        const response = await fetch(`http://localhost:3001/auth/me`, {
+        const response = await fetch(`/auth/me`, {
           credentials: 'include',
           headers: {
             'X-Session-ID': storedSessionId

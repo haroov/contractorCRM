@@ -86,7 +86,7 @@ const LoginPage: React.FC = () => {
       const params = new URLSearchParams({
         response_type: 'code',
         client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
-        redirect_uri: 'http://localhost:3001/auth/google/callback',
+        redirect_uri: '/auth/google/callback',
         scope: 'profile email',
         access_type: 'offline',
         prompt: 'select_account consent' // Force account selection and password entry
