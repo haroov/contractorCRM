@@ -830,7 +830,16 @@ export default function ContractorTabsSimple({
                 name: contractorData.name,
                 nameEnglish: contractorData.nameEnglish,
                 company_id: contractorData.company_id,
-                contractor_id: contractorData.contractor_id
+                contractor_id: contractorData.contractor_id,
+                foundationDate: contractorData.foundationDate,
+                address: contractorData.address,
+                city: contractorData.city,
+                email: contractorData.email,
+                phone: contractorData.phone,
+                website: contractorData.website,
+                employees: contractorData.employees,
+                numberOfEmployees: contractorData.numberOfEmployees,
+                companyType: contractorData.companyType
             };
             onUpdateContractor(updatedContractor);
         }
@@ -945,7 +954,16 @@ export default function ContractorTabsSimple({
                 name: cleanName,
                 nameEnglish: cleanNameEnglish,
                 company_id: companyData.company_id,
-                contractor_id: companyData.contractor_id
+                contractor_id: companyData.contractor_id,
+                foundationDate: companyData.foundationDate,
+                address: companyData.address,
+                city: companyData.city,
+                email: companyData.email,
+                phone: companyData.phone,
+                website: companyData.website,
+                employees: companyData.employees,
+                numberOfEmployees: companyData.employees,
+                companyType: companyData.companyType
             };
             onUpdateContractor(updatedContractor);
         }
