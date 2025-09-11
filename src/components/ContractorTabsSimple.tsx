@@ -794,8 +794,8 @@ export default function ContractorTabsSimple({
         }
 
         // Set status indicator
-        if (companyData.companyStatus) {
-            setCompanyStatusIndicator(companyData.companyStatus);
+        if (companyData.statusIndicator) {
+            setCompanyStatusIndicator(companyData.statusIndicator);
         }
 
         // Set about and logo if available
