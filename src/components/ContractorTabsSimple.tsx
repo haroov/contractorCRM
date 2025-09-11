@@ -328,7 +328,7 @@ export default function ContractorTabsSimple({
         } else {
             console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
         }
-        
+
         // Debug: Log current local state values
         console.log('🔍 Current local state values:');
         console.log('🔍 localContacts:', localContacts);
@@ -512,7 +512,7 @@ export default function ContractorTabsSimple({
             }
 
             const result = await response.json();
-            
+
             if (result.success) {
                 // Update local state with the uploaded file URL
                 if (type === 'safety') {
@@ -774,11 +774,13 @@ export default function ContractorTabsSimple({
             if (onSave) {
                 const updatedContractor = {
                     ...contractor,
-                    company_id: localCompanyId, // Ensure company_id is preserved
                     contacts: updatedContacts
                 };
                 onSave(updatedContractor);
             }
+
+            // Show success message for contact save
+            alert(editingContact ? 'איש הקשר עודכן בהצלחה' : 'איש הקשר נוסף בהצלחה');
 
             handleCloseContactDialog();
         } catch (error) {
@@ -902,13 +904,13 @@ export default function ContractorTabsSimple({
         console.log('📊 Notes keys:', contractorData.notes ? Object.keys(contractorData.notes) : 'no notes');
         console.log('📊 Safety Rating:', contractorData.safetyRating);
         console.log('📊 Classifications:', contractorData.classifications);
-        
+
         // Check all keys in contractorData
         console.log('📊 All contractorData keys:', Object.keys(contractorData));
 
         setLocalContacts(contractorData.contacts || []);
         console.log('📊 Set localContacts to:', contractorData.contacts || []);
-        
+
         // Load projects if projectIds exist
         if (contractorData.projectIds && contractorData.projectIds.length > 0) {
             console.log('📊 Loading projects for IDs:', contractorData.projectIds);
@@ -923,7 +925,7 @@ export default function ContractorTabsSimple({
         } else {
             setLocalProjects(contractorData.projects || []);
         }
-        
+
         setLocalNotes(contractorData.notes || { general: '', internal: '' });
         console.log('📊 Set localNotes to:', contractorData.notes || { general: '', internal: '' });
         setLocalSafetyRating(contractorData.safetyRating || '0');
@@ -1696,12 +1698,12 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localSafetyCertificate ? (
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <img 
-                                                src={localSafetyCertificate} 
-                                                alt="תעודת בטיחות" 
-                                                style={{ 
-                                                    width: 40, 
-                                                    height: 40, 
+                                            <img
+                                                src={localSafetyCertificate}
+                                                alt="תעודת בטיחות"
+                                                style={{
+                                                    width: 40,
+                                                    height: 40,
                                                     objectFit: 'cover',
                                                     borderRadius: 4,
                                                     cursor: 'pointer',
@@ -1828,12 +1830,12 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localIsoCertificate ? (
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <img 
-                                                src={localIsoCertificate} 
-                                                alt="תעודת ISO45001" 
-                                                style={{ 
-                                                    width: 40, 
-                                                    height: 40, 
+                                            <img
+                                                src={localIsoCertificate}
+                                                alt="תעודת ISO45001"
+                                                style={{
+                                                    width: 40,
+                                                    height: 40,
                                                     objectFit: 'cover',
                                                     borderRadius: 4,
                                                     cursor: 'pointer',

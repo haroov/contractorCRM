@@ -315,7 +315,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setSelectedContractor(null);
   };
 
-  const handleSaveContractor = async (updatedContractor: Contractor) => {
+  const handleSaveContractor = async (updatedContractor: Contractor, skipCompanyIdCheck = false) => {
     console.log('💾 Starting save process for contractor:', {
       company_id: updatedContractor.company_id,
       name: updatedContractor.name,
@@ -337,7 +337,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         return;
       }
 
-      if (contractorMode === 'new') {
+      if (contractorMode === 'new' && !skipCompanyIdCheck) {
         // Check if company_id already exists in the database
         const existingContractor = contractors.find(c => c.company_id === updatedContractor.company_id);
 
