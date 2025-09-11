@@ -31,6 +31,7 @@ export default function ContractorTabsSimple({
     const [contactEmailError, setContactEmailError] = useState<string>('');
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
+    const [emailError, setEmailError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
@@ -82,6 +83,38 @@ export default function ContractorTabsSimple({
         // Israeli phone number validation (10 digits, can start with 0 or +972)
         const phoneRegex = /^(\+972|0)?[2-9]\d{7,8}$/;
         return phoneRegex.test(phone.replace(/[\s-]/g, ''));
+    };
+
+    // Function to check if email domain is a company domain (not personal email providers)
+    const isCompanyDomain = (email: string): boolean => {
+        if (!email || !email.includes('@')) return false;
+        
+        const domain = email.split('@')[1].toLowerCase();
+        const personalEmailProviders = [
+            'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'walla.co.il',
+            'nana.co.il', 'bezeqint.net', 'netvision.net.il', '012.net.il',
+            'aol.com', 'icloud.com', 'me.com', 'mac.com', 'live.com', 'msn.com'
+        ];
+        
+        return !personalEmailProviders.includes(domain);
+    };
+
+    // Function to calculate website from email domain (only for company domains)
+    const calculateWebsiteFromEmail = (email: string): string => {
+        if (!email || !email.includes('@')) {
+            return '';
+        }
+        
+        const domain = email.split('@')[1];
+        if (!domain) return '';
+
+        // Use the same logic as generateWebsiteFromEmail
+        const freeEmailProviders = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'walla.co.il', 'nana10.co.il'];
+        if (freeEmailProviders.includes(domain.toLowerCase())) {
+            return '';
+        }
+
+        return `https://www.${domain}`;
     };
 
     // Function to get Hebrew text for company type value
@@ -278,19 +311,7 @@ export default function ContractorTabsSimple({
         }
     }, [contractor]);
 
-    // Auto-generate website from email when website is empty
-    useEffect(() => {
-        if (localEmail && !localWebsite) {
-            const generatedWebsite = generateWebsiteFromEmail(localEmail);
-            if (generatedWebsite) {
-                console.log('🌐 Auto-generating website from email:', {
-                    email: localEmail,
-                    generatedWebsite
-                });
-                setLocalWebsite(generatedWebsite);
-            }
-        }
-    }, [localEmail, localWebsite]);
+    // Note: Website generation from email is now handled in onBlur event of email field
 
     // Auto-scrape company info when website changes
     useEffect(() => {
@@ -1233,7 +1254,34 @@ export default function ContractorTabsSimple({
                                     value={localEmail}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
-                                    onChange={(e) => setLocalEmail(e.target.value)}
+                                    error={!!emailError}
+                                    helperText={emailError}
+                                    onChange={(e) => {
+                                        setLocalEmail(e.target.value);
+                                        // Clear error when user starts typing
+                                        if (emailError) {
+                                            setEmailError('');
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        const email = e.target.value.trim();
+                                        if (email && !validateEmail(email)) {
+                                            setEmailError('כתובת אימייל לא תקינה');
+                                        } else {
+                                            setEmailError('');
+                                            // Calculate website from email if it's a company domain and website is empty
+                                            if (email && !localWebsite) {
+                                                const website = calculateWebsiteFromEmail(email);
+                                                if (website) {
+                                                    console.log('🌐 Auto-generating website from email:', {
+                                                        email: email,
+                                                        generatedWebsite: website
+                                                    });
+                                                    setLocalWebsite(website);
+                                                }
+                                            }
+                                        }
+                                    }}
                                 />
                             </Grid>
 
