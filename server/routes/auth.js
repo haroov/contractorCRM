@@ -1,9 +1,18 @@
 const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const router = express.Router();
+
+// SendGrid configuration
+if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✅ SendGrid configured successfully');
+} else {
+  console.log('⚠️ SendGrid not configured - emails will be logged to console only');
+}
 
 // Google OAuth login
 router.get('/google', (req, res, next) => {
@@ -425,6 +434,157 @@ router.get('/debug-user/:email', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Send login email endpoint
+router.post('/send-login-email', async (req, res) => {
+  try {
+    console.log('📧 Send login email request for:', req.body.email);
+    
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'אימייל נדרש' 
+      });
+    }
+    
+    // Check if email exists in system users
+    const systemUser = await User.findOne({ email: email.toLowerCase() });
+    
+    // Check if email exists in contractor contacts
+    const { MongoClient } = require('mongodb');
+    const client = new MongoClient(process.env.MONGODB_URI);
+    await client.connect();
+    const db = client.db('contractor-crm');
+    
+    const contractors = await db.collection('contractors').find({
+      'contacts.email': email.toLowerCase(),
+      'contacts.permissions': { $in: ['admin', 'user', 'contact_manager', 'contact_user', 'contactAdmin', 'contactUser'] }
+    }).toArray();
+    
+    await client.close();
+    
+    if (!systemUser && contractors.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.' 
+      });
+    }
+    
+    // Create email template
+    const recipient = systemUser || {
+      email: email,
+      name: contractors[0]?.contacts?.find(c => c.email === email)?.fullName || 'יקר/ה',
+      role: contractors[0]?.contacts?.find(c => c.email === email)?.role || 'משתמש',
+      contractorName: contractors[0]?.companyName || contractors[0]?.name
+    };
+    
+    const loginUrl = 'https://dash.chocoinsurance.com/login';
+    
+    const msg = {
+      to: email,
+      from: process.env.SENDGRID_FROM_EMAIL || 'hello@chocoinsurance.com',
+      subject: 'התחברות למערכת ניהול קבלנים - שוקו ביטוח',
+      html: `
+        <!DOCTYPE html>
+        <html dir="rtl" lang="he">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>התחברות למערכת</title>
+          <style>
+            body { font-family: Arial, sans-serif; direction: rtl; text-align: right; margin: 0; padding: 20px; background-color: #f5f5f5; }
+            .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: white; padding: 30px; text-align: center; }
+            .logo { width: 60px; height: 60px; margin: 0 auto 20px; background-color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+            .content { padding: 30px; }
+            .button { display: inline-block; background-color: #9c27b0; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+            .button:hover { background-color: #7b1fa2; }
+            .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+            .info-box { background-color: #e3f2fd; border-right: 4px solid #2196f3; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 669.3 669.3" style="fill: #9c27b0;">
+                  <circle cx="334.6" cy="334.6" r="334.6" fill="#FFFFFF"/>
+                  <path d="M445.8,158.7c-9.2-7.2-19.1-13.4-29.5-18.6c-20.5-10-44.1-15.2-71-15.6c-40.9-0.4-76.9,12.4-107.8,38.5c-32,26.5-48.4,69.4-49.3,128.5c0.9,58.5,17.3,100.9,49.3,127c30.9,26.1,66.8,39.2,107.6,39.2c26.9-0.4,50.6-5.9,71.1-16.5c7.7-3.8,15.1-8.2,22.2-13v0.1c9-6.6,10.7-6.6,27.2-22.2c1.3-1.3,2.4-2.6,3.6-4l0.4-0.4l0,0c11.7-15.2,10.4-33.8-2.1-46.8c-13.2-13.7-32.9-12.7-48.3,2.3c-9.1,8.8-18.6,17.2-28.6,25c-12.5,6.8-26.8,10.3-42.9,10.5c-59.2,1-89.2-32.6-90.1-101c0.9-68.7,30.9-102.7,90.1-101.9c21.9,0.6,37.2,6.3,52.6,18.7c4.1,3.3,10.3,9.3,22.1,20.3c16.7,14.6,37.5,13,50.6-1.7c11.9-13.4,10.3-31.7-3.5-45.8h0.1c-6.8-7.7-14.4-14.8-22.4-21.2" fill="#424242"/>
+                  <path d="M485.3,475c11.2,10.1,10.4,24.8-2.3,36.1c-40,35.4-88.4,52.4-143.5,53.4h0c-55.6-1-103.5-18.1-143.5-53c-10.2-8.9-12.1-20.5-5.6-30.4c6.4-9.9,19-14.2,31-10.8c5.3,1.5,9.2,4.7,13.1,8c61.7,51.4,150.6,50.7,211.8-1.6C458.6,466,474.6,465.3,485.3,475z" fill="#9c27b0"/>
+                </svg>
+              </div>
+              <h1 style="margin: 0; font-size: 24px;">שוקו ביטוח</h1>
+              <p style="margin: 10px 0 0; font-size: 16px; opacity: 0.9;">מערכת ניהול קבלנים</p>
+            </div>
+            
+            <div class="content">
+              <h2>שלום ${recipient.name || 'יקר/ה'},</h2>
+              
+              <p>אנו שמחים להודיע לך על הפעלת מערכת ניהול הקבלנים החדשה של שוקו ביטוח.</p>
+              
+              <div class="info-box">
+                <strong>פרטי ההתחברות שלך:</strong><br>
+                📧 אימייל: ${recipient.email}<br>
+                ${systemUser ? `👤 תפקיד: ${recipient.role === 'admin' ? 'מנהל מערכת' : 'משתמש'}` : `🏢 חברה: ${recipient.contractorName}<br>👤 תפקיד: ${recipient.role}`}
+              </div>
+              
+              <p><strong>איך להתחבר למערכת:</strong></p>
+              <ol>
+                <li>לחץ על הקישור למטה</li>
+                <li>הזן את כתובת האימייל שלך</li>
+                <li>בחר באפשרות "שלח לי קישור התחברות"</li>
+                <li>בדוק את תיבת הדואר שלך לקבלת קישור התחברות</li>
+              </ol>
+              
+              <div style="text-align: center;">
+                <a href="${loginUrl}" class="button">התחבר למערכת</a>
+              </div>
+              
+              <p><strong>אפשרויות התחברות זמינות:</strong></p>
+              <ul>
+                <li>🔗 קישור התחברות במייל (מומלץ)</li>
+                <li>🔵 התחברות עם Google</li>
+                <li>🔵 התחברות עם Microsoft</li>
+              </ul>
+              
+              <p><strong>תמיכה טכנית:</strong></p>
+              <p>אם אתה נתקל בבעיות בהתחברות, אנא פנה לתמיכה הטכנית:</p>
+              <p>📧 אימייל: hello@chocoinsurance.com<br>📞 טלפון: 03-1234567</p>
+            </div>
+            
+            <div class="footer">
+              <p>שוקו ביטוח - מערכת ניהול סיכונים באתרי בניה</p>
+              <p>© 2024 כל הזכויות שמורות</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+    
+    // Send email
+    if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
+      await sgMail.send(msg);
+      console.log('✅ Login email sent to:', email);
+    } else {
+      console.log('📧 [DEV MODE] Login email would be sent to:', email);
+    }
+    
+    res.json({
+      success: true,
+      message: 'נשלח לך מייל עם קישור התחברות. אנא בדוק את תיבת הדואר שלך.'
+    });
+    
+  } catch (error) {
+    console.error('❌ Send login email error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'שגיאה בשליחת המייל' 
+    });
   }
 });
 

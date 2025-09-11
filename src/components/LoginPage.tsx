@@ -9,11 +9,9 @@ import {
   Container,
   Avatar,
   Divider,
-  TextField,
-  InputAdornment,
-  IconButton
+  TextField
 } from '@mui/material';
-import { Google as GoogleIcon, Microsoft as MicrosoftIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Google as GoogleIcon, Microsoft as MicrosoftIcon } from '@mui/icons-material';
 // Removed API imports - using simple localStorage-based auth
 import logo from '../assets/logo.svg';
 
@@ -29,9 +27,7 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   // Force deployment update
   console.log('LoginPage component loaded with email validation');
@@ -134,56 +130,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleEmailPasswordLogin = async () => {
-    if (!email) {
-      setEmailError('נא להזין כתובת אימייל');
-      return;
-    }
-
-    if (!password) {
-      setError('נא להזין סיסמה');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setEmailError('כתובת אימייל לא תקינה');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Login with email and password
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Login successful - store user data and redirect
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('userAuthenticated', 'true');
-        window.location.href = '/';
-      } else {
-        // Login failed - show error message
-        setError(data.message || 'שגיאה בהתחברות');
-      }
-    } catch (error) {
-      console.error('Error with email/password login:', error);
-      setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleContactLogin = async () => {
+  const handleEmailLogin = async () => {
     if (!email) {
       setEmailError('נא להזין כתובת אימייל');
       return;
@@ -198,8 +145,8 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // Check if email exists in the system
-      const response = await fetch('/api/contact-auth/check-email', {
+      // Send email to authorized user
+      const response = await fetch('/api/auth/send-login-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -210,15 +157,13 @@ const LoginPage: React.FC = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.exists) {
-        // Email exists - navigate to contact login with email parameter
-        window.location.href = `/contact-login?email=${encodeURIComponent(email)}`;
+      if (response.ok && data.success) {
+        setError('נשלח לך מייל עם קישור התחברות. אנא בדוק את תיבת הדואר שלך.');
       } else {
-        // Email doesn't exist - show error message
-        setError('אינך מורשה למערכת. אנא פנה למנהל המערכת.');
+        setError(data.message || 'שגיאה בשליחת המייל');
       }
     } catch (error) {
-      console.error('Error checking email:', error);
+      console.error('Error sending login email:', error);
       setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
     } finally {
       setLoading(false);
@@ -357,30 +302,8 @@ const LoginPage: React.FC = () => {
               autoComplete="email"
               sx={{ mb: 1 }}
             />
-            <TextField
-              fullWidth
-              label="סיסמה"
-              type={showPassword ? 'text' : 'password'}
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="הזן את הסיסמה שלך"
-              autoComplete="current-password"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
             {error && (
-              <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+              <Alert severity={error.includes('נשלח לך מייל') ? 'success' : 'error'} sx={{ mt: 1, mb: 1 }}>
                 {error}
               </Alert>
             )}
@@ -389,7 +312,7 @@ const LoginPage: React.FC = () => {
               size="large"
               fullWidth
               startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-              onClick={handleEmailPasswordLogin}
+              onClick={handleEmailLogin}
               disabled={loading}
               sx={{
                 py: 1.5,
@@ -399,26 +322,7 @@ const LoginPage: React.FC = () => {
                 }
               }}
             >
-              {loading ? 'מתחבר...' : 'התחבר עם אימייל וסיסמה'}
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              fullWidth
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-              onClick={handleContactLogin}
-              disabled={loading}
-              sx={{
-                py: 1.5,
-                borderColor: '#1976d2',
-                color: '#1976d2',
-                '&:hover': {
-                  borderColor: '#1565c0',
-                  backgroundColor: 'rgba(25, 118, 210, 0.04)'
-                }
-              }}
-            >
-              {loading ? 'מתחבר...' : 'התחבר כלקוח'}
+              {loading ? 'שולח מייל...' : 'שלח לי קישור התחברות'}
             </Button>
           </Box>
         </Box>
