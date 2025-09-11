@@ -803,6 +803,30 @@ export default function ContractorTabsSimple({
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
         setLocalCompanyType(contractorData.companyType || 'private_company');
 
+        // Update additional contractor data (contacts, projects, notes, etc.)
+        console.log('📊 Loading additional data:');
+        console.log('📊 Contacts:', contractorData.contacts);
+        console.log('📊 Projects:', contractorData.projects);
+        console.log('📊 Notes:', contractorData.notes);
+        console.log('📊 Safety Rating:', contractorData.safetyRating);
+        console.log('📊 Classifications:', contractorData.classifications);
+        
+        setLocalContacts(contractorData.contacts || []);
+        setLocalProjects(contractorData.projects || []);
+        setLocalNotes(contractorData.notes || { general: '', internal: '' });
+        setLocalSafetyRating(contractorData.safetyRating || '0');
+        setLocalSafetyExpiry(contractorData.safetyExpiry || '');
+        setLocalSafetyCertificate(contractorData.safetyCertificate || '');
+        setLocalIso45001(contractorData.iso45001 || false);
+        setLocalIsoExpiry(contractorData.isoExpiry || '');
+        setLocalIsoCertificate(contractorData.isoCertificate || '');
+        setLocalClassifications(contractorData.classifications || []);
+        setLocalIsActive(contractorData.isActive ?? true);
+
+        // Update company about section
+        setCompanyAbout(contractorData.companyAbout || '');
+        setCompanyLogo(contractorData.companyLogo || '');
+
         // IMPORTANT: Set the company ID from existing contractor data
         if (contractorData.company_id) {
             setLocalCompanyId(contractorData.company_id);
