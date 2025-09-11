@@ -199,11 +199,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <Typography>טוען פרטי פרויקט...</Typography>
-            </Box>
-        );
+        return <SkeletonLoader />;
     }
 
     if (!project) {

@@ -1397,9 +1397,20 @@ export default function ContractorTabsSimple({
                                                 }}
                                             />
                                         ) : (
-                                            <Typography variant="body2" color="text.secondary" textAlign="center">
-                                                {isLoadingAbout ? 'טוען לוגו...' : 'לוגו החברה יופיע כאן אוטומטית'}
-                                            </Typography>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                                                {isLoadingAbout ? (
+                                                    <>
+                                                        <CircularProgress size={24} />
+                                                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                            טוען לוגו...
+                                                        </Typography>
+                                                    </>
+                                                ) : (
+                                                    <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                        לוגו החברה יופיע כאן אוטומטית
+                                                    </Typography>
+                                                )}
+                                            </Box>
                                         )}
                                     </Box>
                                 </Grid>

@@ -5,6 +5,7 @@ import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
+import SkeletonLoader from './SkeletonLoader';
 
 const ContractorTabs = lazy(() => import('./ContractorTabsSimple'));
 
@@ -495,11 +496,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   };
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <Typography>טוען...</Typography>
-      </Box>
-    );
+    return <SkeletonLoader />;
   }
 
   // Filter contractors based on search term
@@ -750,7 +747,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                            <Typography variant="body2">
+                            <Typography variant="body2" sx={{ textAlign: 'right' }}>
                               {contractor.company_id}
                             </Typography>
                             {contractor.company_id && contractorStatusIndicators[contractor.company_id] && (
@@ -765,8 +762,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               </Tooltip>
                             )}
                           </Box>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
                             קבלן {contractor.contractor_id}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
+                            {contractor.companyType === 'private_company' ? 'חברה פרטית' :
+                             contractor.companyType === 'public_company' ? 'חברה ציבורית' :
+                             contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
+                             contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
+                             contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
+                             contractor.companyType || 'לא צוין'}
                           </Typography>
                         </TableCell>
 
@@ -933,12 +938,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <Suspense fallback={
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                  <CircularProgress />
-                  <Typography sx={{ ml: 2 }}>טוען פרטי קבלן...</Typography>
-                </Box>
-              }>
+              <Suspense fallback={<SkeletonLoader />}>
                 <ContractorTabs
                   contractor={selectedContractor!}
                   onSave={handleSaveContractor}
