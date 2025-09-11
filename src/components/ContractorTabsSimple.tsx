@@ -665,6 +665,72 @@ export default function ContractorTabsSimple({
         }
     };
 
+    // Function to sync data from both Companies Registry and Contractors Registry APIs
+    const syncDataFromBothAPIs = async (companyId: string) => {
+        console.log('🔄 Syncing data from both APIs for company ID:', companyId);
+        
+        try {
+            // Step 1: Get data from Companies Registry API
+            console.log('📊 Step 1: Fetching from Companies Registry API...');
+            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+            const companiesData = await companiesResponse.json();
+            
+            let contractorsData = null;
+            if (companiesData.success && companiesData.result.records.length > 0) {
+                const record = companiesData.result.records[0];
+                contractorsData = {
+                    name: record.SHEM_YESHUT || '',
+                    phone: record.MISPAR_TEL || '',
+                    email: record.EMAIL || '',
+                    address: record.SHEM_REHOV || '',
+                    city: record.SHEM_YISHUV || '',
+                    contractor_id: record.MISPAR_KABLAN || '',
+                    classifications: companiesData.result.records.map((r: any) => 
+                        `${r.TEUR_ANAF} - ${r.KVUTZA}${r.SIVUG}`
+                    )
+                };
+                console.log('✅ Contractors Registry data:', contractorsData);
+            }
+            
+            // Step 2: Get data from Companies Registry API (our existing endpoint)
+            console.log('📊 Step 2: Fetching from Companies Registry API...');
+            const response = await fetch(`/api/search-company/${companyId}`);
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const companyData = result.data;
+                console.log('✅ Companies Registry data:', companyData);
+                
+                // Merge data from both sources
+                const mergedData = {
+                    ...companyData,
+                    // Override with Contractors Registry data if available
+                    ...(contractorsData && {
+                        name: contractorsData.name || companyData.name,
+                        phone: contractorsData.phone || companyData.phone,
+                        email: contractorsData.email || companyData.email,
+                        address: contractorsData.address || companyData.address,
+                        city: contractorsData.city || companyData.city,
+                        contractor_id: contractorsData.contractor_id || companyData.contractor_id,
+                        classifications: contractorsData.classifications || companyData.classifications
+                    })
+                };
+                
+                console.log('🔄 Merged data:', mergedData);
+                
+                // Populate form with merged data
+                await populateFormWithApiData(mergedData);
+                
+            } else {
+                throw new Error('No data found in Companies Registry');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error syncing data:', error);
+            throw error;
+        }
+    };
+
     // New function to handle the complete validation and data fetching flow
     const validateAndFetchCompanyData = async (companyId: string, forceRefresh: boolean = false) => {
         setIsLoadingCompanyData(true);
@@ -922,50 +988,9 @@ export default function ContractorTabsSimple({
             <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
                 {activeTab === 0 && (
                     <Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6">
-                                פרטי חברה
-                            </Typography>
-                            {localCompanyId && localCompanyId.length === 9 && (
-                                <Button
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={async () => {
-                                        if (localCompanyId && localCompanyId.length === 9) {
-                                            setIsLoadingCompanyData(true);
-                                            try {
-                                                const response = await fetch(`/api/search-company/${localCompanyId}`);
-                                                const result = await response.json();
-                                                
-                                                if (result.success && result.data) {
-                                                    // Force refresh from API by calling the validation function
-                                                    await validateAndFetchCompanyData(localCompanyId, true);
-                                                    alert('נתונים נטענו בהצלחה מרשם החברות');
-                                                } else {
-                                                    alert('לא נמצאו נתונים ברשם החברות');
-                                                }
-                                            } catch (error) {
-                                                console.error('Error refreshing data:', error);
-                                                alert('שגיאה בטעינת הנתונים');
-                                            } finally {
-                                                setIsLoadingCompanyData(false);
-                                            }
-                                        }
-                                    }}
-                                    disabled={isLoadingCompanyData}
-                                    sx={{ 
-                                        borderColor: '#9c27b0',
-                                        color: '#9c27b0',
-                                        '&:hover': {
-                                            borderColor: '#7b1fa2',
-                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                        }
-                                    }}
-                                >
-                                    {isLoadingCompanyData ? 'טוען...' : 'טען נתונים מרשם החברות'}
-                                </Button>
-                            )}
-                        </Box>
+                        <Typography variant="h6" gutterBottom>
+                            פרטי חברה
+                        </Typography>
 
                         <Grid container spacing={2}>
                             {/* שורה ראשונה */}
@@ -1076,6 +1101,44 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit}
                                     sx={textFieldSx}
                                     onChange={(e) => setLocalName(e.target.value)}
+                                    InputProps={{
+                                        endAdornment: localCompanyId && localCompanyId.length === 9 ? (
+                                            <Tooltip title="סנכרן נתונים מרשם החברות ופנקס הקבלנים">
+                                                <IconButton
+                                                    onClick={async () => {
+                                                        if (localCompanyId && localCompanyId.length === 9) {
+                                                            setIsLoadingCompanyData(true);
+                                                            try {
+                                                                // Load from both APIs
+                                                                await syncDataFromBothAPIs(localCompanyId);
+                                                                alert('נתונים נטענו בהצלחה מרשם החברות ופנקס הקבלנים');
+                                                            } catch (error) {
+                                                                console.error('Error syncing data:', error);
+                                                                alert('שגיאה בסנכרון הנתונים');
+                                                            } finally {
+                                                                setIsLoadingCompanyData(false);
+                                                            }
+                                                        }
+                                                    }}
+                                                    disabled={isLoadingCompanyData}
+                                                    sx={{ 
+                                                        color: '#9c27b0',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                                        }
+                                                    }}
+                                                >
+                                                    {isLoadingCompanyData ? (
+                                                        <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                    ) : (
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                                                        </svg>
+                                                    )}
+                                                </IconButton>
+                                            </Tooltip>
+                                        ) : null
+                                    }}
                                 />
                             </Grid>
 
