@@ -231,7 +231,7 @@ app.get('/debug-users', async (req, res) => {
 
 // Import auth routes
 const authRoutes = require('./routes/auth.js');
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 console.log('✅ Auth routes configured');
 
 // Import user management routes
