@@ -416,7 +416,7 @@ export default function ContactLoginPage() {
                           תפקיד: {contractor.contactRole}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          הרשאות: {contractor.contactPermissions === 'contact_manager' ? 'מנהל' : 'משתמש'}
+                          הרשאות: {contractor.contactPermissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
                         </Typography>
                       </Box>
                     ))}

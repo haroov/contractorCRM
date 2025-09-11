@@ -170,7 +170,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           setUser({
             name: contactUser.name || 'משתמש',
             picture: contactUser.picture || '',
-            role: contactUser.role || 'contact_user',
+            role: contactUser.role || 'contactUser',
             email: contactUser.email || ''
           });
           return;
@@ -687,7 +687,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               const userData = JSON.parse(contactUserData);
                               const permissions = userData.permissions;
                               // Contact managers and admins can edit, contact users can only view
-                              mode = (permissions === 'contact_manager' || permissions === 'admin') ? 'edit' : 'view';
+                              mode = (permissions === 'contactAdmin' || permissions === 'admin') ? 'edit' : 'view';
                             } catch (error) {
                               console.error('Error parsing contact user data:', error);
                               mode = 'view';
@@ -952,7 +952,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         return contactUser.permissions;
                       } catch (error) {
                         console.error('Error parsing contact user data:', error);
-                        return 'contact_user';
+                        return 'contactUser';
                       }
                     }
                     return 'contact_user';

@@ -12,7 +12,7 @@ export interface Contact {
     role: string;
     email: string;
     mobile: string;
-    permissions: 'user' | 'admin' | 'contact_manager' | 'contact_user';
+    permissions: 'user' | 'admin' | 'contactAdmin' | 'contactUser';
 }
 
 export interface Project {

@@ -90,13 +90,13 @@ interface ContractorTabsProps {
     onSave?: (contractor: Contractor) => void;
     onClose?: () => void;
     isContactUser?: boolean;
-    contactUserPermissions?: 'contact_manager' | 'contact_user';
+    contactUserPermissions?: 'contactAdmin' | 'contactUser';
     isSaving?: boolean;
 }
 
 export default function ContractorTabs({ contractor: initialContractor, onSave, onClose, isContactUser = false, contactUserPermissions, isSaving = false }: ContractorTabsProps) {
     // Check if user can edit based on contact user permissions
-    const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
+    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin' || contactUserPermissions === 'admin';
 
     const [contractor, setContractor] = useState<Contractor>(initialContractor || {
         contractor_id: '',

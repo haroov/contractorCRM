@@ -197,7 +197,7 @@ export default function ContractorTabsSimple({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Check if user can edit based on contact user permissions
-    const canEdit = !isContactUser || contactUserPermissions === 'contact_manager' || contactUserPermissions === 'admin';
+    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin' || contactUserPermissions === 'admin';
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
@@ -543,7 +543,7 @@ export default function ContractorTabsSimple({
         setEditingContact(null);
     };
 
-    const handleSaveContact = () => {
+    const handleSaveContact = async () => {
         // Get form data from the dialog
         const form = document.querySelector('#contact-dialog-form') as HTMLFormElement;
         if (!form) return;
@@ -559,24 +559,41 @@ export default function ContractorTabsSimple({
 
         console.log('Saving contact:', contactData);
 
-        if (editingContact) {
-            // Update existing contact
-            const updatedContacts = localContacts.map(contact => 
-                contact.id === editingContact.id 
-                    ? { ...contact, ...contactData }
-                    : contact
-            );
-            setLocalContacts(updatedContacts);
-        } else {
-            // Add new contact
-            const newContact = {
-                id: Date.now().toString(),
-                ...contactData
-            };
-            setLocalContacts([...localContacts, newContact]);
-        }
+        try {
+            let updatedContacts;
+            
+            if (editingContact) {
+                // Update existing contact
+                updatedContacts = localContacts.map(contact => 
+                    contact.id === editingContact.id 
+                        ? { ...contact, ...contactData }
+                        : contact
+                );
+            } else {
+                // Add new contact
+                const newContact = {
+                    id: Date.now().toString(),
+                    ...contactData
+                };
+                updatedContacts = [...localContacts, newContact];
+            }
 
-        handleCloseContactDialog();
+            // Update local state first
+            setLocalContacts(updatedContacts);
+
+            // Save to server by triggering the main save
+            if (onSave) {
+                const updatedContractor = {
+                    ...contractor,
+                    contacts: updatedContacts
+                };
+                onSave(updatedContractor);
+            }
+
+            handleCloseContactDialog();
+        } catch (error) {
+            console.error('Error saving contact:', error);
+        }
     };
 
     // Load status indicator for existing contractors
