@@ -710,6 +710,11 @@ export default function ContractorTabsSimple({
                 console.log('✅ Companies Registry data:', companiesInfo);
             }
             
+            // Check if we have any data from external APIs
+            if (!contractorsInfo && !companiesInfo) {
+                throw new Error('לא נמצאו נתונים במאגרים החיצוניים');
+            }
+            
             // Merge data from both sources
             const mergedData = {
                 ...companiesInfo,
@@ -1108,6 +1113,7 @@ export default function ContractorTabsSimple({
                                                             // Show confirmation dialog
                                                             const confirmed = window.confirm(
                                                                 'האם אתה בטוח שאתה רוצה לסנכרן נתונים?\n\n' +
+                                                                'הח״פ ' + localCompanyId + ' כבר קיים במערכת.\n\n' +
                                                                 'פעולה זו תטען נתונים חדשים מרשם החברות ופנקס הקבלנים ותעדכן את הטופס.\n\n' +
                                                                 'נתונים קיימים בטופס יוחלפו בנתונים מהמאגרים החיצוניים.'
                                                             );
