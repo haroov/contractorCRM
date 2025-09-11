@@ -26,21 +26,21 @@ export const API_CONFIG = {
     HEALTH: '/health',
     AUTH: '/auth',
 
-    // Full URLs
-    CONTRACTORS_URL: () => `${API_CONFIG.BASE_URL}${API_CONFIG.CONTRACTORS}`,
-    PROJECTS_URL: () => `${API_CONFIG.BASE_URL}${API_CONFIG.PROJECTS}`,
-    HEALTH_URL: () => `${API_CONFIG.BASE_URL}${API_CONFIG.HEALTH}`,
+    // Full URLs - these are already complete paths, don't add BASE_URL
+    CONTRACTORS_URL: () => API_CONFIG.CONTRACTORS,
+    PROJECTS_URL: () => API_CONFIG.PROJECTS,
+    HEALTH_URL: () => API_CONFIG.HEALTH,
     
     // Auth URLs
-    AUTH_STATUS_URL: () => `${API_CONFIG.AUTH_BASE_URL}${API_CONFIG.AUTH}/status`,
-    AUTH_ME_URL: () => `${API_CONFIG.AUTH_BASE_URL}${API_CONFIG.AUTH}/me`,
-    AUTH_LOGOUT_URL: () => `${API_CONFIG.AUTH_BASE_URL}${API_CONFIG.AUTH}/logout`,
-    AUTH_GOOGLE_URL: () => `${API_CONFIG.AUTH_BASE_URL}${API_CONFIG.AUTH}/google`,
+    AUTH_STATUS_URL: () => `${API_CONFIG.AUTH}/status`,
+    AUTH_ME_URL: () => `${API_CONFIG.AUTH}/me`,
+    AUTH_LOGOUT_URL: () => `${API_CONFIG.AUTH}/logout`,
+    AUTH_GOOGLE_URL: () => `${API_CONFIG.AUTH}/google`,
 
     // Individual contractor/project URLs
-    CONTRACTOR_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.CONTRACTORS}/${id}`,
-    PROJECT_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.PROJECTS}/${id}`,
-    VALIDATE_STATUS_URL: (id: string) => `${API_CONFIG.BASE_URL}${API_CONFIG.CONTRACTORS}/validate-status/${id}`,
+    CONTRACTOR_URL: (id: string) => `${API_CONFIG.CONTRACTORS}/${id}`,
+    PROJECT_URL: (id: string) => `${API_CONFIG.PROJECTS}/${id}`,
+    VALIDATE_STATUS_URL: (id: string) => `${API_CONFIG.CONTRACTORS}/validate-status/${id}`,
 };
 
 // Helper function to get session ID from URL or localStorage
