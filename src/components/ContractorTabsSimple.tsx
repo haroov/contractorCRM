@@ -278,9 +278,9 @@ export default function ContractorTabsSimple({
 
     // Update local states when contractor changes
     useEffect(() => {
-        // Only update state if contractor has meaningful data
+        // Only update state if contractor has meaningful data AND we're not in the middle of loading from API/DB
         // Don't reset fields that were already populated from API/DB
-        if (contractor && contractor.company_id) {
+        if (contractor && contractor.company_id && !isLoadingCompanyData) {
             console.log('🔄 useEffect: Updating state with contractor data:', contractor);
             setLocalCompanyId(contractor?.company_id || '');
             setLocalCompanyType(contractor?.companyType || 'private_company');
@@ -316,9 +316,9 @@ export default function ContractorTabsSimple({
                 loadStatusForExistingContractor(contractor.company_id);
             }
         } else {
-            console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
+            console.log('🔄 useEffect: Skipping state update - no meaningful contractor data or loading in progress');
         }
-    }, [contractor]);
+    }, [contractor, isLoadingCompanyData]);
 
 
     // Auto-scrape company info when website changes
