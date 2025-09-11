@@ -28,6 +28,8 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
 
   // Force deployment update
   console.log('LoginPage component loaded with email validation');
@@ -145,7 +147,7 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     try {
-      // Send email to authorized user
+      // Send OTP email to authorized user
       const response = await fetch('/api/auth/send-login-email', {
         method: 'POST',
         headers: {
@@ -158,16 +160,61 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setError('נשלח לך מייל עם קישור התחברות. אנא בדוק את תיבת הדואר שלך.');
+        setOtpSent(true);
+        setError('נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.');
       } else {
         setError(data.message || 'שגיאה בשליחת המייל');
       }
     } catch (error) {
-      console.error('Error sending login email:', error);
+      console.error('Error sending OTP email:', error);
       setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOtpVerification = async () => {
+    if (!otp || otp.length !== 6) {
+      setError('נא להזין קוד אימות בן 6 ספרות');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Verify OTP
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Login successful - store user data and redirect
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('userAuthenticated', 'true');
+        window.location.href = '/';
+      } else {
+        setError(data.message || 'קוד אימות שגוי');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      setError('שגיאה בהתחברות לשרת. אנא נסה שוב.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToEmail = () => {
+    setOtpSent(false);
+    setOtp('');
+    setError(null);
   };
 
   // Removed handleLogout - using simple localStorage clear
@@ -289,41 +336,109 @@ const LoginPage: React.FC = () => {
           </Divider>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-            <TextField
-              fullWidth
-              label="כתובת אימייל"
-              type="email"
-              variant="outlined"
-              value={email}
-              onChange={handleEmailChange}
-              error={!!emailError}
-              helperText={emailError}
-              placeholder="הזן את כתובת האימייל שלך"
-              autoComplete="email"
-              sx={{ mb: 1 }}
-            />
-            {error && (
-              <Alert severity={error.includes('נשלח לך מייל') ? 'success' : 'error'} sx={{ mt: 1, mb: 1 }}>
-                {error}
-              </Alert>
+            {!otpSent ? (
+              <>
+                <TextField
+                  fullWidth
+                  label="כתובת אימייל"
+                  type="email"
+                  variant="outlined"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                  placeholder="הזן את כתובת האימייל שלך"
+                  autoComplete="email"
+                  sx={{ mb: 1 }}
+                />
+                {error && (
+                  <Alert severity={error.includes('נשלח לך מייל') ? 'success' : 'error'} sx={{ mt: 1, mb: 1 }}>
+                    {error}
+                  </Alert>
+                )}
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                  onClick={handleEmailLogin}
+                  disabled={loading}
+                  sx={{
+                    py: 1.5,
+                    bgcolor: '#9c27b0',
+                    '&:hover': {
+                      bgcolor: '#7b1fa2'
+                    }
+                  }}
+                >
+                  {loading ? 'שולח מייל...' : 'שלח לי קוד אימות'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Typography variant="h6" sx={{ textAlign: 'center', mb: 2 }}>
+                  הזן קוד אימות
+                </Typography>
+                <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, color: 'text.secondary' }}>
+                  נשלח קוד אימות בן 6 ספרות לכתובת:
+                  <br />
+                  <strong>{email}</strong>
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="קוד אימות"
+                  type="text"
+                  variant="outlined"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000000"
+                  inputProps={{
+                    style: { textAlign: 'center', fontSize: '24px', letterSpacing: '8px' }
+                  }}
+                  sx={{ mb: 1 }}
+                />
+                {error && (
+                  <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+                    {error}
+                  </Alert>
+                )}
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                  onClick={handleOtpVerification}
+                  disabled={loading || otp.length !== 6}
+                  sx={{
+                    py: 1.5,
+                    bgcolor: '#9c27b0',
+                    '&:hover': {
+                      bgcolor: '#7b1fa2'
+                    }
+                  }}
+                >
+                  {loading ? 'מאמת...' : 'התחבר'}
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  fullWidth
+                  onClick={handleBackToEmail}
+                  disabled={loading}
+                  sx={{
+                    py: 1,
+                    borderColor: '#9c27b0',
+                    color: '#9c27b0',
+                    '&:hover': {
+                      borderColor: '#7b1fa2',
+                      backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                    }
+                  }}
+                >
+                  חזור לכתובת אימייל
+                </Button>
+              </>
             )}
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-              onClick={handleEmailLogin}
-              disabled={loading}
-              sx={{
-                py: 1.5,
-                bgcolor: '#9c27b0',
-                '&:hover': {
-                  bgcolor: '#7b1fa2'
-                }
-              }}
-            >
-              {loading ? 'שולח מייל...' : 'שלח לי קישור התחברות'}
-            </Button>
           </Box>
         </Box>
       </Paper>
