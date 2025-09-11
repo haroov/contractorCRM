@@ -670,60 +670,58 @@ export default function ContractorTabsSimple({
         console.log('🔄 Syncing data from both APIs for company ID:', companyId);
         
         try {
-            // Step 1: Get data from Companies Registry API
-            console.log('📊 Step 1: Fetching from Companies Registry API...');
-            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
-            const companiesData = await companiesResponse.json();
+            // Step 1: Get data from Contractors Registry API (data.gov.il)
+            console.log('📊 Step 1: Fetching from Contractors Registry API...');
+            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+            const contractorsData = await contractorsResponse.json();
             
-            let contractorsData = null;
-            if (companiesData.success && companiesData.result.records.length > 0) {
-                const record = companiesData.result.records[0];
-                contractorsData = {
+            let contractorsInfo = null;
+            if (contractorsData.success && contractorsData.result.records.length > 0) {
+                const record = contractorsData.result.records[0];
+                contractorsInfo = {
                     name: record.SHEM_YESHUT || '',
                     phone: record.MISPAR_TEL || '',
                     email: record.EMAIL || '',
                     address: record.SHEM_REHOV || '',
                     city: record.SHEM_YISHUV || '',
                     contractor_id: record.MISPAR_KABLAN || '',
-                    classifications: companiesData.result.records.map((r: any) => 
+                    classifications: contractorsData.result.records.map((r: any) => 
                         `${r.TEUR_ANAF} - ${r.KVUTZA}${r.SIVUG}`
                     )
                 };
-                console.log('✅ Contractors Registry data:', contractorsData);
+                console.log('✅ Contractors Registry data:', contractorsInfo);
             }
             
-            // Step 2: Get data from Companies Registry API (our existing endpoint)
+            // Step 2: Get data from Companies Registry API (data.gov.il)
             console.log('📊 Step 2: Fetching from Companies Registry API...');
-            const response = await fetch(`/api/search-company/${companyId}`);
-            const result = await response.json();
+            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b9d0b97-8f9c-4f7b-9f9c-e166dfa0a2d8&q=${companyId}`);
+            const companiesData = await companiesResponse.json();
             
-            if (result.success && result.data) {
-                const companyData = result.data;
-                console.log('✅ Companies Registry data:', companyData);
-                
-                // Merge data from both sources
-                const mergedData = {
-                    ...companyData,
-                    // Override with Contractors Registry data if available
-                    ...(contractorsData && {
-                        name: contractorsData.name || companyData.name,
-                        phone: contractorsData.phone || companyData.phone,
-                        email: contractorsData.email || companyData.email,
-                        address: contractorsData.address || companyData.address,
-                        city: contractorsData.city || companyData.city,
-                        contractor_id: contractorsData.contractor_id || companyData.contractor_id,
-                        classifications: contractorsData.classifications || companyData.classifications
-                    })
+            let companiesInfo = null;
+            if (companiesData.success && companiesData.result.records.length > 0) {
+                const record = companiesData.result.records[0];
+                companiesInfo = {
+                    nameEnglish: record.SHEM_TAATZMAI || '',
+                    foundationDate: record.TAARICH_HITAGDUT || '',
+                    companyType: record.SUG_TAATZMAI || '',
+                    status: record.STATUS_TAATZMAI || '',
+                    lastAnnualReport: record.DOCH_SHNATI_ACHARON || ''
                 };
-                
-                console.log('🔄 Merged data:', mergedData);
-                
-                // Populate form with merged data
-                await populateFormWithApiData(mergedData);
-                
-            } else {
-                throw new Error('No data found in Companies Registry');
+                console.log('✅ Companies Registry data:', companiesInfo);
             }
+            
+            // Merge data from both sources
+            const mergedData = {
+                ...companiesInfo,
+                ...contractorsInfo,
+                // Ensure we have the company ID
+                company_id: companyId
+            };
+            
+            console.log('🔄 Merged data:', mergedData);
+            
+            // Populate form with merged data
+            await populateFormWithApiData(mergedData);
             
         } catch (error) {
             console.error('❌ Error syncing data:', error);
@@ -1107,16 +1105,25 @@ export default function ContractorTabsSimple({
                                                 <IconButton
                                                     onClick={async () => {
                                                         if (localCompanyId && localCompanyId.length === 9) {
-                                                            setIsLoadingCompanyData(true);
-                                                            try {
-                                                                // Load from both APIs
-                                                                await syncDataFromBothAPIs(localCompanyId);
-                                                                alert('נתונים נטענו בהצלחה מרשם החברות ופנקס הקבלנים');
-                                                            } catch (error) {
-                                                                console.error('Error syncing data:', error);
-                                                                alert('שגיאה בסנכרון הנתונים');
-                                                            } finally {
-                                                                setIsLoadingCompanyData(false);
+                                                            // Show confirmation dialog
+                                                            const confirmed = window.confirm(
+                                                                'האם אתה בטוח שאתה רוצה לסנכרן נתונים?\n\n' +
+                                                                'פעולה זו תטען נתונים חדשים מרשם החברות ופנקס הקבלנים ותעדכן את הטופס.\n\n' +
+                                                                'נתונים קיימים בטופס יוחלפו בנתונים מהמאגרים החיצוניים.'
+                                                            );
+                                                            
+                                                            if (confirmed) {
+                                                                setIsLoadingCompanyData(true);
+                                                                try {
+                                                                    // Load from both APIs
+                                                                    await syncDataFromBothAPIs(localCompanyId);
+                                                                    alert('נתונים נטענו בהצלחה מרשם החברות ופנקס הקבלנים');
+                                                                } catch (error) {
+                                                                    console.error('Error syncing data:', error);
+                                                                    alert('שגיאה בסנכרון הנתונים');
+                                                                } finally {
+                                                                    setIsLoadingCompanyData(false);
+                                                                }
                                                             }
                                                         }
                                                     }}
