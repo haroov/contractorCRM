@@ -224,8 +224,8 @@ const LoginPage: React.FC = () => {
 
       if (response.ok && data.success) {
         // Login successful - store user data and redirect
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('userAuthenticated', 'true');
+        localStorage.setItem('contactUser', JSON.stringify(data.user));
+        localStorage.setItem('contactUserAuthenticated', 'true');
         window.location.href = '/';
       } else {
         setError(data.message || 'קוד אימות שגוי');
