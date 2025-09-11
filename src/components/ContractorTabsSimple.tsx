@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import ContractorService from '../services/contractorService';
+import { authenticatedFetch } from '../config/api';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -497,8 +498,8 @@ export default function ContractorTabsSimple({
             formData.append('companyId', localCompanyId);
             formData.append('contractorId', contractor?._id || '');
 
-            // Call API to upload file
-            const response = await fetch('/api/upload-certificate', {
+            // Call API to upload file using authenticatedFetch
+            const response = await authenticatedFetch('/upload-certificate', {
                 method: 'POST',
                 body: formData,
                 headers: {
