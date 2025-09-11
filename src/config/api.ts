@@ -85,10 +85,15 @@ export const getAuthHeaders = (): HeadersInit => {
 // Helper function for authenticated API calls
 export const authenticatedFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const sessionId = getSessionId();
+    
+    // For FormData, don't set Content-Type - let browser set it with boundary
+    const isFormData = options.body instanceof FormData;
+    const headers = isFormData ? {} : getAuthHeaders();
+    
     const fetchOptions: RequestInit = {
         ...options,
         headers: {
-            ...getAuthHeaders(),
+            ...headers,
             ...options.headers,
         },
         credentials: 'include',
