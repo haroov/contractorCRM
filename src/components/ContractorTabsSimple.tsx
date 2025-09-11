@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import ContractorService from '../services/contractorService';
 
 interface ContractorTabsSimpleProps {
     contractor?: any;
@@ -808,12 +809,28 @@ export default function ContractorTabsSimple({
         console.log('📊 Loading additional data:');
         console.log('📊 Contacts:', contractorData.contacts);
         console.log('📊 Projects:', contractorData.projects);
+        console.log('📊 Project IDs:', contractorData.projectIds);
         console.log('📊 Notes:', contractorData.notes);
         console.log('📊 Safety Rating:', contractorData.safetyRating);
         console.log('📊 Classifications:', contractorData.classifications);
         
         setLocalContacts(contractorData.contacts || []);
-        setLocalProjects(contractorData.projects || []);
+        
+        // Load projects if projectIds exist
+        if (contractorData.projectIds && contractorData.projectIds.length > 0) {
+            console.log('📊 Loading projects for IDs:', contractorData.projectIds);
+            try {
+                const projects = await ContractorService.getProjectsByIds(contractorData.projectIds);
+                setLocalProjects(projects);
+                console.log('📊 Loaded projects:', projects);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                setLocalProjects([]);
+            }
+        } else {
+            setLocalProjects(contractorData.projects || []);
+        }
+        
         setLocalNotes(contractorData.notes || { general: '', internal: '' });
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalSafetyExpiry(contractorData.safetyExpiry || '');

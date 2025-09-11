@@ -67,6 +67,26 @@ class ContractorService {
         }
     }
 
+    // Get projects by IDs
+    static async getProjectsByIds(projectIds: string[]): Promise<any[]> {
+        try {
+            if (!projectIds || projectIds.length === 0) {
+                return [];
+            }
+            
+            const response = await authenticatedFetch(`${API_CONFIG.PROJECTS_URL()}?ids=${projectIds.join(',')}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const projects = await response.json();
+            console.log('📋 Loaded projects:', projects.length);
+            return projects;
+        } catch (error) {
+            console.error('Error fetching projects by IDs:', error);
+            return [];
+        }
+    }
+
     // Create new contractor
     static async create(contractorData: Partial<Contractor>): Promise<Contractor> {
         try {
