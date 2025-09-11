@@ -22,6 +22,9 @@ const isEmailAllowed = async (email) => {
 const callbackURL = process.env.GOOGLE_CALLBACK_URL || "https://contractorcrm-api.onrender.com/auth/google/callback";
 console.log('🔐 Passport callbackURL:', callbackURL);
 console.log('🔐 GOOGLE_CALLBACK_URL env var:', process.env.GOOGLE_CALLBACK_URL);
+console.log('🔐 Environment check in passport:');
+console.log('  - NODE_ENV:', process.env.NODE_ENV);
+console.log('  - All env vars with GOOGLE:', Object.keys(process.env).filter(key => key.includes('GOOGLE')));
 
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,

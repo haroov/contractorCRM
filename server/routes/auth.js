@@ -9,6 +9,10 @@ const router = express.Router();
 router.get('/google', (req, res, next) => {
   console.log('🔐 Google OAuth login request received');
   console.log('🔐 Query params:', req.query);
+  console.log('🔐 Environment check:');
+  console.log('  - GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
+  console.log('  - NODE_ENV:', process.env.NODE_ENV);
+  console.log('  - All env vars with GOOGLE:', Object.keys(process.env).filter(key => key.includes('GOOGLE')));
 
   const prompt = req.query.prompt;
 
