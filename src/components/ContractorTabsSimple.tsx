@@ -701,12 +701,20 @@ export default function ContractorTabsSimple({
 
     // Filter projects based on active filter
     const getFilteredProjects = () => {
-        if (!localProjects || localProjects.length === 0) return [];
+        console.log('🔍 getFilteredProjects called with:');
+        console.log('🔍 localProjects:', localProjects);
+        console.log('🔍 localProjects length:', localProjects?.length || 0);
+        console.log('🔍 activeProjectFilter:', activeProjectFilter);
+        
+        if (!localProjects || localProjects.length === 0) {
+            console.log('🔍 No projects to filter, returning empty array');
+            return [];
+        }
         
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
-        return localProjects.filter((project: any) => {
+        const filtered = localProjects.filter((project: any) => {
             const startDate = new Date(project.startDate);
             startDate.setHours(0, 0, 0, 0);
             const isClosed = project.isClosed || project.status === 'completed';
@@ -724,6 +732,10 @@ export default function ContractorTabsSimple({
                     return true;
             }
         });
+        
+        console.log('🔍 Filtered projects:', filtered);
+        console.log('🔍 Filtered count:', filtered.length);
+        return filtered;
     };
 
     // Format date from YYYY-MM-DD to DD/MM/YYYY
@@ -936,11 +948,13 @@ export default function ContractorTabsSimple({
                 const projects = await ContractorService.getProjectsByIds(contractorData.projectIds);
                 setLocalProjects(projects);
                 console.log('📊 Loaded projects:', projects);
+                console.log('📊 Projects count:', projects.length);
             } catch (error) {
-                console.error('Error loading projects:', error);
+                console.error('❌ Error loading projects:', error);
                 setLocalProjects([]);
             }
         } else {
+            console.log('📊 No projectIds found, using contractorData.projects:', contractorData.projects);
             setLocalProjects(contractorData.projects || []);
         }
 
