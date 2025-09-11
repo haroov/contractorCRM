@@ -1416,12 +1416,41 @@ export default function ContractorTabsSimple({
                             defaultValue={editingContact?.name || editingContact?.fullName || ''}
                             sx={{ mb: 2, ...textFieldSx }}
                         />
-                        <TextField
-                            fullWidth
-                            label="תפקיד"
-                            defaultValue={editingContact?.role || editingContact?.position || ''}
-                            sx={{ mb: 2, ...textFieldSx }}
-                        />
+                        <FormControl fullWidth sx={{ mb: 2 }}>
+                            <InputLabel sx={{
+                                backgroundColor: 'white',
+                                px: 1,
+                                '&.Mui-focused': {
+                                    backgroundColor: 'white'
+                                }
+                            }}>
+                                תפקיד
+                            </InputLabel>
+                            <Select
+                                defaultValue={editingContact?.role || editingContact?.position || ''}
+                                sx={{
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#d0d0d0'
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#9c27b0'
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#9c27b0'
+                                    }
+                                }}
+                            >
+                                <MenuItem value="מנכ״ל">מנכ״ל</MenuItem>
+                                <MenuItem value="סמנכ״ל כספים">סמנכ״ל כספים</MenuItem>
+                                <MenuItem value="גזבר">גזבר</MenuItem>
+                                <MenuItem value="ממונה ביטוח">ממונה ביטוח</MenuItem>
+                                <MenuItem value="יועץ ביטוח">יועץ ביטוח</MenuItem>
+                                <MenuItem value="ממונה בטיחות">ממונה בטיחות</MenuItem>
+                                <MenuItem value="סמנכ״ל תפעול">סמנכ״ל תפעול</MenuItem>
+                                <MenuItem value="סמנכ״ל הנדסה">סמנכ״ל הנדסה</MenuItem>
+                                <MenuItem value="סמנכ״ל תכנון">סמנכ״ל תכנון</MenuItem>
+                            </Select>
+                        </FormControl>
                         <TextField
                             fullWidth
                             label="טלפון"
@@ -1436,9 +1465,17 @@ export default function ContractorTabsSimple({
                             sx={{ mb: 2, ...textFieldSx }}
                         />
                         <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>הרשאות</InputLabel>
+                            <InputLabel sx={{
+                                backgroundColor: 'white',
+                                px: 1,
+                                '&.Mui-focused': {
+                                    backgroundColor: 'white'
+                                }
+                            }}>
+                                הרשאות
+                            </InputLabel>
                             <Select
-                                defaultValue={editingContact?.permissions || 'contact_user'}
+                                defaultValue={editingContact?.permissions || 'contactUser'}
                                 sx={{
                                     '& .MuiOutlinedInput-notchedOutline': {
                                         borderColor: '#d0d0d0'
@@ -1451,8 +1488,8 @@ export default function ContractorTabsSimple({
                                     }
                                 }}
                             >
-                                <MenuItem value="contact_user">משתמש קשר</MenuItem>
-                                <MenuItem value="contact_manager">מנהל קשר</MenuItem>
+                                <MenuItem value="contactUser">משתמש</MenuItem>
+                                <MenuItem value="contactAdmin">מנהל</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
