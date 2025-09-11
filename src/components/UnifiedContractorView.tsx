@@ -959,6 +959,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   })()}
                   currentUser={currentUser}
                   isSaving={isSaving}
+                  onUpdateContractor={setSelectedContractor}
                 />
               </Suspense>
             </Box>

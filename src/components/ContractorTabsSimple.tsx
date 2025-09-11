@@ -10,6 +10,7 @@ interface ContractorTabsSimpleProps {
     contactUserPermissions?: string;
     currentUser?: any;
     isSaving?: boolean;
+    onUpdateContractor?: (contractor: any) => void;
 }
 
 export default function ContractorTabsSimple({
@@ -19,7 +20,8 @@ export default function ContractorTabsSimple({
     isContactUser = false,
     contactUserPermissions,
     currentUser,
-    isSaving = false
+    isSaving = false,
+    onUpdateContractor
 }: ContractorTabsSimpleProps) {
     const [activeTab, setActiveTab] = useState(0);
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -796,6 +798,18 @@ export default function ContractorTabsSimple({
             console.log('📊 Setting local company ID:', contractorData.company_id);
             setLocalCompanyId(contractorData.company_id);
         }
+
+        // Update the contractor object with the loaded data for the title
+        if (onUpdateContractor) {
+            const updatedContractor = {
+                ...contractor,
+                name: contractorData.name,
+                nameEnglish: contractorData.nameEnglish,
+                company_id: contractorData.company_id,
+                contractor_id: contractorData.contractor_id
+            };
+            onUpdateContractor(updatedContractor);
+        }
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalIso45001(contractorData.iso45001 || false);
         setLocalClassifications(contractorData.classifications || []);
@@ -881,6 +895,18 @@ export default function ContractorTabsSimple({
         }
         if (companyData.companyLogo) {
             setCompanyLogo(companyData.companyLogo);
+        }
+
+        // Update the contractor object with the loaded data for the title
+        if (onUpdateContractor) {
+            const updatedContractor = {
+                ...contractor,
+                name: cleanName,
+                nameEnglish: cleanNameEnglish,
+                company_id: companyData.company_id,
+                contractor_id: companyData.contractor_id
+            };
+            onUpdateContractor(updatedContractor);
         }
 
         console.log('✅ Form populated with API data successfully');
