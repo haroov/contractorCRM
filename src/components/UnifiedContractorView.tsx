@@ -1003,7 +1003,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           פרופיל
         </MenuItem>
         {/* Only show User Management for admin users */}
-        {!localStorage.getItem('contactUserAuthenticated') && (
+        {currentUser?.role === 'admin' && (
           <MenuItem onClick={handleUserManagementClick}>
             <AccountCircleIcon sx={{ mr: 1 }} />
             ניהול משתמשים

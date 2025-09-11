@@ -23,10 +23,10 @@ export const API_CONFIG = {
     AUTH_BASE_URL: getAuthBaseUrl(),
 
     // Specific endpoints
-    CONTRACTORS: '/contractors',
-    PROJECTS: '/projects',
-    HEALTH: '/health',
-    AUTH: '/auth',
+    CONTRACTORS: '/api/contractors',
+    PROJECTS: '/api/projects',
+    HEALTH: '/api/health',
+    AUTH: '/api/auth',
 
     // Full URLs - these are already complete paths, don't add BASE_URL
     CONTRACTORS_URL: () => API_CONFIG.CONTRACTORS,
