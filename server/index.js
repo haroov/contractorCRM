@@ -371,7 +371,19 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
 });
 
 // Apply authentication to protected routes
-app.use('/api/contractors', requireAuth);
+// For contractors, allow both regular auth and contact auth
+app.use('/api/contractors', (req, res, next) => {
+  // Check if it's a contact user first
+  const contactUserHeader = req.headers['x-contact-user'];
+  if (contactUserHeader) {
+    // Use contact auth middleware
+    const { requireContactAuth } = require('./middleware/contact-auth.js');
+    return requireContactAuth(req, res, next);
+  } else {
+    // Use regular auth middleware
+    return requireAuth(req, res, next);
+  }
+});
 app.use('/api/projects', requireAuth);
 console.log('✅ Auth middleware configured');
 

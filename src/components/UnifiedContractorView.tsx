@@ -124,10 +124,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       setLoading(true);
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
-      
+
       // Check if user is a contact user
       const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
-      
+
       let filteredContractors;
       if (isContactUser) {
         // For contact users, show only their associated contractor
@@ -135,7 +135,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         if (contactUserData) {
           try {
             const contactUser = JSON.parse(contactUserData);
-            filteredContractors = contractorsData.filter(contractor => 
+            filteredContractors = contractorsData.filter(contractor =>
               contractor._id === contactUser.contractorId && contractor.isActive === true
             );
             console.log('📋 Filtered contractors for contact user:', filteredContractors.length);
@@ -151,7 +151,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
         console.log('📋 Loaded all active contractors:', filteredContractors.length);
       }
-      
+
       setContractors(filteredContractors);
     } catch (error) {
       console.error('Error loading contractors:', error);
@@ -1002,10 +1002,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <AccountCircleIcon sx={{ mr: 1 }} />
           פרופיל
         </MenuItem>
-        <MenuItem onClick={handleUserManagementClick}>
-          <AccountCircleIcon sx={{ mr: 1 }} />
-          ניהול משתמשים
-        </MenuItem>
+        {/* Only show User Management for admin users */}
+        {!localStorage.getItem('contactUserAuthenticated') && (
+          <MenuItem onClick={handleUserManagementClick}>
+            <AccountCircleIcon sx={{ mr: 1 }} />
+            ניהול משתמשים
+          </MenuItem>
+        )}
         <MenuItem onClick={handleLogout}>
           <AccountCircleIcon sx={{ mr: 1 }} />
           התנתקות
@@ -1030,32 +1033,32 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
       {/* User Management - Full Screen */}
       {userManagementOpen && (
-        <Box sx={{ 
-          position: 'fixed', 
+        <Box sx={{
+          position: 'fixed',
           top: '80px', // Start below the header
-          left: 0, 
-          right: 0, 
-          bottom: 0, 
+          left: 0,
+          right: 0,
+          bottom: 0,
           zIndex: 1300,
           backgroundColor: 'background.default'
         }}>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
             height: 'calc(100vh - 80px)', // Full height minus header
             p: 2
           }}>
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
               mb: 2
             }}>
               <Typography variant="h4" component="h1">
                 ניהול משתמשים
               </Typography>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 onClick={() => setUserManagementOpen(false)}
                 startIcon={<CloseIcon />}
               >
