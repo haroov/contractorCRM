@@ -252,6 +252,11 @@ const docsRoutes = require('./routes/docs.js');
 app.use('/api/docs', docsRoutes);
 console.log('✅ Docs routes configured');
 
+// Import Google Docs routes
+const googleDocsRoutes = require('./routes/google-docs.js');
+app.use('/api/google-docs', googleDocsRoutes);
+console.log('✅ Google Docs routes configured');
+
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
