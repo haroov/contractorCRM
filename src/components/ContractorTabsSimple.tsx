@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import ContractorService from '../services/contractorService';
 import { authenticatedFetch } from '../config/api';
 
@@ -25,6 +26,7 @@ export default function ContractorTabsSimple({
     isSaving = false,
     onUpdateContractor
 }: ContractorTabsSimpleProps) {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -76,6 +78,33 @@ export default function ContractorTabsSimple({
             default:
                 return 'ללא כוכבים';
         }
+    };
+
+    // Function to navigate to project editing page
+    const navigateToProject = (project: any, mode: 'view' | 'edit' | 'new') => {
+        // Get session ID from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('sessionId');
+        
+        // Create URL parameters for the project data
+        const params = new URLSearchParams();
+        params.set('mode', mode);
+        
+        // Add session ID to the URL
+        if (sessionId) {
+            params.set('sessionId', sessionId);
+        }
+
+        if (mode === 'new') {
+            params.set('project_id', 'new');
+        } else {
+            params.set('project_id', project._id || project.id || '');
+            // Store project data in sessionStorage for the project page to access
+            sessionStorage.setItem('project_data', JSON.stringify(project));
+        }
+
+        // Navigate to project page in the same window
+        navigate(`/project?${params.toString()}`);
     };
 
     // Validation functions
@@ -706,20 +735,20 @@ export default function ContractorTabsSimple({
         console.log('🔍 localProjects:', localProjects);
         console.log('🔍 localProjects length:', localProjects?.length || 0);
         console.log('🔍 activeProjectFilter:', activeProjectFilter);
-        
+
         if (!localProjects || localProjects.length === 0) {
             console.log('🔍 No projects to filter, returning empty array');
             return [];
         }
-        
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         const filtered = localProjects.filter((project: any) => {
             const startDate = new Date(project.startDate);
             startDate.setHours(0, 0, 0, 0);
             const isClosed = project.isClosed || project.status === 'completed';
-            
+
             switch (activeProjectFilter) {
                 case 'all':
                     return true;
@@ -733,7 +762,7 @@ export default function ContractorTabsSimple({
                     return true;
             }
         });
-        
+
         console.log('🔍 Filtered projects:', filtered);
         console.log('🔍 Filtered count:', filtered.length);
         return filtered;
@@ -744,11 +773,11 @@ export default function ContractorTabsSimple({
         if (!dateString) return '';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return dateString;
-        
+
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear();
-        
+
         return `${day}/${month}/${year}`;
     };
 
@@ -2021,7 +2050,7 @@ export default function ContractorTabsSimple({
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => {/* TODO: Edit project handler */ }}
+                                                            onClick={() => navigateToProject(project, 'edit')}
                                                             sx={{ color: '#9c27b0' }}
                                                         >
                                                             <EditIcon fontSize="small" />
@@ -2044,9 +2073,9 @@ export default function ContractorTabsSimple({
                             <Box sx={{ textAlign: 'center', py: 4 }}>
                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                     {activeProjectFilter === 'all' ? 'אין פרויקטים רשומים' :
-                                     activeProjectFilter === 'active' ? 'אין פרויקטים פעילים' :
-                                     activeProjectFilter === 'future' ? 'אין פרויקטים עתידיים' :
-                                     'אין פרויקטים נסגרו'}
+                                        activeProjectFilter === 'active' ? 'אין פרויקטים פעילים' :
+                                            activeProjectFilter === 'future' ? 'אין פרויקטים עתידיים' :
+                                                'אין פרויקטים נסגרו'}
                                 </Typography>
                                 {canEdit && (
                                     <Button

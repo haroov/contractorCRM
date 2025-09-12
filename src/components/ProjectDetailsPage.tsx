@@ -285,11 +285,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} aria-label="project tabs">
-                            <Tab label="דשבורד" />
-                            <Tab label="מידע כללי" />
-                            <Tab label="טכני" />
+                            <Tab label="כללי" />
+                            <Tab label="מפרט" />
                             <Tab label="מסמכים" />
                             <Tab label="ביטוח" />
+                            <Tab label="הרשאות" />
+                            <Tab label="הערות" />
                         </Tabs>
                     </Box>
 
@@ -297,211 +298,85 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     <Box sx={{ p: 3, pb: 6 }}>
                         {activeTab === 0 && (
                             <Box>
-                                {/* Project Header */}
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                                    <Box>
-                                        <Typography variant="h4" fontWeight="bold" sx={{ color: 'primary.main', mb: 1 }}>
-                                            {project.projectName || 'אכזיב, מגרש 3001'}
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-                                                (5x) צמח המרמן
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <Typography key={star} sx={{ color: 'warning.main', fontSize: '1.2rem' }}>
-                                                        ⭐
-                                                    </Typography>
-                                                ))}
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
-                                            Time Period
-                                        </Typography>
-                                        <Typography variant="body1" fontWeight="medium">
-                                            22-Apr-2023 - Today
-                                        </Typography>
-                                    </Box>
-                                </Box>
-
-                                {/* Safety Coins Section */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
-                                        Safety Coins
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                        <Typography variant="h4" fontWeight="bold" sx={{ color: 'warning.main' }}>
-                                            🪙
-                                        </Typography>
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                                                <Typography variant="body2">Earned: 3,309</Typography>
-                                                <Typography variant="body2">Available: 1,701</Typography>
-                                            </Box>
-                                            <Box sx={{ width: '100%', height: 8, bgcolor: 'grey.300', borderRadius: 4, overflow: 'hidden' }}>
-                                                <Box sx={{
-                                                    width: '66%',
-                                                    height: '100%',
-                                                    bgcolor: 'warning.main',
-                                                    borderRadius: 4
-                                                }} />
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                </Box>
-
-                                {/* Project Progress Section */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
-                                        Project Progress
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Typography variant="body2" sx={{ color: 'success.main' }}>22/04/2023 Proj. Start</Typography>
-                                        </Box>
-                                        <Box sx={{ flexGrow: 1, height: 4, bgcolor: 'grey.300', borderRadius: 2, position: 'relative' }}>
-                                            <Box sx={{
-                                                width: '51%',
-                                                height: '100%',
-                                                bgcolor: 'success.main',
-                                                borderRadius: 2
-                                            }} />
-                                            <Box sx={{
-                                                position: 'absolute',
-                                                left: '51%',
-                                                top: '-8px',
-                                                width: 12,
-                                                height: 20,
-                                                bgcolor: 'success.main',
-                                                borderRadius: 1,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
-                                            }}>
-                                                <Typography variant="caption" sx={{ color: 'white', fontWeight: 'bold' }}>
-                                                    51%
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>Building</Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                                        <Typography variant="body2" sx={{ color: 'error.main' }}>
-                                            Policy End 20/06/2027
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ color: 'success.main' }}>
-                                            Est. Delivery 10/06/2027
-                                        </Typography>
-                                    </Box>
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        startIcon={<Typography>+</Typography>}
-                                        sx={{ mb: 2 }}
-                                    >
-                                        Extend Policy
-                                    </Button>
-                                </Box>
-
-                                {/* Performance Charts Grid */}
+                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+                                    מידע כללי
+                                </Typography>
+                                
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-                                    {/* Safety Chart */}
-                                    <Paper sx={{ p: 2, height: 200 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                            <Typography sx={{ fontSize: '1.5rem' }}>⛑️</Typography>
-                                            <Typography variant="h6">Safety</Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>Avg. Score</Typography>
-                                                <Typography variant="h6" fontWeight="bold">8.5</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 120, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}>
-                                            {/* Placeholder for chart - would integrate with charting library */}
-                                            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Chart: Safety Performance
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
-
-                                    {/* Security & Access Chart */}
-                                    <Paper sx={{ p: 2, height: 200 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                            <Typography sx={{ fontSize: '1.5rem' }}>⚙️</Typography>
-                                            <Typography variant="h6">Security & Access</Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>Avg. Score</Typography>
-                                                <Typography variant="h6" fontWeight="bold">9.5</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 120, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}>
-                                            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Chart: Security Performance
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
-
-                                    {/* Fire System Chart */}
-                                    <Paper sx={{ p: 2, height: 200 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                            <Typography sx={{ fontSize: '1.5rem' }}>🔥</Typography>
-                                            <Typography variant="h6">Fire System</Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>Avg. Score</Typography>
-                                                <Typography variant="h6" fontWeight="bold">8.1</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 120, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}>
-                                            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Chart: Fire System Performance
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
-
-                                    {/* Water System Chart */}
-                                    <Paper sx={{ p: 2, height: 200 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                            <Typography sx={{ fontSize: '1.5rem' }}>💧</Typography>
-                                            <Typography variant="h6">Water System</Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>Avg. Score</Typography>
-                                                <Typography variant="h6" fontWeight="bold">7.9</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 120, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}>
-                                            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Chart: Water System Performance
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
-
-                                    {/* Structural Vibration Chart */}
-                                    <Paper sx={{ p: 2, height: 200 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                            <Typography sx={{ fontSize: '1.5rem' }}>🏗️</Typography>
-                                            <Typography variant="h6">Structural Vibration</Typography>
-                                            <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>Avg. Score</Typography>
-                                                <Typography variant="h6" fontWeight="bold">8.9</Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ height: 120, bgcolor: 'grey.100', borderRadius: 1, p: 1 }}>
-                                            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                    Chart: Structural Vibration Performance
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
+                                    <TextField
+                                        fullWidth
+                                        label="שם הפרויקט"
+                                        value={project?.projectName || ''}
+                                        onChange={(e) => handleFieldChange('projectName', e.target.value)}
+                                        disabled={mode === 'view'}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="תיאור הפרויקט"
+                                        value={project?.description || ''}
+                                        onChange={(e) => handleFieldChange('description', e.target.value)}
+                                        disabled={mode === 'view'}
+                                        multiline
+                                        rows={3}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="תאריך התחלה"
+                                        type="date"
+                                        value={project?.startDate || ''}
+                                        onChange={(e) => handleFieldChange('startDate', e.target.value)}
+                                        disabled={mode === 'view'}
+                                        InputLabelProps={{ shrink: true }}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="משך הפרויקט (חודשים)"
+                                        type="number"
+                                        value={project?.durationMonths || 0}
+                                        onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
+                                        disabled={mode === 'view'}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="עיר"
+                                        value={project?.city || ''}
+                                        onChange={(e) => handleFieldChange('city', e.target.value)}
+                                        disabled={mode === 'view'}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="ערך הפרויקט (₪)"
+                                        type="number"
+                                        value={project?.valueNis || project?.value || 0}
+                                        onChange={(e) => handleFieldChange('valueNis', parseInt(e.target.value) || 0)}
+                                        disabled={mode === 'view'}
+                                    />
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="סטטוס"
+                                        select
+                                        value={project?.status || 'future'}
+                                        onChange={(e) => handleFieldChange('status', e.target.value)}
+                                        disabled={mode === 'view'}
+                                    >
+                                        <MenuItem value="future">עתידי</MenuItem>
+                                        <MenuItem value="current">פעיל</MenuItem>
+                                        <MenuItem value="completed">הושלם</MenuItem>
+                                    </TextField>
+                                    
+                                    <TextField
+                                        fullWidth
+                                        label="קבלן ראשי"
+                                        value={project?.mainContractor || ''}
+                                        onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
+                                        disabled={mode === 'view'}
+                                    />
                                 </Box>
                             </Box>
                         )}
@@ -509,7 +384,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 1 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מידע כללי
+                                    מפרט טכני
                                 </Typography>
 
                                 {/* Project General Information */}
@@ -658,7 +533,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 2 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מידע טכני
+                                    מסמכים
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
                                     תוכן טכני יוצג כאן בעתיד...
@@ -669,7 +544,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 3 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מסמכים
+                                    ביטוח
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
                                     ניהול מסמכים יוצג כאן בעתיד...
@@ -680,11 +555,29 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 4 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    ביטוח
+                                    הרשאות
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
-                                    מידע ביטוחי יוצג כאן בעתיד...
+                                    ניהול הרשאות יוצג כאן בעתיד...
                                 </Typography>
+                            </Box>
+                        )}
+
+                        {activeTab === 5 && (
+                            <Box>
+                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+                                    הערות
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    label="הערות כלליות"
+                                    value={project?.notes || ''}
+                                    onChange={(e) => handleFieldChange('notes', e.target.value)}
+                                    disabled={mode === 'view'}
+                                    multiline
+                                    rows={6}
+                                    placeholder="הוסף הערות על הפרויקט..."
+                                />
                             </Box>
                         )}
                     </Box>
