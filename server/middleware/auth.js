@@ -3,12 +3,19 @@ const requireAuth = (req, res, next) => {
   console.log('🔍 Auth middleware - isAuthenticated:', req.isAuthenticated());
   console.log('🔍 Session ID:', req.sessionID);
   console.log('🔍 User:', req.user);
+  console.log('🔍 Session user:', req.session?.user);
   console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
   console.log('🔍 sessionId query param:', req.query.sessionId);
   
-  // Check if user is authenticated via session
+  // Check if user is authenticated via passport session
   if (req.isAuthenticated()) {
-    console.log('✅ User is authenticated via session:', req.user.email);
+    console.log('✅ User is authenticated via passport session:', req.user.email);
+    return next();
+  }
+  
+  // Check if user is authenticated via custom session (OTP login)
+  if (req.session?.user) {
+    console.log('✅ User is authenticated via custom session:', req.session.user.email);
     return next();
   }
   
@@ -32,11 +39,18 @@ const requireAuth = (req, res, next) => {
 const requireAdmin = (req, res, next) => {
   console.log('🔍 Admin middleware - isAuthenticated:', req.isAuthenticated());
   console.log('🔍 User role:', req.user?.role);
+  console.log('🔍 Session user role:', req.session?.user?.role);
   console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
   
-  // Check if user is authenticated via session and is admin
+  // Check if user is authenticated via passport session and is admin
   if (req.isAuthenticated() && req.user.role === 'admin') {
-    console.log('✅ User is admin via session:', req.user.email);
+    console.log('✅ User is admin via passport session:', req.user.email);
+    return next();
+  }
+  
+  // Check if user is authenticated via custom session and is admin
+  if (req.session?.user && req.session.user.role === 'admin') {
+    console.log('✅ User is admin via custom session:', req.session.user.email);
     return next();
   }
   
