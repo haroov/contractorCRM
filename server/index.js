@@ -51,6 +51,9 @@ app.use(cookieParser());
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Configure multer for file uploads using memory storage
 const storage = multer.memoryStorage();
 
