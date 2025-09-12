@@ -216,20 +216,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     return (
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8' }}>
-            {/* Main Header with System Name and Profile */}
-            <AppBar position="static" sx={{ bgcolor: 'white', color: 'text.primary', boxShadow: 1 }}>
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
-                    {/* Left side - Menu and System Name */}
+            {/* Main Header with System Name and Profile - Same as contractor card */}
+            <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {/* Left side - Back button and title */}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
+                            onClick={handleBack}
                             sx={{ mr: 2 }}
                         >
                             <ArrowBackIcon />
                         </IconButton>
-                        <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                             ניהול סיכונים באתרי בניה
                         </Typography>
                     </Box>
@@ -277,57 +275,57 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </MenuItemComponent>
                         </Menu>
                     </Box>
-                </Toolbar>
-            </AppBar>
-
-            {/* Project Title and Action Buttons */}
-            <Paper elevation={0} sx={{ p: 3, bgcolor: 'white', borderBottom: 1, borderColor: 'divider' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {/* Project Title */}
-                    <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                        {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
-                    </Typography>
-
-                    {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Button
-                            variant="outlined"
-                            onClick={handleClose}
-                            startIcon={<CloseIcon />}
-                            sx={{ 
-                                minWidth: 120,
-                                borderColor: '#9c27b0',
-                                color: '#9c27b0',
-                                '&:hover': {
-                                    borderColor: '#7b1fa2',
-                                    backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                }
-                            }}
-                        >
-                            סגירה
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleSave}
-                            disabled={saving}
-                            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                            sx={{ 
-                                minWidth: 120,
-                                bgcolor: '#9c27b0',
-                                '&:hover': {
-                                    bgcolor: '#7b1fa2'
-                                }
-                            }}
-                        >
-                            {saving ? 'שומר...' : 'שמירה'}
-                        </Button>
-                    </Box>
                 </Box>
             </Paper>
 
-            {/* Content */}
-            <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3 }}>
-                <Paper sx={{ height: '100%', direction: 'rtl' }}>
+            {/* Project Card - Same style as contractor card */}
+            <Box sx={{ p: 2 }}>
+                <Paper elevation={1} sx={{ bgcolor: 'white', borderRadius: 2 }}>
+                    {/* Project Title and Action Buttons */}
+                    <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            {/* Project Title */}
+                            <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                                {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
+                            </Typography>
+
+                            {/* Action Buttons */}
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleClose}
+                                    startIcon={<CloseIcon />}
+                                    sx={{ 
+                                        minWidth: 120,
+                                        borderColor: '#9c27b0',
+                                        color: '#9c27b0',
+                                        '&:hover': {
+                                            borderColor: '#7b1fa2',
+                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    סגירה
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+                                    sx={{ 
+                                        minWidth: 120,
+                                        bgcolor: '#9c27b0',
+                                        '&:hover': {
+                                            bgcolor: '#7b1fa2'
+                                        }
+                                    }}
+                                >
+                                    {saving ? 'שומר...' : 'שמירה'}
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} aria-label="project tabs">
