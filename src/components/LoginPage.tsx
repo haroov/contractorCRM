@@ -338,65 +338,13 @@ const LoginPage: React.FC = () => {
         </Typography>
 
 
-        {/* Email Field */}
-        {/* Removed email input and divider - using Google login only */}
-
-        {/* Social Login Buttons */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            startIcon={<GoogleIcon />}
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            sx={{
-              py: 1.5,
-              bgcolor: '#4285f4',
-              '&:hover': {
-                bgcolor: '#357ae8'
-              },
-              '& .MuiButton-startIcon': {
-                marginRight: '8px'
-              }
-            }}
-          >
-            התחבר עם Google
-          </Button>
-
-          <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            startIcon={<MicrosoftIcon />}
-            onClick={handleMicrosoftLogin}
-            disabled={loading}
-            sx={{
-              py: 1.5,
-              bgcolor: '#00a1f1',
-              '&:hover': {
-                bgcolor: '#0088cc'
-              },
-              '& .MuiButton-startIcon': {
-                marginRight: '8px'
-              }
-            }}
-          >
-            התחבר עם Microsoft
-          </Button>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-              או
-            </Typography>
-          </Divider>
-
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-            {!otpSent ? (
-              <>
-                <TextField
-                  fullWidth
-                  label="כתובת אימייל"
+        {/* Email Field First */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+          {!otpSent ? (
+            <>
+              <TextField
+                fullWidth
+                label="כתובת אימייל"
                   type="email"
                   variant="outlined"
                   value={email}
@@ -504,6 +452,58 @@ const LoginPage: React.FC = () => {
               </>
             )}
           </Box>
+
+        {/* Divider */}
+        <Divider sx={{ my: 3 }}>
+          <Typography variant="body2" color="text.secondary">
+            או
+          </Typography>
+        </Divider>
+
+        {/* Social Login Buttons */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            startIcon={<GoogleIcon />}
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            sx={{
+              py: 1.5,
+              bgcolor: '#4285f4',
+              '&:hover': {
+                bgcolor: '#357ae8'
+              },
+              '& .MuiButton-startIcon': {
+                marginRight: '8px'
+              }
+            }}
+          >
+            התחבר עם Google
+          </Button>
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            startIcon={<MicrosoftIcon />}
+            onClick={handleMicrosoftLogin}
+            disabled={true}
+            sx={{
+              py: 1.5,
+              bgcolor: '#9e9e9e',
+              color: '#fff',
+              '&:hover': {
+                bgcolor: '#9e9e9e'
+              },
+              '& .MuiButton-startIcon': {
+                marginRight: '8px'
+              }
+            }}
+          >
+            התחבר עם Microsoft
+          </Button>
         </Box>
         
         {/* Terms and Privacy Links */}
