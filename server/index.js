@@ -249,8 +249,7 @@ console.log('✅ Contact authentication routes configured');
 
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
-app.use('/api/contractors', contractorsRoutes);
-console.log('✅ Contractors routes configured');
+console.log('✅ Contractors routes imported');
 
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
@@ -386,7 +385,7 @@ app.use('/api/contractors', (req, res, next) => {
     // Use regular auth middleware
     return requireAuth(req, res, next);
   }
-});
+}, contractorsRoutes);
 app.use('/api/projects', requireAuth);
 console.log('✅ Auth middleware configured');
 

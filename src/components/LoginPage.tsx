@@ -224,9 +224,12 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Login successful - store user data and redirect
+        // Login successful - store user data and session ID
         localStorage.setItem('contactUser', JSON.stringify(data.user));
         localStorage.setItem('contactUserAuthenticated', 'true');
+        if (data.sessionId) {
+          localStorage.setItem('sessionId', data.sessionId);
+        }
         window.location.href = '/';
       } else {
         setError(data.message || 'קוד אימות שגוי');
