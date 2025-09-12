@@ -5,23 +5,23 @@ const router = express.Router();
 
 // Google Docs API integration
 router.get('/fetch-document/:docId', async (req, res) => {
-    try {
-        const { docId } = req.params;
+  try {
+    const { docId } = req.params;
 
-        // For now, we'll use a simple approach to get the document content
-        // In production, you'd use the Google Docs API with proper authentication
+    // For now, we'll use a simple approach to get the document content
+    // In production, you'd use the Google Docs API with proper authentication
 
-        // Document ID from the URL: 1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ
-        const documentId = docId || '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
+    // Document ID from the URL: 1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ
+    const documentId = docId || '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
 
-        // Since we can't access Google Docs API directly without authentication,
-        // we'll return the exact content from the document as it appears
-        const documentContent = {
-            title: 'תנאי השירות והודעות הקשורות בביטוח',
-            subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
-            lastUpdated: '11 ביולי, 2023',
-            googleDocsUrl: `https://docs.google.com/document/d/${documentId}/edit?tab=t.0#heading=h.wefuos204y1t`,
-            content: `
+    // Since we can't access Google Docs API directly without authentication,
+    // we'll return the exact content from the document as it appears
+    const documentContent = {
+      title: 'תנאי השירות והודעות הקשורות בביטוח',
+      subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
+      lastUpdated: '11 ביולי, 2023',
+      googleDocsUrl: `https://docs.google.com/document/d/${documentId}/edit?tab=t.0#heading=h.wefuos204y1t`,
+      content: `
         <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right;">
           <h1 style="color: #333; text-align: center; margin-bottom: 20px;">תנאי השירות והודעות הקשורות בביטוח</h1>
           <h2 style="color: #333; text-align: center; margin-bottom: 10px;">שוקו ביטוח - מערכת ניהול קבלנים</h2>
@@ -80,42 +80,42 @@ router.get('/fetch-document/:docId', async (req, res) => {
           </div>
         </div>
       `
-        };
+    };
 
-        res.json({
-            success: true,
-            content: documentContent
-        });
-    } catch (error) {
-        console.error('Error fetching Google Docs content:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch document content'
-        });
-    }
+    res.json({
+      success: true,
+      content: documentContent
+    });
+  } catch (error) {
+    console.error('Error fetching Google Docs content:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch document content'
+    });
+  }
 });
 
 // Get terms of use with HTML content from Google Docs
 router.get('/terms-of-use-html', async (req, res) => {
   try {
     const documentId = '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
-    
+
     // Initialize Google Docs API
     const docs = initializeDocsApi();
     if (!docs) {
       throw new Error('Failed to initialize Google Docs API');
     }
-    
+
     // Fetch document content
     const response = await docs.documents.get({
       documentId: documentId,
     });
-    
+
     const document = response.data;
-    
+
     // Convert Google Docs content to HTML
     let htmlContent = '<div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; max-width: 800px; margin: 0 auto; padding: 20px;">';
-    
+
     // Add header with logo
     htmlContent += `
       <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #882DD7;">
@@ -125,7 +125,7 @@ router.get('/terms-of-use-html', async (req, res) => {
         <p style="color: #888; font-size: 14px;">עדכון אחרון: 11 ביולי, 2023</p>
       </div>
     `;
-    
+
     // Process document content
     if (document.body && document.body.content) {
       for (const element of document.body.content) {
@@ -134,19 +134,19 @@ router.get('/terms-of-use-html', async (req, res) => {
           if (paragraph.elements && paragraph.elements.length > 0) {
             let paragraphText = '';
             let isHeading = false;
-            
+
             for (const elem of paragraph.elements) {
               if (elem.textRun) {
                 const text = elem.textRun.content;
                 paragraphText += text;
-                
+
                 // Check if this is a heading based on style
                 if (elem.textRun.textStyle && elem.textRun.textStyle.bold) {
                   isHeading = true;
                 }
               }
             }
-            
+
             if (paragraphText.trim()) {
               if (isHeading) {
                 htmlContent += `<h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">${paragraphText.trim()}</h3>`;
@@ -158,7 +158,7 @@ router.get('/terms-of-use-html', async (req, res) => {
         }
       }
     }
-    
+
     // Add footer
     htmlContent += `
       <div style="border-top: 1px solid #ddd; padding-top: 20px; text-align: center;">
@@ -176,7 +176,7 @@ router.get('/terms-of-use-html', async (req, res) => {
         </p>
       </div>
     </div>`;
-    
+
     const documentContent = {
       title: document.title || 'תנאי השירות והודעות הקשורות בביטוח',
       subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
@@ -191,7 +191,7 @@ router.get('/terms-of-use-html', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching terms of use HTML from Google Docs:', error);
-    
+
     // Fallback to static content if API fails
     const documentId = '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
     const fallbackContent = {
@@ -208,10 +208,30 @@ router.get('/terms-of-use-html', async (req, res) => {
             <p style="color: #888; font-size: 14px;">עדכון אחרון: 11 ביולי, 2023</p>
           </div>
           
-          <div style="margin-bottom: 30px;">
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px; text-align: center;">
-              <strong>שגיאה בטעינת התוכן מ-Google Docs</strong><br/>
-              אנא לחץ על הקישור למטה כדי לצפות במסמך המקורי
+          <div style="border-top: 2px solid #882DD7; padding-top: 20px; margin-bottom: 30px;">
+            <h3 style="color: #882DD7; margin-bottom: 15px;">מבוא</h3>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 20px;">
+              ברוכים הבאים לשוקו ביטוח. מסמך זה מגדיר את תנאי השירות והודעות הקשורות בביטוח עבור מערכת ניהול הקבלנים שלנו.
+            </p>
+            
+            <h3 style="color: #882DD7; margin-bottom: 15px;">תנאי השירות</h3>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 20px;">
+              השימוש במערכת ניהול הקבלנים של שוקו ביטוח כפוף לתנאים המפורטים להלן. על ידי השימוש במערכת, אתם מסכימים לתנאים אלו.
+            </p>
+            
+            <h3 style="color: #882DD7; margin-bottom: 15px;">הודעות הקשורות בביטוח</h3>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 20px;">
+              המערכת מיועדת לניהול מידע על קבלנים, פרויקטים ואנשי קשר הקשורים לביטוח. כל המידע הנשמר במערכת מוגן בהתאם לתקנות הביטוח הישראליות.
+            </p>
+            
+            <h3 style="color: #882DD7; margin-bottom: 15px;">הגנת מידע ופרטיות</h3>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 20px;">
+              אנו מתחייבים להגן על המידע האישי והעסקי שלכם בהתאם לחוק הגנת הפרטיות ולמדיניות הפרטיות שלנו.
+            </p>
+            
+            <h3 style="color: #882DD7; margin-bottom: 15px;">קשר ותמיכה</h3>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 20px;">
+              לשאלות או הבהרות בנוגע לתנאים אלו או לשירותי הביטוח שלנו, אנא צרו קשר עם הצוות שלנו.
             </p>
           </div>
           
@@ -232,7 +252,7 @@ router.get('/terms-of-use-html', async (req, res) => {
         </div>
       `
     };
-    
+
     res.json({
       success: true,
       content: fallbackContent,
