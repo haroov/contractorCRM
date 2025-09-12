@@ -51,9 +51,18 @@ export const getSessionId = (): string | null => {
     const urlSessionId = urlParams.get('sessionId');
     const localSessionId = localStorage.getItem('sessionId');
     
+    // Check if this is a system user (admin/regular user) vs contact user
+    const contactUser = localStorage.getItem('contactUser');
+    const isSystemUser = contactUser && JSON.parse(contactUser).userType === 'system';
+    
+    // For system users, we need sessionId
+    if (isSystemUser) {
+        return urlSessionId || localSessionId;
+    }
+    
     // For contact users, we don't need sessionId - they use session cookies
     const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
-    if (isContactUser) {
+    if (isContactUser && !isSystemUser) {
         return null; // Contact users rely on session cookies
     }
     
@@ -76,8 +85,12 @@ export const getAuthHeaders = (): HeadersInit => {
     if (isContactUser) {
         const contactUser = localStorage.getItem('contactUser');
         if (contactUser) {
-            // Encode the contact user data to avoid non-ISO-8859-1 characters
-            headers['X-Contact-User'] = encodeURIComponent(contactUser);
+            const userData = JSON.parse(contactUser);
+            // Only add X-Contact-User header for actual contact users, not system users
+            if (userData.userType !== 'system') {
+                // Encode the contact user data to avoid non-ISO-8859-1 characters
+                headers['X-Contact-User'] = encodeURIComponent(contactUser);
+            }
         }
     }
     
@@ -104,14 +117,24 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
     // Add base URL if the URL doesn't start with http
     const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
     
-    // For contact users, don't add sessionId - they use session cookies
+    // Check if this is a system user vs contact user
+    const contactUser = localStorage.getItem('contactUser');
+    const isSystemUser = contactUser && JSON.parse(contactUser).userType === 'system';
     const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
-    if (sessionId && !isContactUser) {
+    
+    // For system users, add sessionId as query parameter
+    if (sessionId && isSystemUser) {
         // Add session ID as query parameter as well
         const urlWithSession = fullUrl.includes('?') 
             ? `${fullUrl}&sessionId=${sessionId}`
             : `${fullUrl}?sessionId=${sessionId}`;
         return fetch(urlWithSession, fetchOptions);
+    }
+    
+    // For contact users, don't add sessionId - they use session cookies
+    if (sessionId && isContactUser && !isSystemUser) {
+        // Contact users rely on session cookies only
+        return fetch(fullUrl, fetchOptions);
     }
     
     return fetch(fullUrl, fetchOptions);
