@@ -41,11 +41,13 @@ router.get('/google-docs/:docId', async (req, res) => {
 // Get terms of use content
 router.get('/terms-of-use', async (req, res) => {
   try {
-    // This could fetch from Google Docs API in the future
+    // For now, return the exact content from Google Docs
+    // In the future, this could fetch from Google Docs API
     const termsContent = {
       title: 'תנאי השירות והודעות הקשורות בביטוח',
       subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
       lastUpdated: '11 ביולי, 2023',
+      googleDocsUrl: 'https://docs.google.com/document/d/1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ/edit?tab=t.0#heading=h.wefuos204y1t',
       sections: [
         {
           title: 'מבוא',

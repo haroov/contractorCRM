@@ -8,7 +8,7 @@ const PrivacyPolicy: React.FC = () => {
         <Box sx={{ textAlign: 'center', mb: 4, pb: 2, borderBottom: '2px solid #882DD7' }}>
           <Box
             component="img"
-            src="/src/assets/logo.svg"
+            src="/assets/logo.svg"
             alt="שוקו ביטוח"
             sx={{
               width: 60,
