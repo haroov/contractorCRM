@@ -422,6 +422,24 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Session debug endpoint
+app.get('/api/session-debug', (req, res) => {
+  console.log('🔍 Session debug endpoint called');
+  console.log('🔍 Session ID:', req.sessionID);
+  console.log('🔍 Session data:', req.session);
+  console.log('🔍 Cookies:', req.headers.cookie);
+  console.log('🔍 Is authenticated:', req.isAuthenticated());
+  
+  res.json({
+    sessionId: req.sessionID,
+    sessionData: req.session,
+    cookies: req.headers.cookie,
+    isAuthenticated: req.isAuthenticated(),
+    user: req.user,
+    sessionUser: req.session?.user
+  });
+});
+
 // Fix mainContractor field endpoint
 app.post('/api/fix-maincontractor', async (req, res) => {
   try {
@@ -644,6 +662,10 @@ app.get('/api/contractors', async (req, res) => {
     console.log('📋 Is authenticated:', req.isAuthenticated());
     console.log('📋 Session ID:', req.sessionID);
     console.log('📋 All session data:', req.session);
+    console.log('📋 Cookies header:', req.headers.cookie);
+    console.log('📋 User-Agent:', req.headers['user-agent']);
+    console.log('📋 Origin:', req.headers.origin);
+    console.log('📋 Referer:', req.headers.referer);
     
     const db = client.db('contractor-crm');
     
