@@ -510,7 +510,7 @@ const LoginPage: React.FC = () => {
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             <Link 
-              href="/termsOfUse.html" 
+              href="/termsOfUse" 
               target="_blank" 
               rel="noopener noreferrer"
               sx={{ 
@@ -523,7 +523,7 @@ const LoginPage: React.FC = () => {
             </Link>
             {' | '}
             <Link 
-              href="/privacyPolicy.html" 
+              href="/privacyPolicy" 
               target="_blank" 
               rel="noopener noreferrer"
               sx={{ 

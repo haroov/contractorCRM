@@ -8,6 +8,8 @@ import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
 import UnifiedContractorView from './components/UnifiedContractorView';
+import TermsOfUse from './components/TermsOfUse';
+import PrivacyPolicy from './components/PrivacyPolicy';
 // Removed API imports - using simple localStorage-based auth
 
 const theme = createTheme({
@@ -245,6 +247,10 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/contact-login" element={<ContactLoginPage />} />
+            <Route path="/termsOfUse.html" element={<Navigate to="/termsOfUse" replace />} />
+            <Route path="/privacyPolicy.html" element={<Navigate to="/privacyPolicy" replace />} />
+            <Route path="/termsOfUse" element={<TermsOfUse />} />
+            <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
             <Route
               path="/"
               element={
