@@ -977,13 +977,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     if (contactUserData) {
                       try {
                         const contactUser = JSON.parse(contactUserData);
-                        return contactUser.permissions;
+                        // For system users (admin/regular), use role instead of permissions
+                        if (contactUser.role) {
+                          return contactUser.role; // 'admin' or 'user'
+                        }
+                        // For contact users, use permissions
+                        return contactUser.permissions || 'contactUser';
                       } catch (error) {
                         console.error('Error parsing contact user data:', error);
                         return 'contactUser';
                       }
                     }
-                    return 'contact_user';
+                    return 'contactUser';
                   })()}
                   currentUser={currentUser}
                   isSaving={isSaving}
