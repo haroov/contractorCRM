@@ -7,78 +7,77 @@ const TermsOfUse: React.FC = () => {
       <Paper elevation={3} sx={{ p: 4 }}>
         <Box sx={{ textAlign: 'center', mb: 4, pb: 2, borderBottom: '2px solid #882DD7' }}>
           <Box
+            component="img"
+            src="/src/assets/logo.svg"
+            alt="שוקו ביטוח"
             sx={{
               width: 60,
               height: 60,
-              backgroundColor: '#882DD7',
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 24,
               mb: 2
             }}
-          >
-            C
-          </Box>
+          />
           <Typography variant="h4" sx={{ color: '#333', mb: 1 }}>
             תנאי השירות
           </Typography>
+          <Typography variant="h5" sx={{ color: '#333', mb: 1 }}>
+            והודעות הקשורות בביטוח
+          </Typography>
           <Typography variant="h6" color="text.secondary">
             שוקו ביטוח - מערכת ניהול קבלנים
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            עדכון אחרון: 11 ביולי, 2023
           </Typography>
         </Box>
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            1. מבוא
+            מבוא
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            ברוכים הבאים למערכת ניהול הקבלנים של שוקו ביטוח. השימוש במערכת זו כפוף לתנאים המפורטים להלן.
+            ברוכים הבאים לשוקו ביטוח. מסמך זה מגדיר את תנאי השירות והודעות הקשורות בביטוח עבור מערכת ניהול הקבלנים שלנו.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            2. קבלת התנאים
+            תנאי השירות
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            על ידי השימוש במערכת, אתם מסכימים לתנאים אלו. אם אינכם מסכימים לתנאים, אנא אל תשתמשו במערכת.
+            השימוש במערכת ניהול הקבלנים של שוקו ביטוח כפוף לתנאים המפורטים להלן. על ידי השימוש במערכת, אתם מסכימים לתנאים אלו.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            3. שימוש במערכת
+            הודעות הקשורות בביטוח
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            המערכת מיועדת לניהול מידע על קבלנים, פרויקטים ואנשי קשר. השימוש במערכת מותר רק למטרות עסקיות לגיטימיות.
+            המערכת מיועדת לניהול מידע על קבלנים, פרויקטים ואנשי קשר הקשורים לביטוח. כל המידע הנשמר במערכת מוגן בהתאם לתקנות הביטוח הישראליות.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            4. הגנת מידע
+            הגנת מידע ופרטיות
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            אנו מתחייבים להגן על המידע האישי והעסקי שלכם בהתאם למדיניות הפרטיות שלנו.
+            אנו מתחייבים להגן על המידע האישי והעסקי שלכם בהתאם לחוק הגנת הפרטיות ולמדיניות הפרטיות שלנו.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            5. אחריות
+            אחריות וביטוח
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            השימוש במערכת הוא על אחריותכם הבלעדית. אנו לא נושאים באחריות לנזקים שעלולים להיגרם כתוצאה מהשימוש במערכת.
+            השימוש במערכת הוא על אחריותכם הבלעדית. אנו לא נושאים באחריות לנזקים שעלולים להיגרם כתוצאה מהשימוש במערכת, למעט במקרים המכוסים בפוליסת הביטוח שלנו.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            6. שינויים בתנאים
+            שינויים בתנאים
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            אנו שומרים לעצמנו את הזכות לשנות תנאים אלו מעת לעת. שינויים ייכנסו לתוקף מייד עם פרסומם.
+            אנו שומרים לעצמנו את הזכות לשנות תנאים אלו מעת לעת. שינויים ייכנסו לתוקף מייד עם פרסומם במערכת.
           </Typography>
 
           <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
-            7. קשר
+            קשר ותמיכה
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
-            לשאלות או הבהרות בנוגע לתנאים אלו, אנא צרו קשר עם הצוות שלנו.
+            לשאלות או הבהרות בנוגע לתנאים אלו או לשירותי הביטוח שלנו, אנא צרו קשר עם הצוות שלנו.
           </Typography>
         </Box>
 

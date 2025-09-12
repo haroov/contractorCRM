@@ -7,22 +7,15 @@ const PrivacyPolicy: React.FC = () => {
       <Paper elevation={3} sx={{ p: 4 }}>
         <Box sx={{ textAlign: 'center', mb: 4, pb: 2, borderBottom: '2px solid #882DD7' }}>
           <Box
+            component="img"
+            src="/src/assets/logo.svg"
+            alt="שוקו ביטוח"
             sx={{
               width: 60,
               height: 60,
-              backgroundColor: '#882DD7',
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 24,
               mb: 2
             }}
-          >
-            C
-          </Box>
+          />
           <Typography variant="h4" sx={{ color: '#333', mb: 1 }}>
             מדיניות המידע והפרטיות
           </Typography>

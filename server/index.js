@@ -247,6 +247,11 @@ const contactAuthRoutes = require('./routes/contact-auth.js');
 app.use('/api/contact-auth', contactAuthRoutes);
 console.log('✅ Contact authentication routes configured');
 
+// Import docs routes
+const docsRoutes = require('./routes/docs.js');
+app.use('/api/docs', docsRoutes);
+console.log('✅ Docs routes configured');
+
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
