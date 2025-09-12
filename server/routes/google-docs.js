@@ -1,4 +1,6 @@
 const express = require('express');
+const { google } = require('googleapis');
+const { initializeDocsApi } = require('../config/google-api');
 const router = express.Router();
 
 // Google Docs API integration
@@ -93,17 +95,111 @@ router.get('/fetch-document/:docId', async (req, res) => {
     }
 });
 
-// Get terms of use with HTML content
+// Get terms of use with HTML content from Google Docs
 router.get('/terms-of-use-html', async (req, res) => {
-    try {
-        const documentId = '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
+  try {
+    const documentId = '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
+    
+    // Initialize Google Docs API
+    const docs = initializeDocsApi();
+    if (!docs) {
+      throw new Error('Failed to initialize Google Docs API');
+    }
+    
+    // Fetch document content
+    const response = await docs.documents.get({
+      documentId: documentId,
+    });
+    
+    const document = response.data;
+    
+    // Convert Google Docs content to HTML
+    let htmlContent = '<div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; max-width: 800px; margin: 0 auto; padding: 20px;">';
+    
+    // Add header with logo
+    htmlContent += `
+      <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #882DD7;">
+        <img src="/assets/logo.svg" alt="שוקו ביטוח" style="width: 60px; height: 60px; margin-bottom: 15px;" />
+        <h1 style="color: #333; margin-bottom: 10px; font-size: 28px;">${document.title || 'תנאי השירות והודעות הקשורות בביטוח'}</h1>
+        <h2 style="color: #666; margin-bottom: 10px; font-size: 18px;">שוקו ביטוח - מערכת ניהול קבלנים</h2>
+        <p style="color: #888; font-size: 14px;">עדכון אחרון: 11 ביולי, 2023</p>
+      </div>
+    `;
+    
+    // Process document content
+    if (document.body && document.body.content) {
+      for (const element of document.body.content) {
+        if (element.paragraph) {
+          const paragraph = element.paragraph;
+          if (paragraph.elements && paragraph.elements.length > 0) {
+            let paragraphText = '';
+            let isHeading = false;
+            
+            for (const elem of paragraph.elements) {
+              if (elem.textRun) {
+                const text = elem.textRun.content;
+                paragraphText += text;
+                
+                // Check if this is a heading based on style
+                if (elem.textRun.textStyle && elem.textRun.textStyle.bold) {
+                  isHeading = true;
+                }
+              }
+            }
+            
+            if (paragraphText.trim()) {
+              if (isHeading) {
+                htmlContent += `<h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">${paragraphText.trim()}</h3>`;
+              } else {
+                htmlContent += `<p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">${paragraphText.trim()}</p>`;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Add footer
+    htmlContent += `
+      <div style="border-top: 1px solid #ddd; padding-top: 20px; text-align: center;">
+        <p style="color: #666; margin-bottom: 15px; font-size: 14px;">© 2024 שוקו ביטוח. כל הזכויות שמורות.</p>
+        <p style="margin-bottom: 10px;">
+          <a href="https://docs.google.com/document/d/${documentId}/edit?tab=t.0" 
+             target="_blank" 
+             style="color: #882DD7; text-decoration: none; font-size: 16px;">
+            צפה במסמך המקורי ב-Google Docs
+          </a>
+        </p>
+        <p>
+          <a href="/privacyPolicy" style="color: #882DD7; text-decoration: none; margin-left: 15px; font-size: 16px;">מדיניות הפרטיות</a>
+          <a href="/" style="color: #882DD7; text-decoration: none; margin-right: 15px; font-size: 16px;">חזרה למערכת</a>
+        </p>
+      </div>
+    </div>`;
+    
+    const documentContent = {
+      title: document.title || 'תנאי השירות והודעות הקשורות בביטוח',
+      subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
+      lastUpdated: '11 ביולי, 2023',
+      googleDocsUrl: `https://docs.google.com/document/d/${documentId}/edit?tab=t.0`,
+      content: htmlContent
+    };
 
-        const documentContent = {
-            title: 'תנאי השירות והודעות הקשורות בביטוח',
-            subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
-            lastUpdated: '11 ביולי, 2023',
-            googleDocsUrl: `https://docs.google.com/document/d/${documentId}/edit?tab=t.0#heading=h.wefuos204y1t`,
-            content: `
+    res.json({
+      success: true,
+      content: documentContent
+    });
+  } catch (error) {
+    console.error('Error fetching terms of use HTML from Google Docs:', error);
+    
+    // Fallback to static content if API fails
+    const documentId = '1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ';
+    const fallbackContent = {
+      title: 'תנאי השירות והודעות הקשורות בביטוח',
+      subtitle: 'שוקו ביטוח - מערכת ניהול קבלנים',
+      lastUpdated: '11 ביולי, 2023',
+      googleDocsUrl: `https://docs.google.com/document/d/${documentId}/edit?tab=t.0`,
+      content: `
         <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; max-width: 800px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #882DD7;">
             <img src="/assets/logo.svg" alt="שוקו ביטוח" style="width: 60px; height: 60px; margin-bottom: 15px;" />
@@ -113,46 +209,16 @@ router.get('/terms-of-use-html', async (req, res) => {
           </div>
           
           <div style="margin-bottom: 30px;">
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">מבוא</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              ברוכים הבאים לשוקו ביטוח. מסמך זה מגדיר את תנאי השירות והודעות הקשורות בביטוח עבור מערכת ניהול הקבלנים שלנו.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">תנאי השירות</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              השימוש במערכת ניהול הקבלנים של שוקו ביטוח כפוף לתנאים המפורטים להלן. על ידי השימוש במערכת, אתם מסכימים לתנאים אלו.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">הודעות הקשורות בביטוח</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              המערכת מיועדת לניהול מידע על קבלנים, פרויקטים ואנשי קשר הקשורים לביטוח. כל המידע הנשמר במערכת מוגן בהתאם לתקנות הביטוח הישראליות.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">הגנת מידע ופרטיות</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              אנו מתחייבים להגן על המידע האישי והעסקי שלכם בהתאם לחוק הגנת הפרטיות ולמדיניות הפרטיות שלנו.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">אחריות וביטוח</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              השימוש במערכת הוא על אחריותכם הבלעדית. אנו לא נושאים באחריות לנזקים שעלולים להיגרם כתוצאה מהשימוש במערכת, למעט במקרים המכוסים בפוליסת הביטוח שלנו.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">שינויים בתנאים</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              אנו שומרים לעצמנו את הזכות לשנות תנאים אלו מעת לעת. שינויים ייכנסו לתוקף מייד עם פרסומם במערכת.
-            </p>
-            
-            <h3 style="color: #882DD7; margin-bottom: 15px; font-size: 20px;">קשר ותמיכה</h3>
-            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px;">
-              לשאלות או הבהרות בנוגע לתנאים אלו או לשירותי הביטוח שלנו, אנא צרו קשר עם הצוות שלנו.
+            <p style="line-height: 1.8; color: #555; margin-bottom: 25px; font-size: 16px; text-align: center;">
+              <strong>שגיאה בטעינת התוכן מ-Google Docs</strong><br/>
+              אנא לחץ על הקישור למטה כדי לצפות במסמך המקורי
             </p>
           </div>
           
           <div style="border-top: 1px solid #ddd; padding-top: 20px; text-align: center;">
             <p style="color: #666; margin-bottom: 15px; font-size: 14px;">© 2024 שוקו ביטוח. כל הזכויות שמורות.</p>
             <p style="margin-bottom: 10px;">
-              <a href="https://docs.google.com/document/d/${documentId}/edit?tab=t.0#heading=h.wefuos204y1t" 
+              <a href="https://docs.google.com/document/d/${documentId}/edit?tab=t.0" 
                  target="_blank" 
                  style="color: #882DD7; text-decoration: none; font-size: 16px;">
                 צפה במסמך המקורי ב-Google Docs
@@ -165,19 +231,14 @@ router.get('/terms-of-use-html', async (req, res) => {
           </div>
         </div>
       `
-        };
-
-        res.json({
-            success: true,
-            content: documentContent
-        });
-    } catch (error) {
-        console.error('Error fetching terms of use HTML:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Failed to fetch terms of use HTML'
-        });
-    }
+    };
+    
+    res.json({
+      success: true,
+      content: fallbackContent,
+      warning: 'Using fallback content - Google Docs API not available'
+    });
+  }
 });
 
 module.exports = router;
