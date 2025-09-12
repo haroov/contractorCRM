@@ -57,7 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Configure multer for file uploads using memory storage
 const storage = multer.memoryStorage();
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
@@ -146,7 +146,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -441,7 +441,7 @@ app.get('/api/session-debug', (req, res) => {
   console.log('🔍 Session data:', req.session);
   console.log('🔍 Cookies:', req.headers.cookie);
   console.log('🔍 Is authenticated:', req.isAuthenticated());
-  
+
   res.json({
     sessionId: req.sessionID,
     sessionData: req.session,
@@ -678,24 +678,24 @@ app.get('/api/contractors', async (req, res) => {
     console.log('📋 User-Agent:', req.headers['user-agent']);
     console.log('📋 Origin:', req.headers.origin);
     console.log('📋 Referer:', req.headers.referer);
-    
+
     const db = client.db('contractor-crm');
-    
+
     // Check if user is authenticated via session
     const sessionUser = req.session?.user;
     if (!sessionUser) {
       console.log('❌ No session user found - checking localStorage fallback');
-      
+
       // For now, allow access if no session (for testing)
       // In production, you'd want proper session management
       console.log('⚠️ Allowing access without session for testing');
     }
-    
+
     let contractors;
-    
+
     if (sessionUser) {
       console.log('✅ User authenticated:', sessionUser.email, 'Role:', sessionUser.role);
-      
+
       // Filter contractors based on user role
       if (sessionUser.role === 'admin' || sessionUser.userType === 'system') {
         // Admin users see all contractors
@@ -1007,7 +1007,7 @@ app.get('/api/projects', async (req, res) => {
     const { contractorId, ids } = req.query;
 
     let query = {};
-    
+
     // Handle multiple project IDs
     if (ids) {
       const projectIds = ids.split(',').map(id => new ObjectId(id.trim()));
@@ -2126,7 +2126,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
     // If force_refresh is true for existing contractor, fetch fresh data from external APIs
     if (existingContractor && force_refresh) {
       console.log('🔄 Force refresh requested for existing contractor - fetching fresh data from external APIs');
-      
+
       // Fetch fresh data from both APIs
       const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
       const companiesData = await companiesResponse.json();
@@ -2178,7 +2178,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
           // Extract license types
           if (contractorsData.result.records.length > 0) {
-            licenseTypes = contractorsData.result.records.map(record => 
+            licenseTypes = contractorsData.result.records.map(record =>
               `${record.TEUR_ANAF} - ${record.KVUTZA}${record.SIVUG}`
             );
           }
@@ -3018,7 +3018,7 @@ app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
     }
 
     const { type, companyId, contractorId } = req.body;
-    
+
     if (!type || !companyId) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
@@ -3031,7 +3031,7 @@ app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
     // Store file in GridFS
     const db = client.db('contractor-crm');
     const bucket = new GridFSBucket(db, { bucketName: 'certificates' });
-    
+
     const uploadStream = bucket.openUploadStream(filename, {
       metadata: {
         type: type,
@@ -3054,16 +3054,16 @@ app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
       try {
         // Create file URL for GridFS
         const fileUrl = `/api/certificates/${uploadStream.id}`;
-        
+
         // Update contractor in database with file URL
         const updateField = type === 'safety' ? 'safetyCertificate' : 'isoCertificate';
         const result = await db.collection('contractors').updateOne(
           { _id: new ObjectId(contractorId) },
-          { 
-            $set: { 
+          {
+            $set: {
               [updateField]: fileUrl,
               [`${updateField}UploadDate`]: new Date().toISOString()
-            } 
+            }
           }
         );
 
@@ -3071,10 +3071,10 @@ app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
           return res.status(404).json({ success: false, message: 'Contractor not found' });
         }
 
-        res.json({ 
-          success: true, 
+        res.json({
+          success: true,
           fileUrl: fileUrl,
-          message: 'File uploaded successfully' 
+          message: 'File uploaded successfully'
         });
       } catch (error) {
         console.error('Error updating contractor:', error);
@@ -3093,23 +3093,23 @@ app.get('/api/certificates/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const bucket = new GridFSBucket(db, { bucketName: 'certificates' });
-    
+
     const fileId = new ObjectId(req.params.id);
     const downloadStream = bucket.openDownloadStream(fileId);
-    
+
     downloadStream.on('error', (error) => {
       console.error('GridFS download error:', error);
       res.status(404).json({ success: false, message: 'File not found' });
     });
-    
+
     downloadStream.on('data', (chunk) => {
       res.write(chunk);
     });
-    
+
     downloadStream.on('end', () => {
       res.end();
     });
-    
+
     // Set appropriate headers
     downloadStream.on('file', (file) => {
       res.set({
@@ -3117,7 +3117,7 @@ app.get('/api/certificates/:id', async (req, res) => {
         'Content-Disposition': `inline; filename="${file.metadata?.originalName || file.filename}"`
       });
     });
-    
+
   } catch (error) {
     console.error('Error serving certificate:', error);
     res.status(500).json({ success: false, message: 'Error serving file' });
@@ -3308,11 +3308,11 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error scraping company info:', error);
-    
+
     // Fallback: return basic info without scraping
     const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
     const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
-    
+
     res.json({
       success: true,
       about: `מידע על החברה ${website} - לא ניתן לגשת למידע באתר החברה כרגע.`,

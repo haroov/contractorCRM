@@ -125,26 +125,29 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const { default: ContractorService } = await import('../services/contractorService');
       const contractorsData = await ContractorService.getAll();
 
-      // Check if user is a contact user
+      // Check if user is a contact user (not system admin)
       const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
-
+      const contactUserData = localStorage.getItem('contactUser');
+      
       let filteredContractors;
-      if (isContactUser) {
-        // For contact users, show only their associated contractor
-        const contactUserData = localStorage.getItem('contactUser');
-        if (contactUserData) {
-          try {
-            const contactUser = JSON.parse(contactUserData);
+      if (isContactUser && contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          // Only filter for actual contact users, not system users
+          if (contactUser.userType === 'contact') {
+            // For contact users, show only their associated contractor
             filteredContractors = contractorsData.filter(contractor =>
               contractor._id === contactUser.contractorId && contractor.isActive === true
             );
             console.log('📋 Filtered contractors for contact user:', filteredContractors.length);
-          } catch (error) {
-            console.error('Error parsing contact user data:', error);
-            filteredContractors = [];
+          } else {
+            // For system users (admin/regular), show all contractors
+            filteredContractors = contractorsData;
+            console.log('📋 Showing all contractors for system user:', filteredContractors.length);
           }
-        } else {
-          filteredContractors = [];
+        } catch (error) {
+          console.error('Error parsing contact user data:', error);
+          filteredContractors = contractorsData;
         }
       } else {
         // For regular users, show all active contractors

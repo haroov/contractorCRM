@@ -19,7 +19,7 @@ const TermsOfUse: React.FC = () => {
       try {
         const response = await fetch('/api/google-docs/terms-of-use-html');
         const data = await response.json();
-        
+
         if (data.success) {
           setContent(data.content);
         } else {
@@ -66,7 +66,7 @@ const TermsOfUse: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 0 }}>
-        <Box 
+        <Box
           dangerouslySetInnerHTML={{ __html: content.content }}
         />
       </Paper>
