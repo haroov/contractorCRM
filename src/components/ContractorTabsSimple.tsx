@@ -85,11 +85,11 @@ export default function ContractorTabsSimple({
         // Get session ID from current URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('sessionId');
-        
+
         // Create URL parameters for the project data
         const params = new URLSearchParams();
         params.set('mode', mode);
-        
+
         // Add session ID to the URL
         if (sessionId) {
             params.set('sessionId', sessionId);
@@ -2032,7 +2032,7 @@ export default function ContractorTabsSimple({
                                                 <TableCell sx={{ textAlign: 'right' }}>{formatDate(project.startDate)}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.city || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
-                                                    {project.value ? `₪${project.value.toLocaleString()}` : ''}
+                                                    {(project.valueNis || project.value) ? `₪${(project.valueNis || project.value).toLocaleString()}` : ''}
                                                 </TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
                                                     <Typography

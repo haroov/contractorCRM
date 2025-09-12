@@ -1268,6 +1268,47 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
   }
 });
 
+// Update all contractors statistics
+app.post('/api/contractors/update-all-stats', async (req, res) => {
+  try {
+    const db = client.db('contractor-crm');
+    
+    // Get all contractors
+    const contractors = await db.collection('contractors').find({}).toArray();
+    console.log('📊 Updating stats for', contractors.length, 'contractors');
+    
+    const results = [];
+    
+    for (const contractor of contractors) {
+      try {
+        const stats = await updateContractorStats(db, contractor._id.toString());
+        results.push({
+          contractorId: contractor._id,
+          contractorName: contractor.name,
+          stats
+        });
+        console.log('✅ Updated stats for:', contractor.name);
+      } catch (error) {
+        console.error('❌ Error updating stats for contractor:', contractor.name, error);
+        results.push({
+          contractorId: contractor._id,
+          contractorName: contractor.name,
+          error: error.message
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Updated stats for ${results.length} contractors`,
+      results
+    });
+  } catch (error) {
+    console.error('❌ Error updating all contractor stats:', error);
+    res.status(500).json({ error: 'Failed to update all contractor stats' });
+  }
+});
+
 // Endpoint to create pending users
 app.post('/api/users/create-pending', requireAuth, async (req, res) => {
   try {

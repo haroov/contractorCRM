@@ -128,7 +128,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleSave = async () => {
         try {
-            
+
             if (!project) {
                 console.error('No project to save');
                 return;
@@ -164,7 +164,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             // Navigate back to main view after successful save
             navigate('/');
-            
+
         } catch (error) {
             console.error('❌ Error saving project:', error);
             alert('שגיאה בשמירת הפרויקט: ' + error.message);
@@ -301,7 +301,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     מידע כללי
                                 </Typography>
-                                
+
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
                                     <TextField
                                         fullWidth
@@ -310,7 +310,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         onChange={(e) => handleFieldChange('projectName', e.target.value)}
                                         disabled={mode === 'view'}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="תיאור הפרויקט"
@@ -320,7 +320,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         multiline
                                         rows={3}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="תאריך התחלה"
@@ -330,7 +330,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         disabled={mode === 'view'}
                                         InputLabelProps={{ shrink: true }}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="משך הפרויקט (חודשים)"
@@ -339,7 +339,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
                                         disabled={mode === 'view'}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="עיר"
@@ -347,7 +347,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         onChange={(e) => handleFieldChange('city', e.target.value)}
                                         disabled={mode === 'view'}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="ערך הפרויקט (₪)"
@@ -356,7 +356,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         onChange={(e) => handleFieldChange('valueNis', parseInt(e.target.value) || 0)}
                                         disabled={mode === 'view'}
                                     />
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="סטטוס"
@@ -369,7 +369,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <MenuItem value="current">פעיל</MenuItem>
                                         <MenuItem value="completed">הושלם</MenuItem>
                                     </TextField>
-                                    
+
                                     <TextField
                                         fullWidth
                                         label="קבלן ראשי"

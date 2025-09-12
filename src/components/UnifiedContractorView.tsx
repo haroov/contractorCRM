@@ -128,7 +128,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       // Check if user is a contact user (not system admin)
       const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
       const contactUserData = localStorage.getItem('contactUser');
-      
+
       let filteredContractors;
       if (isContactUser && contactUserData) {
         try {
