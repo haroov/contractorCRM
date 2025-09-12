@@ -6,6 +6,8 @@ const requireAuth = (req, res, next) => {
   console.log('🔍 Session user:', req.session?.user);
   console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
   console.log('🔍 sessionId query param:', req.query.sessionId);
+  console.log('🔍 Cookies:', req.headers.cookie);
+  console.log('🔍 All session data:', req.session);
   
   // Check if user is authenticated via passport session
   if (req.isAuthenticated()) {

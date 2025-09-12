@@ -649,15 +649,29 @@ router.post('/verify-otp', async (req, res) => {
       picture: userData.picture || '' // Include profile picture
     };
 
+    // Force session save
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+      } else {
+        console.log('✅ Session saved successfully');
+        console.log('🔐 Session ID:', req.sessionID);
+        console.log('🔐 Session user:', req.session.user);
+      }
+    });
+
     // Clean up OTP
     otpStorage.delete(email);
 
     console.log('✅ OTP verified successfully for:', email);
+    console.log('🔐 Session ID after OTP:', req.sessionID);
+    console.log('🔐 Session data after OTP:', req.session);
 
     res.json({
       success: true,
       message: 'התחברות הצליחה',
-      user: req.session.user
+      user: req.session.user,
+      sessionId: req.sessionID
     });
 
   } catch (error) {
