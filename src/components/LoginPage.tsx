@@ -9,7 +9,8 @@ import {
   Container,
   Avatar,
   Divider,
-  TextField
+  TextField,
+  Link
 } from '@mui/material';
 import { Google as GoogleIcon, Microsoft as MicrosoftIcon } from '@mui/icons-material';
 // Removed API imports - using simple localStorage-based auth
@@ -503,6 +504,37 @@ const LoginPage: React.FC = () => {
               </>
             )}
           </Box>
+        </Box>
+        
+        {/* Terms and Privacy Links */}
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <Link 
+              href="https://docs.google.com/document/d/1U6rqzofesQdFfU3G1Lj6i1mHF0QDePFHy48iXuwoAWQ/edit?tab=t.0#heading=h.wefuos204y1t" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ 
+                color: 'primary.main', 
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}
+            >
+              תנאי השימוש
+            </Link>
+            {' | '}
+            <Link 
+              href="https://docs.google.com/document/d/1zwqY2xUf7TY2IAcugt45A2zDE4iENjG0kUU_iB3KCvc/edit?tab=t.0#heading=h.41ug95or8w4n" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              sx={{ 
+                color: 'primary.main', 
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}
+            >
+              מדיניות המידע והפרטיות
+            </Link>
+          </Typography>
         </Box>
       </Paper>
     </Container>
