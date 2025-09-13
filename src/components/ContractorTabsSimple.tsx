@@ -293,9 +293,11 @@ export default function ContractorTabsSimple({
     const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '0');
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
     const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
+    const [localSafetyCertificateType, setLocalSafetyCertificateType] = useState<string>('');
     const [localIso45001, setLocalIso45001] = useState<boolean>(contractor?.iso45001 || false);
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
+    const [localIsoCertificateType, setLocalIsoCertificateType] = useState<string>('');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
     const [localIsActive, setLocalIsActive] = useState<boolean>(contractor?.isActive ?? true);
 
@@ -600,11 +602,13 @@ export default function ContractorTabsSimple({
             const result = await response.json();
 
             if (result.success) {
-                // Update local state with the uploaded file URL
+                // Update local state with the uploaded file URL and type
                 if (type === 'safety') {
                     setLocalSafetyCertificate(result.fileUrl);
+                    setLocalSafetyCertificateType(file.type);
                 } else if (type === 'iso') {
                     setLocalIsoCertificate(result.fileUrl);
+                    setLocalIsoCertificateType(file.type);
                 }
 
                 // Update contractor data
@@ -642,8 +646,10 @@ export default function ContractorTabsSimple({
             // Clear the file from local state
             if (fileToDelete.type === 'safety') {
                 setLocalSafetyCertificate('');
+                setLocalSafetyCertificateType('');
             } else if (fileToDelete.type === 'iso') {
                 setLocalIsoCertificate('');
+                setLocalIsoCertificateType('');
             }
 
             // Update contractor data
@@ -1874,7 +1880,7 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localSafetyCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localSafetyCertificate.toLowerCase().includes('.pdf') ? (
+                                            {localSafetyCertificateType === 'application/pdf' ? (
                                                 <Box
                                                     sx={{
                                                         width: '56px',
@@ -1896,17 +1902,18 @@ export default function ContractorTabsSimple({
                                                 >
                                                     {/* PDF Icon */}
                                                     <Box sx={{ 
-                                                        width: '24px', 
-                                                        height: '24px', 
+                                                        width: '32px', 
+                                                        height: '32px', 
                                                         backgroundColor: '#d32f2f',
-                                                        borderRadius: '2px',
+                                                        borderRadius: '3px',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        mb: 0.5
+                                                        mb: 0.5,
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                                     }}>
                                                         <Typography sx={{ 
-                                                            fontSize: '8px', 
+                                                            fontSize: '10px', 
                                                             color: 'white', 
                                                             fontWeight: 'bold',
                                                             lineHeight: 1
@@ -1914,7 +1921,7 @@ export default function ContractorTabsSimple({
                                                             PDF
                                                         </Typography>
                                                     </Box>
-                                                    <Typography sx={{ fontSize: '7px', color: '#666', textAlign: 'center', lineHeight: 1 }}>
+                                                    <Typography sx={{ fontSize: '8px', color: '#666', textAlign: 'center', lineHeight: 1, fontWeight: 500 }}>
                                                         תעודה
                                                     </Typography>
                                                 </Box>
@@ -1931,6 +1938,43 @@ export default function ContractorTabsSimple({
                                                         border: '1px solid #d0d0d0'
                                                     }}
                                                     onClick={() => window.open(localSafetyCertificate, '_blank')}
+                                                    onError={(e) => {
+                                                        // Fallback to PDF icon if image fails to load
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        const parent = target.parentElement;
+                                                        if (parent) {
+                                                            parent.innerHTML = `
+                                                                <div style="
+                                                                    width: 56px; 
+                                                                    height: 56px; 
+                                                                    border-radius: 8px; 
+                                                                    background-color: #f5f5f5; 
+                                                                    border: 1px solid #d0d0d0; 
+                                                                    display: flex; 
+                                                                    flex-direction: column; 
+                                                                    align-items: center; 
+                                                                    justify-content: center; 
+                                                                    cursor: pointer;
+                                                                ">
+                                                                    <div style="
+                                                                        width: 32px; 
+                                                                        height: 32px; 
+                                                                        background-color: #d32f2f; 
+                                                                        border-radius: 3px; 
+                                                                        display: flex; 
+                                                                        align-items: center; 
+                                                                        justify-content: center; 
+                                                                        margin-bottom: 4px; 
+                                                                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                                                    ">
+                                                                        <span style="font-size: 10px; color: white; font-weight: bold;">PDF</span>
+                                                                    </div>
+                                                                    <span style="font-size: 8px; color: #666; text-align: center; font-weight: 500;">תעודה</span>
+                                                                </div>
+                                                            `;
+                                                        }
+                                                    }}
                                                 />
                                             )}
                                             {canEdit && (
@@ -2056,7 +2100,7 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localIsoCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localIsoCertificate.toLowerCase().includes('.pdf') ? (
+                                            {localIsoCertificateType === 'application/pdf' ? (
                                                 <Box
                                                     sx={{
                                                         width: '56px',
@@ -2078,17 +2122,18 @@ export default function ContractorTabsSimple({
                                                 >
                                                     {/* PDF Icon */}
                                                     <Box sx={{ 
-                                                        width: '24px', 
-                                                        height: '24px', 
+                                                        width: '32px', 
+                                                        height: '32px', 
                                                         backgroundColor: '#d32f2f',
-                                                        borderRadius: '2px',
+                                                        borderRadius: '3px',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
-                                                        mb: 0.5
+                                                        mb: 0.5,
+                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                                                     }}>
                                                         <Typography sx={{ 
-                                                            fontSize: '8px', 
+                                                            fontSize: '10px', 
                                                             color: 'white', 
                                                             fontWeight: 'bold',
                                                             lineHeight: 1
@@ -2096,7 +2141,7 @@ export default function ContractorTabsSimple({
                                                             PDF
                                                         </Typography>
                                                     </Box>
-                                                    <Typography sx={{ fontSize: '7px', color: '#666', textAlign: 'center', lineHeight: 1 }}>
+                                                    <Typography sx={{ fontSize: '8px', color: '#666', textAlign: 'center', lineHeight: 1, fontWeight: 500 }}>
                                                         ISO
                                                     </Typography>
                                                 </Box>
@@ -2113,6 +2158,43 @@ export default function ContractorTabsSimple({
                                                         border: '1px solid #d0d0d0'
                                                     }}
                                                     onClick={() => window.open(localIsoCertificate, '_blank')}
+                                                    onError={(e) => {
+                                                        // Fallback to PDF icon if image fails to load
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        const parent = target.parentElement;
+                                                        if (parent) {
+                                                            parent.innerHTML = `
+                                                                <div style="
+                                                                    width: 56px; 
+                                                                    height: 56px; 
+                                                                    border-radius: 8px; 
+                                                                    background-color: #f5f5f5; 
+                                                                    border: 1px solid #d0d0d0; 
+                                                                    display: flex; 
+                                                                    flex-direction: column; 
+                                                                    align-items: center; 
+                                                                    justify-content: center; 
+                                                                    cursor: pointer;
+                                                                ">
+                                                                    <div style="
+                                                                        width: 32px; 
+                                                                        height: 32px; 
+                                                                        background-color: #d32f2f; 
+                                                                        border-radius: 3px; 
+                                                                        display: flex; 
+                                                                        align-items: center; 
+                                                                        justify-content: center; 
+                                                                        margin-bottom: 4px; 
+                                                                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                                                    ">
+                                                                        <span style="font-size: 10px; color: white; font-weight: bold;">PDF</span>
+                                                                    </div>
+                                                                    <span style="font-size: 8px; color: #666; text-align: center; font-weight: 500;">ISO</span>
+                                                                </div>
+                                                            `;
+                                                        }
+                                                    }}
                                                 />
                                             )}
                                             {canEdit && (
