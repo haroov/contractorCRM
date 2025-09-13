@@ -1064,6 +1064,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       console.error('Error parsing contact user data in final debug:', error);
                     }
                   }
+                  
+                  // Force hide buttons for contactUser
+                  if (isContactUser) {
+                    console.log('🔧 Force hiding buttons for contactUser');
+                    return null;
+                  }
 
                   if (!showButtons) {
                     console.log('🔧 Returning null - no buttons for contactUser');
