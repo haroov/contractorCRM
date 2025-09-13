@@ -512,31 +512,31 @@ const LoginPage: React.FC = () => {
         {/* Terms and Privacy Links */}
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            <Link 
-              href="/termsOfService.html" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              sx={{ 
-                color: 'primary.main', 
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' }
-              }}
-            >
-              תנאי השימוש
-            </Link>
-            {' | '}
-            <Link 
-              href="/privacyPolicy.html" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              sx={{ 
-                color: 'primary.main', 
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' }
-              }}
-            >
-              מדיניות המידע והפרטיות
-            </Link>
+        <Link
+          href="/terms-of-service.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' }
+          }}
+        >
+          תנאי השימוש
+        </Link>
+        {' | '}
+        <Link
+          href="/privacy-policy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            color: 'primary.main',
+            textDecoration: 'none',
+            '&:hover': { textDecoration: 'underline' }
+          }}
+        >
+          מדיניות המידע והפרטיות
+        </Link>
           </Typography>
         </Box>
       </Paper>

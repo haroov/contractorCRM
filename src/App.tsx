@@ -315,6 +315,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            {/* Catch-all route for static files - redirect to server */}
+            <Route path="*" element={<Navigate to={window.location.pathname} replace />} />
           </Routes>
         </Box>
       </Router>
