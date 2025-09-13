@@ -3104,7 +3104,7 @@ const scrapingLimiter = rateLimit({
 });
 
 // Upload certificate file using GridFS
-app.post('/api/upload-certificate', upload.single('file'), async (req, res) => {
+app.post('/api/upload-certificate', requireAuth, upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
