@@ -995,13 +995,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     try {
                       const userData = JSON.parse(contactUserData);
                       const permissions = userData.permissions;
+                      const role = userData.role;
                       
-                      if (permissions === 'contactAdmin') {
+                      console.log('🔧 Button logic debug:', {
+                        isContactUser,
+                        permissions,
+                        role,
+                        userData
+                      });
+                      
+                      if (permissions === 'contactAdmin' || role === 'מנהל פרוייקטים' || (role && role.includes('מנהל'))) {
                         // contactAdmin: show only Save button, no Close button
+                        console.log('🔧 Setting contactAdmin button logic');
                         showCloseButton = false;
                         showSaveButton = true;
                       } else if (permissions === 'contactUser') {
                         // contactUser: show no buttons at all
+                        console.log('🔧 Setting contactUser button logic');
                         showButtons = false;
                       }
                     } catch (error) {
@@ -1092,7 +1102,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         if (contactUser.role) {
                           console.log('🔧 contactUserPermissions debug - using role:', contactUser.role);
                           // If role is "מנהל פרוייקטים" or similar, treat as contactAdmin
-                          if (contactUser.role === 'מנהל פרוייקטים' || contactUser.role.includes('מנהל')) {
+                          if (contactUser.role === 'מנהל פרוייקטים' || (contactUser.role && contactUser.role.includes('מנהל'))) {
                             console.log('🔧 contactUserPermissions debug - treating role as contactAdmin');
                             return 'contactAdmin';
                           }
