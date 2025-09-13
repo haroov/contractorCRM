@@ -92,6 +92,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const projectId = searchParams.get('project_id');
 
             setMode(urlMode || 'view');
+            setLoading(true);
 
             if (urlMode === 'new') {
                 // Create new project
@@ -109,6 +110,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     contractorName: ''
                 };
                 setProject(newProject);
+                setLoading(false);
             } else if (projectId && projectId !== 'new') {
                 // Load existing project from server
                 const loadProjectFromServer = async () => {
@@ -144,12 +146,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 console.error('Error parsing fallback project data:', parseError);
                             }
                         }
+                    } finally {
+                        setLoading(false);
                     }
                 };
                 loadProjectFromServer();
+            } else {
+                setLoading(false);
             }
-
-            setLoading(false);
         };
 
         loadProjectData();
@@ -251,14 +255,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     if (!project) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <Typography>פרויקט לא נמצא</Typography>
-            </Box>
-        );
-    }
-
-    if (loading) {
         return <SkeletonLoader />;
     }
 
