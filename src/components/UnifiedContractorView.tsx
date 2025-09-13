@@ -133,9 +133,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
-          const contractor = contractors.find(c => c._id === contactUser.contractorId);
+          console.log('🔍 Contact user data:', contactUser);
+          console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
+          
+          // Try to find contractor by contractor_id first (external registry ID), then by _id
+          const contractor = contractors.find(c => 
+            c.contractor_id === contactUser.contractorId || 
+            c._id === contactUser.contractorId
+          );
+          
           if (contractor) {
+            console.log('✅ Found contractor for contact user:', contractor.name);
             handleContractorSelect(contractor, 'view');
+          } else {
+            console.log('❌ No contractor found for contact user contractorId:', contactUser.contractorId);
           }
         } catch (error) {
           console.error('Error parsing contact user data:', error);
@@ -173,9 +184,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (isRealContactUser && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
+          console.log('🔍 Contact user data for filtering:', contactUser);
+          console.log('🔍 Available contractors for filtering:', contractorsData.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name, isActive: c.isActive })));
+          
           // For contact users, show only their associated contractor
+          // Try to find by contractor_id first (external registry ID), then by _id
           filteredContractors = contractorsData.filter(contractor =>
-            contractor._id === contactUser.contractorId && contractor.isActive === true
+            (contractor.contractor_id === contactUser.contractorId || contractor._id === contactUser.contractorId) && 
+            contractor.isActive === true
           );
           console.log('📋 Filtered contractors for contact user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
         } catch (error) {
