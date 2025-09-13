@@ -319,6 +319,12 @@ export default function ContractorTabsSimple({
         canEdit
     });
 
+    // Debug logging for status indicator
+    console.log('🔧 companyStatusIndicator debug:', {
+        companyStatusIndicator,
+        hasIndicator: !!companyStatusIndicator
+    });
+
     // Common styling for TextFields with choco purple focus
     const textFieldSx = {
         '& .MuiOutlinedInput-root': {
@@ -387,7 +393,16 @@ export default function ContractorTabsSimple({
             setCompanyLogo(contractor?.companyLogo || '');
 
             // Load status indicator for existing contractors
-            if (contractor?.company_id && contractor._id) {
+            console.log('🔍 useEffect: Checking contractor status data:', {
+                company_id: contractor?.company_id,
+                _id: contractor?._id,
+                statusIndicator: contractor?.statusIndicator
+            });
+            
+            if (contractor?.statusIndicator) {
+                console.log('🔍 useEffect: Setting status from contractor data:', contractor.statusIndicator);
+                setCompanyStatusIndicator(contractor.statusIndicator);
+            } else if (contractor?.company_id && contractor._id) {
                 console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
                 loadStatusForExistingContractor(contractor.company_id);
             } else {
