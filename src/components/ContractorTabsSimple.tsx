@@ -539,6 +539,27 @@ export default function ContractorTabsSimple({
         input.click();
     };
 
+    const generatePdfThumbnail = async (file: File): Promise<string | null> => {
+        try {
+            // Create a canvas to render PDF thumbnail
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return null;
+
+            // Set canvas size for thumbnail
+            canvas.width = 200;
+            canvas.height = 200;
+
+            // For now, return null to use the fallback PDF icon
+            // In a real implementation, you would use PDF.js or similar library
+            // to render the first page of the PDF to the canvas
+            return null;
+        } catch (error) {
+            console.error('Error generating PDF thumbnail:', error);
+            return null;
+        }
+    };
+
     const handleFileUploadDirect = async (file: File, type: 'safety' | 'iso') => {
         // Check file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
@@ -596,7 +617,7 @@ export default function ContractorTabsSimple({
                     onSave(updatedContractor);
                 }
 
-                alert('הקובץ הועלה בהצלחה!');
+                // File uploaded successfully - UI will show the change
             } else {
                 throw new Error(result.message || 'שגיאה בהעלאת הקובץ');
             }
@@ -732,7 +753,7 @@ export default function ContractorTabsSimple({
                         }
                     }
 
-                    alert('הקובץ הועלה בהצלחה!');
+                    // File uploaded successfully - UI will show the change
                 } else {
                     throw new Error('שגיאה בהעלאת הקובץ');
                 }
@@ -791,7 +812,7 @@ export default function ContractorTabsSimple({
             }
 
             console.log('Contact deleted successfully:', contactToDelete);
-            alert('איש הקשר נמחק בהצלחה!');
+            // Contact deleted successfully - UI will show the change
         } catch (error) {
             console.error('Error deleting contact:', error);
             alert('שגיאה במחיקת איש הקשר');
@@ -1841,16 +1862,34 @@ export default function ContractorTabsSimple({
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
+                                                        position: 'relative',
                                                         '&:hover': {
                                                             backgroundColor: '#e0e0e0'
                                                         }
                                                     }}
                                                     onClick={() => window.open(localSafetyCertificate, '_blank')}
                                                 >
-                                                    <Typography sx={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>
-                                                        PDF
-                                                    </Typography>
-                                                    <Typography sx={{ fontSize: '8px', color: '#999', textAlign: 'center' }}>
+                                                    {/* PDF Icon */}
+                                                    <Box sx={{ 
+                                                        width: '24px', 
+                                                        height: '24px', 
+                                                        backgroundColor: '#d32f2f',
+                                                        borderRadius: '2px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        mb: 0.5
+                                                    }}>
+                                                        <Typography sx={{ 
+                                                            fontSize: '8px', 
+                                                            color: 'white', 
+                                                            fontWeight: 'bold',
+                                                            lineHeight: 1
+                                                        }}>
+                                                            PDF
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography sx={{ fontSize: '7px', color: '#666', textAlign: 'center', lineHeight: 1 }}>
                                                         תעודה
                                                     </Typography>
                                                 </Box>
@@ -2005,16 +2044,34 @@ export default function ContractorTabsSimple({
                                                         flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
+                                                        position: 'relative',
                                                         '&:hover': {
                                                             backgroundColor: '#e0e0e0'
                                                         }
                                                     }}
                                                     onClick={() => window.open(localIsoCertificate, '_blank')}
                                                 >
-                                                    <Typography sx={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>
-                                                        PDF
-                                                    </Typography>
-                                                    <Typography sx={{ fontSize: '8px', color: '#999', textAlign: 'center' }}>
+                                                    {/* PDF Icon */}
+                                                    <Box sx={{ 
+                                                        width: '24px', 
+                                                        height: '24px', 
+                                                        backgroundColor: '#d32f2f',
+                                                        borderRadius: '2px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        mb: 0.5
+                                                    }}>
+                                                        <Typography sx={{ 
+                                                            fontSize: '8px', 
+                                                            color: 'white', 
+                                                            fontWeight: 'bold',
+                                                            lineHeight: 1
+                                                        }}>
+                                                            PDF
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography sx={{ fontSize: '7px', color: '#666', textAlign: 'center', lineHeight: 1 }}>
                                                         ISO
                                                     </Typography>
                                                 </Box>
