@@ -2289,9 +2289,20 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
           // Extract license types
           if (contractorsData.result.records.length > 0) {
-            licenseTypes = contractorsData.result.records.map(record =>
-              `${record.TEUR_ANAF} - ${record.KVUTZA}${record.SIVUG}`
-            );
+            licenseTypes = contractorsData.result.records.map(record => {
+              if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+                const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+                return {
+                  classification_type: record['TEUR_ANAF'],
+                  classification: `${record['KVUTZA']}${record['SIVUG']}`,
+                  description: licenseDescription,
+                  kod_anaf: record['KOD_ANAF'] || '',
+                  tarich_sug: record['TARICH_SUG'] || '',
+                  hekef: record['HEKEF'] || ''
+                };
+              }
+              return null;
+            }).filter(Boolean);
           }
         }
 
