@@ -1045,8 +1045,25 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     showSaveButton,
                     showCloseButton,
                     isContactUser,
-                    contactUserData: localStorage.getItem('contactUser')
+                    contactUserData: localStorage.getItem('contactUser'),
+                    contactUserAuthenticated: localStorage.getItem('contactUserAuthenticated')
                   });
+                  
+                  // Additional debug for contactUser detection
+                  const contactUserData = localStorage.getItem('contactUser');
+                  if (contactUserData) {
+                    try {
+                      const userData = JSON.parse(contactUserData);
+                      console.log('🔧 Final debug - userData:', {
+                        userType: userData.userType,
+                        permissions: userData.permissions,
+                        isContactUser,
+                        showButtons
+                      });
+                    } catch (error) {
+                      console.error('Error parsing contact user data in final debug:', error);
+                    }
+                  }
 
                   if (!showButtons) {
                     console.log('🔧 Returning null - no buttons for contactUser');
