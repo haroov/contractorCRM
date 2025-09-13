@@ -2306,6 +2306,9 @@ export default function ContractorTabsSimple({
                             </Grid>
                         </Grid>
 
+                        {/* רווח בין ISO לסוגי רישיונות */}
+                        <Box sx={{ mt: 4, mb: 2 }} />
+
                         {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" gutterBottom>

@@ -5,7 +5,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const router = express.Router();
 
 // Configure multer for memory storage
-const upload = multer({ 
+const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
@@ -39,14 +39,14 @@ async function initDB() {
 router.post('/certificate', upload.single('file'), async (req, res) => {
   try {
     await initDB();
-    
+
     const { contractorId, certificateType } = req.body;
     const file = req.file;
-    
+
     if (!contractorId || !certificateType || !file) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required fields: contractorId, certificateType, or file' 
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: contractorId, certificateType, or file'
       });
     }
 
@@ -56,9 +56,9 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
     });
 
     if (!contractor) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Contractor not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'Contractor not found'
       });
     }
 
@@ -77,11 +77,11 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
     const updateField = `${certificateType}Certificate`;
     await db.collection('contractors').updateOne(
       { _id: new ObjectId(contractorId) },
-      { 
-        $set: { 
+      {
+        $set: {
           [updateField]: blob.url,
           [`${certificateType}LastUpdated`]: new Date().toISOString()
-        } 
+        }
       }
     );
 
@@ -99,10 +99,10 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error uploading certificate:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Failed to upload certificate',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -111,13 +111,13 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 router.delete('/certificate', async (req, res) => {
   try {
     await initDB();
-    
+
     const { contractorId, certificateType } = req.body;
-    
+
     if (!contractorId || !certificateType) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required fields: contractorId or certificateType' 
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: contractorId or certificateType'
       });
     }
 
@@ -125,11 +125,11 @@ router.delete('/certificate', async (req, res) => {
     const updateField = `${certificateType}Certificate`;
     await db.collection('contractors').updateOne(
       { _id: new ObjectId(contractorId) },
-      { 
-        $unset: { 
+      {
+        $unset: {
           [updateField]: "",
           [`${certificateType}LastUpdated`]: ""
-        } 
+        }
       }
     );
 
@@ -146,10 +146,10 @@ router.delete('/certificate', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error removing certificate:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Failed to remove certificate',
-      details: error.message 
+      details: error.message
     });
   }
 });
@@ -158,23 +158,23 @@ router.delete('/certificate', async (req, res) => {
 router.get('/certificate/:contractorId/:certificateType', async (req, res) => {
   try {
     await initDB();
-    
+
     const { contractorId, certificateType } = req.params;
-    
+
     const contractor = await db.collection('contractors').findOne({
       _id: new ObjectId(contractorId)
     });
 
     if (!contractor) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Contractor not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'Contractor not found'
       });
     }
 
     const certificateField = `${certificateType}Certificate`;
     const lastUpdatedField = `${certificateType}LastUpdated`;
-    
+
     const certificateUrl = contractor[certificateField];
     const lastUpdated = contractor[lastUpdatedField];
 
@@ -191,10 +191,10 @@ router.get('/certificate/:contractorId/:certificateType', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error getting certificate info:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Failed to get certificate info',
-      details: error.message 
+      details: error.message
     });
   }
 });
