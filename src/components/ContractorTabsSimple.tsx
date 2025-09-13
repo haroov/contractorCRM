@@ -311,6 +311,9 @@ export default function ContractorTabsSimple({
     // Check if user can edit based on contact user permissions
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
+    
+    // For company ID field specifically - always disable if contractor exists (saved)
+    const canEditCompanyId = canEdit && !contractor?._id;
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
@@ -1486,7 +1489,7 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
                                     value={localCompanyId}
-                                    disabled={!canEdit || !!contractor?._id}
+                                    disabled={!canEditCompanyId}
                                     sx={{
                                         ...textFieldSx,
                                         direction: 'rtl',
@@ -1520,31 +1523,7 @@ export default function ContractorTabsSimple({
                                                 )}
                                             </Box>
                                         ),
-                                        endAdornment: companyStatusIndicator ? (
-                                            <Tooltip
-                                                title={getStatusTooltipText(companyStatusIndicator)}
-                                                arrow
-                                                placement="top"
-                                            >
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    marginLeft: '8px',
-                                                    marginRight: '10px',
-                                                    fontSize: '18px',
-                                                    cursor: 'help'
-                                                }}>
-                                                    {companyStatusIndicator}
-                                                </Box>
-                                            </Tooltip>
-                                        ) : (
-                                            console.log('🔍 No status indicator to display in HP field:', { 
-                                                companyStatusIndicator, 
-                                                localCompanyId,
-                                                contractor: contractor?.company_id,
-                                                isLoadingCompanyData 
-                                            })
-                                        )
+                                        endAdornment: null
                                     }}
                                     onChange={(e) => {
                                         const value = e.target.value;
