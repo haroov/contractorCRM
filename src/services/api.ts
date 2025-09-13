@@ -39,18 +39,42 @@ export const projectsAPI = {
   // Get all projects
   getAll: async () => {
     const response = await authenticatedFetch('/projects');
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 
   // Get projects by contractor ID
   getByContractor: async (contractorId: string) => {
     const response = await authenticatedFetch(`/projects?contractorId=${contractorId}`);
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 
   // Get project by ID
   getById: async (projectId: string) => {
     const response = await authenticatedFetch(`/projects/${projectId}`);
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 
@@ -63,6 +87,14 @@ export const projectsAPI = {
       },
       body: JSON.stringify(project),
     });
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 
@@ -75,6 +107,14 @@ export const projectsAPI = {
       },
       body: JSON.stringify(project),
     });
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 
@@ -83,6 +123,14 @@ export const projectsAPI = {
     const response = await authenticatedFetch(`/projects/${id}`, {
       method: 'DELETE',
     });
+    
+    if (!response.ok) {
+      console.error('❌ API Error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
     return response.json();
   },
 };
