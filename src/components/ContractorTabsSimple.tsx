@@ -1055,7 +1055,24 @@ export default function ContractorTabsSimple({
             } else {
                 // Step 3: Not found in MongoDB - check Companies Registry API
                 console.log('📊 Step 3: Not found in MongoDB, checking Companies Registry API...');
-                setCompanyIdError('חברה לא נמצאה במאגרי המידע');
+                
+                // Try to fetch from external APIs
+                try {
+                    const response = await fetch(`/api/search-company/${localCompanyId}`);
+                    const result = await response.json();
+                    
+                    if (result.success && result.data) {
+                        console.log('✅ Found company in external APIs:', result.data.name);
+                        await populateFormWithApiData(result.data);
+                        setCompanyIdError(''); // Clear any error
+                    } else {
+                        console.log('❌ Company not found in external APIs either');
+                        setCompanyIdError(''); // Don't show error - this is legitimate for new contractors
+                    }
+                } catch (apiError) {
+                    console.error('❌ Error fetching from external APIs:', apiError);
+                    setCompanyIdError(''); // Don't show error - this is legitimate for new contractors
+                }
             }
         } catch (error) {
             console.error('❌ Error in validation flow:', error);
@@ -1200,9 +1217,7 @@ export default function ContractorTabsSimple({
     const populateFormWithApiData = async (companyData: any) => {
         console.log('📊 Populating form with API data:', companyData);
 
-        // Show notification that data was refreshed from API
-        const message = `נתונים עודכנו מרשם החברות ופנקס הקבלנים עבור "${companyData.name}".`;
-        alert(message);
+        // Data loaded from external APIs - no need to show notification
 
         // Clean up company name - replace בע~מ with בע״מ and remove double spaces
         const cleanName = (companyData.name || '')
@@ -1224,7 +1239,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(companyData.email || '');
         setLocalPhone(companyData.phone || '');
         setLocalWebsite(companyData.website || '');
-        setLocalContractorId(companyData.contractor_id || '');
+        setLocalContractorId(companyData.contractor_id || 'לא קבלן רשום');
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
