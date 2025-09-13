@@ -30,12 +30,15 @@ export default function ContractorTabsSimple({
     const [activeTab, setActiveTab] = useState(0);
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
+    const [contactSearchTerm, setContactSearchTerm] = useState('');
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
     const [isUploading, setIsUploading] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState<{ type: 'safety' | 'iso', url: string } | null>(null);
+    const [contactDeleteDialogOpen, setContactDeleteDialogOpen] = useState(false);
+    const [contactToDelete, setContactToDelete] = useState<string | null>(null);
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [contactEmailError, setContactEmailError] = useState<string>('');
@@ -743,26 +746,36 @@ export default function ContractorTabsSimple({
         setContactDialogOpen(true);
     };
 
-    const handleDeleteContact = async (contactId: string) => {
-        if (window.confirm('האם אתה בטוח שברצונך למחוק את איש הקשר?')) {
-            try {
-                // Remove from local state
-                const updatedContacts = localContacts.filter(contact => contact.id !== contactId);
-                setLocalContacts(updatedContacts);
+    const handleDeleteContact = (contactId: string) => {
+        setContactToDelete(contactId);
+        setContactDeleteDialogOpen(true);
+    };
 
-                // Save to server by triggering the main save
-                if (onSave) {
-                    const updatedContractor = {
-                        ...contractor,
-                        contacts: updatedContacts
-                    };
-                    onSave(updatedContractor);
-                }
+    const confirmDeleteContact = async () => {
+        if (!contactToDelete) return;
 
-                console.log('Contact deleted successfully:', contactId);
-            } catch (error) {
-                console.error('Error deleting contact:', error);
+        try {
+            // Remove from local state
+            const updatedContacts = localContacts.filter(contact => contact.id !== contactToDelete);
+            setLocalContacts(updatedContacts);
+
+            // Save to server by triggering the main save
+            if (onSave) {
+                const updatedContractor = {
+                    ...contractor,
+                    contacts: updatedContacts
+                };
+                onSave(updatedContractor);
             }
+
+            console.log('Contact deleted successfully:', contactToDelete);
+            alert('איש הקשר נמחק בהצלחה!');
+        } catch (error) {
+            console.error('Error deleting contact:', error);
+            alert('שגיאה במחיקת איש הקשר');
+        } finally {
+            setContactDeleteDialogOpen(false);
+            setContactToDelete(null);
         }
     };
 
@@ -771,6 +784,24 @@ export default function ContractorTabsSimple({
         setEditingContact(null);
         setContactEmailError('');
         setContactPhoneError('');
+    };
+
+    // Filter contacts based on search term
+    const getFilteredContacts = () => {
+        if (!localContacts || localContacts.length === 0) return [];
+        
+        if (!contactSearchTerm.trim()) return localContacts;
+        
+        const searchLower = contactSearchTerm.toLowerCase();
+        return localContacts.filter((contact: any) => {
+            const name = (contact.fullName || '').toLowerCase();
+            const role = (contact.role || contact.position || '').toLowerCase();
+            const permissions = (contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש').toLowerCase();
+            
+            return name.includes(searchLower) || 
+                   role.includes(searchLower) || 
+                   permissions.includes(searchLower);
+        });
     };
 
     // Filter projects based on active filter
@@ -2154,9 +2185,35 @@ export default function ContractorTabsSimple({
                 {activeTab === 3 && (
                     <Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6">
-                                אנשי קשר
-                            </Typography>
+                            <TextField
+                                fullWidth
+                                placeholder="חיפוש אנשי קשר לפי שם, תפקיד, הרשאות..."
+                                value={contactSearchTerm}
+                                onChange={(e) => setContactSearchTerm(e.target.value)}
+                                variant="outlined"
+                                size="small"
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                sx={{
+                                    maxWidth: '400px',
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: '#d0d0d0'
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: '#9c27b0'
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#9c27b0'
+                                        }
+                                    }
+                                }}
+                            />
                             {canEdit && (
                                 <Button
                                     variant="contained"
@@ -2175,48 +2232,46 @@ export default function ContractorTabsSimple({
                             )}
                         </Box>
 
-                        {localContacts && localContacts.length > 0 ? (
-                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                        {getFilteredContacts().length > 0 ? (
+                            <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                                 <Table>
                                     <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תפקיד</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>טלפון</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>אימייל</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>הרשאות</TableCell>
+                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
                                             {canEdit && (
-                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
+                                                <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
                                             )}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {localContacts.map((contact: any, index: number) => (
-                                            <TableRow key={contact.id || index}>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.fullName || ''}</TableCell>
+                                        {getFilteredContacts().map((contact: any, index: number) => (
+                                            <TableRow 
+                                                key={contact.id || index}
+                                                sx={{
+                                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => handleEditContact(contact)}
+                                            >
+                                                <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>{contact.fullName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.mobile || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.email || contact.emailAddress || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
-                                                    <Typography variant="body2" sx={{
-                                                        color: 'text.secondary',
-                                                        fontWeight: 'normal'
-                                                    }}>
-                                                        {contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
-                                                    </Typography>
+                                                    {contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
                                                 </TableCell>
                                                 {canEdit && (
                                                     <TableCell sx={{ textAlign: 'center' }}>
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => handleEditContact(contact)}
-                                                            sx={{ mr: 1 }}
-                                                        >
-                                                            <EditIcon fontSize="small" />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() => handleDeleteContact(contact.id)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteContact(contact.id);
+                                                            }}
                                                             sx={{ color: 'text.secondary' }}
                                                         >
                                                             <DeleteIcon fontSize="small" />
@@ -2230,26 +2285,9 @@ export default function ContractorTabsSimple({
                             </TableContainer>
                         ) : (
                             <Box sx={{ textAlign: 'center', py: 4 }}>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                    אין אנשי קשר רשומים
+                                <Typography variant="body2" color="text.secondary">
+                                    {contactSearchTerm ? 'לא נמצאו אנשי קשר התואמים לחיפוש' : 'אין אנשי קשר רשומים'}
                                 </Typography>
-                                {canEdit && (
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<AddIcon />}
-                                        onClick={handleAddContact}
-                                        sx={{
-                                            borderColor: '#9c27b0', // סגול שוקו
-                                            color: '#9c27b0',
-                                            '&:hover': {
-                                                borderColor: '#7b1fa2',
-                                                backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                            }
-                                        }}
-                                    >
-                                        הוסף איש קשר ראשון
-                                    </Button>
-                                )}
                             </Box>
                         )}
                     </Box>
@@ -2478,6 +2516,30 @@ export default function ContractorTabsSimple({
                     </Button>
                     <Button 
                         onClick={confirmDeleteFile} 
+                        color="error" 
+                        variant="contained"
+                    >
+                        מחק
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Contact Delete Confirmation Dialog */}
+            <Dialog open={contactDeleteDialogOpen} onClose={() => setContactDeleteDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    אישור מחיקת איש קשר
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        האם אתה בטוח שברצונך למחוק את איש הקשר?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setContactDeleteDialogOpen(false)}>
+                        ביטול
+                    </Button>
+                    <Button 
+                        onClick={confirmDeleteContact} 
                         color="error" 
                         variant="contained"
                     >
