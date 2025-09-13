@@ -1027,9 +1027,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   } else {
                     console.log('🔧 Not a contact user or no contact user data:', {
                       isContactUser,
-                      hasContactUserData: !!contactUserData
+                      hasContactUserData: !!contactUserData,
+                      contactUserData: contactUserData
                     });
                   }
+                  
+                  // Additional debug for contactUser detection
+                  console.log('🔧 Contact user detection debug:', {
+                    isContactUser,
+                    contactUserData,
+                    contactUserAuthenticated: localStorage.getItem('contactUserAuthenticated'),
+                    contactUserType: contactUserData ? JSON.parse(contactUserData).userType : 'no data'
+                  });
 
                   console.log('🔧 Final button logic:', {
                     showButtons,
