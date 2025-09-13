@@ -590,12 +590,11 @@ export default function ContractorTabsSimple({
             // Create FormData for file upload
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('type', type);
-            formData.append('companyId', localCompanyId);
+            formData.append('certificateType', type);
             formData.append('contractorId', contractor?._id || '');
 
             // Call API to upload file using authenticatedFetch
-            const response = await authenticatedFetch('/api/upload-certificate', {
+            const response = await authenticatedFetch('/api/upload/certificate', {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -612,10 +611,10 @@ export default function ContractorTabsSimple({
             if (result.success) {
                 // Update local state with the uploaded file URL and type
                 if (type === 'safety') {
-                    setLocalSafetyCertificate(result.fileUrl);
+                    setLocalSafetyCertificate(result.data.url);
                     setLocalSafetyCertificateType(file.type);
                 } else if (type === 'iso') {
-                    setLocalIsoCertificate(result.fileUrl);
+                    setLocalIsoCertificate(result.data.url);
                     setLocalIsoCertificateType(file.type);
                 }
 
@@ -624,14 +623,15 @@ export default function ContractorTabsSimple({
                     const updatedContractor = {
                         ...contractor,
                         company_id: localCompanyId,
-                        [type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: result.fileUrl
+                        [type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: result.data.url
                     };
                     onSave(updatedContractor);
                 }
 
-                // File uploaded successfully - UI will show the change
+                console.log(`✅ Certificate uploaded successfully: ${result.data.url}`);
+                alert('התעודה הועלתה בהצלחה!');
             } else {
-                throw new Error(result.message || 'שגיאה בהעלאת הקובץ');
+                throw new Error(result.error || 'שגיאה בהעלאת הקובץ');
             }
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -651,27 +651,52 @@ export default function ContractorTabsSimple({
         if (!fileToDelete) return;
 
         try {
-            // Clear the file from local state
-            if (fileToDelete.type === 'safety') {
-                setLocalSafetyCertificate('');
-                setLocalSafetyCertificateType('');
-            } else if (fileToDelete.type === 'iso') {
-                setLocalIsoCertificate('');
-                setLocalIsoCertificateType('');
+            // Call API to delete certificate
+            const response = await authenticatedFetch('/api/upload/certificate', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contractorId: contractor?._id,
+                    certificateType: fileToDelete.type
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Update contractor data
-            if (onSave) {
-                const updatedContractor = {
-                    ...contractor,
-                    [fileToDelete.type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: ''
-                };
-                onSave(updatedContractor);
+            const result = await response.json();
+
+            if (result.success) {
+                // Clear the file from local state
+                if (fileToDelete.type === 'safety') {
+                    setLocalSafetyCertificate('');
+                    setLocalSafetyCertificateType('');
+                } else if (fileToDelete.type === 'iso') {
+                    setLocalIsoCertificate('');
+                    setLocalIsoCertificateType('');
+                }
+
+                // Update contractor data
+                if (onSave) {
+                    const updatedContractor = {
+                        ...contractor,
+                        [fileToDelete.type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: ''
+                    };
+                    onSave(updatedContractor);
+                }
+
+                console.log(`✅ Certificate deleted successfully`);
+                alert('התעודה נמחקה בהצלחה!');
+            } else {
+                throw new Error(result.error || 'שגיאה במחיקת הקובץ');
             }
 
         } catch (error) {
             console.error('Error deleting file:', error);
-            alert('שגיאה במחיקת הקובץ');
+            alert('שגיאה במחיקת הקובץ: ' + (error as Error).message);
         } finally {
             setDeleteDialogOpen(false);
             setFileToDelete(null);

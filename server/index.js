@@ -15,6 +15,9 @@ const path = require('path');
 const fs = require('fs');
 const { GridFSBucket } = require('mongodb');
 
+// Import routes
+const uploadRoutes = require('./routes/upload');
+
 dotenv.config();
 
 const app = express();
@@ -273,6 +276,10 @@ console.log('✅ User management routes configured');
 const contactAuthRoutes = require('./routes/contact-auth.js');
 app.use('/api/contact-auth', contactAuthRoutes);
 console.log('✅ Contact authentication routes configured');
+
+// Import upload routes
+app.use('/api/upload', uploadRoutes);
+console.log('✅ Upload routes configured');
 
 // Import docs routes
 const docsRoutes = require('./routes/docs.js');
