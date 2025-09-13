@@ -2087,6 +2087,91 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       const lastLicenseUpdate = existingContractor.licensesLastUpdated ? new Date(existingContractor.licensesLastUpdated) : null;
       const isLicenseDataFresh = lastLicenseUpdate && lastLicenseUpdate >= today; // Today only
 
+      // If we have fresh status data but need to update licenses, fetch licenses from API
+      if (isStatusDataFresh && existingContractor.statusIndicator && !isLicenseDataFresh && !force_refresh) {
+        console.log('🔄 Status data is fresh, but license data needs update - fetching licenses from API');
+        
+        try {
+          // Fetch fresh license data from Contractors Registry
+          const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+          const contractorsData = await contractorsResponse.json();
+
+          let licenseTypes = [];
+          if (contractorsData.success && contractorsData.result.records.length > 0) {
+            console.log(`📋 Processing ${contractorsData.result.records.length} license records for cache update`);
+
+            contractorsData.result.records.forEach((record) => {
+              if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+                const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+                licenseTypes.push({
+                  classification_type: record['TEUR_ANAF'],
+                  classification: `${record['KVUTZA']}${record['SIVUG']}`,
+                  description: licenseDescription,
+                  kod_anaf: record['KOD_ANAF'] || '',
+                  tarich_sug: record['TARICH_SUG'] || '',
+                  hekef: record['HEKEF'] || '',
+                  lastUpdated: new Date().toISOString()
+                });
+              }
+            });
+
+            // Update contractor with fresh license data
+            await db.collection('contractors').updateOne(
+              { _id: existingContractor._id },
+              {
+                $set: {
+                  classifications: licenseTypes,
+                  licensesLastUpdated: new Date().toISOString()
+                }
+              }
+            );
+
+            console.log(`✅ Updated ${existingContractor.name} with ${licenseTypes.length} licenses`);
+          }
+
+          // Return data with updated licenses
+          return res.json({
+            success: true,
+            source: 'mongodb_updated',
+            data: {
+              // Basic company info
+              name: existingContractor.name,
+              nameEnglish: existingContractor.nameEnglish,
+              companyType: existingContractor.companyType,
+              foundationDate: existingContractor.foundationDate,
+              address: existingContractor.address,
+              city: existingContractor.city,
+              email: existingContractor.email,
+              phone: existingContractor.phone,
+              contractor_id: existingContractor.contractor_id,
+              // Status data
+              statusIndicator: existingContractor.statusIndicator,
+              statusLastUpdated: existingContractor.statusLastUpdated,
+              isActive: existingContractor.isActive,
+              // Complete contractor data
+              employees: existingContractor.employees || existingContractor.numberOfEmployees || '',
+              numberOfEmployees: existingContractor.numberOfEmployees || existingContractor.employees || '',
+              contacts: existingContractor.contacts || [],
+              projects: existingContractor.projects || [],
+              notes: existingContractor.notes || { general: '', internal: '' },
+              safetyRating: existingContractor.safetyRating || '',
+              safetyExpiry: existingContractor.safetyExpiry || '',
+              safetyCertificate: existingContractor.safetyCertificate || '',
+              iso45001: existingContractor.iso45001 || false,
+              isoExpiry: existingContractor.isoExpiry || '',
+              isoCertificate: existingContractor.isoCertificate || '',
+              // Updated license data
+              classifications: licenseTypes,
+              // All other fields
+              ...existingContractor
+            }
+          });
+        } catch (error) {
+          console.error('❌ Error updating licenses:', error);
+          // Fall through to return cached data even if license update failed
+        }
+      }
+
       if (isStatusDataFresh && existingContractor.statusIndicator && isLicenseDataFresh && !force_refresh) {
         console.log('✅ Using cached status data (from today)');
         return res.json({
@@ -2125,11 +2210,15 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         });
       }
 
-      // Fetch fresh data from Companies Registry for status indicator
+      // Fetch fresh data from Companies Registry for status indicator and Contractors Registry for licenses
       try {
         console.log('🔄 Fetching fresh status data from Companies Registry API');
         const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
         const companiesData = await companiesResponse.json();
+
+        console.log('🔄 Fetching fresh license data from Contractors Registry API');
+        const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+        const contractorsData = await contractorsResponse.json();
 
         let statusIndicator = '';
         let statusData = {};
@@ -2159,6 +2248,40 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           );
 
           console.log('✅ Updated contractor with fresh status data:', statusData);
+        }
+
+        // Process license data from Contractors Registry
+        let licenseTypes = [];
+        if (contractorsData.success && contractorsData.result.records.length > 0) {
+          console.log(`📋 Processing ${contractorsData.result.records.length} license records for fresh data`);
+
+          contractorsData.result.records.forEach((record) => {
+            if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+              const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+              licenseTypes.push({
+                classification_type: record['TEUR_ANAF'],
+                classification: `${record['KVUTZA']}${record['SIVUG']}`,
+                description: licenseDescription,
+                kod_anaf: record['KOD_ANAF'] || '',
+                tarich_sug: record['TARICH_SUG'] || '',
+                hekef: record['HEKEF'] || '',
+                lastUpdated: new Date().toISOString()
+              });
+            }
+          });
+
+          // Update contractor with fresh license data
+          await db.collection('contractors').updateOne(
+            { company_id: companyId },
+            {
+              $set: {
+                classifications: licenseTypes,
+                licensesLastUpdated: new Date().toISOString()
+              }
+            }
+          );
+
+          console.log(`✅ Updated ${existingContractor.name} with ${licenseTypes.length} licenses`);
         }
 
         return res.json({
@@ -2191,6 +2314,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             iso45001: existingContractor.iso45001 || false,
             isoExpiry: existingContractor.isoExpiry || '',
             isoCertificate: existingContractor.isoCertificate || '',
+            // License data from Contractors Registry
+            classifications: licenseTypes,
             // All other fields
             ...existingContractor
           }
