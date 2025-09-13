@@ -378,7 +378,13 @@ export default function ContractorTabsSimple({
 
             // Load status indicator for existing contractors
             if (contractor?.company_id && contractor._id) {
+                console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
                 loadStatusForExistingContractor(contractor.company_id);
+            } else {
+                console.log('🔍 useEffect: Not loading status - missing company_id or _id:', {
+                    company_id: contractor?.company_id,
+                    _id: contractor?._id
+                });
             }
         } else if (isLoadingCompanyData) {
             console.log('🔄 useEffect: Skipping state update - data is currently loading');
@@ -977,16 +983,20 @@ export default function ContractorTabsSimple({
     // Load status indicator for existing contractors
     const loadStatusForExistingContractor = async (companyId: string) => {
         try {
-            console.log('Loading status for existing contractor:', companyId);
+            console.log('🔍 Loading status for existing contractor:', companyId);
             const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
+
+            console.log('🔍 API response for status:', result);
 
             if (result.success && result.data.statusIndicator) {
                 setCompanyStatusIndicator(result.data.statusIndicator);
                 console.log('✅ Loaded status indicator for existing contractor:', result.data.statusIndicator);
+            } else {
+                console.log('❌ No status indicator found in response:', result);
             }
         } catch (error) {
-            console.error('Error loading status for existing contractor:', error);
+            console.error('❌ Error loading status for existing contractor:', error);
         }
     };
 
@@ -1399,7 +1409,9 @@ export default function ContractorTabsSimple({
                                                     {companyStatusIndicator}
                                                 </Box>
                                             </Tooltip>
-                                        ) : null
+                                        ) : (
+                                            console.log('🔍 No status indicator to display:', { companyStatusIndicator, localCompanyId })
+                                        )
                                     }}
                                     onChange={(e) => {
                                         const value = e.target.value;
