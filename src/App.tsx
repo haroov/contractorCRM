@@ -92,8 +92,20 @@ function App() {
           // Check if this is actually a system user (userType: "system")
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, treating as system user');
-            // For system users, we need to get fresh data from server
-            // Don't return early, continue to system user logic below
+            // For system users who came through contact login, use their data directly
+            // since they already have valid session data
+            const userState = {
+              id: contactUser.id,
+              email: contactUser.email,
+              name: contactUser.name,
+              role: contactUser.role,
+              picture: contactUser.picture || ''
+            };
+            console.log('🔍 Setting system user state from contact login data:', userState);
+            setUser(userState);
+            setLoading(false);
+            console.log('✅ System user state set from contact login, returning early');
+            return;
           } else {
             // This is a real contact user
             console.log('🔍 This is a contact user');
