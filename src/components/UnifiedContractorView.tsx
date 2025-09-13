@@ -1110,6 +1110,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                   if (!showButtons) {
                     console.log('🔧 Returning null - no buttons for contactUser');
+                    console.log('🔧 Final button state:', {
+                      showButtons,
+                      showSaveButton,
+                      showCloseButton,
+                      isContactUser,
+                      contactUserData: localStorage.getItem('contactUser')
+                    });
                     return null; // No buttons for contactUser
                   }
 
