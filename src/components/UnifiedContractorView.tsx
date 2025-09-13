@@ -1001,10 +1001,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         isContactUser,
                         permissions,
                         role,
+                        userType: userData.userType,
                         userData
                       });
                       
-                      if (permissions === 'contactAdmin' || role === 'מנהל פרוייקטים' || (role && role.includes('מנהל'))) {
+                      if (permissions === 'contactAdmin') {
                         // contactAdmin: show only Save button, no Close button
                         console.log('🔧 Setting contactAdmin button logic');
                         showCloseButton = false;
@@ -1093,19 +1094,21 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         const contactUser = JSON.parse(contactUserData);
                         console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
                         console.log('🔧 contactUserPermissions debug - user keys:', Object.keys(contactUser));
-                        // For contact users, use permissions field
-                        if (contactUser.permissions) {
-                          console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
-                          return contactUser.permissions; // 'contactAdmin' or 'contactUser'
+                        // Check userType first to determine if this is a contact user
+                        if (contactUser.userType === 'contact' || contactUser.userType === 'contractor') {
+                          console.log('🔧 contactUserPermissions debug - this is a contact user, checking permissions');
+                          // For contact users, use permissions field
+                          if (contactUser.permissions) {
+                            console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
+                            return contactUser.permissions; // 'contactAdmin' or 'contactUser'
+                          }
+                          // If no permissions field, default to contactUser
+                          console.log('🔧 contactUserPermissions debug - no permissions field, defaulting to contactUser');
+                          return 'contactUser';
                         }
                         // For system users (admin/regular), use role instead of permissions
                         if (contactUser.role) {
-                          console.log('🔧 contactUserPermissions debug - using role:', contactUser.role);
-                          // If role is "מנהל פרוייקטים" or similar, treat as contactAdmin
-                          if (contactUser.role === 'מנהל פרוייקטים' || (contactUser.role && contactUser.role.includes('מנהל'))) {
-                            console.log('🔧 contactUserPermissions debug - treating role as contactAdmin');
-                            return 'contactAdmin';
-                          }
+                          console.log('🔧 contactUserPermissions debug - this is a system user, using role:', contactUser.role);
                           return contactUser.role; // 'admin' or 'user'
                         }
                         console.log('🔧 contactUserPermissions debug - defaulting to contactUser');
