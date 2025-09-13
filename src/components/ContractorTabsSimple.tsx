@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete, InputAdornment } from '@mui/material';
-import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
+import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import ContractorService from '../services/contractorService';
 import { authenticatedFetch } from '../config/api';
@@ -1279,6 +1279,8 @@ export default function ContractorTabsSimple({
         console.log('📊 Notes type:', typeof contractorData.notes);
         console.log('📊 Notes keys:', contractorData.notes ? Object.keys(contractorData.notes) : 'no notes');
         console.log('📊 Safety Rating:', contractorData.safetyRating);
+        console.log('📊 Safety Rating type:', typeof contractorData.safetyRating);
+        console.log('📊 Safety Rating converted to string:', contractorData.safetyRating?.toString());
         console.log('📊 Classifications:', contractorData.classifications);
 
         // Check all keys in contractorData
@@ -2490,6 +2492,25 @@ export default function ContractorTabsSimple({
                                         }}
                                     />
                                 )}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        if (contractor?.company_id) {
+                                            console.log('🔄 Manual refresh of licenses for company:', contractor.company_id);
+                                            loadLicensesForContractor(contractor.company_id);
+                                        }
+                                    }}
+                                    disabled={isLoadingLicenses}
+                                    title="רענן רישיונות מפנקס הקבלנים"
+                                    sx={{
+                                        color: '#9c27b0',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    <RefreshIcon />
+                                </IconButton>
                             </Box>
                             
                             {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 ? (
