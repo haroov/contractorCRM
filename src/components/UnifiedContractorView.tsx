@@ -1066,6 +1066,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   }
                   
                   // Force hide buttons for contactUser
+                  console.log('🔧 Checking isContactUser for button hiding:', {
+                    isContactUser,
+                    type: typeof isContactUser,
+                    value: isContactUser
+                  });
+                  
                   if (isContactUser) {
                     console.log('🔧 Force hiding buttons for contactUser');
                     return null;
