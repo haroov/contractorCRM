@@ -169,8 +169,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (contactUserCheck && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
-          // Only treat as contact user if userType is 'contact'
-          isRealContactUser = contactUser.userType === 'contact';
+          console.log('🔍 Contact user data for type check:', contactUser);
+          // Treat as contact user if userType is 'contact' OR 'contractor' (both are contact users)
+          isRealContactUser = contactUser.userType === 'contact' || contactUser.userType === 'contractor';
+          console.log('🔍 Is real contact user:', isRealContactUser);
         } catch (error) {
           console.error('Error parsing contact user data:', error);
           isRealContactUser = false;
