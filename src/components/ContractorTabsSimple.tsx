@@ -1005,6 +1005,7 @@ export default function ContractorTabsSimple({
     const loadStatusForExistingContractor = async (companyId: string) => {
         try {
             console.log('🔍 Loading status for existing contractor:', companyId);
+            console.log('🔍 Current companyStatusIndicator state:', companyStatusIndicator);
             const response = await fetch(`/api/search-company/${companyId}`);
             const result = await response.json();
 
@@ -1013,6 +1014,7 @@ export default function ContractorTabsSimple({
             if (result.success && result.data.statusIndicator) {
                 setCompanyStatusIndicator(result.data.statusIndicator);
                 console.log('✅ Loaded status indicator for existing contractor:', result.data.statusIndicator);
+                console.log('✅ Status indicator set in state');
             } else {
                 console.log('❌ No status indicator found in response:', result);
             }
@@ -1399,8 +1401,10 @@ export default function ContractorTabsSimple({
                                     disabled={!canEdit || !!contractor?._id}
                                     sx={{
                                         ...textFieldSx,
+                                        direction: 'rtl',
                                         '& .MuiInputBase-input': {
-                                            textAlign: 'right'  // יישור הטקסט לימין
+                                            textAlign: 'right',
+                                            direction: 'rtl'
                                         }
                                     }}
                                     InputProps={{
@@ -1413,7 +1417,8 @@ export default function ContractorTabsSimple({
                                             }}>
                                                 <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
                                             </Box>
-                                        ) : companyStatusIndicator ? (
+                                        ) : null,
+                                        endAdornment: companyStatusIndicator ? (
                                             <Tooltip
                                                 title={getStatusTooltipText(companyStatusIndicator)}
                                                 arrow
@@ -1422,8 +1427,8 @@ export default function ContractorTabsSimple({
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    marginLeft: '10px',
-                                                    marginRight: '8px',
+                                                    marginLeft: '8px',
+                                                    marginRight: '10px',
                                                     fontSize: '18px',
                                                     cursor: 'help'
                                                 }}>
@@ -1431,7 +1436,12 @@ export default function ContractorTabsSimple({
                                                 </Box>
                                             </Tooltip>
                                         ) : (
-                                            console.log('🔍 No status indicator to display:', { companyStatusIndicator, localCompanyId })
+                                            console.log('🔍 No status indicator to display in HP field:', { 
+                                                companyStatusIndicator, 
+                                                localCompanyId,
+                                                contractor: contractor?.company_id,
+                                                isLoadingCompanyData 
+                                            })
                                         )
                                     }}
                                     onChange={(e) => {
