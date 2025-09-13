@@ -1077,20 +1077,29 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   isContactUser={isContactUser}
                   contactUserPermissions={(() => {
                     const contactUserData = localStorage.getItem('contactUser');
+                    console.log('🔧 contactUserPermissions debug - localStorage data:', contactUserData);
                     if (contactUserData) {
                       try {
                         const contactUser = JSON.parse(contactUserData);
+                        console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
+                        // For contact users, use permissions field
+                        if (contactUser.permissions) {
+                          console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
+                          return contactUser.permissions; // 'contactAdmin' or 'contactUser'
+                        }
                         // For system users (admin/regular), use role instead of permissions
                         if (contactUser.role) {
+                          console.log('🔧 contactUserPermissions debug - using role:', contactUser.role);
                           return contactUser.role; // 'admin' or 'user'
                         }
-                        // For contact users, use permissions
-                        return contactUser.permissions || 'contactUser';
+                        console.log('🔧 contactUserPermissions debug - defaulting to contactUser');
+                        return 'contactUser';
                       } catch (error) {
                         console.error('Error parsing contact user data:', error);
                         return 'contactUser';
                       }
                     }
+                    console.log('🔧 contactUserPermissions debug - no localStorage data, defaulting to contactUser');
                     return 'contactUser';
                   })()}
                   currentUser={currentUser}
