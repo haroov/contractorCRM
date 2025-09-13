@@ -2364,6 +2364,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       let contractorId = '';
       let phone = '';
       let email = '';
+      let website = '';
       let licenseTypes = [];
 
       if (contractorData) {
@@ -2380,7 +2381,6 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         email = contractorData['EMAIL'] || '';
 
         // Extract website domain from email
-        let website = '';
         if (email && email.includes('@')) {
           const domain = email.split('@')[1];
           if (domain) {
