@@ -629,7 +629,6 @@ export default function ContractorTabsSimple({
                 }
 
                 console.log(`✅ Certificate uploaded successfully: ${result.data.url}`);
-                alert('התעודה הועלתה בהצלחה!');
             } else {
                 throw new Error(result.error || 'שגיאה בהעלאת הקובץ');
             }
@@ -689,7 +688,6 @@ export default function ContractorTabsSimple({
                 }
 
                 console.log(`✅ Certificate deleted successfully`);
-                alert('התעודה נמחקה בהצלחה!');
             } else {
                 throw new Error(result.error || 'שגיאה במחיקת הקובץ');
             }

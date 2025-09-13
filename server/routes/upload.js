@@ -38,22 +38,12 @@ async function initDB() {
 // Upload certificate endpoint
 router.post('/certificate', upload.single('file'), async (req, res) => {
   try {
-    console.log('📁 Upload certificate endpoint called');
-    console.log('🔑 BLOB_READ_WRITE_TOKEN exists:', !!process.env.BLOB_READ_WRITE_TOKEN);
-    console.log('📋 Request body:', req.body);
-    console.log('📁 File info:', req.file ? {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size
-    } : 'No file');
-    
     await initDB();
     
     const { contractorId, certificateType } = req.body;
     const file = req.file;
     
     if (!contractorId || !certificateType || !file) {
-      console.log('❌ Missing required fields:', { contractorId, certificateType, hasFile: !!file });
       return res.status(400).json({ 
         success: false, 
         error: 'Missing required fields: contractorId, certificateType, or file' 
@@ -77,21 +67,11 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
     const fileExtension = file.originalname.split('.').pop();
     const filename = `${contractorId}/${certificateType}_${timestamp}.${fileExtension}`;
 
-    console.log(`📁 Uploading certificate: ${filename}`);
-
     // Upload to Vercel Blob
-    let blob;
-    try {
-      console.log('🔄 Attempting to upload to Vercel Blob...');
-      blob = await put(filename, file.buffer, {
-        access: 'public',
-        contentType: file.mimetype,
-      });
-      console.log(`✅ Certificate uploaded successfully: ${blob.url}`);
-    } catch (blobError) {
-      console.error('❌ Vercel Blob upload error:', blobError);
-      throw blobError;
-    }
+    const blob = await put(filename, file.buffer, {
+      access: 'public',
+      contentType: file.mimetype,
+    });
 
     // Update contractor document with certificate URL
     const updateField = `${certificateType}Certificate`;
@@ -105,7 +85,6 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
       }
     );
 
-    console.log(`✅ Updated contractor ${contractorId} with ${certificateType} certificate URL`);
 
     res.json({
       success: true,
