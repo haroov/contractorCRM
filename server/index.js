@@ -65,7 +65,7 @@ app.get('*.html', (req, res) => {
     res.sendFile(filePath);
   } else {
     console.log('❌ Static HTML file not found, falling back to React');
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
   }
 });
 
