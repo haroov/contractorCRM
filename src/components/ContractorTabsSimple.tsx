@@ -1888,42 +1888,54 @@ export default function ContractorTabsSimple({
                                                         borderRadius: 4,
                                                         cursor: 'pointer',
                                                         border: '1px solid #d0d0d0',
-                                                        backgroundColor: '#f5f5f5',
+                                                        backgroundColor: '#d32f2f',
                                                         display: 'flex',
-                                                        flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         position: 'relative',
                                                         '&:hover': {
-                                                            backgroundColor: '#e0e0e0'
+                                                            backgroundColor: '#b71c1c'
                                                         }
                                                     }}
                                                     onClick={() => window.open(localSafetyCertificate, '_blank')}
                                                 >
-                                                    {/* PDF Icon */}
-                                                    <Box sx={{ 
-                                                        width: '32px', 
-                                                        height: '32px', 
-                                                        backgroundColor: '#d32f2f',
-                                                        borderRadius: '3px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        mb: 0.5,
-                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                    {/* PDF Text - fills the entire button */}
+                                                    <Typography sx={{ 
+                                                        fontSize: '12px', 
+                                                        color: 'white', 
+                                                        fontWeight: 'bold',
+                                                        lineHeight: 1,
+                                                        textAlign: 'center'
                                                     }}>
-                                                        <Typography sx={{ 
-                                                            fontSize: '10px', 
-                                                            color: 'white', 
-                                                            fontWeight: 'bold',
-                                                            lineHeight: 1
-                                                        }}>
-                                                            PDF
-                                                        </Typography>
-                                                    </Box>
-                                                    <Typography sx={{ fontSize: '8px', color: '#666', textAlign: 'center', lineHeight: 1, fontWeight: 500 }}>
-                                                        תעודה
+                                                        PDF
                                                     </Typography>
+                                                    
+                                                    {/* Delete button */}
+                                                    {canEdit && (
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteFile('safety', localSafetyCertificate);
+                                                            }}
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                top: -8,
+                                                                right: -8,
+                                                                width: '20px',
+                                                                height: '20px',
+                                                                backgroundColor: 'white',
+                                                                border: '1px solid #d32f2f',
+                                                                color: '#d32f2f',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#d32f2f',
+                                                                    color: 'white'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <CloseIcon sx={{ fontSize: '12px' }} />
+                                                        </IconButton>
+                                                    )}
                                                 </Box>
                                             ) : (
                                                 <img
@@ -1949,28 +1961,15 @@ export default function ContractorTabsSimple({
                                                                     width: 56px; 
                                                                     height: 56px; 
                                                                     border-radius: 8px; 
-                                                                    background-color: #f5f5f5; 
+                                                                    background-color: #d32f2f; 
                                                                     border: 1px solid #d0d0d0; 
                                                                     display: flex; 
-                                                                    flex-direction: column; 
                                                                     align-items: center; 
                                                                     justify-content: center; 
                                                                     cursor: pointer;
+                                                                    position: relative;
                                                                 ">
-                                                                    <div style="
-                                                                        width: 32px; 
-                                                                        height: 32px; 
-                                                                        background-color: #d32f2f; 
-                                                                        border-radius: 3px; 
-                                                                        display: flex; 
-                                                                        align-items: center; 
-                                                                        justify-content: center; 
-                                                                        margin-bottom: 4px; 
-                                                                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                                                    ">
-                                                                        <span style="font-size: 10px; color: white; font-weight: bold;">PDF</span>
-                                                                    </div>
-                                                                    <span style="font-size: 8px; color: #666; text-align: center; font-weight: 500;">תעודה</span>
+                                                                    <span style="font-size: 12px; color: white; font-weight: bold; text-align: center;">PDF</span>
                                                                 </div>
                                                             `;
                                                         }
@@ -2108,42 +2107,54 @@ export default function ContractorTabsSimple({
                                                         borderRadius: 4,
                                                         cursor: 'pointer',
                                                         border: '1px solid #d0d0d0',
-                                                        backgroundColor: '#f5f5f5',
+                                                        backgroundColor: '#d32f2f',
                                                         display: 'flex',
-                                                        flexDirection: 'column',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         position: 'relative',
                                                         '&:hover': {
-                                                            backgroundColor: '#e0e0e0'
+                                                            backgroundColor: '#b71c1c'
                                                         }
                                                     }}
                                                     onClick={() => window.open(localIsoCertificate, '_blank')}
                                                 >
-                                                    {/* PDF Icon */}
-                                                    <Box sx={{ 
-                                                        width: '32px', 
-                                                        height: '32px', 
-                                                        backgroundColor: '#d32f2f',
-                                                        borderRadius: '3px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        mb: 0.5,
-                                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                    {/* PDF Text - fills the entire button */}
+                                                    <Typography sx={{ 
+                                                        fontSize: '12px', 
+                                                        color: 'white', 
+                                                        fontWeight: 'bold',
+                                                        lineHeight: 1,
+                                                        textAlign: 'center'
                                                     }}>
-                                                        <Typography sx={{ 
-                                                            fontSize: '10px', 
-                                                            color: 'white', 
-                                                            fontWeight: 'bold',
-                                                            lineHeight: 1
-                                                        }}>
-                                                            PDF
-                                                        </Typography>
-                                                    </Box>
-                                                    <Typography sx={{ fontSize: '8px', color: '#666', textAlign: 'center', lineHeight: 1, fontWeight: 500 }}>
-                                                        ISO
+                                                        PDF
                                                     </Typography>
+                                                    
+                                                    {/* Delete button */}
+                                                    {canEdit && (
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteFile('iso', localIsoCertificate);
+                                                            }}
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                top: -8,
+                                                                right: -8,
+                                                                width: '20px',
+                                                                height: '20px',
+                                                                backgroundColor: 'white',
+                                                                border: '1px solid #d32f2f',
+                                                                color: '#d32f2f',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#d32f2f',
+                                                                    color: 'white'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <CloseIcon sx={{ fontSize: '12px' }} />
+                                                        </IconButton>
+                                                    )}
                                                 </Box>
                                             ) : (
                                                 <img
@@ -2169,28 +2180,15 @@ export default function ContractorTabsSimple({
                                                                     width: 56px; 
                                                                     height: 56px; 
                                                                     border-radius: 8px; 
-                                                                    background-color: #f5f5f5; 
+                                                                    background-color: #d32f2f; 
                                                                     border: 1px solid #d0d0d0; 
                                                                     display: flex; 
-                                                                    flex-direction: column; 
                                                                     align-items: center; 
                                                                     justify-content: center; 
                                                                     cursor: pointer;
+                                                                    position: relative;
                                                                 ">
-                                                                    <div style="
-                                                                        width: 32px; 
-                                                                        height: 32px; 
-                                                                        background-color: #d32f2f; 
-                                                                        border-radius: 3px; 
-                                                                        display: flex; 
-                                                                        align-items: center; 
-                                                                        justify-content: center; 
-                                                                        margin-bottom: 4px; 
-                                                                        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                                                    ">
-                                                                        <span style="font-size: 10px; color: white; font-weight: bold;">PDF</span>
-                                                                    </div>
-                                                                    <span style="font-size: 8px; color: #666; text-align: center; font-weight: 500;">ISO</span>
+                                                                    <span style="font-size: 12px; color: white; font-weight: bold; text-align: center;">PDF</span>
                                                                 </div>
                                                             `;
                                                         }
