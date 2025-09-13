@@ -503,6 +503,7 @@ router.post('/send-login-email', async (req, res) => {
         name: contractors[0]?.contacts?.find(c => c.email === email)?.fullName || 'יקר/ה',
         role: contractors[0]?.contacts?.find(c => c.email === email)?.role || 'משתמש',
         contractorName: contractors[0]?.companyName || contractors[0]?.name,
+        contractorId: contractors[0]?._id?.toString() || '',
         picture: contractors[0]?.contacts?.find(c => c.email === email)?.picture || ''
       }
     });
@@ -646,6 +647,7 @@ router.post('/verify-otp', async (req, res) => {
       role: userData.role || (storedData.userType === 'system' ? 'admin' : 'user'),
       userType: storedData.userType,
       contractorName: userData.contractorName,
+      contractorId: userData.contractorId || '',
       picture: userData.picture || '' // Include profile picture
     };
 
