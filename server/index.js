@@ -1066,6 +1066,11 @@ app.get('/api/projects', async (req, res) => {
 // Get single project by ID
 app.get('/api/projects/:id', async (req, res) => {
   try {
+    console.log('🔍 API ROUTE HIT: /api/projects/:id');
+    console.log('🔍 Request URL:', req.url);
+    console.log('🔍 Request method:', req.method);
+    console.log('🔍 Request headers:', req.headers);
+    
     const db = client.db('contractor-crm');
     const projectId = req.params.id;
 
@@ -3247,6 +3252,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all handler: send back React's index.html file for any non-API routes
 app.get('*', (req, res) => {
+  console.log('🔍 CATCH-ALL ROUTE HIT:', req.url);
+  console.log('🔍 Request method:', req.method);
+  console.log('🔍 Sending React index.html for:', req.url);
   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 
