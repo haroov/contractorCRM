@@ -1002,18 +1002,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         permissions,
                         role,
                         userType: userData.userType,
-                        userData
+                        userData,
+                        allKeys: Object.keys(userData)
                       });
                       
-                      if (permissions === 'contactAdmin') {
+                      // Check if user is contactUser by userType or permissions
+                      if (userData.userType === 'contractor' || userData.userType === 'contact' || permissions === 'contactUser') {
+                        // contactUser: show no buttons at all - no permission to save or close contractor
+                        console.log('🔧 Setting contactUser button logic - no buttons');
+                        showButtons = false;
+                        showSaveButton = false;
+                        showCloseButton = false;
+                      } else if (permissions === 'contactAdmin') {
                         // contactAdmin: show only Save button, no Close button
                         console.log('🔧 Setting contactAdmin button logic');
                         showCloseButton = false;
                         showSaveButton = true;
-                      } else if (permissions === 'contactUser') {
-                        // contactUser: show no buttons at all - no permission to save or close contractor
-                        console.log('🔧 Setting contactUser button logic - no buttons');
-                        showButtons = false;
                       } else {
                         console.log('🔧 No matching permissions found, defaulting to show buttons');
                         console.log('🔧 permissions value:', permissions);

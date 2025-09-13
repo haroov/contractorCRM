@@ -330,7 +330,10 @@ export default function ContractorTabsSimple({
         hasIndicator: !!companyStatusIndicator,
         contractor: contractor?.name,
         contractorStatusIndicator: contractor?.statusIndicator,
-        company_id: contractor?.company_id
+        company_id: contractor?.company_id,
+        isLoadingCompanyData,
+        shouldShowIndicator: companyStatusIndicator && !isLoadingCompanyData,
+        shouldShowNoIndicator: !companyStatusIndicator && !isLoadingCompanyData
     });
 
     // Common styling for TextFields with choco purple focus
@@ -1537,6 +1540,12 @@ export default function ContractorTabsSimple({
                                                 {!companyStatusIndicator && !isLoadingCompanyData && (
                                                     <Box sx={{ fontSize: '12px', color: 'text.secondary' }}>
                                                         אין חיווי
+                                                    </Box>
+                                                )}
+                                                {/* Debug info */}
+                                                {process.env.NODE_ENV === 'development' && (
+                                                    <Box sx={{ fontSize: '10px', color: 'red' }}>
+                                                        DEBUG: {companyStatusIndicator || 'empty'} | Loading: {isLoadingCompanyData ? 'yes' : 'no'}
                                                     </Box>
                                                 )}
                                             </Box>
