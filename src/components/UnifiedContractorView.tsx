@@ -79,10 +79,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
-          const userContractor = contractors.find(contractor => 
+          const userContractor = contractors.find(contractor =>
             contractor._id === contactUser.contractorId
           );
-          
+
           if (userContractor) {
             console.log('🚀 Auto-navigating contact user to their contractor:', userContractor.name);
             // Determine mode based on permissions
@@ -135,13 +135,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data:', contactUser);
           console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
-          
+
           // Try to find contractor by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
-          const contractor = contractors.find(c => 
-            c._id === contactUser.contractorId || 
+          const contractor = contractors.find(c =>
+            c._id === contactUser.contractorId ||
             c.contractor_id === contactUser.contractorId
           );
-          
+
           if (contractor) {
             console.log('✅ Found contractor for contact user:', contractor.name);
             handleContractorSelect(contractor, 'view');
@@ -164,7 +164,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       // Check if user is a contact user (not system admin)
       const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
       const contactUserData = localStorage.getItem('contactUser');
-      
+
       let isRealContactUser = false;
       if (contactUserCheck && contactUserData) {
         try {
@@ -178,7 +178,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           isRealContactUser = false;
         }
       }
-      
+
       // Update state
       setIsContactUser(isRealContactUser);
 
@@ -188,11 +188,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data for filtering:', contactUser);
           console.log('🔍 Available contractors for filtering:', contractorsData.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name, isActive: c.isActive })));
-          
+
           // For contact users, show only their associated contractor
           // Try to find by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
           filteredContractors = contractorsData.filter(contractor =>
-            (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) && 
+            (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) &&
             contractor.isActive === true
           );
           console.log('📋 Filtered contractors for contact user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
@@ -767,13 +767,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               const userData = JSON.parse(contactUserData);
                               const permissions = userData.permissions;
                               const contractorId = userData.contractorId;
-                              
+
                               // Check if this contact user has access to this contractor
                               if (contractorId !== contractor._id) {
                                 console.log('🚫 Contact user does not have access to this contractor');
                                 return; // Don't open contractor details
                               }
-                              
+
                               // Contact admins can edit, contact users can only view
                               mode = (permissions === 'contactAdmin') ? 'edit' : 'view';
                             } catch (error) {
@@ -986,6 +986,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {/* Show buttons based on user permissions */}
                 {(() => {
+                  console.log('🔧 BUTTON LOGIC EXECUTING - START');
                   const contactUserData = localStorage.getItem('contactUser');
                   let showButtons = true;
                   let showSaveButton = true;
@@ -997,12 +998,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     contactUserData: contactUserData
                   });
 
+                  console.log('🔧 CHECKING CONDITIONS:', {
+                    isContactUser,
+                    hasContactUserData: !!contactUserData,
+                    condition: isContactUser && contactUserData
+                  });
+
                   if (isContactUser && contactUserData) {
+                    console.log('🔧 ENTERING CONTACT USER LOGIC');
                     try {
                       const userData = JSON.parse(contactUserData);
                       const permissions = userData.permissions;
                       const role = userData.role;
-                      
+
                       console.log('🔧 Button logic debug:', {
                         isContactUser,
                         permissions,
@@ -1011,7 +1019,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         userData,
                         allKeys: Object.keys(userData)
                       });
-                      
+
                       // Check if user is contactUser by userType or permissions
                       if (userData.userType === 'contractor' || userData.userType === 'contact' || permissions === 'contactUser') {
                         // contactUser: hide buttons completely - view only
@@ -1041,7 +1049,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       contactUserData: contactUserData
                     });
                   }
-                  
+
                   // Additional debug for contactUser detection
                   console.log('🔧 Contact user detection debug:', {
                     isContactUser,
@@ -1058,7 +1066,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     contactUserData: localStorage.getItem('contactUser'),
                     contactUserAuthenticated: localStorage.getItem('contactUserAuthenticated')
                   });
-                  
+
                   // Additional debug for contactUser detection
                   const contactUserData = localStorage.getItem('contactUser');
                   if (contactUserData) {
@@ -1074,19 +1082,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       console.error('Error parsing contact user data in final debug:', error);
                     }
                   }
-                  
+
                   // Force hide buttons for contactUser
                   console.log('🔧 Checking isContactUser for button hiding:', {
                     isContactUser,
                     type: typeof isContactUser,
                     value: isContactUser
                   });
-                  
+
                   if (isContactUser) {
                     console.log('🔧 Force hiding buttons for contactUser');
                     return null;
                   }
-                  
+
                   // Additional check for contactUser permissions
                   const contactUserData = localStorage.getItem('contactUser');
                   if (contactUserData) {
@@ -1097,12 +1105,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         permissions: userData.permissions,
                         userData
                       });
-                      
+
                       if (userData.userType === 'contact' || userData.userType === 'contractor') {
                         console.log('🔧 Force hiding buttons for contact user type:', userData.userType);
                         return null;
                       }
-                      
+
                       // Also check permissions field
                       if (userData.permissions === 'contactUser') {
                         console.log('🔧 Force hiding buttons for contactUser permissions');
@@ -1111,18 +1119,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     } catch (error) {
                       console.error('Error parsing contact user data for button hiding:', error);
                     }
+                  } else {
+                    console.log('🔧 NOT ENTERING CONTACT USER LOGIC - condition not met');
+                    console.log('🔧 isContactUser:', isContactUser);
+                    console.log('🔧 contactUserData:', contactUserData);
                   }
 
 
+                  console.log('🔧 FINAL BUTTON STATE BEFORE RENDERING:', {
+                    showButtons,
+                    showSaveButton,
+                    showCloseButton,
+                    isContactUser,
+                    contactUserData: localStorage.getItem('contactUser')
+                  });
+
                   if (!showButtons) {
                     console.log('🔧 Returning null - no buttons for contactUser');
-                    console.log('🔧 Final button state:', {
-                      showButtons,
-                      showSaveButton,
-                      showCloseButton,
-                      isContactUser,
-                      contactUserData: localStorage.getItem('contactUser')
-                    });
                     return null; // No buttons for contactUser
                   }
 
