@@ -2057,12 +2057,11 @@ export default function ContractorTabsSimple({
                                 <Table>
                                     <TableHead>
                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם פרויקט</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תיאור</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תאריך התחלה</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>עיר</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ערך (₪)</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סטטוס</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>התחלה</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>עיר</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ערך (₪)</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סטטוס</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -2075,24 +2074,15 @@ export default function ContractorTabsSimple({
                                                 }}
                                                 onClick={() => navigateToProject(project, 'edit')}
                                             >
-                                                <TableCell sx={{ textAlign: 'right' }}>{project.projectName || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{project.description || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>{project.projectName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{formatDate(project.startDate)}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.city || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
                                                     {(project.valueNis || project.value) ? `₪${(project.valueNis || project.value).toLocaleString()}` : ''}
                                                 </TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>
-                                                    <Typography
-                                                        variant="body2"
-                                                        sx={{
-                                                            color: project.status === 'active' || project.status === 'current' ? 'green' :
-                                                                project.status === 'future' ? 'orange' : 'gray'
-                                                        }}
-                                                    >
-                                                        {project.status === 'active' || project.status === 'current' ? 'פעיל' :
-                                                            project.status === 'future' ? 'עתידי' : 'הושלם'}
-                                                    </Typography>
+                                                    {project.status === 'active' || project.status === 'current' ? 'פעיל' :
+                                                        project.status === 'future' ? 'עתידי' : 'הושלם'}
                                                 </TableCell>
                                             </TableRow>
                                         ))}

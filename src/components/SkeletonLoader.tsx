@@ -9,7 +9,7 @@ const SkeletonLoader: React.FC = () => {
             padding: 3,
             backgroundColor: '#f5f5f5',
             minHeight: '100vh',
-            fontFamily: 'Arial, sans-serif'
+            fontFamily: 'Assistant, Arial, sans-serif'
         }}>
             {/* Header Section */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
