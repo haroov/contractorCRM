@@ -555,7 +555,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       description: '',
       contacts: [],
       notes: '',
-      safetyRating: 1,
+      safetyRating: 0,
       classifications: [],
       iso45001: false,
       isActive: true,
