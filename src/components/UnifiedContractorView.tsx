@@ -1082,6 +1082,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       try {
                         const contactUser = JSON.parse(contactUserData);
                         console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
+                        console.log('🔧 contactUserPermissions debug - user keys:', Object.keys(contactUser));
                         // For contact users, use permissions field
                         if (contactUser.permissions) {
                           console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
@@ -1090,6 +1091,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         // For system users (admin/regular), use role instead of permissions
                         if (contactUser.role) {
                           console.log('🔧 contactUserPermissions debug - using role:', contactUser.role);
+                          // If role is "מנהל פרוייקטים" or similar, treat as contactAdmin
+                          if (contactUser.role === 'מנהל פרוייקטים' || contactUser.role.includes('מנהל')) {
+                            console.log('🔧 contactUserPermissions debug - treating role as contactAdmin');
+                            return 'contactAdmin';
+                          }
                           return contactUser.role; // 'admin' or 'user'
                         }
                         console.log('🔧 contactUserPermissions debug - defaulting to contactUser');
