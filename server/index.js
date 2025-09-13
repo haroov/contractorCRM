@@ -81,9 +81,6 @@ app.get('/termsOfService.html', (req, res) => {
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
 // Configure multer for file uploads using memory storage
 const storage = multer.memoryStorage();
 
@@ -3243,6 +3240,14 @@ app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManage
     console.error('❌ Error deleting project for contact user:', error);
     res.status(500).json({ error: 'Failed to delete project' });
   }
+});
+
+// Serve static files from public directory AFTER all API routes
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
 
 connectDB().then(() => {
