@@ -45,6 +45,47 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [activeTab, setActiveTab] = useState(0);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+    // Check if user is a contact user
+    const [isContactUser, setIsContactUser] = useState(false);
+    const [contactUserPermissions, setContactUserPermissions] = useState<string>('contactUser');
+
+    useEffect(() => {
+        const checkContactUser = () => {
+            const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
+            const contactUserData = localStorage.getItem('contactUser');
+            
+            let isRealContactUser = false;
+            let permissions = 'contactUser';
+            
+            if (contactUserCheck && contactUserData) {
+                try {
+                    const contactUser = JSON.parse(contactUserData);
+                    isRealContactUser = contactUser.userType === 'contact' || contactUser.userType === 'contractor';
+                    
+                    if (isRealContactUser) {
+                        permissions = contactUser.permissions || 'contactUser';
+                    }
+                } catch (error) {
+                    console.error('Error parsing contact user data:', error);
+                }
+            }
+            
+            setIsContactUser(isRealContactUser);
+            setContactUserPermissions(permissions);
+            
+            console.log('🔧 ProjectDetailsPage contact user check:', {
+                isContactUser: isRealContactUser,
+                permissions,
+                contactUserData
+            });
+        };
+
+        checkContactUser();
+    }, []);
+
+    // Check if user can edit based on contact user permissions
+    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
+
     useEffect(() => {
         const loadProjectData = () => {
             const urlMode = searchParams.get('mode') as 'view' | 'edit' | 'new';
@@ -317,39 +358,82 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={handleClose}
-                                sx={{
-                                    minWidth: 'auto',
-                                    px: 2,
-                                    borderColor: '#9c27b0', // סגול שוקו
-                                    color: '#9c27b0',
-                                    '&:hover': {
-                                        borderColor: '#7b1fa2',
-                                        backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                    }
-                                }}
-                            >
-                                סגירה
-                            </Button>
-                            <Button
-                                variant="contained"
-                                size="small"
-                                onClick={handleSave}
-                                disabled={saving}
-                                sx={{
-                                    minWidth: 'auto',
-                                    px: 2,
-                                    bgcolor: '#9c27b0',
-                                    '&:hover': {
-                                        bgcolor: '#7b1fa2'
-                                    }
-                                }}
-                            >
-                                {saving ? 'שומר...' : 'שמירה'}
-                            </Button>
+                            {/* Show buttons based on user permissions */}
+                            {(() => {
+                                console.log('🔧 ProjectDetailsPage button logic:', {
+                                    isContactUser,
+                                    contactUserPermissions
+                                });
+
+                                // contactUser: show no buttons at all
+                                if (isContactUser && contactUserPermissions === 'contactUser') {
+                                    console.log('🔧 ProjectDetailsPage: contactUser - no buttons');
+                                    return null;
+                                }
+
+                                // contactAdmin: show only Save button, no Close button
+                                if (isContactUser && contactUserPermissions === 'contactAdmin') {
+                                    console.log('🔧 ProjectDetailsPage: contactAdmin - only Save button');
+                                    return (
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleSave}
+                                            disabled={saving}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
+                                                bgcolor: '#9c27b0',
+                                                '&:hover': {
+                                                    bgcolor: '#7b1fa2'
+                                                }
+                                            }}
+                                        >
+                                            {saving ? 'שומר...' : 'שמירה'}
+                                        </Button>
+                                    );
+                                }
+
+                                // System users: show both buttons
+                                console.log('🔧 ProjectDetailsPage: system user - both buttons');
+                                return (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={handleClose}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
+                                                borderColor: '#9c27b0', // סגול שוקו
+                                                color: '#9c27b0',
+                                                '&:hover': {
+                                                    borderColor: '#7b1fa2',
+                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                                }
+                                            }}
+                                        >
+                                            סגירה
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleSave}
+                                            disabled={saving}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
+                                                bgcolor: '#9c27b0',
+                                                '&:hover': {
+                                                    bgcolor: '#7b1fa2'
+                                                }
+                                            }}
+                                        >
+                                            {saving ? 'שומר...' : 'שמירה'}
+                                        </Button>
+                                    </>
+                                );
+                            })()}
                         </Box>
                     </Box>
 
@@ -379,7 +463,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         label="שם הפרויקט"
                                         value={project?.projectName || ''}
                                         onChange={(e) => handleFieldChange('projectName', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     />
 
                                     <TextField
@@ -387,7 +471,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         label="תיאור הפרויקט"
                                         value={project?.description || ''}
                                         onChange={(e) => handleFieldChange('description', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                         multiline
                                         rows={3}
                                     />
@@ -398,7 +482,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         type="date"
                                         value={project?.startDate || ''}
                                         onChange={(e) => handleFieldChange('startDate', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                         InputLabelProps={{ shrink: true }}
                                     />
 
@@ -408,7 +492,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         type="number"
                                         value={project?.durationMonths || 0}
                                         onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     />
 
                                     <TextField
@@ -416,7 +500,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         label="עיר"
                                         value={project?.city || ''}
                                         onChange={(e) => handleFieldChange('city', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     />
 
                                     <TextField
@@ -425,7 +509,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         type="number"
                                         value={project?.valueNis || project?.value || 0}
                                         onChange={(e) => handleFieldChange('valueNis', parseInt(e.target.value) || 0)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     />
 
                                     <TextField
@@ -434,7 +518,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         select
                                         value={project?.status || 'future'}
                                         onChange={(e) => handleFieldChange('status', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     >
                                         <MenuItem value="future">עתידי</MenuItem>
                                         <MenuItem value="current">פעיל</MenuItem>
@@ -446,7 +530,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         label="קבלן ראשי"
                                         value={project?.mainContractor || ''}
                                         onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
-                                        disabled={mode === 'view'}
+                                        disabled={mode === 'view' || !canEdit}
                                     />
                                 </Box>
                             </Box>
