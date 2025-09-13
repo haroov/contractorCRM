@@ -984,49 +984,87 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 {selectedContractor?.name || 'קבלן חדש'}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleCloseContractorDetails}
-                  sx={{
-                    minWidth: 'auto',
-                    px: 2,
-                    borderColor: '#9c27b0', // סגול שוקו
-                    color: '#9c27b0',
-                    '&:hover': {
-                      borderColor: '#7b1fa2',
-                      backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                {/* Show buttons based on user permissions */}
+                {(() => {
+                  const contactUserData = localStorage.getItem('contactUser');
+                  let showButtons = true;
+                  let showSaveButton = true;
+                  let showCloseButton = true;
+
+                  if (isContactUser && contactUserData) {
+                    try {
+                      const userData = JSON.parse(contactUserData);
+                      const permissions = userData.permissions;
+                      
+                      if (permissions === 'contactAdmin') {
+                        // contactAdmin: show only Save button, no Close button
+                        showCloseButton = false;
+                        showSaveButton = true;
+                      } else if (permissions === 'contactUser') {
+                        // contactUser: show no buttons at all
+                        showButtons = false;
+                      }
+                    } catch (error) {
+                      console.error('Error parsing contact user data:', error);
                     }
-                  }}
-                >
-                  סגירה
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => {
-                    console.log('🔘 Save button clicked');
-                    // Trigger save from ContractorTabs
-                    const saveEvent = new CustomEvent('saveContractor');
-                    window.dispatchEvent(saveEvent);
-                  }}
-                  disabled={isSaving}
-                  startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
-                  sx={{
-                    minWidth: 'auto',
-                    px: 2,
-                    backgroundColor: '#9c27b0', // סגול שוקו
-                    '&:hover': {
-                      backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
-                    },
-                    '&:disabled': {
-                      backgroundColor: '#9c27b0',
-                      opacity: 0.7
-                    }
-                  }}
-                >
-                  {isSaving ? 'שומר...' : 'שמירה'}
-                </Button>
+                  }
+
+                  if (!showButtons) {
+                    return null; // No buttons for contactUser
+                  }
+
+                  return (
+                    <>
+                      {showCloseButton && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={handleCloseContractorDetails}
+                          sx={{
+                            minWidth: 'auto',
+                            px: 2,
+                            borderColor: '#9c27b0', // סגול שוקו
+                            color: '#9c27b0',
+                            '&:hover': {
+                              borderColor: '#7b1fa2',
+                              backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                            }
+                          }}
+                        >
+                          סגירה
+                        </Button>
+                      )}
+                      {showSaveButton && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => {
+                            console.log('🔘 Save button clicked');
+                            // Trigger save from ContractorTabs
+                            const saveEvent = new CustomEvent('saveContractor');
+                            window.dispatchEvent(saveEvent);
+                          }}
+                          disabled={isSaving}
+                          startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
+                          sx={{
+                            minWidth: 'auto',
+                            px: 2,
+                            backgroundColor: '#9c27b0', // סגול שוקו
+                            '&:hover': {
+                              backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                            },
+                            '&:disabled': {
+                              backgroundColor: '#9c27b0',
+                              opacity: 0.7
+                            }
+                          }}
+                        >
+                          {isSaving ? 'שומר...' : 'שמירה'}
+                        </Button>
+                      )}
+                    </>
+                  );
+                })()}
               </Box>
             </Box>
 
