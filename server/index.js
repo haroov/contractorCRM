@@ -2383,7 +2383,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
         console.log('📋 Extracted contractor data:', {
           contractorId,
-          phone: rawPhone + ' -> ' + phone,
+          phone: phone,
           email,
           licenseTypes
         });
@@ -2474,7 +2474,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
       console.log('📋 Extracted contractor-only data:', {
         contractorId,
-        phone: rawPhone + ' -> ' + phone,
+        phone: phone,
         email,
         name: contractorName,
         city,
