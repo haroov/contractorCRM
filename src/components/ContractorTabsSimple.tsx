@@ -14,6 +14,7 @@ interface ContractorTabsSimpleProps {
     currentUser?: any;
     isSaving?: boolean;
     onUpdateContractor?: (contractor: any) => void;
+    onShowNotification?: (message: string, severity: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
 export default function ContractorTabsSimple({
@@ -24,7 +25,8 @@ export default function ContractorTabsSimple({
     contactUserPermissions,
     currentUser,
     isSaving = false,
-    onUpdateContractor
+    onUpdateContractor,
+    onShowNotification
 }: ContractorTabsSimpleProps) {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
@@ -1283,8 +1285,10 @@ export default function ContractorTabsSimple({
             ? `הח״פ ${localCompanyId} כבר קיים במערכת (archived). נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`
             : `הח״פ ${localCompanyId} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`;
 
-        // Show alert or notification
-        alert(message);
+        // Show notification using snackbar
+        if (onShowNotification) {
+            onShowNotification(message, 'info');
+        }
 
         console.log('✅ Existing contractor data loaded successfully');
     };

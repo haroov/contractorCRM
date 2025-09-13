@@ -1155,6 +1155,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   currentUser={currentUser}
                   isSaving={isSaving}
                   onUpdateContractor={setSelectedContractor}
+                  onShowNotification={setSnackbar}
                 />
               </Suspense>
             </Box>
