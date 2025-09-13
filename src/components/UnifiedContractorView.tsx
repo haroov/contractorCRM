@@ -1011,8 +1011,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         showCloseButton = false;
                         showSaveButton = true;
                       } else if (permissions === 'contactUser') {
-                        // contactUser: show no buttons at all
-                        console.log('🔧 Setting contactUser button logic');
+                        // contactUser: show no buttons at all - no permission to save or close contractor
+                        console.log('🔧 Setting contactUser button logic - no buttons');
                         showButtons = false;
                       } else {
                         console.log('🔧 No matching permissions found, defaulting to show buttons');
