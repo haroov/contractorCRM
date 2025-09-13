@@ -176,8 +176,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleClose = () => {
-        // Navigate back to the main contractor view
-        navigate('/');
+        // Navigate back to the contractor card that opened this project
+        const contractorId = searchParams.get('contractorId');
+        if (contractorId) {
+            navigate(`/?contractor=${contractorId}&tab=projects`);
+        } else {
+            // Fallback to main view if no contractor ID
+            navigate('/');
+        }
     };
 
     const handleBack = () => {

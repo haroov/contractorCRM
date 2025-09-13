@@ -96,6 +96,11 @@ export default function ContractorTabsSimple({
             params.set('sessionId', sessionId);
         }
 
+        // Add contractor ID for navigation back
+        if (contractor?._id) {
+            params.set('contractorId', contractor._id);
+        }
+
         if (mode === 'new') {
             params.set('project_id', 'new');
         } else {
