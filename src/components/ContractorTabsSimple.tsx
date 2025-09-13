@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete } from '@mui/material';
-import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete, InputAdornment } from '@mui/material';
+import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import ContractorService from '../services/contractorService';
 import { authenticatedFetch } from '../config/api';
@@ -29,6 +29,7 @@ export default function ContractorTabsSimple({
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
+    const [projectSearchTerm, setProjectSearchTerm] = useState('');
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
@@ -748,6 +749,17 @@ export default function ContractorTabsSimple({
             const startDate = new Date(project.startDate);
             startDate.setHours(0, 0, 0, 0);
             const isClosed = project.isClosed || project.status === 'completed';
+
+            // Apply search filter
+            if (projectSearchTerm) {
+                const searchTerm = projectSearchTerm.toLowerCase();
+                const projectName = (project.projectName || '').toLowerCase();
+                const city = (project.city || '').toLowerCase();
+                
+                if (!projectName.includes(searchTerm) && !city.includes(searchTerm)) {
+                    return false;
+                }
+            }
 
             switch (activeProjectFilter) {
                 case 'all':
@@ -1957,10 +1969,42 @@ export default function ContractorTabsSimple({
 
                 {activeTab === 2 && (
                     <Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                            <Typography variant="h6">
-                                פרויקטים
-                            </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                            <TextField
+                                size="small"
+                                placeholder="חיפוש פרויקטים לפי שם, עיר..."
+                                value={projectSearchTerm}
+                                onChange={(e) => setProjectSearchTerm(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                sx={{
+                                    bgcolor: 'white',
+                                    borderRadius: 1,
+                                    flex: 1,
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: '#d0d0d0'
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: '#9c27b0'
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#9c27b0'
+                                        }
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        color: '#666666',
+                                        '&.Mui-focused': {
+                                            color: '#9c27b0'
+                                        }
+                                    }
+                                }}
+                            />
                             {canEdit && (
                                 <Button
                                     variant="contained"
