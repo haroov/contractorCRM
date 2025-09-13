@@ -991,6 +991,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   let showSaveButton = true;
                   let showCloseButton = true;
 
+                  console.log('🔧 Button logic start:', {
+                    isContactUser,
+                    hasContactUserData: !!contactUserData,
+                    contactUserData: contactUserData
+                  });
+
                   if (isContactUser && contactUserData) {
                     try {
                       const userData = JSON.parse(contactUserData);
