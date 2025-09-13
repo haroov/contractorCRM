@@ -1082,8 +1082,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   if (contactUserData) {
                     try {
                       const userData = JSON.parse(contactUserData);
+                      console.log('🔧 Checking userData for button hiding:', {
+                        userType: userData.userType,
+                        permissions: userData.permissions,
+                        userData
+                      });
+                      
                       if (userData.userType === 'contact' || userData.userType === 'contractor') {
                         console.log('🔧 Force hiding buttons for contact user type:', userData.userType);
+                        return null;
+                      }
+                      
+                      // Also check permissions field
+                      if (userData.permissions === 'contactUser') {
+                        console.log('🔧 Force hiding buttons for contactUser permissions');
                         return null;
                       }
                     } catch (error) {
