@@ -2560,13 +2560,13 @@ export default function ContractorTabsSimple({
                                     </TableHead>
                                     <TableBody>
                                         {getFilteredContacts().map((contact: any, index: number) => (
-                                            <TableRow 
+                                            <TableRow
                                                 key={contact.id || index}
                                                 sx={{
                                                     '&:hover': { backgroundColor: '#f5f5f5' },
-                                                    cursor: 'pointer'
+                                                    cursor: canEdit ? 'pointer' : 'default'
                                                 }}
-                                                onClick={() => handleEditContact(contact)}
+                                                onClick={canEdit ? () => handleEditContact(contact) : undefined}
                                             >
                                                 <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>{contact.fullName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
