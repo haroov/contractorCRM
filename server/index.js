@@ -54,17 +54,29 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Handle static HTML files before React Router
-app.get('*.html', (req, res) => {
-  const filePath = path.join(__dirname, 'public', req.path);
-  console.log('🔍 Serving static HTML file:', filePath);
+// Handle specific static HTML files
+app.get('/privacy-policy.html', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'privacy-policy.html');
+  console.log('🔍 Serving privacy policy:', filePath);
   
-  // Check if file exists
   if (fs.existsSync(filePath)) {
-    console.log('✅ Static HTML file found, serving directly');
+    console.log('✅ Privacy policy found, serving directly');
     res.sendFile(filePath);
   } else {
-    console.log('❌ Static HTML file not found, falling back to React');
+    console.log('❌ Privacy policy not found, falling back to React');
+    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  }
+});
+
+app.get('/terms-of-service.html', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'terms-of-service.html');
+  console.log('🔍 Serving terms of service:', filePath);
+  
+  if (fs.existsSync(filePath)) {
+    console.log('✅ Terms of service found, serving directly');
+    res.sendFile(filePath);
+  } else {
+    console.log('❌ Terms of service not found, falling back to React');
     res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
   }
 });
