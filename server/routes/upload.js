@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { put } = require('@vercel/blob');
+const { put, del } = require('@vercel/blob');
 const { MongoClient, ObjectId } = require('mongodb');
 const router = express.Router();
 
@@ -111,25 +111,50 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 router.delete('/certificate', async (req, res) => {
   try {
     await initDB();
-
+    
     const { contractorId, certificateType } = req.body;
-
+    
     if (!contractorId || !certificateType) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: contractorId or certificateType'
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required fields: contractorId or certificateType' 
       });
     }
 
+    // Get contractor to find the certificate URL
+    const contractor = await db.collection('contractors').findOne({
+      _id: new ObjectId(contractorId)
+    });
+
+    if (!contractor) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Contractor not found' 
+      });
+    }
+
+    const certificateField = `${certificateType}Certificate`;
+    const certificateUrl = contractor[certificateField];
+
+    // Delete file from Vercel Blob if URL exists
+    if (certificateUrl) {
+      try {
+        await del(certificateUrl);
+        console.log(`✅ Deleted file from Vercel Blob: ${certificateUrl}`);
+      } catch (blobError) {
+        console.error('❌ Error deleting file from Vercel Blob:', blobError);
+        // Continue with database cleanup even if blob deletion fails
+      }
+    }
+
     // Update contractor document to remove certificate URL
-    const updateField = `${certificateType}Certificate`;
     await db.collection('contractors').updateOne(
       { _id: new ObjectId(contractorId) },
-      {
-        $unset: {
-          [updateField]: "",
+      { 
+        $unset: { 
+          [certificateField]: "",
           [`${certificateType}LastUpdated`]: ""
-        }
+        } 
       }
     );
 
@@ -140,16 +165,17 @@ router.delete('/certificate', async (req, res) => {
       message: 'Certificate removed successfully',
       data: {
         certificateType: certificateType,
-        contractorId: contractorId
+        contractorId: contractorId,
+        deletedFromBlob: !!certificateUrl
       }
     });
 
   } catch (error) {
     console.error('❌ Error removing certificate:', error);
-    res.status(500).json({
-      success: false,
+    res.status(500).json({ 
+      success: false, 
       error: 'Failed to remove certificate',
-      details: error.message
+      details: error.message 
     });
   }
 });
