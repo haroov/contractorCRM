@@ -146,7 +146,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -2112,7 +2112,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           statusIndicator = getCompanyStatusIndicator(
             companyData['סטטוס חברה'] || '',
             companyData['מפרה'] || '',
-            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
+            mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId)
           );
 
           // Store status data for caching
@@ -2411,7 +2412,8 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           statusIndicator: getCompanyStatusIndicator(
             companyData['סטטוס חברה'] || '',
             companyData['מפרה'] || '',
-            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || ''
+            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
+            mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId)
           )
         }
       });
@@ -2586,7 +2588,7 @@ function formatDateForInput(dateString) {
 }
 
 // Helper function to determine company status indicator
-function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport) {
+function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport, companyType) {
   const currentYear = new Date().getFullYear();
 
   // 🔴 Red: Company status is not "פעילה" (Active)
@@ -2594,25 +2596,33 @@ function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport) 
     return '🔴';
   }
 
-  // 🟡 Yellow: Has violations or annual report is more than 2 years old
+  // 🟡 Yellow: Has violations
   if (violations && violations.trim() !== '') {
     return '🟡';
   }
 
-  if (lastAnnualReport) {
+  // For public companies, ignore annual report year (they report to stock exchange, not companies register)
+  const isPublicCompany = companyType === 'public_company' || 
+                         (companyType && companyType.toLowerCase().includes('ציבורית'));
+
+  if (!isPublicCompany && lastAnnualReport) {
     const reportYear = parseInt(lastAnnualReport);
     if (!isNaN(reportYear) && (currentYear - reportYear) > 2) {
       return '🟡';
     }
   }
 
-  // 🟢 Green: All good - active status, no violations, recent annual report
-  if (companyStatus === 'פעילה' &&
-    (!violations || violations.trim() === '') &&
-    lastAnnualReport &&
-    !isNaN(parseInt(lastAnnualReport)) &&
-    (currentYear - parseInt(lastAnnualReport)) <= 2) {
-    return '🟢';
+  // 🟢 Green: All good - active status, no violations, and either:
+  // - For public companies: just active status and no violations
+  // - For other companies: also recent annual report
+  if (companyStatus === 'פעילה' && (!violations || violations.trim() === '')) {
+    if (isPublicCompany) {
+      return '🟢'; // Public companies don't need annual report check
+    } else if (lastAnnualReport && 
+               !isNaN(parseInt(lastAnnualReport)) && 
+               (currentYear - parseInt(lastAnnualReport)) <= 2) {
+      return '🟢'; // Other companies need recent annual report
+    }
   }
 
   // No indicator if no data
