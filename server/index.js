@@ -55,8 +55,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Handle specific static HTML files
-app.get('/privacy-policy.html', (req, res) => {
-  const filePath = path.join(__dirname, 'public', 'privacy-policy.html');
+app.get('/privacyPolicy.html', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'privacyPolicy.html');
   console.log('🔍 Serving privacy policy:', filePath);
   
   if (fs.existsSync(filePath)) {
@@ -68,8 +68,8 @@ app.get('/privacy-policy.html', (req, res) => {
   }
 });
 
-app.get('/terms-of-service.html', (req, res) => {
-  const filePath = path.join(__dirname, 'public', 'terms-of-service.html');
+app.get('/termsOfService.html', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'termsOfService.html');
   console.log('🔍 Serving terms of service:', filePath);
   
   if (fs.existsSync(filePath)) {
