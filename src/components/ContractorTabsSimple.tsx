@@ -369,9 +369,17 @@ export default function ContractorTabsSimple({
             setLocalSafetyRating(contractor?.safetyRating || '0');
             setLocalSafetyExpiry(contractor?.safetyExpiry || '');
             setLocalSafetyCertificate(contractor?.safetyCertificate || '');
+            // Auto-detect file type for legacy files
+            if (contractor?.safetyCertificate) {
+                setLocalSafetyCertificateType(contractor.safetyCertificate.toLowerCase().includes('.pdf') ? 'application/pdf' : 'image');
+            }
             setLocalIso45001(contractor?.iso45001 || false);
             setLocalIsoExpiry(contractor?.isoExpiry || '');
             setLocalIsoCertificate(contractor?.isoCertificate || '');
+            // Auto-detect file type for legacy files
+            if (contractor?.isoCertificate) {
+                setLocalIsoCertificateType(contractor.isoCertificate.toLowerCase().includes('.pdf') ? 'application/pdf' : 'image');
+            }
             setLocalClassifications(contractor?.classifications || []);
 
             // Update company about section
@@ -1151,9 +1159,17 @@ export default function ContractorTabsSimple({
         setLocalSafetyRating(contractorData.safetyRating || '0');
         setLocalSafetyExpiry(contractorData.safetyExpiry || '');
         setLocalSafetyCertificate(contractorData.safetyCertificate || '');
+        // Auto-detect file type for legacy files
+        if (contractorData.safetyCertificate) {
+            setLocalSafetyCertificateType(contractorData.safetyCertificate.toLowerCase().includes('.pdf') ? 'application/pdf' : 'image');
+        }
         setLocalIso45001(contractorData.iso45001 || false);
         setLocalIsoExpiry(contractorData.isoExpiry || '');
         setLocalIsoCertificate(contractorData.isoCertificate || '');
+        // Auto-detect file type for legacy files
+        if (contractorData.isoCertificate) {
+            setLocalIsoCertificateType(contractorData.isoCertificate.toLowerCase().includes('.pdf') ? 'application/pdf' : 'image');
+        }
         setLocalClassifications(contractorData.classifications || []);
         setLocalIsActive(contractorData.isActive ?? true);
 
@@ -1880,7 +1896,7 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localSafetyCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localSafetyCertificateType === 'application/pdf' ? (
+                                            {localSafetyCertificateType === 'application/pdf' || localSafetyCertificate.toLowerCase().includes('.pdf') ? (
                                                 <Box
                                                     sx={{
                                                         width: '56px',
@@ -2099,7 +2115,7 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localIsoCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localIsoCertificateType === 'application/pdf' ? (
+                                            {localIsoCertificateType === 'application/pdf' || localIsoCertificate.toLowerCase().includes('.pdf') ? (
                                                 <Box
                                                     sx={{
                                                         width: '56px',
