@@ -83,7 +83,10 @@ export const projectsAPI = {
     if (!contentType || !contentType.includes('application/json')) {
       console.error('❌ API returned non-JSON response:', contentType);
       const responseText = await response.text();
-      console.error('❌ Response content:', responseText.substring(0, 200));
+      console.error('❌ Response content (first 500 chars):', responseText.substring(0, 500));
+      console.error('❌ Full response URL:', response.url);
+      console.error('❌ Response status:', response.status);
+      console.error('❌ Response statusText:', response.statusText);
       throw new Error(`API returned non-JSON response: ${contentType}`);
     }
     
