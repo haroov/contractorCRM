@@ -133,21 +133,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (isContactUser && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
-          // Only filter for actual contact users, not system users
-          if (contactUser.userType === 'contact') {
-            // For contact users, show only their associated contractor
-            filteredContractors = contractorsData.filter(contractor =>
-              contractor._id === contactUser.contractorId && contractor.isActive === true
-            );
-            console.log('📋 Filtered contractors for contact user:', filteredContractors.length);
-          } else {
-            // For system users (admin/regular), show all contractors
-            filteredContractors = contractorsData;
-            console.log('📋 Showing all contractors for system user:', filteredContractors.length);
-          }
+          // For contact users, show only their associated contractor
+          filteredContractors = contractorsData.filter(contractor =>
+            contractor._id === contactUser.contractorId && contractor.isActive === true
+          );
+          console.log('📋 Filtered contractors for contact user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
         } catch (error) {
           console.error('Error parsing contact user data:', error);
-          filteredContractors = contractorsData;
+          filteredContractors = [];
         }
       } else {
         // For regular users, show all active contractors
@@ -631,14 +624,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               }}
             />
 
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddNewContractor}
-              sx={{ bgcolor: '#882DD7' }}
-            >
-              הוסף קבלן
-            </Button>
+            {/* Only show Add Contractor button for system users, not contact users */}
+            {!isContactUser && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddNewContractor}
+                sx={{ bgcolor: '#882DD7' }}
+              >
+                הוסף קבלן
+              </Button>
+            )}
 
           </Box>
 
@@ -713,8 +709,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             try {
                               const userData = JSON.parse(contactUserData);
                               const permissions = userData.permissions;
-                              // Contact managers and admins can edit, contact users can only view
-                              mode = (permissions === 'contactAdmin' || permissions === 'admin') ? 'edit' : 'view';
+                              const contractorId = userData.contractorId;
+                              
+                              // Check if this contact user has access to this contractor
+                              if (contractorId !== contractor._id) {
+                                console.log('🚫 Contact user does not have access to this contractor');
+                                return; // Don't open contractor details
+                              }
+                              
+                              // Contact admins can edit, contact users can only view
+                              mode = (permissions === 'contactAdmin') ? 'edit' : 'view';
                             } catch (error) {
                               console.error('Error parsing contact user data:', error);
                               mode = 'view';
@@ -847,48 +851,50 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           )}
                         </TableCell>
 
-                        {/* פעולות */}
-                        <TableCell sx={{ textAlign: 'center' }}>
-                          <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
-                            {/* כפתור ארכב - לכל המשתמשים */}
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleArchiveContractor(contractor);
-                              }}
-                              sx={{
-                                color: '#5f6368',
-                                '&:hover': {
-                                  backgroundColor: '#f1f3f4',
-                                  color: '#202124'
-                                }
-                              }}
-                            >
-                              <ArchiveIcon fontSize="small" />
-                            </IconButton>
-
-                            {/* כפתור מחק - רק לאדמין */}
-                            {currentUser?.permissions === 'admin' && (
+                        {/* פעולות - רק למשתמשי מערכת */}
+                        {!isContactUser && (
+                          <TableCell sx={{ textAlign: 'center' }}>
+                            <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                              {/* כפתור ארכב - לכל המשתמשים */}
                               <IconButton
                                 size="small"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteContractor(contractor);
+                                  handleArchiveContractor(contractor);
                                 }}
                                 sx={{
                                   color: '#5f6368',
                                   '&:hover': {
-                                    backgroundColor: '#fce8e6',
-                                    color: '#d93025'
+                                    backgroundColor: '#f1f3f4',
+                                    color: '#202124'
                                   }
                                 }}
                               >
-                                <DeleteIcon fontSize="small" />
+                                <ArchiveIcon fontSize="small" />
                               </IconButton>
-                            )}
-                          </Box>
-                        </TableCell>
+
+                              {/* כפתור מחק - רק לאדמין */}
+                              {currentUser?.permissions === 'admin' && (
+                                <IconButton
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteContractor(contractor);
+                                  }}
+                                  sx={{
+                                    color: '#5f6368',
+                                    '&:hover': {
+                                      backgroundColor: '#fce8e6',
+                                      color: '#d93025'
+                                    }
+                                  }}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                            </Box>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>

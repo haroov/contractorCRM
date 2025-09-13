@@ -280,7 +280,7 @@ export default function ContractorTabsSimple({
 
     // Check if user can edit based on contact user permissions
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
-    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin' || contactUserPermissions === 'admin' || contactUserPermissions === 'user';
+    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
