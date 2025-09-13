@@ -1014,13 +1014,25 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         // contactUser: show no buttons at all
                         console.log('🔧 Setting contactUser button logic');
                         showButtons = false;
+                      } else {
+                        console.log('🔧 No matching permissions found, defaulting to show buttons');
+                        console.log('🔧 permissions value:', permissions);
+                        console.log('🔧 permissions type:', typeof permissions);
                       }
                     } catch (error) {
                       console.error('Error parsing contact user data:', error);
                     }
                   }
 
+                  console.log('🔧 Final button logic:', {
+                    showButtons,
+                    showSaveButton,
+                    showCloseButton,
+                    isContactUser
+                  });
+
                   if (!showButtons) {
+                    console.log('🔧 Returning null - no buttons for contactUser');
                     return null; // No buttons for contactUser
                   }
 
