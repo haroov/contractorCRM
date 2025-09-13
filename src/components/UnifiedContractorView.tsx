@@ -1,7 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
@@ -163,44 +163,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   };
 
-  // Function to refresh contractor statistics
-  const refreshContractorStats = async () => {
-    try {
-      console.log('🔄 Refreshing contractor statistics...');
-      const { authenticatedFetch } = await import('../config/api');
-      const response = await authenticatedFetch('/api/maintenance/update-stats', {
-        method: 'POST'
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Statistics refreshed:', result);
-        
-        // Reload contractors to get updated statistics
-        await loadContractors();
-        
-        setSnackbar({
-          open: true,
-          message: 'סטטיסטיקות עודכנו בהצלחה',
-          severity: 'success'
-        });
-      } else {
-        console.error('❌ Failed to refresh statistics');
-        setSnackbar({
-          open: true,
-          message: 'שגיאה בעדכון הסטטיסטיקות',
-          severity: 'error'
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error refreshing statistics:', error);
-      setSnackbar({
-        open: true,
-        message: 'שגיאה בעדכון הסטטיסטיקות',
-        severity: 'error'
-      });
-    }
-  };
 
   // Load status indicators for all contractors
   const loadAllContractorStatusIndicators = async () => {
@@ -678,21 +640,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               הוסף קבלן
             </Button>
 
-            <Button
-              variant="outlined"
-              startIcon={<RefreshIcon />}
-              onClick={refreshContractorStats}
-              sx={{ 
-                borderColor: '#9c27b0',
-                color: '#9c27b0',
-                '&:hover': {
-                  borderColor: '#7b1fa2',
-                  backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                }
-              }}
-            >
-              רענן סטטיסטיקות
-            </Button>
           </Box>
 
           {/* Statistics Cards */}

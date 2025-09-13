@@ -2050,17 +2050,18 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         console.log('📋 Company is archived (isActive: false)');
       }
 
-      // Check if we have cached status data that's less than 24 hours old
+      // Check if we have cached status data that's from today
       const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const lastStatusUpdate = existingContractor.statusLastUpdated ? new Date(existingContractor.statusLastUpdated) : null;
-      const isStatusDataFresh = lastStatusUpdate && (now - lastStatusUpdate) < 24 * 60 * 60 * 1000; // 24 hours
+      const isStatusDataFresh = lastStatusUpdate && lastStatusUpdate >= today; // Today only
 
-      // Check if we have cached license data that's less than 24 hours old
+      // Check if we have cached license data that's from today
       const lastLicenseUpdate = existingContractor.licensesLastUpdated ? new Date(existingContractor.licensesLastUpdated) : null;
-      const isLicenseDataFresh = lastLicenseUpdate && (now - lastLicenseUpdate) < 24 * 60 * 60 * 1000; // 24 hours
+      const isLicenseDataFresh = lastLicenseUpdate && lastLicenseUpdate >= today; // Today only
 
       if (isStatusDataFresh && existingContractor.statusIndicator && isLicenseDataFresh && !force_refresh) {
-        console.log('✅ Using cached status data (less than 24 hours old)');
+        console.log('✅ Using cached status data (from today)');
         return res.json({
           success: true,
           source: 'mongodb_cached',
