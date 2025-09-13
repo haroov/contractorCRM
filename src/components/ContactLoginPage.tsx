@@ -12,7 +12,8 @@ import {
   Paper,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  Link
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -448,6 +449,37 @@ export default function ContactLoginPage() {
             ) : null}
           </CardContent>
         </Card>
+
+        {/* Terms and Privacy Links */}
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            <Link
+              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/termsOfService.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}
+            >
+              תנאי השימוש
+            </Link>
+            {' | '}
+            <Link
+              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/privacyPolicy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' }
+              }}
+            >
+              מדיניות המידע והפרטיות
+            </Link>
+          </Typography>
+        </Box>
 
       </Paper>
     </Container>
