@@ -2053,24 +2053,28 @@ export default function ContractorTabsSimple({
                         </Box>
 
                         {getFilteredProjects().length > 0 ? (
-                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                            <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                                 <Table>
                                     <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם פרויקט</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תיאור</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך התחלה</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עיר</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>ערך (₪)</TableCell>
-                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סטטוס</TableCell>
-                                            {canEdit && (
-                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
-                                            )}
+                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם פרויקט</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תיאור</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תאריך התחלה</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>עיר</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ערך (₪)</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 500, textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סטטוס</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {getFilteredProjects().map((project: any, index: number) => (
-                                            <TableRow key={project._id || project.id || index}>
+                                            <TableRow 
+                                                key={project._id || project.id || index}
+                                                sx={{
+                                                    '&:hover': { backgroundColor: '#f5f5f5' },
+                                                    cursor: 'pointer'
+                                                }}
+                                                onClick={() => navigateToProject(project, 'edit')}
+                                            >
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.projectName || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{project.description || ''}</TableCell>
                                                 <TableCell sx={{ textAlign: 'right' }}>{formatDate(project.startDate)}</TableCell>
@@ -2090,24 +2094,6 @@ export default function ContractorTabsSimple({
                                                             project.status === 'future' ? 'עתידי' : 'הושלם'}
                                                     </Typography>
                                                 </TableCell>
-                                                {canEdit && (
-                                                    <TableCell sx={{ textAlign: 'center' }}>
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() => navigateToProject(project, 'edit')}
-                                                            sx={{ color: '#9c27b0' }}
-                                                        >
-                                                            <EditIcon fontSize="small" />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() => {/* TODO: Archive project handler */ }}
-                                                            sx={{ color: 'gray' }}
-                                                        >
-                                                            <DeleteIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                )}
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -2121,23 +2107,6 @@ export default function ContractorTabsSimple({
                                             activeProjectFilter === 'future' ? 'אין פרויקטים עתידיים' :
                                                 'אין פרויקטים נסגרו'}
                                 </Typography>
-                                {canEdit && (
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={<AddIcon />}
-                                        onClick={() => {/* TODO: Add project handler */ }}
-                                        sx={{
-                                            borderColor: '#9c27b0', // סגול שוקו
-                                            color: '#9c27b0',
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                borderColor: '#9c27b0'
-                                            }
-                                        }}
-                                    >
-                                        הוסף פרויקט ראשון
-                                    </Button>
-                                )}
                             </Box>
                         )}
                     </Box>
