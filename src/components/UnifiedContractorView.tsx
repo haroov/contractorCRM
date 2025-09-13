@@ -986,180 +986,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {/* Show buttons based on user permissions */}
                 {(() => {
-                  console.log('🔧 BUTTON LOGIC EXECUTING - START');
-                  const contactUserData = localStorage.getItem('contactUser');
-                  let showButtons = true;
-                  let showSaveButton = true;
-                  let showCloseButton = true;
-
-                  console.log('🔧 Button logic start:', {
-                    isContactUser,
-                    hasContactUserData: !!contactUserData,
-                    contactUserData: contactUserData
-                  });
-
-                  console.log('🔧 CHECKING CONDITIONS:', {
-                    isContactUser,
-                    hasContactUserData: !!contactUserData,
-                    condition: isContactUser && contactUserData
-                  });
-
-                  if (isContactUser && contactUserData) {
-                    console.log('🔧 ENTERING CONTACT USER LOGIC');
-                    try {
-                      const userData = JSON.parse(contactUserData);
-                      const permissions = userData.permissions;
-                      const role = userData.role;
-
-                      console.log('🔧 Button logic debug:', {
-                        isContactUser,
-                        permissions,
-                        role,
-                        userType: userData.userType,
-                        userData,
-                        allKeys: Object.keys(userData)
-                      });
-
-                      // Check if user is contactUser by userType or permissions
-                      if (userData.userType === 'contractor' || userData.userType === 'contact' || permissions === 'contactUser') {
-                        // contactUser: hide buttons completely - view only
-                        console.log('🔧 Setting contactUser button logic - hiding buttons completely');
-                        showButtons = false;
-                        showSaveButton = false;
-                        showCloseButton = false;
-                      } else if (permissions === 'contactAdmin') {
-                        // contactAdmin: show only Save button, no Close button
-                        console.log('🔧 Setting contactAdmin button logic');
-                        showCloseButton = false;
-                        showSaveButton = true;
-                      } else {
-                        console.log('🔧 No matching permissions found, defaulting to show buttons');
-                        console.log('🔧 permissions value:', permissions);
-                        console.log('🔧 permissions type:', typeof permissions);
-                        console.log('🔧 permissions === "contactUser":', permissions === 'contactUser');
-                        console.log('🔧 permissions === "contactAdmin":', permissions === 'contactAdmin');
-                      }
-                    } catch (error) {
-                      console.error('Error parsing contact user data:', error);
-                    }
-                  } else {
-                    console.log('🔧 Not a contact user or no contact user data:', {
-                      isContactUser,
-                      hasContactUserData: !!contactUserData,
-                      contactUserData: contactUserData
-                    });
-                  }
-
-                  // Additional debug for contactUser detection
-                  console.log('🔧 Contact user detection debug:', {
-                    isContactUser,
-                    contactUserData,
-                    contactUserAuthenticated: localStorage.getItem('contactUserAuthenticated'),
-                    contactUserType: contactUserData ? JSON.parse(contactUserData).userType : 'no data'
-                  });
-
-                  console.log('🔧 Final button logic:', {
-                    showButtons,
-                    showSaveButton,
-                    showCloseButton,
-                    isContactUser,
-                    contactUserData: localStorage.getItem('contactUser'),
-                    contactUserAuthenticated: localStorage.getItem('contactUserAuthenticated')
-                  });
-
-                  // Additional debug for contactUser detection
-                  const contactUserData = localStorage.getItem('contactUser');
-                  if (contactUserData) {
-                    try {
-                      const userData = JSON.parse(contactUserData);
-                      console.log('🔧 Final debug - userData:', {
-                        userType: userData.userType,
-                        permissions: userData.permissions,
-                        isContactUser,
-                        showButtons
-                      });
-                    } catch (error) {
-                      console.error('Error parsing contact user data in final debug:', error);
-                    }
-                  }
-
-                  // Force hide buttons for contactUser
-                  console.log('🔧 Checking isContactUser for button hiding:', {
-                    isContactUser,
-                    type: typeof isContactUser,
-                    value: isContactUser
-                  });
-
                   if (isContactUser) {
-                    console.log('🔧 Force hiding buttons for contactUser');
+                    console.log('🔧 Hiding buttons for contactUser');
                     return null;
                   }
-
-                  // Additional check for contactUser permissions
-                  const contactUserData = localStorage.getItem('contactUser');
-                  if (contactUserData) {
-                    try {
-                      const userData = JSON.parse(contactUserData);
-                      console.log('🔧 Checking userData for button hiding:', {
-                        userType: userData.userType,
-                        permissions: userData.permissions,
-                        userData
-                      });
-
-                      if (userData.userType === 'contact' || userData.userType === 'contractor') {
-                        console.log('🔧 Force hiding buttons for contact user type:', userData.userType);
-                        return null;
-                      }
-
-                      // Also check permissions field
-                      if (userData.permissions === 'contactUser') {
-                        console.log('🔧 Force hiding buttons for contactUser permissions');
-                        return null;
-                      }
-                    } catch (error) {
-                      console.error('Error parsing contact user data for button hiding:', error);
-                    }
-                  } else {
-                    console.log('🔧 NOT ENTERING CONTACT USER LOGIC - condition not met');
-                    console.log('🔧 isContactUser:', isContactUser);
-                    console.log('🔧 contactUserData:', contactUserData);
-                  }
-
-
-                  console.log('🔧 FINAL BUTTON STATE BEFORE RENDERING:', {
-                    showButtons,
-                    showSaveButton,
-                    showCloseButton,
-                    isContactUser,
-                    contactUserData: localStorage.getItem('contactUser')
-                  });
-
-                  if (!showButtons) {
-                    console.log('🔧 Returning null - no buttons for contactUser');
-                    return null; // No buttons for contactUser
-                  }
-
-                  console.log('🔧 Rendering buttons:', {
-                    showButtons,
-                    showCloseButton,
-                    showSaveButton
-                  });
 
                   return (
                     <>
                       {showCloseButton && (
                         <Button
-                          variant="outlined"
-                          size="small"
+                          variant="contained"
                           onClick={handleCloseContractorDetails}
+                          disabled={isSaving}
                           sx={{
                             minWidth: 'auto',
                             px: 2,
-                            borderColor: '#9c27b0', // סגול שוקו
-                            color: '#9c27b0',
+                            backgroundColor: '#9c27b0', // סגול שוקו
                             '&:hover': {
-                              borderColor: '#7b1fa2',
-                              backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                              backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                            },
+                            '&:disabled': {
+                              backgroundColor: '#9c27b0',
+                              opacity: 0.7
                             }
                           }}
                         >
@@ -1169,15 +1017,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       {showSaveButton && (
                         <Button
                           variant="contained"
-                          size="small"
-                          onClick={() => {
-                            console.log('🔘 Save button clicked');
-                            // Trigger save from ContractorTabs
-                            const saveEvent = new CustomEvent('saveContractor');
-                            window.dispatchEvent(saveEvent);
-                          }}
+                          onClick={handleSaveContractor}
                           disabled={isSaving}
-                          startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
                           sx={{
                             minWidth: 'auto',
                             px: 2,
