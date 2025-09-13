@@ -402,11 +402,11 @@ export default function ContractorTabsSimple({
             if (contractor?.statusIndicator) {
                 console.log('🔍 useEffect: Setting status from contractor data:', contractor.statusIndicator);
                 setCompanyStatusIndicator(contractor.statusIndicator);
-            } else if (contractor?.company_id && contractor._id) {
+            } else if (contractor?.company_id) {
                 console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
                 loadStatusForExistingContractor(contractor.company_id);
             } else {
-                console.log('🔍 useEffect: Not loading status - missing company_id or _id:', {
+                console.log('🔍 useEffect: Not loading status - missing company_id:', {
                     company_id: contractor?.company_id,
                     _id: contractor?._id
                 });
@@ -1058,9 +1058,12 @@ export default function ContractorTabsSimple({
         try {
             console.log('🔍 Loading status for existing contractor:', companyId);
             console.log('🔍 Current companyStatusIndicator state:', companyStatusIndicator);
+            console.log('🔍 Making API call to:', `/api/search-company/${companyId}`);
+            
             const response = await fetch(`/api/search-company/${companyId}`);
+            console.log('🔍 API response status:', response.status);
+            
             const result = await response.json();
-
             console.log('🔍 API response for status:', result);
 
             if (result.success && result.data.statusIndicator) {
@@ -1069,6 +1072,11 @@ export default function ContractorTabsSimple({
                 console.log('✅ Status indicator set in state');
             } else {
                 console.log('❌ No status indicator found in response:', result);
+                console.log('❌ Response success:', result.success);
+                console.log('❌ Response data:', result.data);
+                if (result.data) {
+                    console.log('❌ Response data keys:', Object.keys(result.data));
+                }
             }
         } catch (error) {
             console.error('❌ Error loading status for existing contractor:', error);
