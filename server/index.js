@@ -54,6 +54,21 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Handle static HTML files before React Router
+app.get('*.html', (req, res) => {
+  const filePath = path.join(__dirname, 'public', req.path);
+  console.log('🔍 Serving static HTML file:', filePath);
+  
+  // Check if file exists
+  if (fs.existsSync(filePath)) {
+    console.log('✅ Static HTML file found, serving directly');
+    res.sendFile(filePath);
+  } else {
+    console.log('❌ Static HTML file not found, falling back to React');
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  }
+});
+
 // Configure multer for file uploads using memory storage
 const storage = multer.memoryStorage();
 

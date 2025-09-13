@@ -86,7 +86,7 @@ function App() {
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('✅ Contact user authenticated from localStorage:', contactUser);
-          
+
           // Check if this is actually a system user (userType: "system")
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, treating as system user');
@@ -315,8 +315,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Catch-all route for static files - redirect to server */}
-            <Route path="*" element={<Navigate to={window.location.pathname} replace />} />
           </Routes>
         </Box>
       </Router>
