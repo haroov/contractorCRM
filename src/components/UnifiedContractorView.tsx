@@ -23,6 +23,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<{ name: string, picture: string, role: string, email: string } | null>(null);
+  const [isContactUser, setIsContactUser] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [profileData, setProfileData] = useState({
     name: '',
@@ -126,11 +127,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const contractorsData = await ContractorService.getAll();
 
       // Check if user is a contact user (not system admin)
-      const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
+      const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
       const contactUserData = localStorage.getItem('contactUser');
+      
+      // Update state
+      setIsContactUser(contactUserCheck);
 
       let filteredContractors;
-      if (isContactUser && contactUserData) {
+      if (contactUserCheck && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
           // For contact users, show only their associated contractor
@@ -698,7 +702,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           e.preventDefault();
                           e.stopPropagation();
 
-                          const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
                           const contactUserData = localStorage.getItem('contactUser');
 
                           console.log('🔥 Contact user check:', { isContactUser, hasContactUserData: !!contactUserData });
@@ -979,7 +982,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   contractor={selectedContractor!}
                   onSave={handleSaveContractor}
                   onClose={handleCloseContractorDetails}
-                  isContactUser={localStorage.getItem('contactUserAuthenticated') === 'true'}
+                  isContactUser={isContactUser}
                   contactUserPermissions={(() => {
                     const contactUserData = localStorage.getItem('contactUser');
                     if (contactUserData) {
