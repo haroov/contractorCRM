@@ -293,7 +293,7 @@ export default function ContractorTabsSimple({
     const [localContacts, setLocalContacts] = useState<any[]>(contractor?.contacts || []);
     const [localProjects, setLocalProjects] = useState<any[]>(contractor?.projects || []);
     const [localNotes, setLocalNotes] = useState<{ general: string, internal: string }>(contractor?.notes || { general: '', internal: '' });
-    const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating || '0');
+    const [localSafetyRating, setLocalSafetyRating] = useState<string>(contractor?.safetyRating?.toString() || '0');
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
     const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
     const [localSafetyCertificateType, setLocalSafetyCertificateType] = useState<string>('');
@@ -439,9 +439,23 @@ export default function ContractorTabsSimple({
 
     // Load licenses when switching to Business Information tab
     useEffect(() => {
+        console.log('🔍 License loading effect triggered:', {
+            activeTab,
+            hasCompanyId: !!contractor?.company_id,
+            companyId: contractor?.company_id,
+            companyIdLength: contractor?.company_id?.length,
+            contractorName: contractor?.name
+        });
+        
         if (activeTab === 1 && contractor?.company_id && contractor.company_id.length >= 9) {
             console.log('🔍 Loading licenses for Business Information tab');
             loadLicensesForContractor(contractor.company_id);
+        } else {
+            console.log('🔍 Not loading licenses - conditions not met:', {
+                activeTabIs1: activeTab === 1,
+                hasCompanyId: !!contractor?.company_id,
+                companyIdLengthValid: contractor?.company_id?.length >= 9
+            });
         }
     }, [activeTab, contractor?.company_id]);
 
