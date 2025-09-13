@@ -1018,10 +1018,17 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         console.log('🔧 No matching permissions found, defaulting to show buttons');
                         console.log('🔧 permissions value:', permissions);
                         console.log('🔧 permissions type:', typeof permissions);
+                        console.log('🔧 permissions === "contactUser":', permissions === 'contactUser');
+                        console.log('🔧 permissions === "contactAdmin":', permissions === 'contactAdmin');
                       }
                     } catch (error) {
                       console.error('Error parsing contact user data:', error);
                     }
+                  } else {
+                    console.log('🔧 Not a contact user or no contact user data:', {
+                      isContactUser,
+                      hasContactUserData: !!contactUserData
+                    });
                   }
 
                   console.log('🔧 Final button logic:', {
