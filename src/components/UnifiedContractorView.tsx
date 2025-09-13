@@ -136,10 +136,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           console.log('🔍 Contact user data:', contactUser);
           console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
           
-          // Try to find contractor by contractor_id first (external registry ID), then by _id
+          // Try to find contractor by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
           const contractor = contractors.find(c => 
-            c.contractor_id === contactUser.contractorId || 
-            c._id === contactUser.contractorId
+            c._id === contactUser.contractorId || 
+            c.contractor_id === contactUser.contractorId
           );
           
           if (contractor) {
@@ -190,9 +190,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           console.log('🔍 Available contractors for filtering:', contractorsData.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name, isActive: c.isActive })));
           
           // For contact users, show only their associated contractor
-          // Try to find by contractor_id first (external registry ID), then by _id
+          // Try to find by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
           filteredContractors = contractorsData.filter(contractor =>
-            (contractor.contractor_id === contactUser.contractorId || contractor._id === contactUser.contractorId) && 
+            (contractor._id === contactUser.contractorId || contractor.contractor_id === contactUser.contractorId) && 
             contractor.isActive === true
           );
           console.log('📋 Filtered contractors for contact user:', filteredContractors.length, 'contractorId:', contactUser.contractorId);
