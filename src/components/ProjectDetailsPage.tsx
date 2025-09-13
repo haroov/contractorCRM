@@ -25,7 +25,8 @@ import {
     Close as CloseIcon,
     AccountCircle as AccountCircleIcon,
     Logout as LogoutIcon,
-    Person as PersonIcon
+    Person as PersonIcon,
+    MoreVert as MoreVertIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -219,34 +220,43 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    {/* Left side - Back button and title */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton
-                            onClick={handleBack}
-                            sx={{ mr: 2 }}
+                    {/* Left side - Logo and title */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                            sx={{
+                                width: 40,
+                                height: 40,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            onClick={() => {
+                                // Navigate to CRM for user and admin types
+                                if (currentUser?.role === 'user' || currentUser?.role === 'admin') {
+                                    handleBack();
+                                }
+                            }}
                         >
-                            <ArrowBackIcon />
-                        </IconButton>
-                        <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                            <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
+                        </Box>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
                             ניהול סיכונים באתרי בניה
                         </Typography>
                     </Box>
 
                     {/* Right side - User profile */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="body1" sx={{ mr: 2, fontWeight: 500 }}>
-                            {currentUser?.name || 'משתמש'}
-                        </Typography>
-                        <IconButton
-                            onClick={handleUserMenuOpen}
-                            sx={{ p: 0 }}
-                        >
-                            <Avatar
-                                src={currentUser?.picture}
-                                sx={{ width: 40, height: 40 }}
-                            >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {currentUser?.picture ? (
+                            <Avatar src={currentUser.picture} alt={currentUser.name} sx={{ width: 32, height: 32 }} />
+                        ) : (
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
                                 <AccountCircleIcon />
                             </Avatar>
+                        )}
+                        <Typography variant="body2">{currentUser?.name || 'משתמש'}</Typography>
+                        <IconButton onClick={handleUserMenuOpen}>
+                            <MoreVertIcon />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
@@ -280,49 +290,60 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             {/* Project Card - Same style as contractor card */}
             <Box sx={{ p: 2 }}>
-                <Paper elevation={1} sx={{ bgcolor: 'white', borderRadius: 2 }}>
-                    {/* Project Title and Action Buttons */}
-                    <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {/* Project Title */}
-                            <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                                {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
-                            </Typography>
-
-                            {/* Action Buttons */}
-                            <Box sx={{ display: 'flex', gap: 2 }}>
-                                <Button
-                                    variant="outlined"
-                                    onClick={handleClose}
-                                    startIcon={<CloseIcon />}
-                                    sx={{ 
-                                        minWidth: 120,
-                                        borderColor: '#9c27b0',
-                                        color: '#9c27b0',
-                                        '&:hover': {
-                                            borderColor: '#7b1fa2',
-                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                        }
-                                    }}
-                                >
-                                    סגירה
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                                    sx={{ 
-                                        minWidth: 120,
-                                        bgcolor: '#9c27b0',
-                                        '&:hover': {
-                                            bgcolor: '#7b1fa2'
-                                        }
-                                    }}
-                                >
-                                    {saving ? 'שומר...' : 'שמירה'}
-                                </Button>
-                            </Box>
+                <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+                    {/* Project Header */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        bgcolor: 'white',
+                        color: 'black',
+                        border: '1px solid #e0e0e0',
+                        borderBottom: 'none',
+                        borderRadius: '4px 4px 0 0',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 10,
+                        flexShrink: 0
+                    }}>
+                        <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                            {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={handleClose}
+                                sx={{
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    borderColor: '#9c27b0', // סגול שוקו
+                                    color: '#9c27b0',
+                                    '&:hover': {
+                                        borderColor: '#7b1fa2',
+                                        backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                    }
+                                }}
+                            >
+                                סגירה
+                            </Button>
+                            <Button
+                                variant="contained"
+                                size="small"
+                                onClick={handleSave}
+                                disabled={saving}
+                                sx={{
+                                    minWidth: 'auto',
+                                    px: 2,
+                                    bgcolor: '#9c27b0',
+                                    '&:hover': {
+                                        bgcolor: '#7b1fa2'
+                                    }
+                                }}
+                            >
+                                {saving ? 'שומר...' : 'שמירה'}
+                            </Button>
                         </Box>
                     </Box>
 
