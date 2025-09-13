@@ -454,7 +454,7 @@ export default function ContactLoginPage() {
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             <Link
-              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/termsOfService.html"
+              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/termsOfService.html?content-type=text/html"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
@@ -467,7 +467,7 @@ export default function ContactLoginPage() {
             </Link>
             {' | '}
             <Link
-              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/privacyPolicy.html"
+              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/privacyPolicy.html?content-type=text/html"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
