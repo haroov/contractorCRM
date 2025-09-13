@@ -1114,12 +1114,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   if (contactUserData) {
                     try {
                       const userData = JSON.parse(contactUserData);
-                      isContactUserForDisabled = userData.userType === 'contractor' || userData.userType === 'contact' || userData.permissions === 'contactUser';
+                      // Check if user is contactUser by userType (since permissions is undefined)
+                      isContactUserForDisabled = userData.userType === 'contractor' || userData.userType === 'contact';
                       console.log('🔧 Disabled state check:', {
                         userData,
                         isContactUserForDisabled,
                         userType: userData.userType,
-                        permissions: userData.permissions
+                        permissions: userData.permissions,
+                        isContractor: userData.userType === 'contractor',
+                        isContact: userData.userType === 'contact'
                       });
                     } catch (error) {
                       console.error('Error parsing contact user data for disabled state:', error);
@@ -1130,6 +1133,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     console.log('🔧 Returning null - no buttons for contactUser');
                     return null; // No buttons for contactUser
                   }
+
+                  console.log('🔧 Rendering buttons with disabled state:', {
+                    showButtons,
+                    showCloseButton,
+                    showSaveButton,
+                    isContactUserForDisabled
+                  });
 
                   return (
                     <>
