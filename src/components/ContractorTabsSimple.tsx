@@ -1114,11 +1114,25 @@ export default function ContractorTabsSimple({
         setIsLoadingLicenses(true);
         try {
             console.log('🔍 Loading licenses for contractor:', companyId);
+            console.log('🔍 Contractor data:', {
+                name: contractor?.name,
+                company_id: contractor?.company_id,
+                _id: contractor?._id,
+                classifications: contractor?.classifications,
+                licensesLastUpdated: contractor?.licensesLastUpdated
+            });
             
             // Check if we have fresh data (today)
             const today = new Date().toISOString().split('T')[0];
             const lastUpdated = contractor?.licensesLastUpdated ? 
                 new Date(contractor.licensesLastUpdated).toISOString().split('T')[0] : null;
+            
+            console.log('🔍 License freshness check:', {
+                today,
+                lastUpdated,
+                hasClassifications: !!contractor?.classifications,
+                classificationsLength: contractor?.classifications?.length || 0
+            });
             
             if (lastUpdated === today && contractor?.classifications && contractor.classifications.length > 0) {
                 console.log('✅ Using cached license data from today');
@@ -1128,10 +1142,13 @@ export default function ContractorTabsSimple({
             
             console.log('🔍 Fetching fresh license data from API');
             const response = await fetch(`/api/search-company/${companyId}`);
+            console.log('🔍 API response status:', response.status);
             const result = await response.json();
+            console.log('🔍 API response data:', result);
             
             if (result.success && result.data.classifications) {
                 console.log('✅ Loaded fresh license data:', result.data.classifications.length, 'licenses');
+                console.log('🔍 License data:', result.data.classifications);
                 // Update contractor with fresh data
                 if (onUpdateContractor) {
                     onUpdateContractor({
@@ -1142,6 +1159,12 @@ export default function ContractorTabsSimple({
                 }
             } else {
                 console.log('❌ No license data found in API response');
+                console.log('❌ Response details:', {
+                    success: result.success,
+                    data: result.data,
+                    source: result.source,
+                    error: result.error
+                });
             }
         } catch (error) {
             console.error('❌ Error loading licenses for contractor:', error);
