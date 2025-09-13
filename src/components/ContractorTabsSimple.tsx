@@ -51,6 +51,7 @@ export default function ContractorTabsSimple({
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>('');
+    const [isLoadingLicenses, setIsLoadingLicenses] = useState<boolean>(false);
 
     // Function to get tooltip text for status indicator
     const getStatusTooltipText = (statusIndicator: string): string => {
@@ -436,6 +437,13 @@ export default function ContractorTabsSimple({
         console.log('🔍 localNotes:', localNotes);
     }, [contractor, isLoadingCompanyData, localCompanyId]);
 
+    // Load licenses when switching to Business Information tab
+    useEffect(() => {
+        if (activeTab === 1 && contractor?.company_id && contractor.company_id.length >= 9) {
+            console.log('🔍 Loading licenses for Business Information tab');
+            loadLicensesForContractor(contractor.company_id);
+        }
+    }, [activeTab, contractor?.company_id]);
 
     // Auto-scrape company info when website changes
     useEffect(() => {
@@ -1097,6 +1105,48 @@ export default function ContractorTabsSimple({
             }
         } catch (error) {
             console.error('❌ Error loading status for existing contractor:', error);
+        }
+    };
+
+    const loadLicensesForContractor = async (companyId: string) => {
+        if (!companyId) return;
+        
+        setIsLoadingLicenses(true);
+        try {
+            console.log('🔍 Loading licenses for contractor:', companyId);
+            
+            // Check if we have fresh data (today)
+            const today = new Date().toISOString().split('T')[0];
+            const lastUpdated = contractor?.licensesLastUpdated ? 
+                new Date(contractor.licensesLastUpdated).toISOString().split('T')[0] : null;
+            
+            if (lastUpdated === today && contractor?.classifications && contractor.classifications.length > 0) {
+                console.log('✅ Using cached license data from today');
+                setIsLoadingLicenses(false);
+                return;
+            }
+            
+            console.log('🔍 Fetching fresh license data from API');
+            const response = await fetch(`/api/search-company/${companyId}`);
+            const result = await response.json();
+            
+            if (result.success && result.data.classifications) {
+                console.log('✅ Loaded fresh license data:', result.data.classifications.length, 'licenses');
+                // Update contractor with fresh data
+                if (onUpdateContractor) {
+                    onUpdateContractor({
+                        ...contractor,
+                        classifications: result.data.classifications,
+                        licensesLastUpdated: result.data.licensesLastUpdated
+                    });
+                }
+            } else {
+                console.log('❌ No license data found in API response');
+            }
+        } catch (error) {
+            console.error('❌ Error loading licenses for contractor:', error);
+        } finally {
+            setIsLoadingLicenses(false);
         }
     };
 
@@ -2382,6 +2432,87 @@ export default function ContractorTabsSimple({
                                 ))}
                             </Box>
                         )}
+
+                        {/* סוגי רישיונות מפנקס הקבלנים */}
+                        <Box sx={{ mb: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                <Typography variant="subtitle2" gutterBottom sx={{ mb: 0 }}>
+                                    סוגי רישיונות מפנקס הקבלנים:
+                                </Typography>
+                                {isLoadingLicenses && (
+                                    <CircularProgress size={16} sx={{ color: '#9c27b0' }} />
+                                )}
+                                {!isLoadingLicenses && contractor?.classifications && contractor.classifications.length > 0 && (
+                                    <Chip 
+                                        label={`עודכן: ${new Date(contractor.licensesLastUpdated || contractor.updatedAt).toLocaleDateString('he-IL')}`}
+                                        size="small"
+                                        sx={{ 
+                                            backgroundColor: '#e8f5e8', 
+                                            color: '#2e7d32',
+                                            fontSize: '0.75rem'
+                                        }}
+                                    />
+                                )}
+                            </Box>
+                            
+                            {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 ? (
+                                <Box sx={{ 
+                                    border: '1px solid #e0e0e0', 
+                                    borderRadius: 1, 
+                                    p: 2, 
+                                    backgroundColor: '#fafafa',
+                                    maxHeight: '300px',
+                                    overflow: 'auto'
+                                }}>
+                                    {contractor.classifications.map((license: any, index: number) => (
+                                        <Box key={index} sx={{ 
+                                            mb: 2, 
+                                            pb: 2, 
+                                            borderBottom: index < contractor.classifications.length - 1 ? '1px solid #e0e0e0' : 'none'
+                                        }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                {license.description || `${license.classification_type} - ${license.classification}`}
+                                            </Typography>
+                                            <Grid container spacing={1}>
+                                                {license.kod_anaf && (
+                                                    <Grid item xs={6}>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            קוד ענף: {license.kod_anaf}
+                                                        </Typography>
+                                                    </Grid>
+                                                )}
+                                                {license.tarich_sug && (
+                                                    <Grid item xs={6}>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            תאריך סוג: {license.tarich_sug}
+                                                        </Typography>
+                                                    </Grid>
+                                                )}
+                                                {license.hekef && (
+                                                    <Grid item xs={12}>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            היקף: {license.hekef}
+                                                        </Typography>
+                                                    </Grid>
+                                                )}
+                                            </Grid>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Box sx={{ 
+                                    border: '1px solid #e0e0e0', 
+                                    borderRadius: 1, 
+                                    p: 2, 
+                                    backgroundColor: '#fafafa',
+                                    textAlign: 'center'
+                                }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {isLoadingLicenses ? 'טוען סוגי רישיונות...' : 'לא נמצאו סוגי רישיונות'}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
                     </Box>
                 )}
 
