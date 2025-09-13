@@ -124,6 +124,23 @@ export default function ContractorTabsSimple({
         return emailRegex.test(email);
     };
 
+    const validateDate = (dateString: string): string => {
+        if (!dateString) return '';
+        
+        // If it's a valid date format (YYYY-MM-DD), return as is
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+            return dateString;
+        }
+        
+        // If it's a partial date, ensure year is max 4 digits
+        const parts = dateString.split('-');
+        if (parts.length >= 1 && parts[0].length > 4) {
+            parts[0] = parts[0].substring(0, 4);
+        }
+        
+        return parts.join('-');
+    };
+
     const validatePhone = (phone: string): boolean => {
         // Israeli phone number validation (10 digits, can start with 0 or +972)
         const phoneRegex = /^(\+972|0)?[2-9]\d{7,8}$/;
@@ -611,7 +628,6 @@ export default function ContractorTabsSimple({
                 onSave(updatedContractor);
             }
 
-            alert('הקובץ נמחק בהצלחה!');
         } catch (error) {
             console.error('Error deleting file:', error);
             alert('שגיאה במחיקת הקובץ');
@@ -1782,9 +1798,10 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="תאריך תוקף"
                                     type="date"
-                                    value={contractor?.safetyRatingExpiry || ''}
+                                    value={localSafetyExpiry}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalSafetyExpiry(validateDate(e.target.value))}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
@@ -1799,19 +1816,47 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localSafetyCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            <img
-                                                src={localSafetyCertificate}
-                                                alt="תעודת בטיחות"
-                                                style={{
-                                                    width: '56px',
-                                                    height: '56px',
-                                                    objectFit: 'cover',
-                                                    borderRadius: 4,
-                                                    cursor: 'pointer',
-                                                    border: '1px solid #d0d0d0'
-                                                }}
-                                                onClick={() => window.open(localSafetyCertificate, '_blank')}
-                                            />
+                                            {localSafetyCertificate.toLowerCase().includes('.pdf') ? (
+                                                <Box
+                                                    sx={{
+                                                        width: '56px',
+                                                        height: '56px',
+                                                        borderRadius: 4,
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #d0d0d0',
+                                                        backgroundColor: '#f5f5f5',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        '&:hover': {
+                                                            backgroundColor: '#e0e0e0'
+                                                        }
+                                                    }}
+                                                    onClick={() => window.open(localSafetyCertificate, '_blank')}
+                                                >
+                                                    <Typography sx={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>
+                                                        PDF
+                                                    </Typography>
+                                                    <Typography sx={{ fontSize: '8px', color: '#999', textAlign: 'center' }}>
+                                                        תעודה
+                                                    </Typography>
+                                                </Box>
+                                            ) : (
+                                                <img
+                                                    src={localSafetyCertificate}
+                                                    alt="תעודת בטיחות"
+                                                    style={{
+                                                        width: '56px',
+                                                        height: '56px',
+                                                        objectFit: 'cover',
+                                                        borderRadius: 4,
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #d0d0d0'
+                                                    }}
+                                                    onClick={() => window.open(localSafetyCertificate, '_blank')}
+                                                />
+                                            )}
                                             {canEdit && (
                                                 <IconButton
                                                     size="small"
@@ -1917,9 +1962,10 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="תאריך תוקף"
                                     type="date"
-                                    value={contractor?.iso45001Expiry || ''}
+                                    value={localIsoExpiry}
                                     disabled={!canEdit}
                                     sx={textFieldSx}
+                                    onChange={(e) => setLocalIsoExpiry(validateDate(e.target.value))}
                                     InputLabelProps={{
                                         shrink: true,
                                         sx: {
@@ -1934,19 +1980,47 @@ export default function ContractorTabsSimple({
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localIsoCertificate ? (
                                         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            <img
-                                                src={localIsoCertificate}
-                                                alt="תעודת ISO45001"
-                                                style={{
-                                                    width: '56px',
-                                                    height: '56px',
-                                                    objectFit: 'cover',
-                                                    borderRadius: 4,
-                                                    cursor: 'pointer',
-                                                    border: '1px solid #d0d0d0'
-                                                }}
-                                                onClick={() => window.open(localIsoCertificate, '_blank')}
-                                            />
+                                            {localIsoCertificate.toLowerCase().includes('.pdf') ? (
+                                                <Box
+                                                    sx={{
+                                                        width: '56px',
+                                                        height: '56px',
+                                                        borderRadius: 4,
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #d0d0d0',
+                                                        backgroundColor: '#f5f5f5',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        '&:hover': {
+                                                            backgroundColor: '#e0e0e0'
+                                                        }
+                                                    }}
+                                                    onClick={() => window.open(localIsoCertificate, '_blank')}
+                                                >
+                                                    <Typography sx={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>
+                                                        PDF
+                                                    </Typography>
+                                                    <Typography sx={{ fontSize: '8px', color: '#999', textAlign: 'center' }}>
+                                                        ISO
+                                                    </Typography>
+                                                </Box>
+                                            ) : (
+                                                <img
+                                                    src={localIsoCertificate}
+                                                    alt="תעודת ISO45001"
+                                                    style={{
+                                                        width: '56px',
+                                                        height: '56px',
+                                                        objectFit: 'cover',
+                                                        borderRadius: 4,
+                                                        cursor: 'pointer',
+                                                        border: '1px solid #d0d0d0'
+                                                    }}
+                                                    onClick={() => window.open(localIsoCertificate, '_blank')}
+                                                />
+                                            )}
                                             {canEdit && (
                                                 <IconButton
                                                     size="small"
