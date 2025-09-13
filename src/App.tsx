@@ -88,18 +88,28 @@ function App() {
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('✅ Contact user authenticated from localStorage:', contactUser);
-          const userState = {
-            id: contactUser.id,
-            email: contactUser.email,
-            name: contactUser.name,
-            role: contactUser.role,
-            picture: contactUser.picture || ''
-          };
-          console.log('🔍 Setting user state to:', userState);
-          setUser(userState);
-          setLoading(false);
-          console.log('✅ Contact user state set, returning early');
-          return;
+          
+          // Check if this is actually a system user (userType: "system")
+          if (contactUser.userType === 'system') {
+            console.log('🔍 This is a system user, treating as system user');
+            // For system users, we need to get fresh data from server
+            // Don't return early, continue to system user logic below
+          } else {
+            // This is a real contact user
+            console.log('🔍 This is a contact user');
+            const userState = {
+              id: contactUser.id,
+              email: contactUser.email,
+              name: contactUser.name,
+              role: contactUser.role,
+              picture: contactUser.picture || ''
+            };
+            console.log('🔍 Setting user state to:', userState);
+            setUser(userState);
+            setLoading(false);
+            console.log('✅ Contact user state set, returning early');
+            return;
+          }
         } catch (error) {
           console.log('❌ Error parsing contact user data:', error);
           localStorage.removeItem('contactUser');

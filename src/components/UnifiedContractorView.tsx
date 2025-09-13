@@ -72,6 +72,30 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     loadUserData();
   }, []);
 
+  // Auto-navigate contact users to their contractor card
+  useEffect(() => {
+    if (isContactUser && contractors.length > 0) {
+      const contactUserData = localStorage.getItem('contactUser');
+      if (contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          const userContractor = contractors.find(contractor => 
+            contractor._id === contactUser.contractorId
+          );
+          
+          if (userContractor) {
+            console.log('🚀 Auto-navigating contact user to their contractor:', userContractor.name);
+            // Determine mode based on permissions
+            const mode = contactUser.permissions === 'contactAdmin' ? 'edit' : 'view';
+            handleContractorSelect(userContractor, mode);
+          }
+        } catch (error) {
+          console.error('Error parsing contact user data for auto-navigation:', error);
+        }
+      }
+    }
+  }, [isContactUser, contractors]);
+
   // Load status indicators for all contractors
   useEffect(() => {
     if (contractors.length > 0) {
@@ -130,11 +154,23 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
       const contactUserData = localStorage.getItem('contactUser');
       
+      let isRealContactUser = false;
+      if (contactUserCheck && contactUserData) {
+        try {
+          const contactUser = JSON.parse(contactUserData);
+          // Only treat as contact user if userType is 'contact'
+          isRealContactUser = contactUser.userType === 'contact';
+        } catch (error) {
+          console.error('Error parsing contact user data:', error);
+          isRealContactUser = false;
+        }
+      }
+      
       // Update state
-      setIsContactUser(contactUserCheck);
+      setIsContactUser(isRealContactUser);
 
       let filteredContractors;
-      if (contactUserCheck && contactUserData) {
+      if (isRealContactUser && contactUserData) {
         try {
           const contactUser = JSON.parse(contactUserData);
           // For contact users, show only their associated contractor
@@ -147,9 +183,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           filteredContractors = [];
         }
       } else {
-        // For regular users, show all active contractors
+        // For system users (admin/regular), show all active contractors
         filteredContractors = contractorsData.filter(contractor => contractor.isActive === true);
-        console.log('📋 Loaded all active contractors:', filteredContractors.length);
+        console.log('📋 Loaded all active contractors for system user:', filteredContractors.length);
       }
 
       setContractors(filteredContractors);
