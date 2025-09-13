@@ -327,7 +327,10 @@ export default function ContractorTabsSimple({
     // Debug logging for status indicator
     console.log('🔧 companyStatusIndicator debug:', {
         companyStatusIndicator,
-        hasIndicator: !!companyStatusIndicator
+        hasIndicator: !!companyStatusIndicator,
+        contractor: contractor?.name,
+        contractorStatusIndicator: contractor?.statusIndicator,
+        company_id: contractor?.company_id
     });
 
     // Common styling for TextFields with choco purple focus
@@ -1082,6 +1085,12 @@ export default function ContractorTabsSimple({
                 if (result.data) {
                     console.log('❌ Response data keys:', Object.keys(result.data));
                 }
+                
+                // Try to load from contractor's existing data
+                if (contractor?.statusIndicator) {
+                    console.log('🔍 Trying to load from contractor data:', contractor.statusIndicator);
+                    setCompanyStatusIndicator(contractor.statusIndicator);
+                }
             }
         } catch (error) {
             console.error('❌ Error loading status for existing contractor:', error);
@@ -1524,6 +1533,11 @@ export default function ContractorTabsSimple({
                                                             {companyStatusIndicator}
                                                         </Box>
                                                     </Tooltip>
+                                                )}
+                                                {!companyStatusIndicator && !isLoadingCompanyData && (
+                                                    <Box sx={{ fontSize: '12px', color: 'text.secondary' }}>
+                                                        אין חיווי
+                                                    </Box>
                                                 )}
                                             </Box>
                                         ),
