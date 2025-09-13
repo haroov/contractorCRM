@@ -111,13 +111,13 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 router.delete('/certificate', async (req, res) => {
   try {
     await initDB();
-    
+
     const { contractorId, certificateType } = req.body;
-    
+
     if (!contractorId || !certificateType) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required fields: contractorId or certificateType' 
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: contractorId or certificateType'
       });
     }
 
@@ -127,9 +127,9 @@ router.delete('/certificate', async (req, res) => {
     });
 
     if (!contractor) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Contractor not found' 
+      return res.status(404).json({
+        success: false,
+        error: 'Contractor not found'
       });
     }
 
@@ -150,11 +150,11 @@ router.delete('/certificate', async (req, res) => {
     // Update contractor document to remove certificate URL
     await db.collection('contractors').updateOne(
       { _id: new ObjectId(contractorId) },
-      { 
-        $unset: { 
+      {
+        $unset: {
           [certificateField]: "",
           [`${certificateType}LastUpdated`]: ""
-        } 
+        }
       }
     );
 
@@ -172,10 +172,10 @@ router.delete('/certificate', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error removing certificate:', error);
-    res.status(500).json({ 
-      success: false, 
+    res.status(500).json({
+      success: false,
       error: 'Failed to remove certificate',
-      details: error.message 
+      details: error.message
     });
   }
 });

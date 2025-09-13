@@ -1196,6 +1196,11 @@ export default function ContractorTabsSimple({
         setLocalClassifications(contractorData.classifications || []);
         setLocalIsActive(contractorData.isActive ?? true);
 
+        // Set status indicator from existing contractor data
+        if (contractorData.statusIndicator) {
+            setCompanyStatusIndicator(contractorData.statusIndicator);
+        }
+
         // Update company about section
         setCompanyAbout(contractorData.companyAbout || '');
         setCompanyLogo(contractorData.companyLogo || '');
@@ -1468,16 +1473,30 @@ export default function ContractorTabsSimple({
                                         }
                                     }}
                                     InputProps={{
-                                        startAdornment: isLoadingCompanyData ? (
+                                        startAdornment: (
                                             <Box sx={{
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 marginLeft: '10px',
-                                                marginRight: '8px'
+                                                marginRight: '8px',
+                                                gap: 1
                                             }}>
-                                                <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                {isLoadingCompanyData && (
+                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                )}
+                                                {companyStatusIndicator && !isLoadingCompanyData && (
+                                                    <Tooltip
+                                                        title={getStatusTooltipText(companyStatusIndicator)}
+                                                        arrow
+                                                        placement="top"
+                                                    >
+                                                        <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help' }}>
+                                                            {companyStatusIndicator}
+                                                        </Box>
+                                                    </Tooltip>
+                                                )}
                                             </Box>
-                                        ) : null,
+                                        ),
                                         endAdornment: companyStatusIndicator ? (
                                             <Tooltip
                                                 title={getStatusTooltipText(companyStatusIndicator)}
