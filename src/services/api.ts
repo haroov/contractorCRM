@@ -68,11 +68,23 @@ export const projectsAPI = {
   getById: async (projectId: string) => {
     const response = await authenticatedFetch(`/projects/${projectId}`);
     
+    console.log('🔍 API Response status:', response.status);
+    console.log('🔍 API Response headers:', response.headers.get('content-type'));
+    
     if (!response.ok) {
       console.error('❌ API Error:', response.status, response.statusText);
       const errorText = await response.text();
       console.error('❌ Error response:', errorText);
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('❌ API returned non-JSON response:', contentType);
+      const responseText = await response.text();
+      console.error('❌ Response content:', responseText.substring(0, 200));
+      throw new Error(`API returned non-JSON response: ${contentType}`);
     }
     
     return response.json();
