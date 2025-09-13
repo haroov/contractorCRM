@@ -48,13 +48,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Handle specific static HTML files
+// Handle specific static HTML files BEFORE express.static
 app.get('/privacyPolicy.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'privacyPolicy.html');
   console.log('🔍 Serving privacy policy:', filePath);
@@ -80,6 +74,12 @@ app.get('/termsOfService.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
   }
 });
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configure multer for file uploads using memory storage
 const storage = multer.memoryStorage();
