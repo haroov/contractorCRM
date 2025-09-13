@@ -365,10 +365,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     contactUserPermissions
                                 });
 
-                                // contactUser: show no buttons at all
+                                // contactUser: show only Close button to return to contractor
                                 if (isContactUser && contactUserPermissions === 'contactUser') {
-                                    console.log('🔧 ProjectDetailsPage: contactUser - no buttons');
-                                    return null;
+                                    console.log('🔧 ProjectDetailsPage: contactUser - only Close button');
+                                    return (
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={handleClose}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
+                                                borderColor: '#9c27b0', // סגול שוקו
+                                                color: '#9c27b0',
+                                                '&:hover': {
+                                                    borderColor: '#7b1fa2',
+                                                    bgcolor: 'rgba(156, 39, 176, 0.04)'
+                                                }
+                                            }}
+                                        >
+                                            סגירה
+                                        </Button>
+                                    );
                                 }
 
                                 // contactAdmin: show only Save button, no Close button
