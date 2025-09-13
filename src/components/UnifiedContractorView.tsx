@@ -1028,7 +1028,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     showButtons,
                     showSaveButton,
                     showCloseButton,
-                    isContactUser
+                    isContactUser,
+                    contactUserData: localStorage.getItem('contactUser')
                   });
 
                   if (!showButtons) {
@@ -1106,6 +1107,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         const contactUser = JSON.parse(contactUserData);
                         console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
                         console.log('🔧 contactUserPermissions debug - user keys:', Object.keys(contactUser));
+                        console.log('🔧 contactUserPermissions debug - userType:', contactUser.userType);
+                        console.log('🔧 contactUserPermissions debug - permissions:', contactUser.permissions);
                         // Check userType first to determine if this is a contact user
                         if (contactUser.userType === 'contact' || contactUser.userType === 'contractor') {
                           console.log('🔧 contactUserPermissions debug - this is a contact user, checking permissions');
