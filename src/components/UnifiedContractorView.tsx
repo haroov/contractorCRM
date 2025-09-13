@@ -1008,12 +1008,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       
                       // Check if user is contactUser by userType or permissions
                       if (userData.userType === 'contractor' || userData.userType === 'contact' || permissions === 'contactUser') {
-                        // contactUser: disable buttons instead of hiding them
-                        console.log('🔧 Setting contactUser button logic - disabled buttons');
-                        showButtons = true; // Keep buttons visible but disabled
-                        showSaveButton = true;
-                        showCloseButton = true;
-                        // We'll add disabled state later
+                        // contactUser: hide buttons completely - view only
+                        console.log('🔧 Setting contactUser button logic - hiding buttons completely');
+                        showButtons = false;
+                        showSaveButton = false;
+                        showCloseButton = false;
                       } else if (permissions === 'contactAdmin') {
                         // contactAdmin: show only Save button, no Close button
                         console.log('🔧 Setting contactAdmin button logic');
@@ -1108,37 +1107,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     }
                   }
 
-                  // Check if user is contactUser for disabled state
-                  const contactUserData = localStorage.getItem('contactUser');
-                  let isContactUserForDisabled = false;
-                  if (contactUserData) {
-                    try {
-                      const userData = JSON.parse(contactUserData);
-                      // Check if user is contactUser by userType (since permissions is undefined)
-                      isContactUserForDisabled = userData.userType === 'contractor' || userData.userType === 'contact';
-                      console.log('🔧 Disabled state check:', {
-                        userData,
-                        isContactUserForDisabled,
-                        userType: userData.userType,
-                        permissions: userData.permissions,
-                        isContractor: userData.userType === 'contractor',
-                        isContact: userData.userType === 'contact'
-                      });
-                    } catch (error) {
-                      console.error('Error parsing contact user data for disabled state:', error);
-                    }
-                  }
 
                   if (!showButtons) {
                     console.log('🔧 Returning null - no buttons for contactUser');
                     return null; // No buttons for contactUser
                   }
 
-                  console.log('🔧 Rendering buttons with disabled state:', {
+                  console.log('🔧 Rendering buttons:', {
                     showButtons,
                     showCloseButton,
-                    showSaveButton,
-                    isContactUserForDisabled
+                    showSaveButton
                   });
 
                   return (
@@ -1148,7 +1126,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           variant="outlined"
                           size="small"
                           onClick={handleCloseContractorDetails}
-                          disabled={isContactUserForDisabled}
                           sx={{
                             minWidth: 'auto',
                             px: 2,
@@ -1157,11 +1134,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             '&:hover': {
                               borderColor: '#7b1fa2',
                               backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                            },
-                            '&:disabled': {
-                              borderColor: '#ccc',
-                              color: '#999',
-                              backgroundColor: '#f5f5f5'
                             }
                           }}
                         >
@@ -1178,7 +1150,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             const saveEvent = new CustomEvent('saveContractor');
                             window.dispatchEvent(saveEvent);
                           }}
-                          disabled={isSaving || isContactUserForDisabled}
+                          disabled={isSaving}
                           startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : null}
                           sx={{
                             minWidth: 'auto',
@@ -1188,8 +1160,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                               backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
                             },
                             '&:disabled': {
-                              backgroundColor: '#ccc',
-                              color: '#999',
+                              backgroundColor: '#9c27b0',
                               opacity: 0.7
                             }
                           }}
