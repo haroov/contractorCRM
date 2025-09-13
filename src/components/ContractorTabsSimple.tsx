@@ -34,6 +34,8 @@ export default function ContractorTabsSimple({
     const [uploadType, setUploadType] = useState<'safety' | 'iso' | null>(null);
     const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: string }>({});
     const [isUploading, setIsUploading] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [fileToDelete, setFileToDelete] = useState<{ type: 'safety' | 'iso', url: string } | null>(null);
     const [contactDialogOpen, setContactDialogOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<any>(null);
     const [contactEmailError, setContactEmailError] = useState<string>('');
@@ -577,6 +579,42 @@ export default function ContractorTabsSimple({
             alert('שגיאה בהעלאת הקובץ: ' + (error as Error).message);
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    // Handle file deletion
+    const handleDeleteFile = (type: 'safety' | 'iso', url: string) => {
+        setFileToDelete({ type, url });
+        setDeleteDialogOpen(true);
+    };
+
+    const confirmDeleteFile = async () => {
+        if (!fileToDelete) return;
+
+        try {
+            // Clear the file from local state
+            if (fileToDelete.type === 'safety') {
+                setLocalSafetyCertificate('');
+            } else if (fileToDelete.type === 'iso') {
+                setLocalIsoCertificate('');
+            }
+
+            // Update contractor data
+            if (onSave) {
+                const updatedContractor = {
+                    ...contractor,
+                    [fileToDelete.type === 'safety' ? 'safetyCertificate' : 'isoCertificate']: ''
+                };
+                onSave(updatedContractor);
+            }
+
+            alert('הקובץ נמחק בהצלחה!');
+        } catch (error) {
+            console.error('Error deleting file:', error);
+            alert('שגיאה במחיקת הקובץ');
+        } finally {
+            setDeleteDialogOpen(false);
+            setFileToDelete(null);
         }
     };
 
@@ -1729,13 +1767,13 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localSafetyCertificate ? (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Box sx={{ position: 'relative', display: 'inline-block' }}>
                                             <img
                                                 src={localSafetyCertificate}
                                                 alt="תעודת בטיחות"
                                                 style={{
-                                                    width: 40,
-                                                    height: 40,
+                                                    width: '56px',
+                                                    height: '56px',
                                                     objectFit: 'cover',
                                                     borderRadius: 4,
                                                     cursor: 'pointer',
@@ -1743,24 +1781,27 @@ export default function ContractorTabsSimple({
                                                 }}
                                                 onClick={() => window.open(localSafetyCertificate, '_blank')}
                                             />
-                                            <IconButton
-                                                disabled={!canEdit || isUploading}
-                                                title="העלאת תעודת הסמכת כוכבי בטיחות"
-                                                onClick={() => handleUploadClick('safety')}
-                                                sx={{
-                                                    border: '1px solid #d0d0d0',
-                                                    borderRadius: 1,
-                                                    height: '56px',
-                                                    width: '56px',
-                                                    color: '#9c27b0',
-                                                    '&:hover': {
-                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                        borderColor: '#9c27b0'
-                                                    }
-                                                }}
-                                            >
-                                                {isUploading && uploadType === 'safety' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
-                                            </IconButton>
+                                            {canEdit && (
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleDeleteFile('safety', localSafetyCertificate)}
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: -8,
+                                                        right: -8,
+                                                        backgroundColor: 'white',
+                                                        border: '1px solid #d0d0d0',
+                                                        width: 20,
+                                                        height: 20,
+                                                        '&:hover': {
+                                                            backgroundColor: '#ffebee',
+                                                            borderColor: '#f44336'
+                                                        }
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontSize: '12px', color: '#f44336', lineHeight: 1 }}>×</Typography>
+                                                </IconButton>
+                                            )}
                                         </Box>
                                     ) : (
                                         <IconButton
@@ -1861,13 +1902,13 @@ export default function ContractorTabsSimple({
                             <Grid item xs={12} sm={6} md={3}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
                                     {localIsoCertificate ? (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Box sx={{ position: 'relative', display: 'inline-block' }}>
                                             <img
                                                 src={localIsoCertificate}
                                                 alt="תעודת ISO45001"
                                                 style={{
-                                                    width: 40,
-                                                    height: 40,
+                                                    width: '56px',
+                                                    height: '56px',
                                                     objectFit: 'cover',
                                                     borderRadius: 4,
                                                     cursor: 'pointer',
@@ -1875,24 +1916,27 @@ export default function ContractorTabsSimple({
                                                 }}
                                                 onClick={() => window.open(localIsoCertificate, '_blank')}
                                             />
-                                            <IconButton
-                                                disabled={!canEdit || isUploading}
-                                                title="העלאת תעודת ISO45001"
-                                                onClick={() => handleUploadClick('iso')}
-                                                sx={{
-                                                    border: '1px solid #d0d0d0',
-                                                    borderRadius: 1,
-                                                    height: '56px',
-                                                    width: '56px',
-                                                    color: '#9c27b0',
-                                                    '&:hover': {
-                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                        borderColor: '#9c27b0'
-                                                    }
-                                                }}
-                                            >
-                                                {isUploading && uploadType === 'iso' ? <CircularProgress size={20} /> : <CloudUploadIcon />}
-                                            </IconButton>
+                                            {canEdit && (
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => handleDeleteFile('iso', localIsoCertificate)}
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: -8,
+                                                        right: -8,
+                                                        backgroundColor: 'white',
+                                                        border: '1px solid #d0d0d0',
+                                                        width: 20,
+                                                        height: 20,
+                                                        '&:hover': {
+                                                            backgroundColor: '#ffebee',
+                                                            borderColor: '#f44336'
+                                                        }
+                                                    }}
+                                                >
+                                                    <Typography sx={{ fontSize: '12px', color: '#f44336', lineHeight: 1 }}>×</Typography>
+                                                </IconButton>
+                                            )}
                                         </Box>
                                     ) : (
                                         <IconButton
@@ -2414,6 +2458,30 @@ export default function ContractorTabsSimple({
                 <DialogActions>
                     <Button onClick={handleCloseUploadDialog} disabled={isUploading}>
                         ביטול
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    אישור מחיקת קובץ
+                </DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        האם אתה בטוח שברצונך למחוק את הקובץ?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>
+                        ביטול
+                    </Button>
+                    <Button 
+                        onClick={confirmDeleteFile} 
+                        color="error" 
+                        variant="contained"
+                    >
+                        מחק
                     </Button>
                 </DialogActions>
             </Dialog>
