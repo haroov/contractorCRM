@@ -128,11 +128,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 const contractorId = searchParams.get('contractorId');
                 const projectData = sessionStorage.getItem('project_data');
                 
+                console.log('🔍 ProjectDetailsPage - NEW mode - contractorId:', contractorId);
+                console.log('🔍 ProjectDetailsPage - NEW mode - projectData:', projectData);
+                
                 let contractorName = '';
                 if (projectData) {
                     try {
                         const parsedProject = JSON.parse(projectData);
                         contractorName = parsedProject.contractorName || '';
+                        console.log('🔍 ProjectDetailsPage - NEW mode - contractorName from sessionStorage:', contractorName);
                     } catch (error) {
                         console.error('Error parsing project data from sessionStorage:', error);
                     }
@@ -276,6 +280,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleClose = () => {
+        console.log('🔍 handleClose - function called');
+        console.log('🔍 handleClose - current URL:', window.location.href);
+        console.log('🔍 handleClose - searchParams:', searchParams.toString());
+        
         // Navigate back to the contractor card that opened this project
         let contractorId = searchParams.get('contractorId');
         
@@ -439,7 +447,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Button
                                             variant="outlined"
                                             size="small"
-                                            onClick={handleClose}
+                                            onClick={() => {
+                                                console.log('🔍 Close button clicked - contactUser');
+                                                handleClose();
+                                            }}
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
@@ -486,7 +497,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Button
                                             variant="outlined"
                                             size="small"
-                                            onClick={handleClose}
+                                            onClick={() => {
+                                                console.log('🔍 Close button clicked - systemUser');
+                                                handleClose();
+                                            }}
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
