@@ -1097,36 +1097,89 @@ export default function ContractorTabsSimple({
         try {
             console.log('🔍 Loading status for existing contractor:', companyId);
             console.log('🔍 Current companyStatusIndicator state:', companyStatusIndicator);
-            console.log('🔍 Making API call to:', `/api/search-company/${companyId}`);
             
-            const response = await fetch(`/api/search-company/${companyId}`);
-            console.log('🔍 API response status:', response.status);
+            // First check if we have cached data from today
+            const today = new Date().toISOString().split('T')[0];
+            const lastUpdated = contractor?.statusLastUpdated ? 
+                new Date(contractor.statusLastUpdated).toISOString().split('T')[0] : null;
+            
+            if (lastUpdated === today && contractor?.statusIndicator) {
+                console.log('✅ Using cached status data from today:', contractor.statusIndicator);
+                setCompanyStatusIndicator(contractor.statusIndicator);
+                return;
+            }
+            
+            console.log('🔍 Fetching fresh status data from Companies Registry API');
+            const response = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+            console.log('🔍 Companies Registry API response status:', response.status);
             
             if (!response.ok) {
-                console.error('❌ API response not OK:', response.status, response.statusText);
+                console.error('❌ Companies Registry API response not OK:', response.status, response.statusText);
                 return;
             }
             
             const result = await response.json();
-            console.log('🔍 API response for status:', result);
+            console.log('🔍 Companies Registry API response data:', result);
 
-            if (result.success && result.data.statusIndicator) {
-                setCompanyStatusIndicator(result.data.statusIndicator);
-                console.log('✅ Loaded status indicator for existing contractor:', result.data.statusIndicator);
-                console.log('✅ Status indicator set in state');
-            } else {
-                console.log('❌ No status indicator found in response:', result);
-                console.log('❌ Response success:', result.success);
-                console.log('❌ Response data:', result.data);
-                if (result.data) {
-                    console.log('❌ Response data keys:', Object.keys(result.data));
+            if (result.success && result.result.records.length > 0) {
+                const record = result.result.records[0];
+                console.log('🔍 Processing company record:', record);
+                
+                // Determine status indicator based on business logic
+                const currentYear = new Date().getFullYear();
+                const companyStatus = record['סטטוס חברה'] || '';
+                const isViolator = record['מפרה'] || false;
+                const companyType = record['סוג תאגיד'] || '';
+                const lastReportYear = record['דוח אחרון (שהוגש)'] || '';
+                
+                let statusIndicator = '';
+                
+                // Check if company is active and not a violator
+                if (companyStatus === 'פעילה' && !isViolator) {
+                    // For private companies, check if last report was submitted within 2 years
+                    if (companyType.includes('פרטית') && lastReportYear) {
+                        const reportYear = parseInt(lastReportYear);
+                        if (currentYear - reportYear <= 2) {
+                            statusIndicator = '🟢'; // Green - all good
+                        } else {
+                            statusIndicator = '🟡'; // Yellow - report overdue
+                        }
+                    } else {
+                        statusIndicator = '🟢'; // Green - active and not violator
+                    }
+                } else if (isViolator) {
+                    statusIndicator = '🔴'; // Red - violator
+                } else if (companyStatus !== 'פעילה') {
+                    statusIndicator = '🟡'; // Yellow - not active
                 }
                 
-                // Try to load from contractor's existing data
-                if (contractor?.statusIndicator) {
-                    console.log('🔍 Trying to load from contractor data:', contractor.statusIndicator);
-                    setCompanyStatusIndicator(contractor.statusIndicator);
+                if (statusIndicator) {
+                    setCompanyStatusIndicator(statusIndicator);
+                    console.log('✅ Loaded status indicator:', statusIndicator);
+                    console.log('🔍 Status logic:', {
+                        companyStatus,
+                        isViolator,
+                        companyType,
+                        lastReportYear,
+                        currentYear,
+                        statusIndicator
+                    });
+                    
+                    // Update contractor with fresh status data
+                    if (onUpdateContractor) {
+                        onUpdateContractor({
+                            ...contractor,
+                            statusIndicator: statusIndicator,
+                            statusLastUpdated: new Date().toISOString()
+                        });
+                    }
+                } else {
+                    console.log('❌ No status indicator determined from record');
+                    setCompanyStatusIndicator(''); // Clear any existing indicator
                 }
+            } else {
+                console.log('❌ No company record found in Companies Registry');
+                setCompanyStatusIndicator(''); // Clear any existing indicator
             }
         } catch (error) {
             console.error('❌ Error loading status for existing contractor:', error);
@@ -1660,11 +1713,6 @@ export default function ContractorTabsSimple({
                                                             {companyStatusIndicator}
                                                         </Box>
                                                     </Tooltip>
-                                                )}
-                                                {!companyStatusIndicator && !isLoadingCompanyData && localCompanyId && (
-                                                    <Box sx={{ fontSize: '12px', color: 'text.secondary' }}>
-                                                        אין חיווי
-                                                    </Box>
                                                 )}
                                                 {/* Debug info */}
                                                 {process.env.NODE_ENV === 'development' && (
@@ -2563,29 +2611,6 @@ export default function ContractorTabsSimple({
                                             <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
                                                 {license.description || `${license.classification_type} - ${license.classification}`}
                                             </Typography>
-                                            <Grid container spacing={1}>
-                                                {license.kod_anaf && (
-                                                    <Grid item xs={6}>
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            קוד ענף: {license.kod_anaf}
-                                                        </Typography>
-                                                    </Grid>
-                                                )}
-                                                {license.tarich_sug && (
-                                                    <Grid item xs={6}>
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            תאריך סוג: {license.tarich_sug}
-                                                        </Typography>
-                                                    </Grid>
-                                                )}
-                                                {license.hekef && (
-                                                    <Grid item xs={12}>
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            היקף: {license.hekef}
-                                                        </Typography>
-                                                    </Grid>
-                                                )}
-                                            </Grid>
                                         </Box>
                                     ))}
                                 </Box>
