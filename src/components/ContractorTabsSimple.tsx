@@ -2717,12 +2717,11 @@ export default function ContractorTabsSimple({
                                         const updatedProjects = [...localProjects, newProject];
                                         setLocalProjects(updatedProjects);
                                         
-                                        // Set as selected project to open in edit mode
-                                        if (onSelectProject) {
-                                            onSelectProject(newProject);
-                                        }
+                                        // Navigate to project edit page
+                                        const projectUrl = `/project?mode=edit&contractorId=${contractor?._id}&projectId=${newProject._id}`;
+                                        window.location.href = projectUrl;
                                         
-                                        console.log('🆕 Created new project:', newProject);
+                                        console.log('🆕 Created new project and navigating to:', projectUrl);
                                     }}
                                     size="small"
                                     sx={{
