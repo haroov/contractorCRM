@@ -421,7 +421,17 @@ export default function ContractorTabsSimple({
                 currentCompanyStatusIndicator: companyStatusIndicator,
                 needsSync: statusFromProp !== companyStatusIndicator,
                 contractorStatusIndicator: contractor?.statusIndicator,
-                contractorStatusIndicatorAlt: contractor?.contractorStatusIndicator
+                contractorStatusIndicatorAlt: contractor?.contractorStatusIndicator,
+                company_id: contractor?.company_id,
+                isLoadingCompanyData,
+                contractorName: contractor?.name,
+                statusIndicatorFromContractor: contractor?.statusIndicator,
+                contractorStatusIndicatorFromContractor: contractor?.contractorStatusIndicator,
+                statusValue: contractor?.statusIndicator || contractor?.contractorStatusIndicator,
+                companyStatusIndicatorState: companyStatusIndicator,
+                hasIndicator: !!companyStatusIndicator,
+                shouldShowIndicator: companyStatusIndicator && !isLoadingCompanyData,
+                shouldShowNoIndicator: !companyStatusIndicator && !isLoadingCompanyData
             });
             
             if (statusFromProp !== companyStatusIndicator) {
@@ -2687,7 +2697,33 @@ export default function ContractorTabsSimple({
                                 <Button
                                     variant="contained"
                                     startIcon={<AddIcon />}
-                                    onClick={() => {/* TODO: Add project handler */ }}
+                                    onClick={() => {
+                                        // Create new project with contractor name pre-filled
+                                        const newProject = {
+                                            _id: `new_${Date.now()}`,
+                                            name: '',
+                                            description: '',
+                                            startDate: new Date().toISOString().split('T')[0],
+                                            city: '',
+                                            value: 0,
+                                            duration: 12,
+                                            contractorName: contractor?.name || '',
+                                            contractorId: contractor?._id || '',
+                                            isActive: true,
+                                            isNew: true
+                                        };
+                                        
+                                        // Add to local projects
+                                        const updatedProjects = [...localProjects, newProject];
+                                        setLocalProjects(updatedProjects);
+                                        
+                                        // Set as selected project to open in edit mode
+                                        if (onSelectProject) {
+                                            onSelectProject(newProject);
+                                        }
+                                        
+                                        console.log('🆕 Created new project:', newProject);
+                                    }}
                                     size="small"
                                     sx={{
                                         backgroundColor: '#9c27b0', // סגול שוקו
