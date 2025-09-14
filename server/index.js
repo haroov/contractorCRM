@@ -427,7 +427,7 @@ app.use('/api/contractors', (req, res, next) => {
     return requireAuth(req, res, next);
   }
 }, contractorsRoutes);
-app.use('/api/projects', requireAuth);
+// app.use('/api/projects', requireAuth); // Temporarily disabled to debug
 console.log('✅ Auth middleware configured');
 
 // Test route for auth
@@ -1070,6 +1070,8 @@ app.get('/api/projects/:id', async (req, res) => {
     console.log('🔍 Request URL:', req.url);
     console.log('🔍 Request method:', req.method);
     console.log('🔍 Request headers:', req.headers);
+    console.log('🔍 Full URL:', req.originalUrl);
+    console.log('🔍 Base URL:', req.baseUrl);
     
     const db = client.db('contractor-crm');
     const projectId = req.params.id;
@@ -3054,36 +3056,7 @@ app.post('/api/contact/contractor/validate-status/:id', async (req, res) => {
   }
 });
 
-// Get projects for contact users
-app.get('/api/contact/projects', async (req, res) => {
-  console.log('🔍 Contact projects endpoint called');
-  console.log('🔍 Session data:', req.session);
-
-  try {
-    const db = client.db('contractor-crm');
-    const contractorId = req.query.contractorId;
-
-    if (!contractorId) {
-      return res.status(400).json({ error: 'Contractor ID is required' });
-    }
-
-    // Get projects for this contractor
-    const projects = await db.collection('projects').find({
-      mainContractor: contractorId
-    }).toArray();
-
-    // Calculate project status for each project
-    const projectsWithStatus = projects.map(project => ({
-      ...project,
-      status: calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed)
-    }));
-
-    res.json(projectsWithStatus);
-  } catch (error) {
-    console.error('❌ Error getting projects for contact user:', error);
-    res.status(500).json({ error: 'Failed to get projects' });
-  }
-});
+// Removed duplicate route - using the one below with proper auth
 
 // Update contractor details (only for contact managers)
 app.put('/api/contact/contractor/:id', requireContactAuth, requireContactManager, requireContactContractorAccess, async (req, res) => {
@@ -3254,6 +3227,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req, res) => {
   console.log('🔍 CATCH-ALL ROUTE HIT:', req.url);
   console.log('🔍 Request method:', req.method);
+  console.log('🔍 Full URL:', req.originalUrl);
+  console.log('🔍 Base URL:', req.baseUrl);
+  
+  // Don't catch API routes
+  if (req.url.startsWith('/api/')) {
+    console.log('❌ CATCH-ALL: API route should not be caught!', req.url);
+    return res.status(404).json({ error: 'API route not found' });
+  }
+  
   console.log('🔍 Sending React index.html for:', req.url);
   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });

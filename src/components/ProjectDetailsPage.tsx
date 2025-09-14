@@ -98,6 +98,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         
         try {
             const { contractorsAPI } = await import('../services/api');
+            console.log('🔍 loadContractorName - calling contractorsAPI.getById with:', contractorId);
             const contractor = await contractorsAPI.getById(contractorId);
             console.log('🔍 loadContractorName - contractor data:', contractor);
             
@@ -110,6 +111,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             }
         } catch (error) {
             console.error('❌ Error loading contractor name:', error);
+            console.error('❌ Error details:', error.message);
         }
     };
 
