@@ -1064,6 +1064,13 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
+// Force JSON middleware for all API routes
+app.use('/api/*', (req, res, next) => {
+  console.log('🚨🚨🚨 API MIDDLEWARE HIT:', req.originalUrl);
+  res.setHeader('Content-Type', 'application/json');
+  next();
+});
+
 // Test route to verify API is working
 app.get('/api/test', (req, res) => {
   console.log('🔍 TEST ROUTE HIT: /api/test');
@@ -3254,7 +3261,7 @@ app.get('*', (req, res) => {
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION 🚨🚨🚨');
+    console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v2.0 🚨🚨🚨');
     console.log('🚀 Server running on port', PORT);
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
