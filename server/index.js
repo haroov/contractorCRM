@@ -794,10 +794,22 @@ app.get('/api/contractors', async (req, res) => {
 app.get('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    const contractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    console.log('🔍 Fetching contractor by ID:', req.params.id);
+    
+    // Try to find by _id (ObjectId) first, then by contractor_id
+    let contractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+    
     if (!contractor) {
+      console.log('🔍 Not found by _id, trying contractor_id');
+      contractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    }
+    
+    if (!contractor) {
+      console.log('❌ Contractor not found by either _id or contractor_id');
       return res.status(404).json({ error: 'Contractor not found' });
     }
+    
+    console.log('✅ Found contractor:', contractor.name || contractor.nameEnglish);
 
     // Get projects for this contractor
     const projectIds = contractor.projectIds || [];

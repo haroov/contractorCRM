@@ -17,16 +17,20 @@ export interface Contact {
 
 export interface Project {
     id: string;
+    _id?: string; // MongoDB ObjectId
     projectName: string;
     description: string;
     startDate: string;
     durationMonths?: number;
     valueNis?: number;
+    value?: number; // Alternative field name
     city?: string;
     isClosed: boolean;
     status?: 'future' | 'current' | 'completed';
     mainContractor: string; // ObjectId of the main contractor who opened the project
+    contractorId?: string; // Contractor ID field
     contractorName?: string;
+    notes?: string; // Notes field
 }
 
 export interface Contractor extends Document {
