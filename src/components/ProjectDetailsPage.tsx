@@ -313,16 +313,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         
         // If no contractorId from URL, try to get it from project data
         if (!contractorId && project) {
-            // For navigation, we need the contractor's _id (ObjectId), not the name
-            // Check if mainContractor is an ObjectId or a name
-            if (project.mainContractor && typeof project.mainContractor === 'string' && project.mainContractor.length === 24) {
-                // It's likely an ObjectId
+            // ALWAYS prioritize mainContractor (ObjectId) for navigation
+            if (project.mainContractor) {
                 contractorId = project.mainContractor;
+                console.log('🔍 handleClose - using mainContractor as contractorId:', contractorId);
             } else if (project.contractorId) {
-                // Use contractorId as fallback
                 contractorId = project.contractorId;
+                console.log('🔍 handleClose - using contractorId as fallback:', contractorId);
             }
-            console.log('🔍 handleClose - contractorId from project:', contractorId);
+            console.log('🔍 handleClose - final contractorId from project:', contractorId);
             console.log('🔍 handleClose - project.mainContractor:', project.mainContractor);
             console.log('🔍 handleClose - project.contractorId:', project.contractorId);
         }
