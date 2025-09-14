@@ -97,9 +97,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 loadContractorName - loading contractor:', contractorId);
         
         try {
-            const { contractorsAPI } = await import('../services/api');
-            console.log('🔍 loadContractorName - calling contractorsAPI.getById with:', contractorId);
-            const contractor = await contractorsAPI.getById(contractorId);
+            const { default: ContractorService } = await import('../services/contractorService');
+            console.log('🔍 loadContractorName - calling ContractorService.getById with:', contractorId);
+            const contractor = await ContractorService.getById(contractorId);
             console.log('🔍 loadContractorName - contractor data:', contractor);
             
             if (contractor) {
@@ -157,6 +157,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     contractorName: contractorName
                 };
                 setProject(newProject);
+                
+                // Set contractor name in state
+                setContractorName(contractorName);
+                
+                // Also load contractor name from API if we have contractorId
+                if (contractorId) {
+                    loadContractorName(contractorId);
+                }
+                
                 setLoading(false);
             } else if (projectId && projectId !== 'new') {
                 // Load existing project from server
@@ -188,6 +197,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 try {
                                     const fallbackData = JSON.parse(storedData);
                                     setProject(fallbackData);
+                                    
+                                    // Load contractor name if we have contractor ID
+                                    const contractorId = fallbackData.contractorId || fallbackData.mainContractor;
+                                    if (contractorId) {
+                                        loadContractorName(contractorId);
+                                    }
                                 } catch (error) {
                                     console.error('Error parsing fallback project data:', error);
                                 }
@@ -201,6 +216,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             try {
                                 const fallbackData = JSON.parse(storedData);
                                 setProject(fallbackData);
+                                
+                                // Load contractor name if we have contractor ID
+                                const contractorId = fallbackData.contractorId || fallbackData.mainContractor;
+                                if (contractorId) {
+                                    loadContractorName(contractorId);
+                                }
                             } catch (parseError) {
                                 console.error('Error parsing fallback project data:', parseError);
                             }
@@ -299,10 +320,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         
         if (contractorId) {
             // Navigate back to contractor details with projects tab
-            // Use window.location to ensure proper navigation
             const navigationUrl = `/?contractor_id=${contractorId}&tab=projects`;
             console.log('🔍 handleClose - navigating to:', navigationUrl);
-            window.location.href = navigationUrl;
+            navigate(navigationUrl);
         } else {
             // Fallback to main view if no contractor ID
             console.log('🔍 handleClose - no contractorId found, navigating to main view');
