@@ -993,48 +993,44 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                   return (
                     <>
-                      {showCloseButton && (
-                        <Button
-                          variant="contained"
-                          onClick={handleCloseContractorDetails}
-                          disabled={isSaving}
-                          sx={{
-                            minWidth: 'auto',
-                            px: 2,
-                            backgroundColor: '#9c27b0', // סגול שוקו
-                            '&:hover': {
-                              backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
-                            },
-                            '&:disabled': {
-                              backgroundColor: '#9c27b0',
-                              opacity: 0.7
-                            }
-                          }}
-                        >
-                          סגירה
-                        </Button>
-                      )}
-                      {showSaveButton && (
-                        <Button
-                          variant="contained"
-                          onClick={handleSaveContractor}
-                          disabled={isSaving}
-                          sx={{
-                            minWidth: 'auto',
-                            px: 2,
-                            backgroundColor: '#9c27b0', // סגול שוקו
-                            '&:hover': {
-                              backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
-                            },
-                            '&:disabled': {
-                              backgroundColor: '#9c27b0',
-                              opacity: 0.7
-                            }
-                          }}
-                        >
-                          {isSaving ? 'שומר...' : 'שמירה'}
-                        </Button>
-                      )}
+                      <Button
+                        variant="contained"
+                        onClick={handleCloseContractorDetails}
+                        disabled={isSaving}
+                        sx={{
+                          minWidth: 'auto',
+                          px: 2,
+                          backgroundColor: '#9c27b0', // סגול שוקו
+                          '&:hover': {
+                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                          },
+                          '&:disabled': {
+                            backgroundColor: '#9c27b0',
+                            opacity: 0.7
+                          }
+                        }}
+                      >
+                        סגירה
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleSaveContractor}
+                        disabled={isSaving}
+                        sx={{
+                          minWidth: 'auto',
+                          px: 2,
+                          backgroundColor: '#9c27b0', // סגול שוקו
+                          '&:hover': {
+                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                          },
+                          '&:disabled': {
+                            backgroundColor: '#9c27b0',
+                            opacity: 0.7
+                          }
+                        }}
+                      >
+                        {isSaving ? 'שומר...' : 'שמירה'}
+                      </Button>
                     </>
                   );
                 })()}
