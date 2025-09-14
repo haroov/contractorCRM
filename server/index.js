@@ -1079,12 +1079,13 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
 });
 
-// Get single project by ID - DEBUGGING VERSION
+// Get single project by ID - DEBUGGING VERSION v3.0
 app.get('/api/projects/:id', async (req, res) => {
-  console.log('🚨🚨🚨 PROJECT API ROUTE HIT - DEBUGGING VERSION 🚨🚨🚨');
+  console.log('🚨🚨🚨 PROJECT API ROUTE HIT - DEBUGGING VERSION v3.0 🚨🚨🚨');
   console.log('🔍 Request URL:', req.url);
   console.log('🔍 Project ID:', req.params.id);
   console.log('🔍 Full URL:', req.originalUrl);
+  console.log('🔍 Method:', req.method);
   
   // Force JSON response for debugging
   res.setHeader('Content-Type', 'application/json');
@@ -3263,7 +3264,7 @@ app.get('*', (req, res) => {
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v2.0 🚨🚨🚨');
+    console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v3.0 🚨🚨🚨');
     console.log('🚀 Server running on port', PORT);
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
