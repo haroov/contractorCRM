@@ -2717,9 +2717,9 @@ export default function ContractorTabsSimple({
                                         const updatedProjects = [...localProjects, newProject];
                                         setLocalProjects(updatedProjects);
                                         
-                                        // Navigate to project edit page
+                                        // Navigate to project edit page using React Router
                                         const projectUrl = `/project?mode=edit&contractorId=${contractor?._id}&projectId=${newProject._id}`;
-                                        window.location.href = projectUrl;
+                                        navigate(projectUrl);
                                         
                                         console.log('🆕 Created new project and navigating to:', projectUrl);
                                     }}
