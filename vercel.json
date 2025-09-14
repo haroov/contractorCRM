@@ -9,6 +9,18 @@
       "destination": "https://contractorcrm-api.onrender.com/api/$1"
     },
     {
+      "source": "/privacyPolicy.html",
+      "destination": "/privacyPolicy.html"
+    },
+    {
+      "source": "/termsOfService.html",
+      "destination": "/termsOfService.html"
+    },
+    {
+      "source": "/termsOfUse.html",
+      "destination": "/termsOfUse.html"
+    },
+    {
       "source": "/dashboard",
       "destination": "/"
     },
