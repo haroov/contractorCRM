@@ -1313,6 +1313,10 @@ export default function ContractorTabsSimple({
                         // Auto-load licenses from Contractors Registry after loading company data
                         console.log('🔄 Auto-loading licenses from Contractors Registry for new company...');
                         await loadLicensesForContractor(localCompanyId);
+                        
+                        // Auto-load status indicator for new company
+                        console.log('🔄 Auto-loading status indicator for new company...');
+                        await loadStatusForExistingContractor(localCompanyId);
                     } else {
                         console.log('❌ Company not found in external APIs either');
                         setCompanyIdError(''); // Don't show error - this is legitimate for new contractors
@@ -1320,6 +1324,10 @@ export default function ContractorTabsSimple({
                         // Still try to load licenses from Contractors Registry even if company not found
                         console.log('🔄 Still trying to load licenses from Contractors Registry...');
                         await loadLicensesForContractor(localCompanyId);
+                        
+                        // Still try to load status indicator even if company not found
+                        console.log('🔄 Still trying to load status indicator...');
+                        await loadStatusForExistingContractor(localCompanyId);
                     }
                 } catch (apiError) {
                     console.error('❌ Error fetching from external APIs:', apiError);
@@ -2529,15 +2537,6 @@ export default function ContractorTabsSimple({
                         {/* רווח בין ISO לסוגי רישיונות */}
                         <Box sx={{ mt: 4, mb: 2 }} />
 
-                        {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 && (
-                            <Box sx={{ mb: 2 }}>
-                                {localClassifications.map((classification: any, index: number) => (
-                                    <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {classification?.description || `${classification?.classification_type || ''} - ${classification?.classification || ''}`}
-                                    </Typography>
-                                ))}
-                            </Box>
-                        )}
 
                         {contractor?.activities && Array.isArray(contractor.activities) && contractor.activities.length > 0 && (
                             <Box sx={{ mb: 2 }}>
@@ -2604,11 +2603,11 @@ export default function ContractorTabsSimple({
                                 }}>
                                     {contractor.classifications.map((license: any, index: number) => (
                                         <Box key={index} sx={{ 
-                                            mb: 2, 
-                                            pb: 2, 
+                                            mb: 1, 
+                                            pb: 1, 
                                             borderBottom: index < contractor.classifications.length - 1 ? '1px solid #e0e0e0' : 'none'
                                         }}>
-                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                                                 {license.description || `${license.classification_type} - ${license.classification}`}
                                             </Typography>
                                         </Box>
