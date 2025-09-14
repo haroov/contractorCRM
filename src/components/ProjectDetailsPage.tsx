@@ -89,14 +89,24 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Function to load contractor name
     const loadContractorName = async (contractorId: string) => {
-        if (!contractorId) return;
+        if (!contractorId) {
+            console.log('🔍 loadContractorName - no contractorId provided');
+            return;
+        }
+        
+        console.log('🔍 loadContractorName - loading contractor:', contractorId);
         
         try {
             const { contractorsAPI } = await import('../services/api');
             const contractor = await contractorsAPI.getById(contractorId);
+            console.log('🔍 loadContractorName - contractor data:', contractor);
+            
             if (contractor) {
-                setContractorName(contractor.name || contractor.companyName || '');
-                console.log('✅ Loaded contractor name:', contractor.name || contractor.companyName);
+                const name = contractor.name || contractor.companyName || '';
+                setContractorName(name);
+                console.log('✅ Loaded contractor name:', name);
+            } else {
+                console.log('❌ No contractor found for ID:', contractorId);
             }
         } catch (error) {
             console.error('❌ Error loading contractor name:', error);
@@ -155,8 +165,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             
                             // Load contractor name if we have contractor ID
                             const contractorId = projectData.contractorId || projectData.mainContractor;
+                            console.log('🔍 Project loaded - contractorId:', contractorId);
+                            console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
+                            console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
+                            
                             if (contractorId) {
                                 loadContractorName(contractorId);
+                            } else {
+                                console.log('❌ No contractor ID found in project data');
                             }
                         } else {
                             console.error('❌ Project not found on server');
@@ -261,18 +277,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         // Navigate back to the contractor card that opened this project
         let contractorId = searchParams.get('contractorId');
         
+        console.log('🔍 handleClose - contractorId from URL:', contractorId);
+        console.log('🔍 handleClose - project data:', project);
+        
         // If no contractorId from URL, try to get it from project data
         if (!contractorId && project) {
             // Try to get contractor ID from project's mainContractor or contractorId
             contractorId = project.contractorId || project.mainContractor;
+            console.log('🔍 handleClose - contractorId from project:', contractorId);
         }
         
         if (contractorId) {
             // Navigate back to contractor details with projects tab
             // Use window.location to ensure proper navigation
-            window.location.href = `/?contractor_id=${contractorId}&tab=projects`;
+            const navigationUrl = `/?contractor_id=${contractorId}&tab=projects`;
+            console.log('🔍 handleClose - navigating to:', navigationUrl);
+            window.location.href = navigationUrl;
         } else {
             // Fallback to main view if no contractor ID
+            console.log('🔍 handleClose - no contractorId found, navigating to main view');
             navigate('/');
         }
     };
@@ -579,7 +602,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <TextField
                                         fullWidth
                                         label="קבלן ראשי"
-                                        value={project?.mainContractor || ''}
+                                        value={contractorName || project?.mainContractor || ''}
                                         onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
                                         disabled={mode === 'view' || !canEdit || mode === 'new'}
                                     />
