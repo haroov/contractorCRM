@@ -428,6 +428,7 @@ app.use('/api/contractors', (req, res, next) => {
   }
 }, contractorsRoutes);
 // app.use('/api/projects', requireAuth); // Temporarily disabled to debug
+// All project routes are now public for debugging
 console.log('✅ Auth middleware configured');
 
 // Test route for auth
@@ -1061,6 +1062,12 @@ app.get('/api/projects', async (req, res) => {
     console.error('❌ Error fetching projects:', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
   }
+});
+
+// Test route to verify API is working
+app.get('/api/test', (req, res) => {
+  console.log('🔍 TEST ROUTE HIT: /api/test');
+  res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
 });
 
 // Get single project by ID
@@ -3230,10 +3237,11 @@ app.get('*', (req, res) => {
   console.log('🔍 Full URL:', req.originalUrl);
   console.log('🔍 Base URL:', req.baseUrl);
   
-  // Don't catch API routes
+  // Don't catch API routes - this should never happen
   if (req.url.startsWith('/api/')) {
     console.log('❌ CATCH-ALL: API route should not be caught!', req.url);
-    return res.status(404).json({ error: 'API route not found' });
+    console.log('❌ This indicates a routing problem!');
+    return res.status(404).json({ error: 'API route not found - routing problem' });
   }
   
   console.log('🔍 Sending React index.html for:', req.url);
