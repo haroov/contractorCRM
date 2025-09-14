@@ -331,6 +331,7 @@ export default function ContractorTabsSimple({
         hasIndicator: !!companyStatusIndicator,
         contractor: contractor?.name,
         contractorStatusIndicator: contractor?.statusIndicator,
+        contractorStatusIndicatorAlt: contractor?.contractorStatusIndicator,
         company_id: contractor?.company_id,
         isLoadingCompanyData,
         shouldShowIndicator: companyStatusIndicator && !isLoadingCompanyData,
@@ -411,9 +412,10 @@ export default function ContractorTabsSimple({
                 statusIndicator: contractor?.statusIndicator
             });
             
-            if (contractor?.statusIndicator) {
-                console.log('🔍 useEffect: Setting status from contractor data:', contractor.statusIndicator);
-                setCompanyStatusIndicator(contractor.statusIndicator);
+            if (contractor?.statusIndicator || contractor?.contractorStatusIndicator) {
+                const statusValue = contractor.statusIndicator || contractor.contractorStatusIndicator;
+                console.log('🔍 useEffect: Setting status from contractor data:', statusValue);
+                setCompanyStatusIndicator(statusValue);
             } else if (contractor?.company_id) {
                 console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
                 loadStatusForExistingContractor(contractor.company_id);
@@ -431,7 +433,7 @@ export default function ContractorTabsSimple({
             }
             
             // Auto-load status indicator for existing contractors if they don't have status
-            if (contractor?.company_id && !contractor?.statusIndicator) {
+            if (contractor?.company_id && !contractor?.statusIndicator && !contractor?.contractorStatusIndicator) {
                 console.log('🔄 Auto-loading status indicator for existing contractor without status...');
                 loadStatusForExistingContractor(contractor.company_id);
             }
