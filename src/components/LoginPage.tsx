@@ -513,7 +513,7 @@ const LoginPage: React.FC = () => {
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             <Link
-              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/termsOfService.html?content-type=text/html"
+              href="https://dash.chocoinsurance.com/termsOfService.html"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
@@ -526,7 +526,7 @@ const LoginPage: React.FC = () => {
             </Link>
             {' | '}
             <Link
-              href="https://lro6avpmanbrbcal.public.blob.vercel-storage.com/documents/privacyPolicy.html?content-type=text/html"
+              href="https://dash.chocoinsurance.com/privacyPolicy.html"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
