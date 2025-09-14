@@ -51,6 +51,13 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
+// 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
+app.use('/api/*', (req, res, next) => {
+  console.log('🚨🚨🚨 API MIDDLEWARE HIT (EARLY):', req.originalUrl);
+  res.setHeader('Content-Type', 'application/json');
+  next();
+});
+
 // Handle specific static HTML files BEFORE express.static
 app.get('/privacyPolicy.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'privacyPolicy.html');
@@ -1064,12 +1071,7 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
-// Force JSON middleware for all API routes
-app.use('/api/*', (req, res, next) => {
-  console.log('🚨🚨🚨 API MIDDLEWARE HIT:', req.originalUrl);
-  res.setHeader('Content-Type', 'application/json');
-  next();
-});
+// This middleware will be moved to earlier position
 
 // Test route to verify API is working
 app.get('/api/test', (req, res) => {
