@@ -423,6 +423,12 @@ export default function ContractorTabsSimple({
                     _id: contractor?._id
                 });
             }
+            
+            // Auto-load licenses for existing contractors if they don't have classifications
+            if (contractor?.company_id && (!contractor?.classifications || contractor.classifications.length === 0)) {
+                console.log('🔄 Auto-loading licenses for existing contractor without classifications...');
+                loadLicensesForContractor(contractor.company_id);
+            }
         } else if (isLoadingCompanyData) {
             console.log('🔄 useEffect: Skipping state update - data is currently loading');
         } else if (contractor && contractor.company_id === localCompanyId) {
@@ -1096,6 +1102,11 @@ export default function ContractorTabsSimple({
             const response = await fetch(`/api/search-company/${companyId}`);
             console.log('🔍 API response status:', response.status);
             
+            if (!response.ok) {
+                console.error('❌ API response not OK:', response.status, response.statusText);
+                return;
+            }
+            
             const result = await response.json();
             console.log('🔍 API response for status:', result);
 
@@ -1245,9 +1256,17 @@ export default function ContractorTabsSimple({
                         console.log('✅ Found company in external APIs:', result.data.name);
                         await populateFormWithApiData(result.data);
                         setCompanyIdError(''); // Clear any error
+                        
+                        // Auto-load licenses from Contractors Registry after loading company data
+                        console.log('🔄 Auto-loading licenses from Contractors Registry for new company...');
+                        await loadLicensesForContractor(localCompanyId);
                     } else {
                         console.log('❌ Company not found in external APIs either');
                         setCompanyIdError(''); // Don't show error - this is legitimate for new contractors
+                        
+                        // Still try to load licenses from Contractors Registry even if company not found
+                        console.log('🔄 Still trying to load licenses from Contractors Registry...');
+                        await loadLicensesForContractor(localCompanyId);
                     }
                 } catch (apiError) {
                     console.error('❌ Error fetching from external APIs:', apiError);
