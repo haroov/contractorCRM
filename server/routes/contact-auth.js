@@ -98,8 +98,8 @@ router.post('/send-otp', async (req, res) => {
     const msg = {
       to: email,
       from: process.env.SENDGRID_FROM_EMAIL || 'hello@chocoinsurance.com',
-      subject: 'קוד אימות למערכת ניהול קבלנים',
-      text: `שלום,\n\nקיבלת בקשה להתחבר למערכת ניהול קבלנים.\n\nקוד האימות שלך הוא: ${otp}\n\nקוד זה תקף למשך 10 דקות.\n\nאם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.\n\nזהו מייל אוטומטי, אנא אל תשיב עליו.`,
+      subject: 'קוד אימות למערכת לניהול סיכונים באתרי בניה',
+      text: `שלום,\n\nקיבלת בקשה להתחבר למערכת לניהול סיכונים באתרי בניה.\n\nקוד האימות שלך הוא: ${otp}\n\nקוד זה תקף למשך 10 דקות.\n\nאם לא ביקשת להתחבר למערכת, אנא התעלם ממייל זה.\n\nזהו מייל אוטומטי, אנא אל תשיב עליו.`,
       html: `
         <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px;">
           <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -107,22 +107,18 @@ router.post('/send-otp', async (req, res) => {
             <div style="text-align: center; margin-bottom: 30px;">
               <div style="display: inline-flex; align-items: center; background-color: #882DD7; color: white; padding: 15px 25px; border-radius: 50px; margin-bottom: 20px;">
                 <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center; padding: 8px;">
-                  <svg width="24" height="24" viewBox="0 0 669.3 669.3" style="fill: #882DD7;">
-                    <circle cx="334.6" cy="334.6" r="334.6" fill="#FFFFFF"/>
-                    <path d="M445.8,158.7c-9.2-7.2-19.1-13.4-29.5-18.6c-20.5-10-44.1-15.2-71-15.6c-40.9-0.4-76.9,12.4-107.8,38.5c-32,26.5-48.4,69.4-49.3,128.5c0.9,58.5,17.3,100.9,49.3,127c30.9,26.1,66.8,39.2,107.6,39.2c26.9-0.4,50.6-5.9,71.1-16.5c7.7-3.8,15.1-8.2,22.2-13v0.1c9-6.6,10.7-6.6,27.2-22.2c1.3-1.3,2.4-2.6,3.6-4l0.4-0.4l0,0c11.7-15.2,10.4-33.8-2.1-46.8c-13.2-13.7-32.9-12.7-48.3,2.3c-9.1,8.8-18.6,17.2-28.6,25c-12.5,6.8-26.8,10.3-42.9,10.5c-59.2,1-89.2-32.6-90.1-101c0.9-68.7,30.9-102.7,90.1-101.9c21.9,0.6,37.2,6.3,52.6,18.7c4.1,3.3,10.3,9.3,22.1,20.3c16.7,14.6,37.5,13,50.6-1.7c11.9-13.4,10.3-31.7-3.5-45.8h0.1c-6.8-7.7-14.4-14.8-22.4-21.2" fill="#424242"/>
-                    <path d="M485.3,475c11.2,10.1,10.4,24.8-2.3,36.1c-40,35.4-88.4,52.4-143.5,53.4h0c-55.6-1-103.5-18.1-143.5-53c-10.2-8.9-12.1-20.5-5.6-30.4c6.4-9.9,19-14.2,31-10.8c5.3,1.5,9.2,4.7,13.1,8c61.7,51.4,150.6,50.7,211.8-1.6C458.6,466,474.6,465.3,485.3,475z" fill="#882DD7"/>
-                  </svg>
+                  <img src="data:image/png;base64,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" alt="שוקו ביטוח" style="width: 24px; height: 24px;" />
                 </div>
                 <span style="font-size: 18px; font-weight: bold;">שוקו ביטוח</span>
               </div>
-              <h1 style="color: #1976d2; margin: 0; font-size: 24px;">מערכת ניהול קבלנים</h1>
+              <h1 style="color: #1976d2; margin: 0; font-size: 24px;">מערכת לניהול סיכונים באתרי בניה</h1>
             </div>
             
             <!-- Main Content -->
             <div style="text-align: center; margin-bottom: 30px;">
               <h2 style="color: #333; margin-bottom: 20px;">קוד אימות למערכת</h2>
               <p style="color: #666; font-size: 16px; margin-bottom: 25px;">שלום,</p>
-              <p style="color: #666; font-size: 16px; margin-bottom: 25px;">קיבלת בקשה להתחבר למערכת ניהול קבלנים.</p>
+              <p style="color: #666; font-size: 16px; margin-bottom: 25px;">קיבלת בקשה להתחבר למערכת לניהול סיכונים באתרי בניה.</p>
               
               <!-- OTP Code Box -->
               <div style="background-color: #f0f8ff; border: 2px solid #1976d2; border-radius: 8px; padding: 20px; margin: 25px 0;">
@@ -139,7 +135,7 @@ router.post('/send-otp', async (req, res) => {
             <div style="text-align: center;">
               <p style="color: #999; font-size: 12px; margin: 0;">
                 זהו מייל אוטומטי, אנא אל תשיב עליו.<br>
-                © 2024 שוקו ביטוח - מערכת ניהול קבלנים
+                © 2024 שוקו ביטוח - מערכת לניהול סיכונים באתרי בניה
               </p>
             </div>
           </div>

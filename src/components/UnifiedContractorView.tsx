@@ -117,7 +117,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
         if (contractor) {
           handleContractorSelect(contractor, mode as 'view' | 'edit');
-          
+
           // Store the tab parameter for ContractorTabsSimple to use
           if (tab === 'projects') {
             sessionStorage.setItem('contractor_active_tab', '3');
@@ -140,13 +140,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data:', contactUser);
-          
+
           // Check if this is a system user - if so, don't auto-select contractor
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, not auto-selecting contractor');
             return;
           }
-          
+
           console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
 
           // Try to find contractor by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
