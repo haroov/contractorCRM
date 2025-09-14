@@ -1070,15 +1070,17 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
 });
 
-// Get single project by ID
+// Get single project by ID - DEBUGGING VERSION
 app.get('/api/projects/:id', async (req, res) => {
+  console.log('🚨🚨🚨 PROJECT API ROUTE HIT - DEBUGGING VERSION 🚨🚨🚨');
+  console.log('🔍 Request URL:', req.url);
+  console.log('🔍 Project ID:', req.params.id);
+  console.log('🔍 Full URL:', req.originalUrl);
+  
+  // Force JSON response for debugging
+  res.setHeader('Content-Type', 'application/json');
+  
   try {
-    console.log('🔍 API ROUTE HIT: /api/projects/:id');
-    console.log('🔍 Request URL:', req.url);
-    console.log('🔍 Request method:', req.method);
-    console.log('🔍 Request headers:', req.headers);
-    console.log('🔍 Full URL:', req.originalUrl);
-    console.log('🔍 Base URL:', req.baseUrl);
     
     const db = client.db('contractor-crm');
     const projectId = req.params.id;
@@ -3232,16 +3234,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all handler: send back React's index.html file for any non-API routes
 app.get('*', (req, res) => {
-  console.log('🔍 CATCH-ALL ROUTE HIT:', req.url);
+  console.log('🚨🚨🚨 CATCH-ALL ROUTE HIT - DEBUGGING VERSION 🚨🚨🚨');
+  console.log('🔍 Request URL:', req.url);
   console.log('🔍 Request method:', req.method);
   console.log('🔍 Full URL:', req.originalUrl);
   console.log('🔍 Base URL:', req.baseUrl);
   
   // Don't catch API routes - this should never happen
   if (req.url.startsWith('/api/')) {
-    console.log('❌ CATCH-ALL: API route should not be caught!', req.url);
-    console.log('❌ This indicates a routing problem!');
-    return res.status(404).json({ error: 'API route not found - routing problem' });
+    console.log('❌❌❌ CATCH-ALL: API route should not be caught!', req.url);
+    console.log('❌❌❌ This indicates a routing problem!');
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(404).json({ error: 'API route not found - routing problem', url: req.url });
   }
   
   console.log('🔍 Sending React index.html for:', req.url);
@@ -3250,10 +3254,13 @@ app.get('*', (req, res) => {
 
 connectDB().then(() => {
   app.listen(PORT, () => {
+    console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION 🚨🚨🚨');
     console.log('🚀 Server running on port', PORT);
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
     console.log('👥 Contact Auth API: http://localhost:' + PORT + '/api/contact-auth');
+    console.log('🔍 Test API: http://localhost:' + PORT + '/api/test');
+    console.log('🚨 DEBUGGING: All API routes should work now!');
   });
 });
 
