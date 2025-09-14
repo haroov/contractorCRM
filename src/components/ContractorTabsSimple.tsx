@@ -139,18 +139,18 @@ export default function ContractorTabsSimple({
 
     const validateDate = (dateString: string): string => {
         if (!dateString) return '';
-        
+
         // If it's a valid date format (YYYY-MM-DD), return as is
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
             return dateString;
         }
-        
+
         // If it's a partial date, ensure year is max 4 digits
         const parts = dateString.split('-');
         if (parts.length >= 1 && parts[0].length > 4) {
             parts[0] = parts[0].substring(0, 4);
         }
-        
+
         return parts.join('-');
     };
 
@@ -324,7 +324,7 @@ export default function ContractorTabsSimple({
     // Check if user can edit based on contact user permissions
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
-    
+
     // For company ID field specifically - always disable if contractor exists (saved)
     const canEditCompanyId = canEdit && !contractor?._id;
 
@@ -421,7 +421,7 @@ export default function ContractorTabsSimple({
                 _id: contractor?._id,
                 statusIndicator: contractor?.statusIndicator
             });
-            
+
             // Sync companyStatusIndicator with contractor prop
             const statusFromProp = contractor?.statusIndicator || contractor?.contractorStatusIndicator;
             console.log('🔧 useEffect: Status sync debug:', {
@@ -441,12 +441,12 @@ export default function ContractorTabsSimple({
                 shouldShowIndicator: companyStatusIndicator && !isLoadingCompanyData,
                 shouldShowNoIndicator: !companyStatusIndicator && !isLoadingCompanyData
             });
-            
+
             if (statusFromProp !== companyStatusIndicator) {
                 console.log('🔍 useEffect: Syncing companyStatusIndicator from prop:', statusFromProp || 'cleared');
                 setCompanyStatusIndicator(statusFromProp || '');
             }
-            
+
             // Load status for contractors without status
             if (!statusFromProp && contractor?.company_id) {
                 console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
@@ -457,13 +457,13 @@ export default function ContractorTabsSimple({
                     _id: contractor?._id
                 });
             }
-            
+
             // Auto-load licenses for existing contractors if they don't have classifications
             if (contractor?.company_id && (!contractor?.classifications || contractor.classifications.length === 0)) {
                 console.log('🔄 Auto-loading licenses for existing contractor without classifications...');
                 loadLicensesForContractor(contractor.company_id);
             }
-            
+
             // Auto-load status indicator for existing contractors if they don't have status
             if (contractor?.company_id && !contractor?.statusIndicator && !contractor?.contractorStatusIndicator) {
                 console.log('🔄 Auto-loading status indicator for existing contractor without status...');
@@ -492,7 +492,7 @@ export default function ContractorTabsSimple({
             companyIdLength: contractor?.company_id?.length,
             contractorName: contractor?.name
         });
-        
+
         if (activeTab === 1 && contractor?.company_id && contractor.company_id.length >= 9) {
             console.log('🔍 Loading licenses for Business Information tab');
             loadLicensesForContractor(contractor.company_id);
@@ -963,18 +963,18 @@ export default function ContractorTabsSimple({
     // Filter contacts based on search term
     const getFilteredContacts = () => {
         if (!localContacts || localContacts.length === 0) return [];
-        
+
         if (!contactSearchTerm.trim()) return localContacts;
-        
+
         const searchLower = contactSearchTerm.toLowerCase();
         return localContacts.filter((contact: any) => {
             const name = (contact.fullName || '').toLowerCase();
             const role = (contact.role || contact.position || '').toLowerCase();
             const permissions = (contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש').toLowerCase();
-            
-            return name.includes(searchLower) || 
-                   role.includes(searchLower) || 
-                   permissions.includes(searchLower);
+
+            return name.includes(searchLower) ||
+                role.includes(searchLower) ||
+                permissions.includes(searchLower);
         });
     };
 
@@ -1003,7 +1003,7 @@ export default function ContractorTabsSimple({
                 const searchTerm = projectSearchTerm.toLowerCase();
                 const projectName = (project.projectName || '').toLowerCase();
                 const city = (project.city || '').toLowerCase();
-                
+
                 if (!projectName.includes(searchTerm) && !city.includes(searchTerm)) {
                     return false;
                 }
@@ -1137,43 +1137,43 @@ export default function ContractorTabsSimple({
         try {
             console.log('🔍 Loading status for existing contractor:', companyId);
             console.log('🔍 Current companyStatusIndicator state:', companyStatusIndicator);
-            
+
             // First check if we have cached data from today
             const today = new Date().toISOString().split('T')[0];
-            const lastUpdated = contractor?.statusLastUpdated ? 
+            const lastUpdated = contractor?.statusLastUpdated ?
                 new Date(contractor.statusLastUpdated).toISOString().split('T')[0] : null;
-            
+
             if (lastUpdated === today && contractor?.statusIndicator) {
                 console.log('✅ Using cached status data from today:', contractor.statusIndicator);
                 setCompanyStatusIndicator(contractor.statusIndicator);
                 return;
             }
-            
+
             console.log('🔍 Fetching fresh status data from Companies Registry API');
             const response = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
             console.log('🔍 Companies Registry API response status:', response.status);
-            
+
             if (!response.ok) {
                 console.error('❌ Companies Registry API response not OK:', response.status, response.statusText);
                 return;
             }
-            
+
             const result = await response.json();
             console.log('🔍 Companies Registry API response data:', result);
 
             if (result.success && result.result.records.length > 0) {
                 const record = result.result.records[0];
                 console.log('🔍 Processing company record:', record);
-                
+
                 // Determine status indicator based on business logic
                 const currentYear = new Date().getFullYear();
                 const companyStatus = record['סטטוס חברה'] || '';
                 const isViolator = record['מפרה'] || false;
                 const companyType = record['סוג תאגיד'] || '';
                 const lastReportYear = record['דוח אחרון (שהוגש)'] || '';
-                
+
                 let statusIndicator = '';
-                
+
                 // Check if company is active and not a violator
                 if (companyStatus === 'פעילה' && !isViolator) {
                     // For private companies, check if last report was submitted within 2 years
@@ -1192,7 +1192,7 @@ export default function ContractorTabsSimple({
                 } else if (companyStatus !== 'פעילה') {
                     statusIndicator = '🟡'; // Yellow - not active
                 }
-                
+
                 if (statusIndicator) {
                     setCompanyStatusIndicator(statusIndicator);
                     console.log('✅ Loaded status indicator:', statusIndicator);
@@ -1204,7 +1204,7 @@ export default function ContractorTabsSimple({
                         currentYear,
                         statusIndicator
                     });
-                    
+
                     // Update contractor with fresh status data
                     if (onUpdateContractor) {
                         onUpdateContractor({
@@ -1228,7 +1228,7 @@ export default function ContractorTabsSimple({
 
     const loadLicensesForContractor = async (companyId: string, forceRefresh: boolean = false) => {
         if (!companyId) return;
-        
+
         setIsLoadingLicenses(true);
         try {
             console.log('🔍 Loading licenses for contractor:', companyId, forceRefresh ? '(force refresh)' : '');
@@ -1239,20 +1239,20 @@ export default function ContractorTabsSimple({
                 classifications: contractor?.classifications,
                 licensesLastUpdated: contractor?.licensesLastUpdated
             });
-            
+
             // Check if we have fresh data (today) - skip if force refresh
             if (!forceRefresh) {
                 const today = new Date().toISOString().split('T')[0];
-                const lastUpdated = contractor?.licensesLastUpdated ? 
+                const lastUpdated = contractor?.licensesLastUpdated ?
                     new Date(contractor.licensesLastUpdated).toISOString().split('T')[0] : null;
-                
+
                 console.log('🔍 License freshness check:', {
                     today,
                     lastUpdated,
                     hasClassifications: !!contractor?.classifications,
                     classificationsLength: contractor?.classifications?.length || 0
                 });
-                
+
                 if (lastUpdated === today && contractor?.classifications && contractor.classifications.length > 0) {
                     console.log('✅ Using cached license data from today');
                     setIsLoadingLicenses(false);
@@ -1261,13 +1261,13 @@ export default function ContractorTabsSimple({
             } else {
                 console.log('🔄 Force refresh - skipping cache check');
             }
-            
+
             console.log('🔍 Fetching fresh license data from Contractors Registry API');
             const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
             console.log('🔍 Contractors Registry API response status:', contractorsResponse.status);
             const contractorsData = await contractorsResponse.json();
             console.log('🔍 Contractors Registry API response data:', contractorsData);
-            
+
             if (contractorsData.success && contractorsData.result.records.length > 0) {
                 const licenseTypes = [];
                 contractorsData.result.records.forEach((record) => {
@@ -1284,10 +1284,10 @@ export default function ContractorTabsSimple({
                         });
                     }
                 });
-                
+
                 console.log('✅ Loaded fresh license data from Contractors Registry:', licenseTypes.length, 'licenses');
                 console.log('🔍 License data:', licenseTypes);
-                
+
                 // Update contractor with fresh data
                 if (onUpdateContractor) {
                     onUpdateContractor({
@@ -1343,32 +1343,32 @@ export default function ContractorTabsSimple({
             } else {
                 // Step 3: Not found in MongoDB - check Companies Registry API
                 console.log('📊 Step 3: Not found in MongoDB, checking Companies Registry API...');
-                
+
                 // Try to fetch from external APIs
                 try {
                     const response = await fetch(`/api/search-company/${localCompanyId}`);
                     const result = await response.json();
-                    
+
                     if (result.success && result.data) {
                         console.log('✅ Found company in external APIs:', result.data.name);
                         await populateFormWithApiData(result.data);
                         setCompanyIdError(''); // Clear any error
-                        
+
                         // Auto-load licenses from Contractors Registry after loading company data
                         console.log('🔄 Auto-loading licenses from Contractors Registry for new company...');
                         await loadLicensesForContractor(localCompanyId);
-                        
+
                         // Auto-load status indicator for new company
                         console.log('🔄 Auto-loading status indicator for new company...');
                         await loadStatusForExistingContractor(localCompanyId);
                     } else {
                         console.log('❌ Company not found in external APIs either');
                         setCompanyIdError(''); // Don't show error - this is legitimate for new contractors
-                        
+
                         // Still try to load licenses from Contractors Registry even if company not found
                         console.log('🔄 Still trying to load licenses from Contractors Registry...');
                         await loadLicensesForContractor(localCompanyId);
-                        
+
                         // Still try to load status indicator even if company not found
                         console.log('🔄 Still trying to load status indicator...');
                         await loadStatusForExistingContractor(localCompanyId);
@@ -2211,16 +2211,16 @@ export default function ContractorTabsSimple({
                                                     onClick={() => window.open(localSafetyCertificate, '_blank')}
                                                 >
                                                     {/* PDF Text - fills the entire button */}
-                                                    <Typography sx={{ 
-                                                        fontSize: '12px', 
-                                                        color: 'white', 
+                                                    <Typography sx={{
+                                                        fontSize: '12px',
+                                                        color: 'white',
                                                         fontWeight: 'bold',
                                                         lineHeight: 1,
                                                         textAlign: 'center'
                                                     }}>
                                                         PDF
                                                     </Typography>
-                                                    
+
                                                     {/* Delete button */}
                                                     {canEdit && (
                                                         <IconButton
@@ -2430,16 +2430,16 @@ export default function ContractorTabsSimple({
                                                     onClick={() => window.open(localIsoCertificate, '_blank')}
                                                 >
                                                     {/* PDF Text - fills the entire button */}
-                                                    <Typography sx={{ 
-                                                        fontSize: '12px', 
-                                                        color: 'white', 
+                                                    <Typography sx={{
+                                                        fontSize: '12px',
+                                                        color: 'white',
                                                         fontWeight: 'bold',
                                                         lineHeight: 1,
                                                         textAlign: 'center'
                                                     }}>
                                                         PDF
                                                     </Typography>
-                                                    
+
                                                     {/* Delete button */}
                                                     {canEdit && (
                                                         <IconButton
@@ -2593,11 +2593,11 @@ export default function ContractorTabsSimple({
                                     <CircularProgress size={16} sx={{ color: '#882fd7' }} />
                                 )}
                                 {!isLoadingLicenses && contractor?.classifications && contractor.classifications.length > 0 && (
-                                    <Chip 
+                                    <Chip
                                         label={`עודכן: ${new Date(contractor.licensesLastUpdated || contractor.updatedAt).toLocaleDateString('he-IL')}`}
                                         size="small"
-                                        sx={{ 
-                                            backgroundColor: '#e8f5e8', 
+                                        sx={{
+                                            backgroundColor: '#e8f5e8',
                                             color: '#2e7d32',
                                             fontSize: '0.75rem'
                                         }}
@@ -2624,20 +2624,20 @@ export default function ContractorTabsSimple({
                                     <RefreshIcon />
                                 </IconButton>
                             </Box>
-                            
+
                             {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 ? (
-                                <Box sx={{ 
-                                    border: '1px solid #e0e0e0', 
-                                    borderRadius: 1, 
-                                    p: 2, 
+                                <Box sx={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: 1,
+                                    p: 2,
                                     backgroundColor: '#fafafa',
                                     maxHeight: '300px',
                                     overflow: 'auto'
                                 }}>
                                     {contractor.classifications.map((license: any, index: number) => (
-                                        <Box key={index} sx={{ 
-                                            mb: 0.5, 
-                                            pb: 0.5, 
+                                        <Box key={index} sx={{
+                                            mb: 0.5,
+                                            pb: 0.5,
                                             borderBottom: index < contractor.classifications.length - 1 ? '1px solid #e0e0e0' : 'none'
                                         }}>
                                             <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
@@ -2647,10 +2647,10 @@ export default function ContractorTabsSimple({
                                     ))}
                                 </Box>
                             ) : (
-                                <Box sx={{ 
-                                    border: '1px solid #e0e0e0', 
-                                    borderRadius: 1, 
-                                    p: 2, 
+                                <Box sx={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: 1,
+                                    p: 2,
                                     backgroundColor: '#fafafa',
                                     textAlign: 'center'
                                 }}>
@@ -2720,14 +2720,14 @@ export default function ContractorTabsSimple({
                                             isActive: true,
                                             isNew: true
                                         };
-                                        
+
                                         // Add to local projects
                                         const updatedProjects = [...localProjects, newProject];
                                         setLocalProjects(updatedProjects);
-                                        
+
                                         // Navigate to project edit page using the existing function
                                         navigateToProject(newProject, 'new');
-                                        
+
                                         console.log('🆕 Created new project and navigating to new project page');
                                     }}
                                     size="small"
@@ -2786,7 +2786,7 @@ export default function ContractorTabsSimple({
                                     </TableHead>
                                     <TableBody>
                                         {getFilteredProjects().map((project: any, index: number) => (
-                                            <TableRow 
+                                            <TableRow
                                                 key={project._id || project.id || index}
                                                 sx={{
                                                     '&:hover': { backgroundColor: '#f5f5f5' },
@@ -3154,9 +3154,9 @@ export default function ContractorTabsSimple({
                     <Button onClick={() => setDeleteDialogOpen(false)}>
                         ביטול
                     </Button>
-                    <Button 
-                        onClick={confirmDeleteFile} 
-                        color="error" 
+                    <Button
+                        onClick={confirmDeleteFile}
+                        color="error"
                         variant="contained"
                     >
                         מחק
@@ -3178,9 +3178,9 @@ export default function ContractorTabsSimple({
                     <Button onClick={() => setContactDeleteDialogOpen(false)}>
                         ביטול
                     </Button>
-                    <Button 
-                        onClick={confirmDeleteContact} 
-                        color="error" 
+                    <Button
+                        onClick={confirmDeleteContact}
+                        color="error"
                         variant="contained"
                     >
                         מחק

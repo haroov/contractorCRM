@@ -44,6 +44,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [contractorName, setContractorName] = useState<string>('');
 
     // Check if user is a contact user
     const [isContactUser, setIsContactUser] = useState(false);
@@ -85,6 +86,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Check if user can edit based on contact user permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
+
+    // Function to load contractor name
+    const loadContractorName = async (contractorId: string) => {
+        if (!contractorId) return;
+        
+        try {
+            const { contractorsAPI } = await import('../services/api');
+            const contractor = await contractorsAPI.getById(contractorId);
+            if (contractor) {
+                setContractorName(contractor.name || contractor.companyName || '');
+                console.log('✅ Loaded contractor name:', contractor.name || contractor.companyName);
+            }
+        } catch (error) {
+            console.error('❌ Error loading contractor name:', error);
+        }
+    };
 
     useEffect(() => {
         const loadProjectData = () => {
@@ -135,6 +152,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
                             setProject(projectData);
+                            
+                            // Load contractor name if we have contractor ID
+                            const contractorId = projectData.contractorId || projectData.mainContractor;
+                            if (contractorId) {
+                                loadContractorName(contractorId);
+                            }
                         } else {
                             console.error('❌ Project not found on server');
                             // Fallback to sessionStorage
@@ -236,7 +259,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleClose = () => {
         // Navigate back to the contractor card that opened this project
-        const contractorId = searchParams.get('contractorId');
+        let contractorId = searchParams.get('contractorId');
+        
+        // If no contractorId from URL, try to get it from project data
+        if (!contractorId && project) {
+            // Try to get contractor ID from project's mainContractor or contractorId
+            contractorId = project.contractorId || project.mainContractor;
+        }
+        
         if (contractorId) {
             // Navigate back to contractor details with projects tab
             // Use window.location to ensure proper navigation
@@ -668,7 +698,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <TextField
                                                 fullWidth
                                                 label="שם הקבלן הראשי"
-                                                value={project.contractorName || ''}
+                                                value={contractorName || project.contractorName || ''}
                                                 onChange={(e) => handleFieldChange('contractorName', e.target.value)}
                                                 variant="outlined"
                                                 size="small"
