@@ -416,6 +416,14 @@ export default function ContractorTabsSimple({
             
             // Sync companyStatusIndicator with contractor prop
             const statusFromProp = contractor?.statusIndicator || contractor?.contractorStatusIndicator;
+            console.log('🔧 useEffect: Status sync debug:', {
+                statusFromProp,
+                currentCompanyStatusIndicator: companyStatusIndicator,
+                needsSync: statusFromProp !== companyStatusIndicator,
+                contractorStatusIndicator: contractor?.statusIndicator,
+                contractorStatusIndicatorAlt: contractor?.contractorStatusIndicator
+            });
+            
             if (statusFromProp !== companyStatusIndicator) {
                 console.log('🔍 useEffect: Syncing companyStatusIndicator from prop:', statusFromProp || 'cleared');
                 setCompanyStatusIndicator(statusFromProp || '');
@@ -1200,12 +1208,12 @@ export default function ContractorTabsSimple({
         }
     };
 
-    const loadLicensesForContractor = async (companyId: string) => {
+    const loadLicensesForContractor = async (companyId: string, forceRefresh: boolean = false) => {
         if (!companyId) return;
         
         setIsLoadingLicenses(true);
         try {
-            console.log('🔍 Loading licenses for contractor:', companyId);
+            console.log('🔍 Loading licenses for contractor:', companyId, forceRefresh ? '(force refresh)' : '');
             console.log('🔍 Contractor data:', {
                 name: contractor?.name,
                 company_id: contractor?.company_id,
@@ -1214,22 +1222,26 @@ export default function ContractorTabsSimple({
                 licensesLastUpdated: contractor?.licensesLastUpdated
             });
             
-            // Check if we have fresh data (today)
-            const today = new Date().toISOString().split('T')[0];
-            const lastUpdated = contractor?.licensesLastUpdated ? 
-                new Date(contractor.licensesLastUpdated).toISOString().split('T')[0] : null;
-            
-            console.log('🔍 License freshness check:', {
-                today,
-                lastUpdated,
-                hasClassifications: !!contractor?.classifications,
-                classificationsLength: contractor?.classifications?.length || 0
-            });
-            
-            if (lastUpdated === today && contractor?.classifications && contractor.classifications.length > 0) {
-                console.log('✅ Using cached license data from today');
-                setIsLoadingLicenses(false);
-                return;
+            // Check if we have fresh data (today) - skip if force refresh
+            if (!forceRefresh) {
+                const today = new Date().toISOString().split('T')[0];
+                const lastUpdated = contractor?.licensesLastUpdated ? 
+                    new Date(contractor.licensesLastUpdated).toISOString().split('T')[0] : null;
+                
+                console.log('🔍 License freshness check:', {
+                    today,
+                    lastUpdated,
+                    hasClassifications: !!contractor?.classifications,
+                    classificationsLength: contractor?.classifications?.length || 0
+                });
+                
+                if (lastUpdated === today && contractor?.classifications && contractor.classifications.length > 0) {
+                    console.log('✅ Using cached license data from today');
+                    setIsLoadingLicenses(false);
+                    return;
+                }
+            } else {
+                console.log('🔄 Force refresh - skipping cache check');
             }
             
             console.log('🔍 Fetching fresh license data from Contractors Registry API');
@@ -2577,8 +2589,9 @@ export default function ContractorTabsSimple({
                                     size="small"
                                     onClick={() => {
                                         if (contractor?.company_id) {
-                                            console.log('🔄 Manual refresh of licenses for company:', contractor.company_id);
-                                            loadLicensesForContractor(contractor.company_id);
+                                            console.log('🔄 Manual refresh of licenses for company (force refresh):', contractor.company_id);
+                                            // Force refresh by passing true as second parameter
+                                            loadLicensesForContractor(contractor.company_id, true);
                                         }
                                     }}
                                     disabled={isLoadingLicenses}
