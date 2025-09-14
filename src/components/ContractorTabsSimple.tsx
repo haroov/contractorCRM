@@ -50,7 +50,9 @@ export default function ContractorTabsSimple({
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
-    const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>('');
+    const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>(
+        contractor?.statusIndicator || contractor?.contractorStatusIndicator || ''
+    );
     const [isLoadingLicenses, setIsLoadingLicenses] = useState<boolean>(false);
 
     // Function to get tooltip text for status indicator
@@ -412,14 +414,18 @@ export default function ContractorTabsSimple({
                 statusIndicator: contractor?.statusIndicator
             });
             
-            if (contractor?.statusIndicator || contractor?.contractorStatusIndicator) {
-                const statusValue = contractor.statusIndicator || contractor.contractorStatusIndicator;
-                console.log('🔍 useEffect: Setting status from contractor data:', statusValue);
-                setCompanyStatusIndicator(statusValue);
-            } else if (contractor?.company_id) {
+            // Sync companyStatusIndicator with contractor prop
+            const statusFromProp = contractor?.statusIndicator || contractor?.contractorStatusIndicator;
+            if (statusFromProp !== companyStatusIndicator) {
+                console.log('🔍 useEffect: Syncing companyStatusIndicator from prop:', statusFromProp || 'cleared');
+                setCompanyStatusIndicator(statusFromProp || '');
+            }
+            
+            // Load status for contractors without status
+            if (!statusFromProp && contractor?.company_id) {
                 console.log('🔍 useEffect: Loading status for existing contractor:', contractor.company_id);
                 loadStatusForExistingContractor(contractor.company_id);
-            } else {
+            } else if (!statusFromProp && !contractor?.company_id) {
                 console.log('🔍 useEffect: Not loading status - missing company_id:', {
                     company_id: contractor?.company_id,
                     _id: contractor?._id
@@ -449,7 +455,7 @@ export default function ContractorTabsSimple({
         console.log('🔍 Current local state values:');
         console.log('🔍 localContacts:', localContacts);
         console.log('🔍 localNotes:', localNotes);
-    }, [contractor, isLoadingCompanyData, localCompanyId]);
+    }, [contractor, isLoadingCompanyData, localCompanyId, companyStatusIndicator]);
 
     // Load licenses when switching to Business Information tab
     useEffect(() => {
