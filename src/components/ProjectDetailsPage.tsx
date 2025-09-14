@@ -95,7 +95,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             setLoading(true);
 
             if (urlMode === 'new') {
-                // Create new project
+                // Get contractor information from URL or sessionStorage
+                const contractorId = searchParams.get('contractorId');
+                const projectData = sessionStorage.getItem('project_data');
+                
+                let contractorName = '';
+                if (projectData) {
+                    try {
+                        const parsedProject = JSON.parse(projectData);
+                        contractorName = parsedProject.contractorName || '';
+                    } catch (error) {
+                        console.error('Error parsing project data from sessionStorage:', error);
+                    }
+                }
+                
+                // Create new project with contractor information
                 const newProject: Project = {
                     id: '',
                     projectName: '',
@@ -106,8 +120,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     city: '',
                     isClosed: false,
                     status: 'future',
-                    mainContractor: '',
-                    contractorName: ''
+                    mainContractor: contractorName,
+                    contractorName: contractorName
                 };
                 setProject(newProject);
                 setLoading(false);
@@ -224,7 +238,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         // Navigate back to the contractor card that opened this project
         const contractorId = searchParams.get('contractorId');
         if (contractorId) {
-            navigate(`/?contractor=${contractorId}&tab=projects`);
+            // Navigate back to contractor details with projects tab
+            navigate(`/?contractor_id=${contractorId}&tab=projects`);
         } else {
             // Fallback to main view if no contractor ID
             navigate('/');
@@ -544,7 +559,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         label="קבלן ראשי"
                                         value={project?.mainContractor || ''}
                                         onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit}
+                                        disabled={mode === 'view' || !canEdit || mode === 'new'}
+                                        helperText={mode === 'new' ? 'שדה זה נקבע אוטומטית לפי הקבלן שנבחר' : ''}
                                     />
                                 </Box>
                             </Box>
