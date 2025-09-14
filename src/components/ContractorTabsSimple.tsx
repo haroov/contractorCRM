@@ -1154,30 +1154,46 @@ export default function ContractorTabsSimple({
                 return;
             }
             
-            console.log('🔍 Fetching fresh license data from API');
-            const response = await fetch(`/api/search-company/${companyId}`);
-            console.log('🔍 API response status:', response.status);
-            const result = await response.json();
-            console.log('🔍 API response data:', result);
+            console.log('🔍 Fetching fresh license data from Contractors Registry API');
+            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+            console.log('🔍 Contractors Registry API response status:', contractorsResponse.status);
+            const contractorsData = await contractorsResponse.json();
+            console.log('🔍 Contractors Registry API response data:', contractorsData);
             
-            if (result.success && result.data.classifications) {
-                console.log('✅ Loaded fresh license data:', result.data.classifications.length, 'licenses');
-                console.log('🔍 License data:', result.data.classifications);
+            if (contractorsData.success && contractorsData.result.records.length > 0) {
+                const licenseTypes = [];
+                contractorsData.result.records.forEach((record) => {
+                    if (record['TEUR_ANAF'] && record['KVUTZA'] && record['SIVUG']) {
+                        const licenseDescription = `${record['TEUR_ANAF']} - ${record['KVUTZA']}${record['SIVUG']}`;
+                        licenseTypes.push({
+                            classification_type: record['TEUR_ANAF'],
+                            classification: `${record['KVUTZA']}${record['SIVUG']}`,
+                            description: licenseDescription,
+                            kod_anaf: record['KOD_ANAF'] || '',
+                            tarich_sug: record['TARICH_SUG'] || '',
+                            hekef: record['HEKEF'] || '',
+                            lastUpdated: new Date().toISOString()
+                        });
+                    }
+                });
+                
+                console.log('✅ Loaded fresh license data from Contractors Registry:', licenseTypes.length, 'licenses');
+                console.log('🔍 License data:', licenseTypes);
+                
                 // Update contractor with fresh data
                 if (onUpdateContractor) {
                     onUpdateContractor({
                         ...contractor,
-                        classifications: result.data.classifications,
-                        licensesLastUpdated: result.data.licensesLastUpdated
+                        classifications: licenseTypes,
+                        licensesLastUpdated: new Date().toISOString()
                     });
                 }
             } else {
-                console.log('❌ No license data found in API response');
+                console.log('❌ No license data found in Contractors Registry API response');
                 console.log('❌ Response details:', {
-                    success: result.success,
-                    data: result.data,
-                    source: result.source,
-                    error: result.error
+                    success: contractorsData.success,
+                    result: contractorsData.result,
+                    records: contractorsData.result?.records?.length || 0
                 });
             }
         } catch (error) {
@@ -1626,7 +1642,7 @@ export default function ContractorTabsSimple({
                                                         </Box>
                                                     </Tooltip>
                                                 )}
-                                                {!companyStatusIndicator && !isLoadingCompanyData && (
+                                                {!companyStatusIndicator && !isLoadingCompanyData && localCompanyId && (
                                                     <Box sx={{ fontSize: '12px', color: 'text.secondary' }}>
                                                         אין חיווי
                                                     </Box>
