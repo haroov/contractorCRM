@@ -52,7 +52,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
-app.use('/api/*', (req, res, next) => {
+app.use('/api', (req, res, next) => {
   console.log('🚨🚨🚨 API MIDDLEWARE HIT (EARLY):', req.originalUrl);
   res.setHeader('Content-Type', 'application/json');
   next();
@@ -62,7 +62,7 @@ app.use('/api/*', (req, res, next) => {
 app.get('/privacyPolicy.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'privacyPolicy.html');
   console.log('🔍 Serving privacy policy:', filePath);
-  
+
   if (fs.existsSync(filePath)) {
     console.log('✅ Privacy policy found, serving directly');
     res.sendFile(filePath);
@@ -75,7 +75,7 @@ app.get('/privacyPolicy.html', (req, res) => {
 app.get('/termsOfService.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'termsOfService.html');
   console.log('🔍 Serving terms of service:', filePath);
-  
+
   if (fs.existsSync(filePath)) {
     console.log('✅ Terms of service found, serving directly');
     res.sendFile(filePath);
@@ -180,7 +180,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on company_id');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on company_id');
       } else {
@@ -1086,12 +1086,12 @@ app.get('/api/projects/:id', async (req, res) => {
   console.log('🔍 Project ID:', req.params.id);
   console.log('🔍 Full URL:', req.originalUrl);
   console.log('🔍 Method:', req.method);
-  
+
   // Force JSON response for debugging
   res.setHeader('Content-Type', 'application/json');
-  
+
   try {
-    
+
     const db = client.db('contractor-crm');
     const projectId = req.params.id;
 
@@ -1329,13 +1329,13 @@ app.post('/api/contractors/:contractorId/update-stats', async (req, res) => {
 app.post('/api/contractors/update-all-stats', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all contractors
     const contractors = await db.collection('contractors').find({}).toArray();
     console.log('📊 Updating stats for', contractors.length, 'contractors');
-    
+
     const results = [];
-    
+
     for (const contractor of contractors) {
       try {
         const stats = await updateContractorStats(db, contractor._id.toString());
@@ -1370,13 +1370,13 @@ app.post('/api/contractors/update-all-stats', async (req, res) => {
 app.post('/api/maintenance/update-stats', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
-    
+
     // Get all contractors
     const contractors = await db.collection('contractors').find({}).toArray();
     console.log('📊 Maintenance: Updating stats for', contractors.length, 'contractors');
-    
+
     const results = [];
-    
+
     for (const contractor of contractors) {
       try {
         const stats = await updateContractorStats(db, contractor._id.toString());
@@ -2120,7 +2120,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
       // If we have fresh status data but need to update licenses, fetch licenses from API
       if (isStatusDataFresh && existingContractor.statusIndicator && !isLicenseDataFresh && !force_refresh) {
         console.log('🔄 Status data is fresh, but license data needs update - fetching licenses from API');
-        
+
         try {
           // Fetch fresh license data from Contractors Registry
           const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
@@ -2795,8 +2795,8 @@ function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport, 
   }
 
   // For public companies, ignore annual report year (they report to stock exchange, not companies register)
-  const isPublicCompany = companyType === 'public_company' || 
-                         (companyType && companyType.toLowerCase().includes('ציבורית'));
+  const isPublicCompany = companyType === 'public_company' ||
+    (companyType && companyType.toLowerCase().includes('ציבורית'));
 
   if (!isPublicCompany && lastAnnualReport) {
     const reportYear = parseInt(lastAnnualReport);
@@ -2811,9 +2811,9 @@ function getCompanyStatusIndicator(companyStatus, violations, lastAnnualReport, 
   if (companyStatus === 'פעילה' && (!violations || violations.trim() === '')) {
     if (isPublicCompany) {
       return '🟢'; // Public companies don't need annual report check
-    } else if (lastAnnualReport && 
-               !isNaN(parseInt(lastAnnualReport)) && 
-               (currentYear - parseInt(lastAnnualReport)) <= 2) {
+    } else if (lastAnnualReport &&
+      !isNaN(parseInt(lastAnnualReport)) &&
+      (currentYear - parseInt(lastAnnualReport)) <= 2) {
       return '🟢'; // Other companies need recent annual report
     }
   }
@@ -3243,24 +3243,25 @@ app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManage
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all handler: send back React's index.html file for any non-API routes
-app.get('*', (req, res) => {
-  console.log('🚨🚨🚨 CATCH-ALL ROUTE HIT - DEBUGGING VERSION 🚨🚨🚨');
-  console.log('🔍 Request URL:', req.url);
-  console.log('🔍 Request method:', req.method);
-  console.log('🔍 Full URL:', req.originalUrl);
-  console.log('🔍 Base URL:', req.baseUrl);
-  
-  // Don't catch API routes - this should never happen
-  if (req.url.startsWith('/api/')) {
-    console.log('❌❌❌ CATCH-ALL: API route should not be caught!', req.url);
-    console.log('❌❌❌ This indicates a routing problem!');
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(404).json({ error: 'API route not found - routing problem', url: req.url });
-  }
-  
-  console.log('🔍 Sending React index.html for:', req.url);
-  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
-});
+// Temporarily disabled due to path-to-regexp issues
+// app.get('/*', (req, res) => {
+//   console.log('🚨🚨🚨 CATCH-ALL ROUTE HIT - DEBUGGING VERSION 🚨🚨🚨');
+//   console.log('🔍 Request URL:', req.url);
+//   console.log('🔍 Request method:', req.method);
+//   console.log('🔍 Full URL:', req.originalUrl);
+//   console.log('🔍 Base URL:', req.baseUrl);
+//   
+//   // Don't catch API routes - this should never happen
+//   if (req.url.startsWith('/api/')) {
+//     console.log('❌❌❌ CATCH-ALL: API route should not be caught!', req.url);
+//     console.log('❌❌❌ This indicates a routing problem!');
+//     res.setHeader('Content-Type', 'application/json');
+//     return res.status(404).json({ error: 'API route not found - routing problem', url: req.url });
+//   }
+//   
+//   console.log('🔍 Sending React index.html for:', req.url);
+//   res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+// });
 
 connectDB().then(() => {
   app.listen(PORT, () => {

@@ -131,7 +131,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   }, [contractors]);
 
-  // Auto-select contact user's contractor
+  // Auto-select contact user's contractor (but NOT for system users)
   useEffect(() => {
     const contactUserAuthenticated = localStorage.getItem('contactUserAuthenticated');
     if (contactUserAuthenticated === 'true' && contractors.length > 0) {
@@ -140,6 +140,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         try {
           const contactUser = JSON.parse(contactUserData);
           console.log('🔍 Contact user data:', contactUser);
+          
+          // Check if this is a system user - if so, don't auto-select contractor
+          if (contactUser.userType === 'system') {
+            console.log('🔍 This is a system user, not auto-selecting contractor');
+            return;
+          }
+          
           console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
 
           // Try to find contractor by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
