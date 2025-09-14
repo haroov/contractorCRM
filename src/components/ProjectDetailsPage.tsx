@@ -239,7 +239,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         const contractorId = searchParams.get('contractorId');
         if (contractorId) {
             // Navigate back to contractor details with projects tab
-            navigate(`/?contractor_id=${contractorId}&tab=projects`);
+            // Use window.location to ensure proper navigation
+            window.location.href = `/?contractor_id=${contractorId}&tab=projects`;
         } else {
             // Fallback to main view if no contractor ID
             navigate('/');
@@ -475,6 +476,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             <Tab label="ביטוח" />
                             <Tab label="הרשאות" />
                             <Tab label="הערות" />
+                            {(project?.status === 'current' || project?.status === 'completed') && (
+                                <Tab label="דשבורד" />
+                            )}
                         </Tabs>
                     </Box>
 
@@ -750,6 +754,277 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     rows={6}
                                     placeholder="הוסף הערות על הפרויקט..."
                                 />
+                            </Box>
+                        )}
+
+                        {activeTab === 6 && (project?.status === 'current' || project?.status === 'completed') && (
+                            <Box>
+                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+                                    דשבורד ניהול סיכונים
+                                </Typography>
+                                
+                                {/* Safety Coins */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
+                                        Safety Coins
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                        <Box sx={{ 
+                                            width: 40, 
+                                            height: 40, 
+                                            borderRadius: '50%', 
+                                            bgcolor: '#FFD700', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: 'center',
+                                            border: '2px solid #FFA500'
+                                        }}>
+                                            🛡️
+                                        </Box>
+                                        <Box sx={{ flex: 1 }}>
+                                            <Box sx={{ 
+                                                height: 20, 
+                                                bgcolor: '#e0e0e0', 
+                                                borderRadius: 10, 
+                                                position: 'relative',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <Box sx={{ 
+                                                    height: '100%', 
+                                                    width: '66%', 
+                                                    bgcolor: '#2196F3', 
+                                                    borderRadius: 10,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end',
+                                                    pr: 1
+                                                }}>
+                                                    <Typography variant="caption" sx={{ color: 'white', fontWeight: 'bold' }}>
+                                                        3,309
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    Earned: 3,309
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    Available: 1,701
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                </Box>
+
+                                {/* Project Progress */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
+                                        התקדמות פרויקט
+                                    </Typography>
+                                    <Box sx={{ 
+                                        height: 8, 
+                                        bgcolor: '#e0e0e0', 
+                                        borderRadius: 4, 
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <Box sx={{ 
+                                            height: '100%', 
+                                            width: '51%', 
+                                            bgcolor: '#2196F3', 
+                                            borderRadius: 4
+                                        }} />
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                            Proj. Start: 22/04/2023
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                                            51%
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                            Est. Delivery: 10/06/2027
+                                        </Typography>
+                                    </Box>
+                                </Box>
+
+                                {/* Risk Monitors Grid */}
+                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+                                    {/* Safety Monitor */}
+                                    <Box sx={{ 
+                                        p: 3, 
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Box sx={{ 
+                                                width: 40, 
+                                                height: 40, 
+                                                borderRadius: '50%', 
+                                                bgcolor: '#4CAF50', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center'
+                                            }}>
+                                                🛡️
+                                            </Box>
+                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                                                בטיחות
+                                            </Typography>
+                                            <Box sx={{ ml: 'auto' }}>
+                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                    Avg. Score 8.5
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
+                                                גרף בטיחות יוצג כאן
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Security Monitor */}
+                                    <Box sx={{ 
+                                        p: 3, 
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Box sx={{ 
+                                                width: 40, 
+                                                height: 40, 
+                                                borderRadius: '50%', 
+                                                bgcolor: '#FF9800', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center'
+                                            }}>
+                                                🔒
+                                            </Box>
+                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                                                ביטחון וגישה
+                                            </Typography>
+                                            <Box sx={{ ml: 'auto' }}>
+                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                    Avg. Score 9.5
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
+                                                גרף ביטחון יוצג כאן
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Fire System Monitor */}
+                                    <Box sx={{ 
+                                        p: 3, 
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Box sx={{ 
+                                                width: 40, 
+                                                height: 40, 
+                                                borderRadius: '50%', 
+                                                bgcolor: '#F44336', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center'
+                                            }}>
+                                                🔥
+                                            </Box>
+                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                                                מערכת כיבוי אש
+                                            </Typography>
+                                            <Box sx={{ ml: 'auto' }}>
+                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                    Avg. Score 8.1
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
+                                                גרף מערכת אש יוצג כאן
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Water System Monitor */}
+                                    <Box sx={{ 
+                                        p: 3, 
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Box sx={{ 
+                                                width: 40, 
+                                                height: 40, 
+                                                borderRadius: '50%', 
+                                                bgcolor: '#2196F3', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center'
+                                            }}>
+                                                💧
+                                            </Box>
+                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                                                מערכת מים
+                                            </Typography>
+                                            <Box sx={{ ml: 'auto' }}>
+                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                    Avg. Score 7.9
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
+                                                גרף מערכת מים יוצג כאן
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Structural Vibration Monitor */}
+                                    <Box sx={{ 
+                                        p: 3, 
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        bgcolor: 'background.paper'
+                                    }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Box sx={{ 
+                                                width: 40, 
+                                                height: 40, 
+                                                borderRadius: '50%', 
+                                                bgcolor: '#9C27B0', 
+                                                display: 'flex', 
+                                                alignItems: 'center', 
+                                                justifyContent: 'center'
+                                            }}>
+                                                🏗️
+                                            </Box>
+                                            <Typography variant="h6" sx={{ color: 'text.primary' }}>
+                                                רעידות מבניות
+                                            </Typography>
+                                            <Box sx={{ ml: 'auto' }}>
+                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                    Avg. Score 8.9
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ height: 200, bgcolor: '#f5f5f5', borderRadius: 1, p: 2 }}>
+                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mt: 8 }}>
+                                                גרף רעידות יוצג כאן
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
                             </Box>
                         )}
                     </Box>
