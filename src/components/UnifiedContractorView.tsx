@@ -994,18 +994,21 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   return (
                     <>
                       <Button
-                        variant="contained"
+                        variant="outlined"
                         onClick={handleCloseContractorDetails}
                         disabled={isSaving}
                         sx={{
                           minWidth: 'auto',
                           px: 2,
-                          backgroundColor: '#9c27b0', // סגול שוקו
+                          borderColor: '#9c27b0', // סגול שוקו
+                          color: '#9c27b0', // סגול שוקו
                           '&:hover': {
-                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                            borderColor: '#7b1fa2', // סגול כהה יותר בהובר
+                            backgroundColor: 'rgba(156, 39, 176, 0.04)' // רקע בהיר בהובר
                           },
                           '&:disabled': {
-                            backgroundColor: '#9c27b0',
+                            borderColor: '#9c27b0',
+                            color: '#9c27b0',
                             opacity: 0.7
                           }
                         }}

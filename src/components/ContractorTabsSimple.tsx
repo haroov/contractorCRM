@@ -2448,9 +2448,6 @@ export default function ContractorTabsSimple({
 
                         {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 && (
                             <Box sx={{ mb: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    סוגי רישיונות:
-                                </Typography>
                                 {localClassifications.map((classification: any, index: number) => (
                                     <Typography key={index} variant="body2" sx={{ mb: 1 }}>
                                         • {classification?.description || `${classification?.classification_type || ''} - ${classification?.classification || ''}`}
