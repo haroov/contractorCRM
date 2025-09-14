@@ -429,6 +429,12 @@ export default function ContractorTabsSimple({
                 console.log('🔄 Auto-loading licenses for existing contractor without classifications...');
                 loadLicensesForContractor(contractor.company_id);
             }
+            
+            // Auto-load status indicator for existing contractors if they don't have status
+            if (contractor?.company_id && !contractor?.statusIndicator) {
+                console.log('🔄 Auto-loading status indicator for existing contractor without status...');
+                loadStatusForExistingContractor(contractor.company_id);
+            }
         } else if (isLoadingCompanyData) {
             console.log('🔄 useEffect: Skipping state update - data is currently loading');
         } else if (contractor && contractor.company_id === localCompanyId) {
@@ -2538,18 +2544,6 @@ export default function ContractorTabsSimple({
                         <Box sx={{ mt: 4, mb: 2 }} />
 
 
-                        {contractor?.activities && Array.isArray(contractor.activities) && contractor.activities.length > 0 && (
-                            <Box sx={{ mb: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    פעילויות:
-                                </Typography>
-                                {contractor.activities.map((activity: any, index: number) => (
-                                    <Typography key={index} variant="body2" sx={{ mb: 1 }}>
-                                        • {String(activity || '')}
-                                    </Typography>
-                                ))}
-                            </Box>
-                        )}
 
                         {/* סוגי רישיונות מפנקס הקבלנים */}
                         <Box sx={{ mb: 2 }}>
@@ -2603,11 +2597,11 @@ export default function ContractorTabsSimple({
                                 }}>
                                     {contractor.classifications.map((license: any, index: number) => (
                                         <Box key={index} sx={{ 
-                                            mb: 1, 
-                                            pb: 1, 
+                                            mb: 0.5, 
+                                            pb: 0.5, 
                                             borderBottom: index < contractor.classifications.length - 1 ? '1px solid #e0e0e0' : 'none'
                                         }}>
-                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
                                                 {license.description || `${license.classification_type} - ${license.classification}`}
                                             </Typography>
                                         </Box>
