@@ -541,18 +541,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         disabled={mode === 'view' || !canEdit}
                                     />
 
-                                    <TextField
-                                        fullWidth
-                                        label="סטטוס"
-                                        select
-                                        value={project?.status || 'future'}
-                                        onChange={(e) => handleFieldChange('status', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit}
-                                    >
-                                        <MenuItem value="future">עתידי</MenuItem>
-                                        <MenuItem value="current">פעיל</MenuItem>
-                                        <MenuItem value="completed">הושלם</MenuItem>
-                                    </TextField>
 
                                     <TextField
                                         fullWidth
@@ -560,7 +548,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         value={project?.mainContractor || ''}
                                         onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
                                         disabled={mode === 'view' || !canEdit || mode === 'new'}
-                                        helperText={mode === 'new' ? 'שדה זה נקבע אוטומטית לפי הקבלן שנבחר' : ''}
                                     />
                                 </Box>
                             </Box>

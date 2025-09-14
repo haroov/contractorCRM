@@ -29,7 +29,15 @@ export default function ContractorTabsSimple({
     onShowNotification
 }: ContractorTabsSimpleProps) {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState(() => {
+        // Check if there's a stored tab from URL navigation
+        const storedTab = sessionStorage.getItem('contractor_active_tab');
+        if (storedTab) {
+            sessionStorage.removeItem('contractor_active_tab'); // Clean up
+            return parseInt(storedTab);
+        }
+        return 0;
+    });
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
     const [contactSearchTerm, setContactSearchTerm] = useState('');

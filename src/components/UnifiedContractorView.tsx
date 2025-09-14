@@ -108,6 +108,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const contractorId = urlParams.get('contractor_id');
+    const tab = urlParams.get('tab');
 
     if (mode && contractorId && contractors.length > 0) {
       if (mode === 'new') {
@@ -116,6 +117,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
         if (contractor) {
           handleContractorSelect(contractor, mode as 'view' | 'edit');
+          
+          // Store the tab parameter for ContractorTabsSimple to use
+          if (tab === 'projects') {
+            sessionStorage.setItem('contractor_active_tab', '3');
+          }
         }
       }
 
