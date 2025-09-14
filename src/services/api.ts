@@ -66,7 +66,7 @@ export const projectsAPI = {
 
   // Get project by ID
   getById: async (projectId: string) => {
-    const response = await authenticatedFetch(`/projects/${projectId}`);
+    const response = await authenticatedFetch(`/api/projects/${projectId}`);
     
     console.log('🔍 API Response status:', response.status);
     console.log('🔍 API Response headers:', response.headers.get('content-type'));
@@ -115,7 +115,7 @@ export const projectsAPI = {
 
   // Update project
   update: async (id: string, project: any) => {
-    const response = await authenticatedFetch(`/projects/${id}`, {
+    const response = await authenticatedFetch(`/api/projects/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export const projectsAPI = {
 
   // Delete project
   delete: async (id: string) => {
-    const response = await authenticatedFetch(`/projects/${id}`, {
+    const response = await authenticatedFetch(`/api/projects/${id}`, {
       method: 'DELETE',
     });
     
