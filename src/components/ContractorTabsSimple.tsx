@@ -355,16 +355,16 @@ export default function ContractorTabsSimple({
                 borderColor: '#d0d0d0'
             },
             '&:hover fieldset': {
-                borderColor: '#9c27b0'
+                borderColor: '#882fd7'
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#9c27b0'
+                borderColor: '#882fd7'
             }
         },
         '& .MuiInputLabel-root': {
             color: '#666666',
             '&.Mui-focused': {
-                color: '#9c27b0'
+                color: '#882fd7'
             }
         }
     };
@@ -1703,11 +1703,11 @@ export default function ContractorTabsSimple({
                         '& .MuiTab-root': {
                             color: 'text.secondary',
                             '&.Mui-selected': {
-                                color: '#9c27b0' // סגול שוקו
+                                color: '#882fd7' // סגול שוקו
                             }
                         },
                         '& .MuiTabs-indicator': {
-                            backgroundColor: '#9c27b0' // סגול שוקו
+                            backgroundColor: '#882fd7' // סגול שוקו
                         }
                     }}
                 >
@@ -1753,7 +1753,7 @@ export default function ContractorTabsSimple({
                                                 gap: 1
                                             }}>
                                                 {isLoadingCompanyData && (
-                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
                                                 )}
                                                 {companyStatusIndicator && !isLoadingCompanyData && (
                                                     <Tooltip
@@ -1884,10 +1884,10 @@ export default function ContractorTabsSimple({
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#9c27b0'
+                                                borderColor: '#882fd7'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#9c27b0'
+                                                borderColor: '#882fd7'
                                             }
                                         }}
                                     >
@@ -2036,7 +2036,7 @@ export default function ContractorTabsSimple({
                                             placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
                                             InputProps={{
                                                 endAdornment: isLoadingAbout && (
-                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
                                                 )
                                             }}
                                         />
@@ -2050,11 +2050,11 @@ export default function ContractorTabsSimple({
                                                     minWidth: 'auto',
                                                     px: 2,
                                                     height: '56px',
-                                                    borderColor: '#9c27b0',
-                                                    color: '#9c27b0',
+                                                    borderColor: '#882fd7',
+                                                    color: '#882fd7',
                                                     '&:hover': {
-                                                        borderColor: '#7b1fa2',
-                                                        backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                                        borderColor: '#6a1b9a',
+                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                     },
                                                     '&:disabled': {
                                                         borderColor: '#d0d0d0',
@@ -2063,7 +2063,7 @@ export default function ContractorTabsSimple({
                                                 }}
                                             >
                                                 {isLoadingAbout ? (
-                                                    <CircularProgress size={20} sx={{ color: '#9c27b0' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
                                                 ) : (
                                                     'סרוק מחדש'
                                                 )}
@@ -2150,10 +2150,10 @@ export default function ContractorTabsSimple({
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#9c27b0'
+                                                borderColor: '#882fd7'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#9c27b0'
+                                                borderColor: '#882fd7'
                                             }
                                         }}
                                     >
@@ -2319,10 +2319,10 @@ export default function ContractorTabsSimple({
                                                 borderRadius: 1,
                                                 height: '56px',
                                                 width: '56px',
-                                                color: '#9c27b0',
+                                                color: '#882fd7',
                                                 '&:hover': {
                                                     backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                    borderColor: '#9c27b0'
+                                                    borderColor: '#882fd7'
                                                 }
                                             }}
                                         >
@@ -2371,9 +2371,9 @@ export default function ContractorTabsSimple({
                                                 setLocalIso45001(e.target.checked);
                                             }}
                                             sx={{
-                                                color: '#9c27b0',
+                                                color: '#882fd7',
                                                 '&.Mui-checked': {
-                                                    color: '#9c27b0'
+                                                    color: '#882fd7'
                                                 }
                                             }}
                                         />
@@ -2538,10 +2538,10 @@ export default function ContractorTabsSimple({
                                                 borderRadius: 1,
                                                 height: '56px',
                                                 width: '56px',
-                                                color: '#9c27b0',
+                                                color: '#882fd7',
                                                 '&:hover': {
                                                     backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                    borderColor: '#9c27b0'
+                                                    borderColor: '#882fd7'
                                                 }
                                             }}
                                         >
@@ -2590,7 +2590,7 @@ export default function ContractorTabsSimple({
                                     סוגי רישיונות מפנקס הקבלנים:
                                 </Typography>
                                 {isLoadingLicenses && (
-                                    <CircularProgress size={16} sx={{ color: '#9c27b0' }} />
+                                    <CircularProgress size={16} sx={{ color: '#882fd7' }} />
                                 )}
                                 {!isLoadingLicenses && contractor?.classifications && contractor.classifications.length > 0 && (
                                     <Chip 
@@ -2615,7 +2615,7 @@ export default function ContractorTabsSimple({
                                     disabled={isLoadingLicenses}
                                     title="רענן רישיונות מפנקס הקבלנים"
                                     sx={{
-                                        color: '#9c27b0',
+                                        color: '#882fd7',
                                         '&:hover': {
                                             backgroundColor: 'rgba(156, 39, 176, 0.04)'
                                         }
@@ -2687,16 +2687,16 @@ export default function ContractorTabsSimple({
                                             borderColor: '#d0d0d0'
                                         },
                                         '&:hover fieldset': {
-                                            borderColor: '#9c27b0'
+                                            borderColor: '#882fd7'
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: '#9c27b0'
+                                            borderColor: '#882fd7'
                                         }
                                     },
                                     '& .MuiInputLabel-root': {
                                         color: '#666666',
                                         '&.Mui-focused': {
-                                            color: '#9c27b0'
+                                            color: '#882fd7'
                                         }
                                     }
                                 }}
@@ -2732,9 +2732,9 @@ export default function ContractorTabsSimple({
                                     }}
                                     size="small"
                                     sx={{
-                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        backgroundColor: '#882fd7', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >
@@ -2756,12 +2756,12 @@ export default function ContractorTabsSimple({
                                         textTransform: 'none',
                                         color: '#666',
                                         '&.Mui-selected': {
-                                            color: '#9c27b0',
+                                            color: '#882fd7',
                                             fontWeight: 'bold'
                                         }
                                     },
                                     '& .MuiTabs-indicator': {
-                                        backgroundColor: '#9c27b0'
+                                        backgroundColor: '#882fd7'
                                     }
                                 }}
                             >
@@ -2846,10 +2846,10 @@ export default function ContractorTabsSimple({
                                             borderColor: '#d0d0d0'
                                         },
                                         '&:hover fieldset': {
-                                            borderColor: '#9c27b0'
+                                            borderColor: '#882fd7'
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: '#9c27b0'
+                                            borderColor: '#882fd7'
                                         }
                                     }
                                 }}
@@ -2861,9 +2861,9 @@ export default function ContractorTabsSimple({
                                     onClick={handleAddContact}
                                     size="small"
                                     sx={{
-                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        backgroundColor: '#882fd7', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >
@@ -3050,10 +3050,10 @@ export default function ContractorTabsSimple({
                                         borderColor: '#d0d0d0'
                                     },
                                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#9c27b0'
+                                        borderColor: '#882fd7'
                                     },
                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#9c27b0'
+                                        borderColor: '#882fd7'
                                     }
                                 }}
                             >
@@ -3069,9 +3069,9 @@ export default function ContractorTabsSimple({
                         variant="contained"
                         onClick={handleSaveContact}
                         sx={{
-                            backgroundColor: '#9c27b0', // סגול שוקו
+                            backgroundColor: '#882fd7', // סגול שוקו
                             '&:hover': {
-                                backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
                             }
                         }}
                     >
@@ -3115,9 +3115,9 @@ export default function ContractorTabsSimple({
                                     startIcon={<CloudUploadIcon />}
                                     sx={{
                                         mb: 2,
-                                        backgroundColor: '#9c27b0', // סגול שוקו
+                                        backgroundColor: '#882fd7', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >

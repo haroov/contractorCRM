@@ -4,10 +4,10 @@ export const theme = createTheme({
     direction: 'rtl',
     palette: {
         primary: {
-            main: '#1976d2',
+            main: '#882fd7', // סגול שוקו
         },
         secondary: {
-            main: '#9c27b0',
+            main: '#882fd7', // סגול שוקו
         },
     },
     typography: {

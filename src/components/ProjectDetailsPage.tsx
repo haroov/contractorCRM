@@ -388,11 +388,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                borderColor: '#9c27b0', // סגול שוקו
-                                                color: '#9c27b0',
+                                                borderColor: '#882fd7', // סגול שוקו
+                                                color: '#882fd7',
                                                 '&:hover': {
-                                                    borderColor: '#7b1fa2',
-                                                    bgcolor: 'rgba(156, 39, 176, 0.04)'
+                                                    borderColor: '#6a1b9a',
+                                                    bgcolor: 'rgba(136, 47, 215, 0.04)'
                                                 }
                                             }}
                                         >
@@ -413,9 +413,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                bgcolor: '#9c27b0',
+                                                bgcolor: '#882fd7',
                                                 '&:hover': {
-                                                    bgcolor: '#7b1fa2'
+                                                    bgcolor: '#6a1b9a'
                                                 }
                                             }}
                                         >
@@ -435,11 +435,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                borderColor: '#9c27b0', // סגול שוקו
-                                                color: '#9c27b0',
+                                                borderColor: '#882fd7', // סגול שוקו
+                                                color: '#882fd7',
                                                 '&:hover': {
-                                                    borderColor: '#7b1fa2',
-                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                                    borderColor: '#6a1b9a',
+                                                    backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                 }
                                             }}
                                         >
@@ -453,9 +453,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                bgcolor: '#9c27b0',
+                                                bgcolor: '#882fd7',
                                                 '&:hover': {
-                                                    bgcolor: '#7b1fa2'
+                                                    bgcolor: '#6a1b9a'
                                                 }
                                             }}
                                         >
@@ -792,7 +792,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Box sx={{ 
                                                     height: '100%', 
                                                     width: '66%', 
-                                                    bgcolor: '#2196F3', 
+                                                    bgcolor: '#882fd7', 
                                                     borderRadius: 10,
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -873,7 +873,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 בטיחות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
                                                     Avg. Score 8.5
                                                 </Typography>
                                             </Box>
@@ -908,7 +908,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 ביטחון וגישה
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
                                                     Avg. Score 9.5
                                                 </Typography>
                                             </Box>
@@ -943,7 +943,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת כיבוי אש
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
                                                     Avg. Score 8.1
                                                 </Typography>
                                             </Box>
@@ -978,7 +978,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת מים
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
                                                     Avg. Score 7.9
                                                 </Typography>
                                             </Box>
@@ -1013,7 +1013,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 רעידות מבניות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#2196F3', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
                                                     Avg. Score 8.9
                                                 </Typography>
                                             </Box>

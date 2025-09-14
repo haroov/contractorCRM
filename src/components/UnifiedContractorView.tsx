@@ -1006,15 +1006,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         sx={{
                           minWidth: 'auto',
                           px: 2,
-                          borderColor: '#9c27b0', // סגול שוקו
-                          color: '#9c27b0', // סגול שוקו
+                          borderColor: '#882fd7', // סגול שוקו
+                          color: '#882fd7', // סגול שוקו
                           '&:hover': {
-                            borderColor: '#7b1fa2', // סגול כהה יותר בהובר
-                            backgroundColor: 'rgba(156, 39, 176, 0.04)' // רקע בהיר בהובר
+                            borderColor: '#6a1b9a', // סגול כהה יותר בהובר
+                            backgroundColor: 'rgba(136, 47, 215, 0.04)' // רקע בהיר בהובר
                           },
                           '&:disabled': {
-                            borderColor: '#9c27b0',
-                            color: '#9c27b0',
+                            borderColor: '#882fd7',
+                            color: '#882fd7',
                             opacity: 0.7
                           }
                         }}
@@ -1028,12 +1028,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         sx={{
                           minWidth: 'auto',
                           px: 2,
-                          backgroundColor: '#9c27b0', // סגול שוקו
+                          backgroundColor: '#882fd7', // סגול שוקו
                           '&:hover': {
-                            backgroundColor: '#7b1fa2' // סגול כהה יותר בהובר
+                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
                           },
                           '&:disabled': {
-                            backgroundColor: '#9c27b0',
+                            backgroundColor: '#882fd7',
                             opacity: 0.7
                           }
                         }}
