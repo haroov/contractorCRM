@@ -313,9 +313,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         
         // If no contractorId from URL, try to get it from project data
         if (!contractorId && project) {
-            // Try to get contractor ID from project's mainContractor or contractorId
-            contractorId = project.contractorId || project.mainContractor;
+            // Prioritize mainContractor (ObjectId) over contractorId (string)
+            contractorId = project.mainContractor || project.contractorId;
             console.log('🔍 handleClose - contractorId from project:', contractorId);
+            console.log('🔍 handleClose - project.mainContractor:', project.mainContractor);
+            console.log('🔍 handleClose - project.contractorId:', project.contractorId);
         }
         
         if (contractorId) {
