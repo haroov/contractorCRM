@@ -562,8 +562,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   const handleAddNewContractor = () => {
     const newContractor: any = {
-      contractor_id: Date.now().toString(),
-      company_id: undefined, // Don't set empty string to avoid duplicate key error
+      contractorId: Date.now().toString(),
+      contractor_id: Date.now().toString(), // Also set old field for backward compatibility
+      companyId: '', // Set empty string for new contractors
+      company_id: '', // Also set old field for backward compatibility
       name: '',
       nameEnglish: '',
       companyType: 'private_company',

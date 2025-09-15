@@ -380,7 +380,7 @@ export default function ContractorTabsSimple({
         // 2. we're not in the middle of loading from API/DB AND
         // 3. the contractor's companyId is different from current local state (to prevent overriding loaded data)
         const contractorCompanyId = contractor?.companyId || contractor?.company_id;
-        if (contractor && contractorCompanyId && !isLoadingCompanyData &&
+        if (contractor && !isLoadingCompanyData &&
             contractorCompanyId !== localCompanyId) {
             console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
             setLocalCompanyId(contractorCompanyId || '');
@@ -476,7 +476,7 @@ export default function ContractorTabsSimple({
             }
         } else if (isLoadingCompanyData) {
             console.log('🔄 useEffect: Skipping state update - data is currently loading');
-        } else if (contractor && contractor.company_id === localCompanyId) {
+        } else if (contractor && (contractor.companyId || contractor.company_id) === localCompanyId) {
             console.log('🔄 useEffect: Skipping state update - contractor data matches current state');
         } else {
             console.log('🔄 useEffect: Skipping state update - no meaningful contractor data');
