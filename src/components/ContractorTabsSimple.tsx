@@ -55,7 +55,7 @@ export default function ContractorTabsSimple({
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
-    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || '');
+    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>(
@@ -375,10 +375,11 @@ export default function ContractorTabsSimple({
         // 1. contractor has meaningful data AND
         // 2. we're not in the middle of loading from API/DB AND
         // 3. the contractor's companyId is different from current local state (to prevent overriding loaded data)
-        if (contractor && contractor.companyId && !isLoadingCompanyData &&
-            contractor.companyId !== localCompanyId) {
+        const contractorCompanyId = contractor?.companyId || contractor?.company_id;
+        if (contractor && contractorCompanyId && !isLoadingCompanyData &&
+            contractorCompanyId !== localCompanyId) {
             console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
-            setLocalCompanyId(contractor?.companyId || '');
+            setLocalCompanyId(contractorCompanyId || '');
             setLocalCompanyType(contractor?.companyType || 'private_company');
             setLocalName(contractor?.name || '');
             setLocalNameEnglish(contractor?.nameEnglish || '');
@@ -1475,7 +1476,7 @@ export default function ContractorTabsSimple({
         setCompanyLogo(contractorData.companyLogo || '');
 
         // IMPORTANT: Set the company ID from existing contractor data
-        setLocalCompanyId(contractorData.companyId || '');
+        setLocalCompanyId(contractorData.companyId || contractorData.company_id || '');
 
         // Update the contractor object with the loaded data for the title
         if (onUpdateContractor) {
@@ -1562,8 +1563,8 @@ export default function ContractorTabsSimple({
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
-        if (companyData.companyId) {
-            setLocalCompanyId(companyData.companyId);
+        if (companyData.companyId || companyData.company_id) {
+            setLocalCompanyId(companyData.companyId || companyData.company_id);
         }
 
         // Set company type from API (prioritize over local logic)

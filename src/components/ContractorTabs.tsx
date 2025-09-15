@@ -597,7 +597,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             newErrors.name = "שם החברה מכיל מילים לא הולמות";
         }
 
-        if (!contractor.companyId.trim()) {
+        const companyId = contractor.companyId || contractor.company_id;
+        if (!companyId || !companyId.trim()) {
             newErrors.companyId = "מספר חברה הוא שדה חובה";
         }
 
@@ -671,11 +672,13 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                 const { default: ContractorService } = await import('../services/contractorService');
 
                 // Check if contractor exists by companyId (ח"פ) first
-                if (contractor.companyId && contractor.companyId !== '') {
-                    const existingContractor = await ContractorService.getByCompanyId(contractor.companyId);
+                const companyId = contractor.companyId || contractor.company_id;
+                if (companyId && companyId !== '') {
+                    const existingContractor = await ContractorService.getByCompanyId(companyId);
                     if (existingContractor) {
                         // Update existing contractor by companyId
-                        savedContractor = await ContractorService.update(existingContractor.contractorId, contractorToSave);
+                        const contractorId = existingContractor.contractorId || existingContractor.contractor_id;
+                        savedContractor = await ContractorService.update(contractorId, contractorToSave);
                         console.log('Updated existing contractor by companyId:', savedContractor);
                     } else {
                         // Create new contractor
