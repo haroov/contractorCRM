@@ -133,9 +133,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         }
       }
 
-      // Clean up URL parameters
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
+      // Keep URL parameters for page refresh support
+      // Don't clean up URL parameters to allow F5 refresh to work
     }
   }, [contractors]);
 
@@ -433,6 +432,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
       // Don't save if companyId is empty or undefined
       const companyId = updatedContractor.companyId || updatedContractor.company_id;
+      console.log('🔍 Validation check - updatedContractor:', updatedContractor);
+      console.log('🔍 Validation check - companyId:', companyId);
+      console.log('🔍 Validation check - updatedContractor.companyId:', updatedContractor.companyId);
+      console.log('🔍 Validation check - updatedContractor.company_id:', updatedContractor.company_id);
       if (!companyId || companyId.trim() === '') {
         console.log('❌ Save failed: Company ID is empty');
         setSnackbarMessage('נא להזין מספר חברה לפני השמירה');
