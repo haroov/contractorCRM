@@ -116,14 +116,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       } else {
         const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
         if (contractor) {
+          console.log('🔍 Found contractor for URL navigation:', contractor.name);
+          console.log('🔍 Contractor ID match:', contractor._id || contractor.contractor_id);
           // If no mode specified, default to 'view'
           const viewMode = mode || 'view';
           handleContractorSelect(contractor, viewMode as 'view' | 'edit');
 
           // Store the tab parameter for ContractorTabsSimple to use
           if (tab === 'projects') {
+            console.log('🔍 Setting contractor_active_tab to 2 for projects tab');
             sessionStorage.setItem('contractor_active_tab', '2');
           }
+        } else {
+          console.log('❌ No contractor found for ID:', contractorId);
+          console.log('❌ Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
         }
       }
 
@@ -316,6 +322,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 Setting selectedContractor to:', contractor);
     console.log('🔍 Setting contractorMode to:', mode);
     console.log('🔍 Setting showContractorDetails to: true');
+    console.log('🔍 Contractor ID:', contractor._id || contractor.contractor_id);
     setSelectedContractor(contractor);
     setContractorMode(mode);
     setShowContractorDetails(true);

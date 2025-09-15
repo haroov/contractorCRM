@@ -33,9 +33,13 @@ export default function ContractorTabsSimple({
         // Check if there's a stored tab from URL navigation
         const storedTab = sessionStorage.getItem('contractor_active_tab');
         if (storedTab) {
+            console.log('🔍 ContractorTabsSimple - Found stored tab:', storedTab);
             sessionStorage.removeItem('contractor_active_tab'); // Clean up
-            return parseInt(storedTab);
+            const tabIndex = parseInt(storedTab);
+            console.log('🔍 ContractorTabsSimple - Setting active tab to:', tabIndex);
+            return tabIndex;
         }
+        console.log('🔍 ContractorTabsSimple - No stored tab, defaulting to 0');
         return 0;
     });
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');

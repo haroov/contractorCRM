@@ -347,6 +347,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const navigationUrl = `/?contractor_id=${contractorId}&tab=projects`;
             console.log('🔍 handleClose - navigating to:', navigationUrl);
             console.log('🔍 handleClose - about to call navigate()');
+            console.log('🔍 handleClose - contractorId type:', typeof contractorId);
+            console.log('🔍 handleClose - contractorId length:', contractorId.length);
             navigate(navigationUrl);
         } else {
             // Fallback to main view if no contractor ID
