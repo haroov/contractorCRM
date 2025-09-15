@@ -410,9 +410,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   const handleSaveContractor = async (updatedContractor: Contractor, skipCompanyIdCheck = false) => {
     console.log('💾 Starting save process for contractor:', {
-      company_id: updatedContractor.company_id,
+      companyId: updatedContractor.companyId,
       name: updatedContractor.name,
-      contractor_id: updatedContractor.contractor_id,
+      contractorId: updatedContractor.contractorId,
       mode: contractorMode
     });
 
@@ -420,8 +420,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     try {
       const { default: ContractorService } = await import('../services/contractorService');
 
-      // Don't save if company_id is empty or undefined
-      if (!updatedContractor.company_id || updatedContractor.company_id.trim() === '') {
+      // Don't save if companyId is empty or undefined
+      if (!updatedContractor.companyId || updatedContractor.companyId.trim() === '') {
         console.log('❌ Save failed: Company ID is empty');
         setSnackbarMessage('נא להזין מספר חברה לפני השמירה');
         setSnackbarSeverity('error');
@@ -431,15 +431,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
 
       if (contractorMode === 'new' && !skipCompanyIdCheck) {
-        // Check if company_id already exists in the database
-        const existingContractor = contractors.find(c => c.company_id === updatedContractor.company_id);
+        // Check if companyId already exists in the database
+        const existingContractor = contractors.find(c => c.companyId === updatedContractor.companyId);
 
         if (existingContractor) {
           // Company ID already exists - load existing contractor for editing
           console.log('✅ Company ID already exists, loading existing contractor for editing:', existingContractor.name);
           setSelectedContractor(existingContractor);
           setContractorMode('edit');
-          setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${existingContractor.name}" עם כל הנתונים לעריכה.`);
+          setSnackbarMessage(`הח"פ ${updatedContractor.companyId} כבר קיים במערכת. נטען הקבלן "${existingContractor.name}" עם כל הנתונים לעריכה.`);
           setSnackbarSeverity('info');
           setSnackbarOpen(true);
           setIsSaving(false);
@@ -448,7 +448,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
         // Double-check with API to see if company exists in MongoDB
         try {
-          const response = await fetch(`/api/search-company/${updatedContractor.company_id}`);
+          const response = await fetch(`/api/search-company/${updatedContractor.companyId}`);
           const result = await response.json();
 
           if (result.success && result.source === 'mongodb') {
@@ -459,11 +459,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             const contractorData = result.data;
             if (contractorData.status === 'archived' || !contractorData.isActive) {
               console.log('📋 Contractor is archived, will be made active on save');
-              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} קיים במערכת אך ארכיב. הקבלן יופעל מחדש בעת השמירה.`);
+              setSnackbarMessage(`הח"פ ${updatedContractor.companyId} קיים במערכת אך ארכיב. הקבלן יופעל מחדש בעת השמירה.`);
               setSnackbarSeverity('info');
               setSnackbarOpen(true);
             } else {
-              setSnackbarMessage(`הח"פ ${updatedContractor.company_id} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`);
+              setSnackbarMessage(`הח"פ ${updatedContractor.companyId} כבר קיים במערכת. נטען הקבלן "${contractorData.name}" עם כל הנתונים לעריכה.`);
               setSnackbarSeverity('info');
               setSnackbarOpen(true);
             }

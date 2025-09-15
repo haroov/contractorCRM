@@ -34,8 +34,8 @@ export interface Project {
 }
 
 export interface Contractor extends Document {
-    contractor_id: string;
-    company_id: string;
+    contractorId: string;
+    companyId: string;
     name: string;
     nameEnglish: string;
     companyType: string;
@@ -75,8 +75,8 @@ export interface Contractor extends Document {
 
 // MongoDB Schema Types
 export interface ContractorDocument extends Document {
-    contractor_id: string;
-    company_id: string;
+    contractorId: string;
+    companyId: string;
     name: string;
     nameEnglish: string;
     companyType: string;

@@ -55,7 +55,7 @@ export default function ContractorTabsSimple({
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
-    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.company_id || '');
+    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>(
@@ -374,11 +374,11 @@ export default function ContractorTabsSimple({
         // Only update state if:
         // 1. contractor has meaningful data AND
         // 2. we're not in the middle of loading from API/DB AND
-        // 3. the contractor's company_id is different from current local state (to prevent overriding loaded data)
-        if (contractor && contractor.company_id && !isLoadingCompanyData &&
-            contractor.company_id !== localCompanyId) {
+        // 3. the contractor's companyId is different from current local state (to prevent overriding loaded data)
+        if (contractor && contractor.companyId && !isLoadingCompanyData &&
+            contractor.companyId !== localCompanyId) {
             console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
-            setLocalCompanyId(contractor?.company_id || '');
+            setLocalCompanyId(contractor?.companyId || '');
             setLocalCompanyType(contractor?.companyType || 'private_company');
             setLocalName(contractor?.name || '');
             setLocalNameEnglish(contractor?.nameEnglish || '');
@@ -388,7 +388,7 @@ export default function ContractorTabsSimple({
             setLocalEmail(contractor?.email || '');
             setLocalPhone(contractor?.phone || '');
             setLocalWebsite(contractor?.website || '');
-            setLocalContractorId(contractor?.contractor_id || '');
+            setLocalContractorId(contractor?.contractorId || '');
             setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
 
             // Update additional contractor data
@@ -589,7 +589,7 @@ export default function ContractorTabsSimple({
             const updatedContractor = {
                 ...contractor,
                 // Basic company info
-                company_id: localCompanyId || undefined, // Use undefined instead of empty string
+                companyId: localCompanyId, // Keep the original value, even if empty string
                 companyType: localCompanyType,
                 name: localName,
                 nameEnglish: localNameEnglish,
@@ -599,7 +599,7 @@ export default function ContractorTabsSimple({
                 email: localEmail,
                 phone: localPhone,
                 website: localWebsite,
-                contractor_id: localContractorId,
+                contractorId: localContractorId,
                 employees: localEmployees,
                 numberOfEmployees: localEmployees ? parseInt(localEmployees) : undefined,
                 // Additional contractor data
@@ -619,9 +619,9 @@ export default function ContractorTabsSimple({
             };
 
             console.log('💾 Saving contractor data:', {
-                company_id: updatedContractor.company_id,
+                companyId: updatedContractor.companyId,
                 name: updatedContractor.name,
-                contractor_id: updatedContractor.contractor_id
+                contractorId: updatedContractor.contractorId
             });
 
             onSave(updatedContractor);
@@ -1404,7 +1404,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractorData.email || '');
         setLocalPhone(contractorData.phone || '');
         setLocalWebsite(contractorData.website || '');
-        setLocalContractorId(contractorData.contractor_id || contractorData.contractorId || '');
+        setLocalContractorId(contractorData.contractorId || '');
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
         setLocalCompanyType(contractorData.companyType || 'private_company');
 
@@ -1475,9 +1475,7 @@ export default function ContractorTabsSimple({
         setCompanyLogo(contractorData.companyLogo || '');
 
         // IMPORTANT: Set the company ID from existing contractor data
-        if (contractorData.company_id) {
-            setLocalCompanyId(contractorData.company_id);
-        }
+        setLocalCompanyId(contractorData.companyId || '');
 
         // Update the contractor object with the loaded data for the title
         if (onUpdateContractor) {
@@ -1564,8 +1562,8 @@ export default function ContractorTabsSimple({
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
-        if (companyData.company_id) {
-            setLocalCompanyId(companyData.company_id);
+        if (companyData.companyId) {
+            setLocalCompanyId(companyData.companyId);
         }
 
         // Set company type from API (prioritize over local logic)

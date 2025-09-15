@@ -795,20 +795,20 @@ app.get('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     console.log('🔍 Fetching contractor by ID:', req.params.id);
-    
+
     // Try to find by _id (ObjectId) first, then by contractor_id
     let contractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
-    
+
     if (!contractor) {
       console.log('🔍 Not found by _id, trying contractor_id');
       contractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
     }
-    
+
     if (!contractor) {
       console.log('❌ Contractor not found by either _id or contractor_id');
       return res.status(404).json({ error: 'Contractor not found' });
     }
-    
+
     console.log('✅ Found contractor:', contractor.name || contractor.nameEnglish);
 
     // Get projects for this contractor
@@ -877,9 +877,9 @@ app.put('/api/contractors/:id', async (req, res) => {
     // קבלת הנתונים הקיימים בדאטה בייס
     let existingContractor;
     try {
-      // ננסה לחפש לפי contractor_id קודם (מספר)
+      // ננסה לחפש לפי contractorId קודם (מספר)
       existingContractor = await db.collection('contractors').findOne({
-        contractor_id: req.params.id
+        contractorId: req.params.id
       });
 
       // אם לא נמצא, ננסה לחפש לפי ObjectId (רק אם זה ObjectId תקין)
@@ -912,9 +912,9 @@ app.put('/api/contractors/:id', async (req, res) => {
     // עדכון הקבלן - נשתמש באותו לוגיקה כמו בחיפוש
     let result;
     try {
-      // ננסה לעדכן לפי contractor_id קודם
+      // ננסה לעדכן לפי contractorId קודם
       result = await db.collection('contractors').updateOne(
-        { contractor_id: req.params.id },
+        { contractorId: req.params.id },
         { $set: finalUpdateData }
       );
 
@@ -935,7 +935,7 @@ app.put('/api/contractors/:id', async (req, res) => {
     console.log('✅ Updated contractor:', req.params.id);
 
     // Return the updated contractor data without projects field
-    const updatedContractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+    const updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
     const { projects, ...contractorWithoutProjects } = updatedContractor;
     const contractorWithProjectIds = {
       ...contractorWithoutProjects,
@@ -3100,7 +3100,7 @@ app.put('/api/contact/contractor/:id', requireContactAuth, requireContactManager
     const result = await db.collection('contractors').updateOne(
       {
         $or: [
-          { contractor_id: req.params.id },
+          { contractorId: req.params.id },
           { _id: new ObjectId(req.params.id) }
         ]
       },

@@ -180,13 +180,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                             // Load contractor name if we have contractor ID
                             // Prioritize contractorId, then mainContractor (ObjectId), but not contractorName
-                            const contractorId = projectData.contractorId || 
+                            const contractorId = projectData.contractorId ||
                                 (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null);
                             console.log('🔍 Project loaded - contractorId:', contractorId);
                             console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
                             console.log('🔍 Project loaded - projectData.contractorName:', projectData.contractorName);
-                            
+
                             if (contractorId) {
                                 loadContractorName(contractorId);
                             } else {
@@ -207,7 +207,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     setProject(fallbackData);
 
                                     // Load contractor name if we have contractor ID
-                                    const contractorId = fallbackData.contractorId || 
+                                    const contractorId = fallbackData.contractorId ||
                                         (fallbackData.mainContractor && fallbackData.mainContractor.length === 24 ? fallbackData.mainContractor : null);
                                     if (contractorId) {
                                         loadContractorName(contractorId);
@@ -229,7 +229,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 setProject(fallbackData);
 
                                 // Load contractor name if we have contractor ID
-                                const contractorId = fallbackData.contractorId || 
+                                const contractorId = fallbackData.contractorId ||
                                     (fallbackData.mainContractor && fallbackData.mainContractor.length === 24 ? fallbackData.mainContractor : null);
                                 if (contractorId) {
                                     loadContractorName(contractorId);

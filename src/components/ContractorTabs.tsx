@@ -597,8 +597,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             newErrors.name = "שם החברה מכיל מילים לא הולמות";
         }
 
-        if (!contractor.company_id.trim()) {
-            newErrors.company_id = "מספר חברה הוא שדה חובה";
+        if (!contractor.companyId.trim()) {
+            newErrors.companyId = "מספר חברה הוא שדה חובה";
         }
 
         if (!contractor.city.trim()) {
@@ -669,14 +669,14 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
             } else {
                 // Regular users use standard endpoints
                 const { default: ContractorService } = await import('../services/contractorService');
-                
-                // Check if contractor exists by company_id (ח"פ) first
-                if (contractor.company_id && contractor.company_id !== '') {
-                    const existingContractor = await ContractorService.getByCompanyId(contractor.company_id);
+
+                // Check if contractor exists by companyId (ח"פ) first
+                if (contractor.companyId && contractor.companyId !== '') {
+                    const existingContractor = await ContractorService.getByCompanyId(contractor.companyId);
                     if (existingContractor) {
-                        // Update existing contractor by company_id
-                        savedContractor = await ContractorService.update(existingContractor.contractor_id, contractorToSave);
-                        console.log('Updated existing contractor by company_id:', savedContractor);
+                        // Update existing contractor by companyId
+                        savedContractor = await ContractorService.update(existingContractor.contractorId, contractorToSave);
+                        console.log('Updated existing contractor by companyId:', savedContractor);
                     } else {
                         // Create new contractor
                         savedContractor = await ContractorService.create(contractorToSave);
@@ -1172,8 +1172,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
     return (
         <Box sx={{ width: '100%', typography: 'body1' }}>
-            <Box sx={{ 
-                borderBottom: 1, 
+            <Box sx={{
+                borderBottom: 1,
                 borderColor: 'divider',
                 borderLeft: '1px solid #e0e0e0',
                 borderRight: '1px solid #e0e0e0',
@@ -1194,8 +1194,8 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Company Details Tab */}
             {activeTab === 0 && (
-                <Box sx={{ 
-                    p: 3, 
+                <Box sx={{
+                    p: 3,
                     pb: 6,
                     borderLeft: '1px solid #e0e0e0',
                     borderRight: '1px solid #e0e0e0',
@@ -1433,10 +1433,10 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Business Information Tab */}
             {activeTab === 1 && (
-                <Box sx={{ 
-                    p: 3, 
-                    minHeight: '100vh', 
-                    display: 'flex', 
+                <Box sx={{
+                    p: 3,
+                    minHeight: '100vh',
+                    display: 'flex',
                     flexDirection: 'column',
                     borderLeft: '1px solid #e0e0e0',
                     borderRight: '1px solid #e0e0e0',
@@ -1535,7 +1535,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Management Contacts Tab */}
             {activeTab === 2 && (
-                <Box sx={{ 
+                <Box sx={{
                     p: 3,
                     borderLeft: '1px solid #e0e0e0',
                     borderRight: '1px solid #e0e0e0',
@@ -1682,7 +1682,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
 
             {/* Projects Tab */}
             {activeTab === 3 && (
-                <Box sx={{ 
+                <Box sx={{
                     p: 3,
                     borderLeft: '1px solid #e0e0e0',
                     borderRight: '1px solid #e0e0e0',

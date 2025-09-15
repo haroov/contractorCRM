@@ -38,12 +38,12 @@ const ProjectSchema = new Schema<Project>({
 
 // Main Contractor Schema
 const ContractorSchema = new Schema({
-    contractor_id: {
+    contractorId: {
         type: String,
         required: true,
         unique: true
     },
-    company_id: {
+    companyId: {
         type: String,
         required: true,
         unique: true
@@ -134,8 +134,8 @@ const ContractorSchema = new Schema({
 });
 
 // Indexes for better performance
-ContractorSchema.index({ contractor_id: 1 });
-ContractorSchema.index({ company_id: 1 });
+ContractorSchema.index({ contractorId: 1 });
+ContractorSchema.index({ companyId: 1 });
 ContractorSchema.index({ name: 1 });
 ContractorSchema.index({ city: 1 });
 ContractorSchema.index({ sector: 1 });
@@ -148,8 +148,8 @@ ContractorSchema.virtual('fullAddress').get(function () {
 
 // Pre-save middleware to ensure unique IDs
 ContractorSchema.pre('save', function (next) {
-    if (!this.contractor_id) {
-        this.contractor_id = `contractor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    if (!this.contractorId) {
+        this.contractorId = `contractor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
     next();
 });
