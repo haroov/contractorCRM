@@ -234,17 +234,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
     // Load indicators for all contractors with company_id
     const promises = contractors
-      .filter(contractor => contractor.company_id)
+      .filter(contractor => contractor.companyId || contractor.company_id)
       .map(async (contractor) => {
         try {
-          const response = await fetch(`/api/search-company/${contractor.company_id}`);
+          const companyId = contractor.companyId || contractor.company_id;
+          const response = await fetch(`/api/search-company/${companyId}`);
           const result = await response.json();
 
           if (result.success && result.data.statusIndicator) {
-            indicators[contractor.company_id!] = result.data.statusIndicator;
+            indicators[companyId!] = result.data.statusIndicator;
           }
         } catch (error) {
-          console.error(`Error loading status for contractor ${contractor.company_id}:`, error);
+          const companyId = contractor.companyId || contractor.company_id;
+          console.error(`Error loading status for contractor ${companyId}:`, error);
         }
       });
 
@@ -853,22 +855,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
                             <Typography variant="body2" sx={{ textAlign: 'right' }}>
-                              {contractor.company_id}
+                              {contractor.companyId || contractor.company_id}
                             </Typography>
-                            {contractor.company_id && contractorStatusIndicators[contractor.company_id] && (
+                            {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
                               <Tooltip
-                                title={getStatusTooltipText(contractorStatusIndicators[contractor.company_id])}
+                                title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
                                 arrow
                                 placement="top"
                               >
                                 <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help' }}>
-                                  {contractorStatusIndicators[contractor.company_id]}
+                                  {contractorStatusIndicators[contractor.companyId || contractor.company_id]}
                                 </Box>
                               </Tooltip>
                             )}
                           </Box>
                           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
-                            קבלן {contractor.contractor_id}
+                            קבלן {contractor.contractorId || contractor.contractor_id}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
                             {contractor.companyType === 'private_company' ? 'חברה פרטית' :
