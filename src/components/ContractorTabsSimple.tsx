@@ -15,6 +15,7 @@ interface ContractorTabsSimpleProps {
     isSaving?: boolean;
     onUpdateContractor?: (contractor: any) => void;
     onShowNotification?: (message: string, severity: 'success' | 'error' | 'info' | 'warning') => void;
+    contractorMode?: 'view' | 'edit' | 'new';
 }
 
 export default function ContractorTabsSimple({
@@ -26,7 +27,8 @@ export default function ContractorTabsSimple({
     currentUser,
     isSaving = false,
     onUpdateContractor,
-    onShowNotification
+    onShowNotification,
+    contractorMode = 'view'
 }: ContractorTabsSimpleProps) {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(() => {
@@ -329,14 +331,17 @@ export default function ContractorTabsSimple({
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
 
-    // For company ID field specifically - always disable if contractor exists (saved)
-    const canEditCompanyId = canEdit && !contractor?._id;
+    // For company ID field specifically - allow editing for new contractors or when in edit mode
+    const canEditCompanyId = canEdit && (!contractor?._id || contractorMode === 'edit' || contractorMode === 'new');
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
         isContactUser,
         contactUserPermissions,
-        canEdit
+        canEdit,
+        canEditCompanyId,
+        contractorId: contractor?._id,
+        contractorMode
     });
 
     // Debug logging for status indicator

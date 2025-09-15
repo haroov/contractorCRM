@@ -1106,6 +1106,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   onSave={handleSaveContractor}
                   onClose={handleCloseContractorDetails}
                   isContactUser={isContactUser}
+                  contractorMode={contractorMode}
                   contactUserPermissions={(() => {
                     const contactUserData = localStorage.getItem('contactUser');
                     console.log('🔧 contactUserPermissions debug - localStorage data:', contactUserData);
