@@ -765,7 +765,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         sx={{
                           '&:hover': { backgroundColor: '#f0f0f0' },
                           cursor: 'pointer',
-                          backgroundColor: selectedContractor?.contractorId === contractor.contractorId || selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : '#ffffff'
+                          backgroundColor: (selectedContractor && (
+                            (selectedContractor.contractorId && contractor.contractorId && selectedContractor.contractorId === contractor.contractorId) ||
+                            (selectedContractor.contractor_id && contractor.contractor_id && selectedContractor.contractor_id === contractor.contractor_id) ||
+                            (selectedContractor._id && contractor._id && selectedContractor._id === contractor._id)
+                          )) ? '#e3f2fd' : '#ffffff'
                         }}
                         onClick={(e) => {
                           console.log('🔥 Contractor row clicked!', contractor.name);
