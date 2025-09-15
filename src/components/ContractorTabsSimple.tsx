@@ -296,7 +296,7 @@ export default function ContractorTabsSimple({
     const [localEmail, setLocalEmail] = useState<string>(contractor?.email || '');
     const [localPhone, setLocalPhone] = useState<string>(contractor?.phone || '');
     const [localWebsite, setLocalWebsite] = useState<string>(contractor?.website || '');
-    const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractor_id || '');
+    const [localContractorId, setLocalContractorId] = useState<string>(contractor?.contractorId || contractor?.contractor_id || '');
     const [localEmployees, setLocalEmployees] = useState<string>(contractor?.employees || contractor?.numberOfEmployees || '');
 
     // Local states for additional contractor data
@@ -1485,7 +1485,7 @@ export default function ContractorTabsSimple({
                 name: contractorData.name,
                 nameEnglish: contractorData.nameEnglish,
                 company_id: contractorData.company_id,
-                contractor_id: contractorData.contractor_id,
+                contractorId: contractorData.contractorId || contractorData.contractor_id,
                 foundationDate: contractorData.foundationDate,
                 address: contractorData.address,
                 city: contractorData.city,
@@ -1559,7 +1559,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(companyData.email || '');
         setLocalPhone(companyData.phone || '');
         setLocalWebsite(companyData.website || '');
-        setLocalContractorId(companyData.contractor_id || 'לא קבלן רשום');
+        setLocalContractorId(companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום');
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
@@ -1648,7 +1648,7 @@ export default function ContractorTabsSimple({
                 setLocalEmail(companyData.email || '');
                 setLocalPhone(companyData.phone || '');
                 setLocalWebsite(companyData.website || '');
-                setLocalContractorId(companyData.contractor_id || '');
+                setLocalContractorId(companyData.contractorId || companyData.contractor_id || '');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
 
                 // Update company about section if available
