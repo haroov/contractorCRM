@@ -333,6 +333,14 @@ export default function ContractorTabsSimple({
 
     // For company ID field specifically - allow editing ONLY for new contractors
     const canEditCompanyId = canEdit && contractorMode === 'new';
+    
+    // Debug the canEditCompanyId calculation
+    console.log('🔧 canEditCompanyId calculation:', {
+        canEdit,
+        contractorMode,
+        'contractorMode === "new"': contractorMode === 'new',
+        canEditCompanyId
+    });
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {

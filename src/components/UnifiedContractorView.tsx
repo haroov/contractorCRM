@@ -1101,6 +1101,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
               <Suspense fallback={<SkeletonLoader />}>
+                {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabs:', contractorMode)}
                 <ContractorTabs
                   contractor={selectedContractor!}
                   onSave={handleSaveContractor}
