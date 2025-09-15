@@ -591,6 +591,7 @@ export default function ContractorTabsSimple({
                 ...contractor,
                 // Basic company info
                 companyId: localCompanyId, // Keep the original value, even if empty string
+                company_id: localCompanyId, // Also set the old field for backward compatibility
                 companyType: localCompanyType,
                 name: localName,
                 nameEnglish: localNameEnglish,
@@ -601,6 +602,7 @@ export default function ContractorTabsSimple({
                 phone: localPhone,
                 website: localWebsite,
                 contractorId: localContractorId,
+                contractor_id: localContractorId, // Also set the old field for backward compatibility
                 employees: localEmployees,
                 numberOfEmployees: localEmployees ? parseInt(localEmployees) : undefined,
                 // Additional contractor data

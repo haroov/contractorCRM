@@ -110,17 +110,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const contractorId = urlParams.get('contractor_id');
     const tab = urlParams.get('tab');
 
-    if (mode && contractorId && contractors.length > 0) {
+    if (contractorId && contractors.length > 0) {
       if (mode === 'new') {
         handleAddNewContractor();
       } else {
         const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
         if (contractor) {
-          handleContractorSelect(contractor, mode as 'view' | 'edit');
+          // If no mode specified, default to 'view'
+          const viewMode = mode || 'view';
+          handleContractorSelect(contractor, viewMode as 'view' | 'edit');
 
           // Store the tab parameter for ContractorTabsSimple to use
           if (tab === 'projects') {
-            sessionStorage.setItem('contractor_active_tab', '3');
+            sessionStorage.setItem('contractor_active_tab', '2');
           }
         }
       }
