@@ -331,8 +331,8 @@ export default function ContractorTabsSimple({
     // System users (admin/user) can always edit, contact users need contactAdmin permissions
     const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
 
-    // For company ID field specifically - allow editing for new contractors or when in edit mode
-    const canEditCompanyId = canEdit && (!contractor?._id || contractorMode === 'edit' || contractorMode === 'new');
+    // For company ID field specifically - allow editing ONLY for new contractors
+    const canEditCompanyId = canEdit && contractorMode === 'new';
 
     // Debug logging for canEdit
     console.log('🔧 canEdit debug:', {
