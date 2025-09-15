@@ -761,11 +761,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   <TableBody>
                     {filteredContractors.map((contractor) => (
                       <TableRow
-                        key={contractor.contractor_id}
+                        key={contractor.contractorId || contractor.contractor_id}
                         sx={{
-                          '&:hover': { backgroundColor: '#f5f5f5' },
+                          '&:hover': { backgroundColor: '#f0f0f0' },
                           cursor: 'pointer',
-                          backgroundColor: selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : 'inherit'
+                          backgroundColor: selectedContractor?.contractorId === contractor.contractorId || selectedContractor?.contractor_id === contractor.contractor_id ? '#e3f2fd' : '#ffffff'
                         }}
                         onClick={(e) => {
                           console.log('🔥 Contractor row clicked!', contractor.name);
