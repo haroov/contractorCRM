@@ -288,8 +288,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Navigate back to main view after successful save
-            navigate('/');
+            // Don't navigate away - just show success message
+            console.log('✅ Project saved successfully');
 
         } catch (error) {
             console.error('❌ Error saving project:', error);
@@ -307,7 +307,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 handleClose - project data:', project);
         
         // Navigate back to the contractor card that opened this project
-        let contractorId = searchParams.get('contractorId');
+        let contractorId = searchParams.get('contractorId') || searchParams.get('contractor_id');
         
         console.log('🔍 handleClose - contractorId from URL:', contractorId);
         
@@ -652,6 +652,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         value={contractorName || project?.mainContractor || ''}
                                         onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
                                         disabled={mode === 'view' || !canEdit || mode === 'new'}
+                                        InputProps={{ readOnly: true }}
+                                        sx={{ backgroundColor: '#f5f5f5' }}
                                     />
                                 </Box>
                             </Box>
