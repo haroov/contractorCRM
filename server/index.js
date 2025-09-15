@@ -175,14 +175,14 @@ async function connectDB() {
     client = new MongoClient(mongoUri);
     await client.connect();
 
-    // Create unique index on company_id to prevent duplicates
+    // Create unique index on companyId to prevent duplicates
     const db = client.db('contractor-crm');
     try {
-      await db.collection('contractors').createIndex({ company_id: 1 }, { unique: true, sparse: true });
-      console.log('✅ Created unique index on company_id');
+      await db.collection('contractors').createIndex({ companyId: 1 }, { unique: true, sparse: true });
+      console.log('✅ Created unique index on companyId');
     } catch (error) {
       if (error.code === 86) {
-        console.log('✅ Index already exists on company_id');
+        console.log('✅ Index already exists on companyId');
       } else {
         console.error('❌ Error creating index:', error);
       }
@@ -356,14 +356,15 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
       return res.status(404).json({ error: 'Contractor not found' });
     }
 
-    if (!contractor.company_id) {
-      return res.status(400).json({ error: 'Contractor has no company_id for validation' });
+    const companyId = contractor.companyId || contractor.company_id;
+    if (!companyId) {
+      return res.status(400).json({ error: 'Contractor has no companyId for validation' });
     }
 
-    console.log(`🔍 Validating contractor ${contractor.name} (${contractor.company_id})`);
+    console.log(`🔍 Validating contractor ${contractor.name} (${companyId})`);
 
     // Validate status from Companies Register
-    const validationResult = await validateContractorStatus(contractor.company_id);
+    const validationResult = await validateContractorStatus(companyId);
 
     if (validationResult) {
       // Update contractor with validated status
@@ -587,19 +588,20 @@ app.post('/api/contractors/validate-all-status', async (req, res) => {
 
     for (const contractor of contractors) {
       try {
-        if (!contractor.company_id) {
+        const companyId = contractor.companyId || contractor.company_id;
+        if (!companyId) {
           results.push({
             contractor: contractor.name,
             status: 'skipped',
-            reason: 'No company_id'
+            reason: 'No companyId'
           });
           continue;
         }
 
-        console.log(`🔍 Validating ${contractor.name} (${contractor.company_id})`);
+        console.log(`🔍 Validating ${contractor.name} (${companyId})`);
 
         // Validate status from Companies Register
-        const validationResult = await validateContractorStatus(contractor.company_id);
+        const validationResult = await validateContractorStatus(companyId);
 
         if (validationResult) {
           // Update contractor with validated status
@@ -2030,7 +2032,10 @@ app.post('/api/contractors/update-licenses-cache', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractors = await db.collection('contractors').find({
-      company_id: { $exists: true, $ne: '' }
+      $or: [
+        { companyId: { $exists: true, $ne: '' } },
+        { company_id: { $exists: true, $ne: '' } }
+      ]
     }).toArray();
 
     console.log(`🔄 Starting daily license cache update for ${contractors.length} contractors`);
@@ -2040,10 +2045,11 @@ app.post('/api/contractors/update-licenses-cache', async (req, res) => {
 
     for (const contractor of contractors) {
       try {
-        console.log(`🔍 Updating licenses for ${contractor.name} (${contractor.company_id})`);
+        const companyId = contractor.companyId || contractor.company_id;
+        console.log(`🔍 Updating licenses for ${contractor.name} (${companyId})`);
 
         // Fetch fresh data from Contractors Registry
-        const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${contractor.company_id}`);
+        const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
         const contractorsData = await contractorsResponse.json();
 
         if (contractorsData.success && contractorsData.result.records.length > 0) {
@@ -2110,7 +2116,10 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
     // First, check if company exists in MongoDB Atlas (including archived contractors)
     const existingContractor = await db.collection('contractors').findOne({
-      company_id: companyId
+      $or: [
+        { companyId: companyId },
+        { company_id: companyId }
+      ]
     });
 
     if (existingContractor) {
@@ -2285,7 +2294,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
           // Update the contractor document with fresh status data
           await db.collection('contractors').updateOne(
-            { company_id: companyId },
+            { $or: [{ companyId: companyId }, { company_id: companyId }] },
             { $set: statusData }
           );
 
@@ -2314,7 +2323,7 @@ app.get('/api/search-company/:companyId', async (req, res) => {
 
           // Update contractor with fresh license data
           await db.collection('contractors').updateOne(
-            { company_id: companyId },
+            { $or: [{ companyId: companyId }, { company_id: companyId }] },
             {
               $set: {
                 classifications: licenseTypes,
@@ -2853,7 +2862,8 @@ app.get('/api/cleanup-contractors', async (req, res) => {
 
     console.log(`🗑️ Found ${invalidContractors.length} invalid contractors to delete:`);
     invalidContractors.forEach(contractor => {
-      console.log(`  - ID: ${contractor._id}, Name: "${contractor.name}", Company ID: ${contractor.company_id}`);
+      const companyId = contractor.companyId || contractor.company_id;
+      console.log(`  - ID: ${contractor._id}, Name: "${contractor.name}", Company ID: ${companyId}`);
     });
 
     let deletedCount = 0;
@@ -2900,7 +2910,7 @@ app.get('/api/cleanup-contractors', async (req, res) => {
       contractors: finalContractors.map(c => ({
         id: c._id,
         name: c.name,
-        company_id: c.company_id
+        companyId: c.companyId || c.company_id
       }))
     });
 

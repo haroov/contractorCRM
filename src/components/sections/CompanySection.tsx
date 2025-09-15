@@ -13,7 +13,7 @@ import {
 type Contractor = {
     name: string;
     name_english: string;
-    company_id: string;
+    companyId: string;
     company_type: string;
     contractor_id: string;
     foundation_date: string;
@@ -25,7 +25,7 @@ type Contractor = {
 };
 
 type Errors = {
-    company_id?: string;
+    companyId?: string;
     [key: string]: string | undefined;
 };
 
@@ -70,18 +70,18 @@ export function CompanySection({ contractor, handleChange, errors }: CompanySect
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="company_id" className="text-right block">
+                        <Label htmlFor="companyId" className="text-right block">
                             ח״פ *
                         </Label>
                         <Input
-                            id="company_id"
-                            value={contractor.company_id}
-                            onChange={(e) => handleChange('company_id', e.target.value)}
+                            id="companyId"
+                            value={contractor.companyId}
+                            onChange={(e) => handleChange('companyId', e.target.value)}
                             placeholder="123456789"
                             required
                         />
-                        {errors.company_id && (
-                            <p className="text-right text-red-500 text-xs mt-1">{errors.company_id}</p>
+                        {errors.companyId && (
+                            <p className="text-right text-red-500 text-xs mt-1">{errors.companyId}</p>
                         )}
                     </div>
 

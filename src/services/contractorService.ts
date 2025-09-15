@@ -59,7 +59,7 @@ class ContractorService {
     static async getByCompanyId(companyId: string): Promise<Contractor | null> {
         try {
             const contractors = await this.getAll();
-            const contractor = contractors.find(c => c.company_id === companyId);
+            const contractor = contractors.find(c => (c.companyId || c.company_id) === companyId);
             return contractor || null;
         } catch (error) {
             console.error('Error fetching contractor by company ID:', error);
@@ -104,7 +104,7 @@ class ContractorService {
             }
 
             const newContractor = await response.json();
-            console.log('✅ Created contractor:', newContractor.contractor_id);
+            console.log('✅ Created contractor:', newContractor.contractorId || newContractor.contractor_id);
             return newContractor;
         } catch (error) {
             console.error('Error creating contractor:', error);
@@ -181,7 +181,7 @@ class ContractorService {
             return contractors.filter(contractor =>
                 contractor.isActive &&
                 (contractor.name?.toLowerCase().includes(searchTerm) ||
-                    contractor.company_id?.includes(searchTerm) ||
+                    (contractor.companyId || contractor.company_id)?.includes(searchTerm) ||
                     contractor.city?.toLowerCase().includes(searchTerm) ||
                     contractor.sector?.toLowerCase().includes(searchTerm))
             );
