@@ -12,6 +12,8 @@
     "preview": "vite preview",
     "setup:env": "node scripts/setup-env.js",
     "test:google-docs": "node scripts/test-google-docs-api.js",
+    "deploy": "git push origin main && npx vercel --prod",
+    "deploy:build": "npm run build && npx vercel --prod",
     "docker:build": "docker build -t contractor-crm .",
     "docker:run": "docker run -p 3001:3001 -p 5173:5173 contractor-crm",
     "docker:compose:up": "docker-compose up -d",
