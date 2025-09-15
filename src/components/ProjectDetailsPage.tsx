@@ -54,15 +54,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         const checkContactUser = () => {
             const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
             const contactUserData = localStorage.getItem('contactUser');
-            
+
             let isRealContactUser = false;
             let permissions = 'contactUser';
-            
+
             if (contactUserCheck && contactUserData) {
                 try {
                     const contactUser = JSON.parse(contactUserData);
                     isRealContactUser = contactUser.userType === 'contact' || contactUser.userType === 'contractor';
-                    
+
                     if (isRealContactUser) {
                         permissions = contactUser.permissions || 'contactUser';
                     }
@@ -70,10 +70,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.error('Error parsing contact user data:', error);
                 }
             }
-            
+
             setIsContactUser(isRealContactUser);
             setContactUserPermissions(permissions);
-            
+
             console.log('🔧 ProjectDetailsPage contact user check:', {
                 isContactUser: isRealContactUser,
                 permissions,
@@ -93,15 +93,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔍 loadContractorName - no contractorId provided');
             return;
         }
-        
+
         console.log('🔍 loadContractorName - loading contractor:', contractorId);
-        
+
         try {
             const { default: ContractorService } = await import('../services/contractorService');
             console.log('🔍 loadContractorName - calling ContractorService.getById with:', contractorId);
             const contractor = await ContractorService.getById(contractorId);
             console.log('🔍 loadContractorName - contractor data:', contractor);
-            
+
             if (contractor) {
                 const name = contractor.name || contractor.nameEnglish || '';
                 setContractorName(name);
@@ -127,10 +127,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 // Get contractor information from URL or sessionStorage
                 const contractorId = searchParams.get('contractorId');
                 const projectData = sessionStorage.getItem('project_data');
-                
+
                 console.log('🔍 ProjectDetailsPage - NEW mode - contractorId:', contractorId);
                 console.log('🔍 ProjectDetailsPage - NEW mode - projectData:', projectData);
-                
+
                 let contractorName = '';
                 if (projectData) {
                     try {
@@ -141,7 +141,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.error('Error parsing project data from sessionStorage:', error);
                     }
                 }
-                
+
                 // Create new project with contractor information
                 const newProject: Project = {
                     id: '',
@@ -157,15 +157,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     contractorName: contractorName
                 };
                 setProject(newProject);
-                
+
                 // Set contractor name in state
                 setContractorName(contractorName);
-                
+
                 // Also load contractor name from API if we have contractorId
                 if (contractorId) {
                     loadContractorName(contractorId);
                 }
-                
+
                 setLoading(false);
             } else if (projectId && projectId !== 'new') {
                 // Load existing project from server
@@ -177,17 +177,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
                             setProject(projectData);
-                            
+
                             // Load contractor name if we have contractor ID
-                            const contractorId = projectData.contractorId || projectData.mainContractor;
+                            // Prioritize contractorId, then mainContractor (ObjectId), but not contractorName
+                            const contractorId = projectData.contractorId || 
+                                (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null);
                             console.log('🔍 Project loaded - contractorId:', contractorId);
                             console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
+                            console.log('🔍 Project loaded - projectData.contractorName:', projectData.contractorName);
                             
                             if (contractorId) {
                                 loadContractorName(contractorId);
                             } else {
-                                console.log('❌ No contractor ID found in project data');
+                                console.log('❌ No valid contractor ID found in project data');
+                                console.log('❌ Available fields:', {
+                                    contractorId: projectData.contractorId,
+                                    mainContractor: projectData.mainContractor,
+                                    contractorName: projectData.contractorName
+                                });
                             }
                         } else {
                             console.error('❌ Project not found on server');
@@ -197,11 +205,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 try {
                                     const fallbackData = JSON.parse(storedData);
                                     setProject(fallbackData);
-                                    
+
                                     // Load contractor name if we have contractor ID
-                                    const contractorId = fallbackData.contractorId || fallbackData.mainContractor;
+                                    const contractorId = fallbackData.contractorId || 
+                                        (fallbackData.mainContractor && fallbackData.mainContractor.length === 24 ? fallbackData.mainContractor : null);
                                     if (contractorId) {
                                         loadContractorName(contractorId);
+                                    } else {
+                                        console.log('❌ No valid contractor ID found in fallback data');
                                     }
                                 } catch (error) {
                                     console.error('Error parsing fallback project data:', error);
@@ -216,11 +227,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             try {
                                 const fallbackData = JSON.parse(storedData);
                                 setProject(fallbackData);
-                                
+
                                 // Load contractor name if we have contractor ID
-                                const contractorId = fallbackData.contractorId || fallbackData.mainContractor;
+                                const contractorId = fallbackData.contractorId || 
+                                    (fallbackData.mainContractor && fallbackData.mainContractor.length === 24 ? fallbackData.mainContractor : null);
                                 if (contractorId) {
                                     loadContractorName(contractorId);
+                                } else {
+                                    console.log('❌ No valid contractor ID found in catch fallback data');
                                 }
                             } catch (parseError) {
                                 console.error('Error parsing fallback project data:', parseError);
@@ -305,18 +319,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 handleClose - current URL:', window.location.href);
         console.log('🔍 handleClose - searchParams:', searchParams.toString());
         console.log('🔍 handleClose - project data:', project);
-        
+
         // Navigate back to the contractor card that opened this project
         let contractorId = searchParams.get('contractorId') || searchParams.get('contractor_id');
-        
+
         console.log('🔍 handleClose - contractorId from URL:', contractorId);
-        
+
         // If no contractorId from URL, try to get it from project data
         if (!contractorId && project) {
             console.log('🔍 handleClose - no contractorId from URL, checking project data');
             console.log('🔍 handleClose - project.mainContractor:', project.mainContractor);
             console.log('🔍 handleClose - project.contractorId:', project.contractorId);
-            
+
             // ALWAYS prioritize mainContractor (ObjectId) for navigation
             if (project.mainContractor) {
                 contractorId = project.mainContractor;
@@ -327,7 +341,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             }
             console.log('🔍 handleClose - final contractorId from project:', contractorId);
         }
-        
+
         if (contractorId) {
             // Navigate back to contractor details with projects tab
             const navigationUrl = `/?contractor_id=${contractorId}&tab=projects`;
@@ -866,37 +880,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     דשבורד ניהול סיכונים
                                 </Typography>
-                                
+
                                 {/* Safety Coins */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
                                         Safety Coins
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                        <Box sx={{ 
-                                            width: 40, 
-                                            height: 40, 
-                                            borderRadius: '50%', 
-                                            bgcolor: '#FFD700', 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
+                                        <Box sx={{
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: '50%',
+                                            bgcolor: '#FFD700',
+                                            display: 'flex',
+                                            alignItems: 'center',
                                             justifyContent: 'center',
                                             border: '2px solid #FFA500'
                                         }}>
                                             🛡️
                                         </Box>
                                         <Box sx={{ flex: 1 }}>
-                                            <Box sx={{ 
-                                                height: 20, 
-                                                bgcolor: '#e0e0e0', 
-                                                borderRadius: 10, 
+                                            <Box sx={{
+                                                height: 20,
+                                                bgcolor: '#e0e0e0',
+                                                borderRadius: 10,
                                                 position: 'relative',
                                                 overflow: 'hidden'
                                             }}>
-                                                <Box sx={{ 
-                                                    height: '100%', 
-                                                    width: '66%', 
-                                                    bgcolor: '#882fd7', 
+                                                <Box sx={{
+                                                    height: '100%',
+                                                    width: '66%',
+                                                    bgcolor: '#882fd7',
                                                     borderRadius: 10,
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -925,17 +939,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <Typography variant="h6" gutterBottom sx={{ color: 'text.primary', mb: 2 }}>
                                         התקדמות פרויקט
                                     </Typography>
-                                    <Box sx={{ 
-                                        height: 8, 
-                                        bgcolor: '#e0e0e0', 
-                                        borderRadius: 4, 
+                                    <Box sx={{
+                                        height: 8,
+                                        bgcolor: '#e0e0e0',
+                                        borderRadius: 4,
                                         position: 'relative',
                                         overflow: 'hidden'
                                     }}>
-                                        <Box sx={{ 
-                                            height: '100%', 
-                                            width: '51%', 
-                                            bgcolor: '#2196F3', 
+                                        <Box sx={{
+                                            height: '100%',
+                                            width: '51%',
+                                            bgcolor: '#2196F3',
                                             borderRadius: 4
                                         }} />
                                     </Box>
@@ -955,20 +969,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* Risk Monitors Grid */}
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
                                     {/* Safety Monitor */}
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
+                                    <Box sx={{
+                                        p: 3,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
                                         bgcolor: 'background.paper'
                                     }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{ 
-                                                width: 40, 
-                                                height: 40, 
-                                                borderRadius: '50%', 
-                                                bgcolor: '#4CAF50', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: '50%',
+                                                bgcolor: '#4CAF50',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center'
                                             }}>
                                                 🛡️
@@ -990,20 +1004,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Security Monitor */}
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
+                                    <Box sx={{
+                                        p: 3,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
                                         bgcolor: 'background.paper'
                                     }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{ 
-                                                width: 40, 
-                                                height: 40, 
-                                                borderRadius: '50%', 
-                                                bgcolor: '#FF9800', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: '50%',
+                                                bgcolor: '#FF9800',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center'
                                             }}>
                                                 🔒
@@ -1025,20 +1039,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Fire System Monitor */}
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
+                                    <Box sx={{
+                                        p: 3,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
                                         bgcolor: 'background.paper'
                                     }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{ 
-                                                width: 40, 
-                                                height: 40, 
-                                                borderRadius: '50%', 
-                                                bgcolor: '#F44336', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: '50%',
+                                                bgcolor: '#F44336',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center'
                                             }}>
                                                 🔥
@@ -1060,20 +1074,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Water System Monitor */}
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
+                                    <Box sx={{
+                                        p: 3,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
                                         bgcolor: 'background.paper'
                                     }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{ 
-                                                width: 40, 
-                                                height: 40, 
-                                                borderRadius: '50%', 
-                                                bgcolor: '#2196F3', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: '50%',
+                                                bgcolor: '#2196F3',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center'
                                             }}>
                                                 💧
@@ -1095,20 +1109,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Structural Vibration Monitor */}
-                                    <Box sx={{ 
-                                        p: 3, 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
+                                    <Box sx={{
+                                        p: 3,
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
                                         bgcolor: 'background.paper'
                                     }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Box sx={{ 
-                                                width: 40, 
-                                                height: 40, 
-                                                borderRadius: '50%', 
-                                                bgcolor: '#9C27B0', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: '50%',
+                                                bgcolor: '#9C27B0',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 justifyContent: 'center'
                                             }}>
                                                 🏗️
