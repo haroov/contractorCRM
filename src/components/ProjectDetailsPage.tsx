@@ -304,15 +304,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 handleClose - function called');
         console.log('🔍 handleClose - current URL:', window.location.href);
         console.log('🔍 handleClose - searchParams:', searchParams.toString());
+        console.log('🔍 handleClose - project data:', project);
         
         // Navigate back to the contractor card that opened this project
         let contractorId = searchParams.get('contractorId');
         
         console.log('🔍 handleClose - contractorId from URL:', contractorId);
-        console.log('🔍 handleClose - project data:', project);
         
         // If no contractorId from URL, try to get it from project data
         if (!contractorId && project) {
+            console.log('🔍 handleClose - no contractorId from URL, checking project data');
+            console.log('🔍 handleClose - project.mainContractor:', project.mainContractor);
+            console.log('🔍 handleClose - project.contractorId:', project.contractorId);
+            
             // ALWAYS prioritize mainContractor (ObjectId) for navigation
             if (project.mainContractor) {
                 contractorId = project.mainContractor;
@@ -322,14 +326,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 console.log('🔍 handleClose - using contractorId as fallback:', contractorId);
             }
             console.log('🔍 handleClose - final contractorId from project:', contractorId);
-            console.log('🔍 handleClose - project.mainContractor:', project.mainContractor);
-            console.log('🔍 handleClose - project.contractorId:', project.contractorId);
         }
         
         if (contractorId) {
             // Navigate back to contractor details with projects tab
             const navigationUrl = `/?contractor_id=${contractorId}&tab=projects`;
             console.log('🔍 handleClose - navigating to:', navigationUrl);
+            console.log('🔍 handleClose - about to call navigate()');
             navigate(navigationUrl);
         } else {
             // Fallback to main view if no contractor ID
@@ -769,6 +772,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(e) => handleFieldChange('contractorName', e.target.value)}
                                                 variant="outlined"
                                                 size="small"
+                                                disabled={mode === 'view' || !canEdit || mode === 'new'}
                                                 InputProps={{ readOnly: true }}
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
@@ -782,6 +786,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(e) => handleFieldChange('contractorId', e.target.value)}
                                                 variant="outlined"
                                                 size="small"
+                                                disabled={mode === 'view' || !canEdit || mode === 'new'}
                                                 InputProps={{ readOnly: true }}
                                                 sx={{ backgroundColor: '#f5f5f5' }}
                                             />
