@@ -108,16 +108,26 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const contractorId = urlParams.get('contractor_id');
+    const companyId = urlParams.get('companyId');
     const tab = urlParams.get('tab');
 
-    if (contractorId && contractors.length > 0) {
+    if ((contractorId || companyId) && contractors.length > 0) {
       if (mode === 'new') {
         handleAddNewContractor();
       } else {
-        const contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
+        // Try to find contractor by contractor_id, _id, or companyId
+        let contractor = null;
+        if (contractorId) {
+          contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
+        }
+        if (!contractor && companyId) {
+          contractor = contractors.find(c => (c.companyId || c.company_id) === companyId);
+        }
+        
         if (contractor) {
           console.log('🔍 Found contractor for URL navigation:', contractor.name);
           console.log('🔍 Contractor ID match:', contractor._id || contractor.contractor_id);
+          console.log('🔍 Company ID match:', contractor.companyId || contractor.company_id);
           // If no mode specified, default to 'view'
           const viewMode = mode || 'view';
           handleContractorSelect(contractor, viewMode as 'view' | 'edit');
@@ -128,8 +138,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             sessionStorage.setItem('contractor_active_tab', '2');
           }
         } else {
-          console.log('❌ No contractor found for ID:', contractorId);
-          console.log('❌ Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
+          console.log('❌ No contractor found for ID:', contractorId || companyId);
+          console.log('❌ Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, companyId: c.companyId, company_id: c.company_id, name: c.name })));
         }
       }
 
@@ -325,6 +335,21 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setSelectedContractor(contractor);
     setContractorMode(mode);
     setShowContractorDetails(true);
+    
+    // Update URL with contractor information for page refresh support
+    const urlParams = new URLSearchParams(window.location.search);
+    if (mode === 'new') {
+      urlParams.set('mode', 'new');
+    } else {
+      urlParams.set('contractor_id', contractor._id || contractor.contractor_id || '');
+      urlParams.set('companyId', contractor.companyId || contractor.company_id || '');
+      urlParams.delete('mode'); // Remove mode for existing contractors
+    }
+    
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, document.title, newUrl);
+    console.log('🔍 URL updated:', newUrl);
+    
     console.log('🔍 State updated successfully');
   };
 

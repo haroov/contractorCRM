@@ -59,7 +59,7 @@ export default function ContractorTabsSimple({
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
-    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || contractor?.company_id || '');
+    const [localCompanyId, setLocalCompanyId] = useState<string>('');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>(
@@ -380,9 +380,8 @@ export default function ContractorTabsSimple({
         // 2. we're not in the middle of loading from API/DB AND
         // 3. the contractor's companyId is different from current local state (to prevent overriding loaded data)
         const contractorCompanyId = contractor?.companyId || contractor?.company_id;
-        if (contractor && !isLoadingCompanyData &&
-            contractorCompanyId !== localCompanyId) {
-            console.log('🔄 useEffect: Updating state with contractor data (meaningful change):', contractor);
+        if (contractor && !isLoadingCompanyData) {
+            console.log('🔄 useEffect: Updating state with contractor data:', contractor);
             setLocalCompanyId(contractorCompanyId || '');
             setLocalCompanyType(contractor?.companyType || 'private_company');
             setLocalName(contractor?.name || '');
