@@ -635,11 +635,18 @@ export default function ContractorTabsSimple({
             console.log('🔍 handleSave - localCompanyId:', localCompanyId);
             console.log('🔍 handleSave - localCompanyId type:', typeof localCompanyId);
             console.log('🔍 handleSave - localCompanyId length:', localCompanyId?.length);
+            console.log('🔍 handleSave - contractor object:', contractor);
+            console.log('🔍 handleSave - contractor.companyId:', contractor?.companyId);
+            console.log('🔍 handleSave - contractor.company_id:', contractor?.company_id);
+            // Fallback: if localCompanyId is empty, try to get it from contractor object
+            const finalCompanyId = localCompanyId || contractor?.companyId || contractor?.company_id || '';
+            console.log('🔍 handleSave - finalCompanyId:', finalCompanyId);
+            
             const updatedContractor = {
                 ...contractor,
                 // Basic company info
-                companyId: localCompanyId, // Keep the original value, even if empty string
-                company_id: localCompanyId, // Also set the old field for backward compatibility
+                companyId: finalCompanyId, // Use fallback if localCompanyId is empty
+                company_id: finalCompanyId, // Also set the old field for backward compatibility
                 companyType: localCompanyType,
                 name: localName,
                 nameEnglish: localNameEnglish,
