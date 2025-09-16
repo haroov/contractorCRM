@@ -85,7 +85,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           );
 
           if (userContractor) {
-            console.log('🚀 Auto-navigating contact user to their contractor:', userContractor.name);
             // Determine mode based on permissions
             const mode = contactUser.permissions === 'contactAdmin' ? 'edit' : 'view';
             handleContractorSelect(userContractor, mode);
@@ -136,9 +135,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         }
 
         if (contractor) {
-          console.log('🔍 Found contractor for URL navigation:', contractor.name);
-          console.log('🔍 Contractor ID match:', contractor._id || contractor.contractor_id);
-          console.log('🔍 Company ID match:', contractor.companyId || contractor.company_id);
           // If no mode specified, default to 'view'
           const viewMode = mode || 'view';
           handleContractorSelect(contractor, viewMode as 'view' | 'edit');

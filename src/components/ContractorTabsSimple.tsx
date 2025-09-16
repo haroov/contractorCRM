@@ -35,13 +35,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         // Check if there's a stored tab from URL navigation
         const storedTab = sessionStorage.getItem('contractor_active_tab');
         if (storedTab) {
-            console.log('🔍 ContractorTabsSimple - Found stored tab:', storedTab);
             sessionStorage.removeItem('contractor_active_tab'); // Clean up
             const tabIndex = parseInt(storedTab);
-            console.log('🔍 ContractorTabsSimple - Setting active tab to:', tabIndex);
             return tabIndex;
         }
-        console.log('🔍 ContractorTabsSimple - No stored tab, defaulting to 0');
         return 0;
     });
     const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
@@ -270,7 +267,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 if (data.success) {
                     setCompanyAbout(data.about || '');
                     setCompanyLogo(data.logo || '');
-                    console.log('✅ Company info scraped successfully:', { about: data.about, logo: data.logo });
                 } else {
                     console.warn('⚠️ Scraping returned unsuccessful:', data);
                 }
@@ -336,37 +332,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     // Force enable for new contractors - debug
     const forceEnableCompanyId = contractorMode === 'new';
 
-    // Debug the canEditCompanyId calculation
-    console.log('🔧 canEditCompanyId calculation:', {
-        canEdit,
-        contractorMode,
-        'contractorMode === "new"': contractorMode === 'new',
-        canEditCompanyId,
-        forceEnableCompanyId
-    });
-
-    // Debug logging for canEdit
-    console.log('🔧 canEdit debug:', {
-        isContactUser,
-        contactUserPermissions,
-        canEdit,
-        canEditCompanyId,
-        contractorId: contractor?._id,
-        contractorMode
-    });
-
-    // Debug logging for status indicator
-    console.log('🔧 companyStatusIndicator debug:', {
-        companyStatusIndicator,
-        hasIndicator: !!companyStatusIndicator,
-        contractor: contractor?.name,
-        contractorStatusIndicator: contractor?.statusIndicator,
-        contractorStatusIndicatorAlt: contractor?.contractorStatusIndicator,
-        company_id: contractor?.company_id,
-        isLoadingCompanyData,
-        shouldShowIndicator: companyStatusIndicator && !isLoadingCompanyData,
-        shouldShowNoIndicator: !companyStatusIndicator && !isLoadingCompanyData
-    });
 
     // Common styling for TextFields with choco purple focus
     const textFieldSx = {
@@ -397,25 +362,15 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         // 3. the contractor's companyId is different from current local state (to prevent overriding loaded data)
         const contractorCompanyId = contractor?.companyId || contractor?.company_id;
         if (contractor && !isLoadingCompanyData) {
-            console.log('🔄 useEffect: Updating state with contractor data:', contractor);
 
             // Only update companyId if we're not in 'new' mode or if the contractor has a meaningful companyId
             // This prevents overriding user input when creating a new contractor
             // BUT: if localCompanyId is already set (from API data), don't override it
-            console.log('🔍 useEffect - localCompanyId before check:', localCompanyId);
-            console.log('🔍 useEffect - contractorCompanyId:', contractorCompanyId);
-            console.log('🔍 useEffect - contractorMode:', contractorMode);
-            
             if (contractorMode !== 'new' || (contractorCompanyId && contractorCompanyId.trim() !== '')) {
                 // Only update if localCompanyId is empty (not set from API)
                 if (!localCompanyId || localCompanyId.trim() === '') {
-                    console.log('🔍 useEffect - Setting localCompanyId to:', contractorCompanyId);
                     setLocalCompanyId(contractorCompanyId || '');
-                } else {
-                    console.log('🔍 useEffect - Keeping existing localCompanyId:', localCompanyId);
                 }
-            } else {
-                console.log('🔍 useEffect - Not updating localCompanyId (new mode, no contractorCompanyId)');
             }
 
             setLocalCompanyType(contractor?.companyType || 'private_company');
@@ -641,20 +596,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             });
 
             // Update contractor with local values before saving
-            console.log('🔍 handleSave - localCompanyId:', localCompanyId);
-            console.log('🔍 handleSave - localCompanyId type:', typeof localCompanyId);
-            console.log('🔍 handleSave - localCompanyId length:', localCompanyId?.length);
-            console.log('🔍 handleSave - contractor object:', contractor);
-            console.log('🔍 handleSave - contractor.companyId:', contractor?.companyId);
-            console.log('🔍 handleSave - contractor.company_id:', contractor?.company_id);
             // Fallback: if localCompanyId is empty, try to get it from contractor object
             const finalCompanyId = localCompanyId || contractor?.companyId || contractor?.company_id || '';
-            console.log('🔍 handleSave - finalCompanyId:', finalCompanyId);
             
             // Remove _id field to prevent MongoDB duplicate key error
             const { _id, ...contractorWithoutId } = contractor || {};
-            console.log('🔍 handleSave - removed _id:', _id);
-            console.log('🔍 handleSave - contractorWithoutId keys:', Object.keys(contractorWithoutId));
             
             const updatedContractor = {
                 ...contractorWithoutId,

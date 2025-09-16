@@ -45,7 +45,6 @@ app.use(cors({
 
 // Add CORS logging middleware
 app.use((req, res, next) => {
-  console.log('🔍 CORS Request:', req.method, req.url, 'from origin:', req.headers.origin);
   next();
 });
 app.use(express.json());
@@ -61,7 +60,6 @@ app.use('/api', (req, res, next) => {
 // Handle specific static HTML files BEFORE express.static
 app.get('/privacyPolicy.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'privacyPolicy.html');
-  console.log('🔍 Serving privacy policy:', filePath);
 
   if (fs.existsSync(filePath)) {
     console.log('✅ Privacy policy found, serving directly');
@@ -74,7 +72,6 @@ app.get('/privacyPolicy.html', (req, res) => {
 
 app.get('/termsOfService.html', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'termsOfService.html');
-  console.log('🔍 Serving terms of service:', filePath);
 
   if (fs.existsSync(filePath)) {
     console.log('✅ Terms of service found, serving directly');
@@ -361,7 +358,6 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
       return res.status(400).json({ error: 'Contractor has no companyId for validation' });
     }
 
-    console.log(`🔍 Validating contractor ${contractor.name} (${companyId})`);
 
     // Validate status from Companies Register
     const validationResult = await validateContractorStatus(companyId);
@@ -3485,7 +3481,7 @@ app.get('/api/scrape-company-info/:companyId', scrapingLimiter, async (req, res)
     console.log('🌐 Scraping company info for company ID:', companyId);
     
     // For now, return fallback data since we don't have website URL
-    const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(companyId)}`;
+    const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
     res.json({
       success: true,
@@ -3497,7 +3493,7 @@ app.get('/api/scrape-company-info/:companyId', scrapingLimiter, async (req, res)
     res.json({
       success: true,
       about: `מידע על החברה ${req.params.companyId} - שגיאה בגישה לאתר החברה.`,
-      logo: `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(req.params.companyId || 'LOGO')}`
+      logo: `/assets/logo.svg` // Use local logo instead of external placeholder
     });
   }
 });
@@ -3667,10 +3663,9 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
         .substring(0, 500); // Limit to 500 characters
     }
 
-    // If no logo found, create a placeholder
+    // If no logo found, use local logo
     if (!companyInfo.logo) {
-      const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
-      companyInfo.logo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
+      companyInfo.logo = `/assets/logo.svg`; // Use local logo instead of external placeholder
     }
 
     console.log('✅ Company info scraped successfully:', {
@@ -3693,8 +3688,7 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
       console.log('🌐 Puppeteer/Network error, returning fallback');
       
       // Fallback: return basic info without scraping
-      const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
-      const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
+      const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
       res.json({
         success: true,
@@ -3705,8 +3699,7 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
       // For other errors, also return fallback instead of 500
       console.log('🌐 General error, returning fallback instead of 500');
       
-      const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
-      const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
+      const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
       res.json({
         success: true,
