@@ -415,7 +415,11 @@ export default function ContractorTabsSimple({
             setLocalEmail(contractor?.email || '');
             setLocalPhone(contractor?.phone || '');
             setLocalWebsite(contractor?.website || '');
-            setLocalContractorId(contractor?.contractorId || '');
+            // Only update contractorId if we're not in 'new' mode or if the contractor has a meaningful contractorId
+            // This prevents overriding API-loaded data when creating a new contractor
+            if (contractorMode !== 'new' || (contractor?.contractorId && contractor.contractorId.trim() !== '')) {
+                setLocalContractorId(contractor?.contractorId || '');
+            }
             setLocalEmployees(contractor?.employees || contractor?.numberOfEmployees || '');
 
             // Update additional contractor data
@@ -1433,7 +1437,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(contractorData.email || '');
         setLocalPhone(contractorData.phone || '');
         setLocalWebsite(contractorData.website || '');
-        setLocalContractorId(contractorData.contractorId || '');
+        setLocalContractorId(contractorData.contractorId || contractorData.contractor_id || 'לא קבלן רשום');
         setLocalEmployees(contractorData.employees || contractorData.numberOfEmployees || '');
         setLocalCompanyType(contractorData.companyType || 'private_company');
 
@@ -1587,7 +1591,9 @@ export default function ContractorTabsSimple({
         setLocalEmail(companyData.email || '');
         setLocalPhone(companyData.phone || '');
         setLocalWebsite(companyData.website || '');
-        setLocalContractorId(companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום');
+        const contractorId = companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום';
+        console.log('🔧 Setting contractor ID:', { contractorId, companyData: companyData.contractorId, contractor_id: companyData.contractor_id });
+        setLocalContractorId(contractorId);
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
@@ -1676,7 +1682,7 @@ export default function ContractorTabsSimple({
                 setLocalEmail(companyData.email || '');
                 setLocalPhone(companyData.phone || '');
                 setLocalWebsite(companyData.website || '');
-                setLocalContractorId(companyData.contractorId || companyData.contractor_id || '');
+                setLocalContractorId(companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום');
                 setCompanyStatusIndicator(companyData.statusIndicator || '');
 
                 // Update company about section if available
@@ -1859,6 +1865,14 @@ export default function ContractorTabsSimple({
                                     value={localContractorId || 'לא קבלן רשום'}
                                     disabled={true}
                                     sx={textFieldSx}
+                                    InputProps={{
+                                        readOnly: true,
+                                        startAdornment: (
+                                            <Box sx={{ fontSize: '10px', color: 'red', marginRight: 1 }}>
+                                                DEBUG: {localContractorId || 'empty'}
+                                            </Box>
+                                        )
+                                    }}
                                 />
                             </Grid>
 
