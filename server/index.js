@@ -177,7 +177,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ companyId: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on companyId');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on companyId');
       } else {
@@ -900,6 +900,7 @@ app.put('/api/contractors/:id', async (req, res) => {
   try {
     console.log('🔍 PUT /api/contractors/:id called with ID:', req.params.id);
     console.log('🔍 Request body keys:', Object.keys(req.body));
+    console.log('🔍 Request body:', req.body);
 
     const db = client.db('contractor-crm');
 
@@ -909,24 +910,30 @@ app.put('/api/contractors/:id', async (req, res) => {
     // קבלת הנתונים הקיימים בדאטה בייס
     let existingContractor;
     try {
+      console.log('🔍 Searching for contractor with ID:', req.params.id);
       // ננסה לחפש לפי contractorId קודם (מספר)
       existingContractor = await db.collection('contractors').findOne({
         contractorId: req.params.id
       });
+      console.log('🔍 Search by contractorId result:', existingContractor ? 'Found' : 'Not found');
 
       // אם לא נמצא, ננסה לחפש לפי ObjectId (רק אם זה ObjectId תקין)
       if (!existingContractor && req.params.id.length === 24) {
+        console.log('🔍 Trying ObjectId search...');
         existingContractor = await db.collection('contractors').findOne({
           _id: new ObjectId(req.params.id)
         });
+        console.log('🔍 Search by ObjectId result:', existingContractor ? 'Found' : 'Not found');
       }
     } catch (error) {
       console.log('❌ Error searching for contractor:', error.message);
       return res.status(400).json({ error: 'Invalid contractor ID format' });
     }
     if (!existingContractor) {
+      console.log('❌ Contractor not found with ID:', req.params.id);
       return res.status(404).json({ error: 'Contractor not found' });
     }
+    console.log('✅ Found contractor:', existingContractor.name);
 
     // עדכון שדה fullAddress - שימוש בערכים החדשים או הקיימים
     const address = updateData.address || existingContractor.address;
@@ -944,27 +951,33 @@ app.put('/api/contractors/:id', async (req, res) => {
     // עדכון הקבלן - נשתמש באותו לוגיקה כמו בחיפוש
     let result;
     try {
+      console.log('🔍 Attempting to update contractor with finalUpdateData:', finalUpdateData);
       // ננסה לעדכן לפי contractorId קודם
       result = await db.collection('contractors').updateOne(
         { contractorId: req.params.id },
         { $set: finalUpdateData }
       );
+      console.log('🔍 Update by contractorId result:', result);
 
       // אם לא נמצא, ננסה לפי ObjectId (רק אם זה ObjectId תקין)
       if (result.matchedCount === 0 && req.params.id.length === 24) {
+        console.log('🔍 Trying ObjectId update...');
         result = await db.collection('contractors').updateOne(
           { _id: new ObjectId(req.params.id) },
           { $set: finalUpdateData }
         );
+        console.log('🔍 Update by ObjectId result:', result);
       }
     } catch (error) {
       console.log('❌ Error updating contractor:', error.message);
+      console.log('❌ Error stack:', error.stack);
       return res.status(500).json({ error: 'Failed to update contractor' });
     }
     if (result.matchedCount === 0) {
+      console.log('❌ No contractor matched for update with ID:', req.params.id);
       return res.status(404).json({ error: 'Contractor not found' });
     }
-    console.log('✅ Updated contractor:', req.params.id);
+    console.log('✅ Updated contractor:', req.params.id, 'Modified count:', result.modifiedCount);
 
     // Return the updated contractor data without projects field
     const updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
