@@ -402,8 +402,12 @@ export default function ContractorTabsSimple({
 
             // Only update companyId if we're not in 'new' mode or if the contractor has a meaningful companyId
             // This prevents overriding user input when creating a new contractor
+            // BUT: if localCompanyId is already set (from API data), don't override it
             if (contractorMode !== 'new' || (contractorCompanyId && contractorCompanyId.trim() !== '')) {
-                setLocalCompanyId(contractorCompanyId || '');
+                // Only update if localCompanyId is empty (not set from API)
+                if (!localCompanyId || localCompanyId.trim() === '') {
+                    setLocalCompanyId(contractorCompanyId || '');
+                }
             }
 
             setLocalCompanyType(contractor?.companyType || 'private_company');
