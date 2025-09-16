@@ -471,6 +471,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 Object keys:', Object.keys(updatedContractor));
     console.log('🔍 companyId field exists:', 'companyId' in updatedContractor);
     console.log('🔍 company_id field exists:', 'company_id' in updatedContractor);
+    console.log('🔍 companyId value:', updatedContractor.companyId);
+    console.log('🔍 company_id value:', updatedContractor.company_id);
+    console.log('🔍 companyId type:', typeof updatedContractor.companyId);
+    console.log('🔍 company_id type:', typeof updatedContractor.company_id);
 
     setIsSaving(true);
     try {
