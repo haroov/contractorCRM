@@ -3461,7 +3461,36 @@ app.get('/api/certificates/:id', async (req, res) => {
   }
 });
 
-// Scrape company information from website
+// Scrape company information from website (GET endpoint for company ID)
+app.get('/api/scrape-company-info/:companyId', scrapingLimiter, async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    
+    if (!companyId) {
+      return res.status(400).json({ error: 'Company ID is required' });
+    }
+
+    console.log('🌐 Scraping company info for company ID:', companyId);
+    
+    // For now, return fallback data since we don't have website URL
+    const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(companyId)}`;
+
+    res.json({
+      success: true,
+      about: `מידע על החברה ${companyId} - לא ניתן לגשת למידע באתר החברה כרגע.`,
+      logo: fallbackLogo
+    });
+  } catch (error) {
+    console.error('❌ Error in GET scrape-company-info:', error);
+    res.json({
+      success: true,
+      about: `מידע על החברה ${req.params.companyId} - שגיאה בגישה לאתר החברה.`,
+      logo: `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(req.params.companyId || 'LOGO')}`
+    });
+  }
+});
+
+// Scrape company information from website (POST endpoint for website URL)
 app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
   let browser = null;
   try {
