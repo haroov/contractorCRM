@@ -258,12 +258,11 @@ export default function ContractorTabsSimple({
 
         setIsLoadingAbout(true);
         try {
-            const response = await fetch('/api/scrape-company-info', {
-                method: 'POST',
+            const response = await fetch(`/api/scrape-company-info/${localCompanyId}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ website: websiteUrl })
+                }
             });
 
             if (response.ok) {
