@@ -475,6 +475,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 company_id value:', updatedContractor.company_id);
     console.log('🔍 companyId type:', typeof updatedContractor.companyId);
     console.log('🔍 company_id type:', typeof updatedContractor.company_id);
+    
+    // SIMPLE FIX: Check if this is a PointerEvent (button click) instead of contractor data
+    if (updatedContractor && updatedContractor.type === 'click') {
+      console.log('🚨 ERROR: Received PointerEvent instead of contractor data!');
+      console.log('🚨 This means the onSave is being called incorrectly');
+      return; // Exit early to prevent saving wrong data
+    }
 
     setIsSaving(true);
     try {

@@ -564,8 +564,9 @@ export default function ContractorTabsSimple({
 
     // Listen for save events from the header button
     useEffect(() => {
-        const handleSaveEvent = () => {
+        const handleSaveEvent = (event: any) => {
             console.log('🔘 Save event received in ContractorTabsSimple');
+            console.log('🔘 Event object:', event);
             handleSave();
         };
 
