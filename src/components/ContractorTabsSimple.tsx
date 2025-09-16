@@ -1609,6 +1609,12 @@ export default function ContractorTabsSimple({
             setCompanyStatusIndicator(companyData.statusIndicator);
         }
 
+        // Set classifications if available
+        if (companyData.licenseTypes && Array.isArray(companyData.licenseTypes)) {
+            console.log('📋 Loading license types from API:', companyData.licenseTypes);
+            setLocalClassifications(companyData.licenseTypes);
+        }
+
         // Set about and logo if available
         if (companyData.companyAbout) {
             setCompanyAbout(companyData.companyAbout);
@@ -2624,7 +2630,7 @@ export default function ContractorTabsSimple({
                                 {isLoadingLicenses && (
                                     <CircularProgress size={16} sx={{ color: '#882fd7' }} />
                                 )}
-                                {!isLoadingLicenses && contractor?.classifications && contractor.classifications.length > 0 && (
+                                {!isLoadingLicenses && localClassifications && localClassifications.length > 0 && (
                                     <Chip
                                         label={`עודכן: ${new Date(contractor.licensesLastUpdated || contractor.updatedAt).toLocaleDateString('he-IL')}`}
                                         size="small"
@@ -2657,7 +2663,7 @@ export default function ContractorTabsSimple({
                                 </IconButton>
                             </Box>
 
-                            {contractor?.classifications && Array.isArray(contractor.classifications) && contractor.classifications.length > 0 ? (
+                            {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 ? (
                                 <Box sx={{
                                     border: '1px solid #e0e0e0',
                                     borderRadius: 1,
@@ -2666,11 +2672,11 @@ export default function ContractorTabsSimple({
                                     maxHeight: '300px',
                                     overflow: 'auto'
                                 }}>
-                                    {contractor.classifications.map((license: any, index: number) => (
+                                    {localClassifications.map((license: any, index: number) => (
                                         <Box key={index} sx={{
                                             mb: 0.5,
                                             pb: 0.5,
-                                            borderBottom: index < contractor.classifications.length - 1 ? '1px solid #e0e0e0' : 'none'
+                                            borderBottom: index < localClassifications.length - 1 ? '1px solid #e0e0e0' : 'none'
                                         }}>
                                             <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
                                                 {license.description || `${license.classification_type} - ${license.classification}`}
