@@ -1220,6 +1220,10 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
 
 app.post('/api/projects', async (req, res) => {
   try {
+    console.log('🔍 POST /api/projects called');
+    console.log('🔍 Request body keys:', Object.keys(req.body));
+    console.log('🔍 Request body:', req.body);
+    
     const db = client.db('contractor-crm');
     const projectData = {
       ...req.body,
@@ -1227,25 +1231,42 @@ app.post('/api/projects', async (req, res) => {
       updatedAt: new Date()
     };
 
+    console.log('🔍 Project data to insert:', projectData);
+
     // Create the project
     const result = await db.collection('projects').insertOne(projectData);
     console.log('✅ Created new project:', result.insertedId);
 
     // Add project ID to contractor's projectIds array
     if (req.body.mainContractor) {
-      await db.collection('contractors').updateOne(
-        { _id: new ObjectId(req.body.mainContractor) },
-        { $push: { projectIds: result.insertedId.toString() } }
-      );
-      console.log('✅ Added project ID to contractor:', req.body.mainContractor);
+      console.log('🔍 Adding project ID to contractor:', req.body.mainContractor);
+      console.log('🔍 mainContractor type:', typeof req.body.mainContractor);
+      console.log('🔍 mainContractor length:', req.body.mainContractor?.length);
+      
+      try {
+        const updateResult = await db.collection('contractors').updateOne(
+          { _id: new ObjectId(req.body.mainContractor) },
+          { $push: { projectIds: result.insertedId.toString() } }
+        );
+        console.log('✅ Added project ID to contractor:', req.body.mainContractor, 'Matched:', updateResult.matchedCount, 'Modified:', updateResult.modifiedCount);
 
-      // Update contractor statistics automatically
-      await updateContractorStats(db, req.body.mainContractor);
+        // Update contractor statistics automatically
+        console.log('🔍 Updating contractor stats for:', req.body.mainContractor);
+        await updateContractorStats(db, req.body.mainContractor);
+        console.log('✅ Updated contractor stats successfully');
+      } catch (contractorError) {
+        console.error('❌ Error updating contractor:', contractorError);
+        console.error('❌ Contractor error stack:', contractorError.stack);
+        // Don't fail the main request if contractor update fails
+      }
+    } else {
+      console.log('⚠️ No mainContractor provided in request body');
     }
 
     res.json(result);
   } catch (error) {
     console.error('❌ Error creating project:', error);
+    console.error('❌ Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to create project' });
   }
 });
