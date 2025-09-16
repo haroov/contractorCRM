@@ -153,7 +153,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     city: '',
                     isClosed: false,
                     status: 'future',
-                    mainContractor: contractorName,
+                    mainContractor: contractorId || '', // Use contractorId (ObjectId) not contractorName
                     contractorName: contractorName
                 };
                 setProject(newProject);
