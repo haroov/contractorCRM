@@ -115,15 +115,25 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       if (mode === 'new') {
         handleAddNewContractor();
       } else {
-        // Try to find contractor by contractor_id, _id, or companyId
+        // Try to find contractor by _id first (primary identifier), then by external identifiers
         let contractor = null;
         if (contractorId) {
-          contractor = contractors.find(c => c.contractor_id === contractorId || c._id === contractorId);
+          // Primary lookup by _id (ObjectId)
+          contractor = contractors.find(c => c._id === contractorId);
+          // Fallback to external identifiers for backward compatibility
+          if (!contractor) {
+            contractor = contractors.find(c => c.contractor_id === contractorId);
+          }
         }
         if (!contractor && companyId) {
-          contractor = contractors.find(c => (c.companyId || c.company_id) === companyId);
+          // Primary lookup by _id (ObjectId)
+          contractor = contractors.find(c => c._id === companyId);
+          // Fallback to companyId for backward compatibility
+          if (!contractor) {
+            contractor = contractors.find(c => (c.companyId || c.company_id) === companyId);
+          }
         }
-        
+
         if (contractor) {
           console.log('🔍 Found contractor for URL navigation:', contractor.name);
           console.log('🔍 Contractor ID match:', contractor._id || contractor.contractor_id);
@@ -166,7 +176,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
           console.log('🔍 Available contractors:', contractors.map(c => ({ _id: c._id, contractor_id: c.contractor_id, name: c.name })));
 
-          // Try to find contractor by _id first (MongoDB ObjectId), then by contractor_id (external registry ID)
+          // Try to find contractor by _id first (primary identifier), then by contractor_id (external registry ID)
           const contractor = contractors.find(c =>
             c._id === contactUser.contractorId ||
             c.contractor_id === contactUser.contractorId
@@ -335,21 +345,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setSelectedContractor(contractor);
     setContractorMode(mode);
     setShowContractorDetails(true);
-    
+
     // Update URL with contractor information for page refresh support
     const urlParams = new URLSearchParams(window.location.search);
     if (mode === 'new') {
       urlParams.set('mode', 'new');
     } else {
-      urlParams.set('contractor_id', contractor._id || contractor.contractor_id || '');
-      urlParams.set('companyId', contractor.companyId || contractor.company_id || '');
+      // Use _id as primary identifier in URL
+      urlParams.set('contractor_id', contractor._id || '');
+      // Keep external identifiers for display purposes
+      if (contractor.contractor_id) {
+        urlParams.set('contractor_registry_id', contractor.contractor_id);
+      }
+      if (contractor.companyId || contractor.company_id) {
+        urlParams.set('companyId', contractor.companyId || contractor.company_id);
+      }
       urlParams.delete('mode'); // Remove mode for existing contractors
     }
-    
+
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({}, document.title, newUrl);
     console.log('🔍 URL updated:', newUrl);
-    
+
     console.log('🔍 State updated successfully');
   };
 
@@ -590,8 +607,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   const handleAddNewContractor = () => {
     const newContractor: any = {
-      contractorId: Date.now().toString(),
-      contractor_id: Date.now().toString(), // Also set old field for backward compatibility
+      // Don't set contractorId or contractor_id for new contractors - they should be empty
+      // These will be populated from external APIs when companyId is entered
+      contractorId: '',
+      contractor_id: '',
       companyId: '', // Set empty string for new contractors
       company_id: '', // Also set old field for backward compatibility
       name: '',

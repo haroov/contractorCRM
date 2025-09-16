@@ -38,15 +38,18 @@ const ProjectSchema = new Schema<Project>({
 
 // Main Contractor Schema
 const ContractorSchema = new Schema({
+    // External registry identifiers (for display and external API integration)
     contractorId: {
         type: String,
-        required: true,
-        unique: true
+        required: false, // Not required for new contractors
+        unique: true,
+        sparse: true // Allow multiple null values
     },
     companyId: {
         type: String,
-        required: true,
-        unique: true
+        required: false, // Not required for new contractors
+        unique: true,
+        sparse: true // Allow multiple null values
     },
     name: {
         type: String,
@@ -146,13 +149,9 @@ ContractorSchema.virtual('fullAddress').get(function () {
     return `${this.address || ''} ${this.city || ''}`.trim();
 });
 
-// Pre-save middleware to ensure unique IDs
-ContractorSchema.pre('save', function (next) {
-    if (!this.contractorId) {
-        this.contractorId = `contractor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    }
-    next();
-});
+// Pre-save middleware - removed auto-generation of contractorId
+// contractorId and companyId should only be set when we have real registry data
+// The MongoDB _id (ObjectId) is the primary identifier for internal operations
 
 export const Contractor = mongoose.model('Contractor', ContractorSchema);
 export default Contractor;

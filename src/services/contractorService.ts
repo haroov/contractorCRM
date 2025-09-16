@@ -18,7 +18,7 @@ class ContractorService {
         }
     }
 
-    // Get contractor by ID
+    // Get contractor by ID (preferably ObjectId, with fallback to external identifiers)
     static async getById(contractorId: string): Promise<Contractor | null> {
         try {
             const response = await authenticatedFetch(API_CONFIG.CONTRACTOR_URL(contractorId));
@@ -55,7 +55,7 @@ class ContractorService {
         }
     }
 
-    // Get contractor by company ID
+    // Get contractor by company ID (external identifier for display purposes)
     static async getByCompanyId(companyId: string): Promise<Contractor | null> {
         try {
             const contractors = await this.getAll();

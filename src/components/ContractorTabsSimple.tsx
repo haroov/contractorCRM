@@ -399,7 +399,13 @@ export default function ContractorTabsSimple({
         const contractorCompanyId = contractor?.companyId || contractor?.company_id;
         if (contractor && !isLoadingCompanyData) {
             console.log('🔄 useEffect: Updating state with contractor data:', contractor);
-            setLocalCompanyId(contractorCompanyId || '');
+
+            // Only update companyId if we're not in 'new' mode or if the contractor has a meaningful companyId
+            // This prevents overriding user input when creating a new contractor
+            if (contractorMode !== 'new' || (contractorCompanyId && contractorCompanyId.trim() !== '')) {
+                setLocalCompanyId(contractorCompanyId || '');
+            }
+
             setLocalCompanyType(contractor?.companyType || 'private_company');
             setLocalName(contractor?.name || '');
             setLocalNameEnglish(contractor?.nameEnglish || '');
@@ -502,7 +508,7 @@ export default function ContractorTabsSimple({
         console.log('🔍 Current local state values:');
         console.log('🔍 localContacts:', localContacts);
         console.log('🔍 localNotes:', localNotes);
-    }, [contractor, isLoadingCompanyData, localCompanyId, companyStatusIndicator]);
+    }, [contractor, isLoadingCompanyData, localCompanyId, companyStatusIndicator, contractorMode]);
 
     // Load licenses when switching to Business Information tab
     useEffect(() => {
@@ -1755,15 +1761,7 @@ export default function ContractorTabsSimple({
                                     fullWidth
                                     label="מספר חברה (ח״פ)"
                                     value={localCompanyId}
-                                    disabled={(() => {
-                                        const isDisabled = contractorMode !== 'new';
-                                        console.log('🔧 Simple disabled check:', {
-                                            contractorMode,
-                                            'contractorMode !== "new"': contractorMode !== 'new',
-                                            isDisabled
-                                        });
-                                        return isDisabled;
-                                    })()}
+                                    disabled={contractorMode !== 'new'}
                                     sx={{
                                         ...textFieldSx,
                                         direction: 'rtl',
@@ -1773,6 +1771,7 @@ export default function ContractorTabsSimple({
                                         }
                                     }}
                                     InputProps={{
+                                        readOnly: contractorMode !== 'new',
                                         startAdornment: (
                                             <Box sx={{
                                                 display: 'flex',
@@ -1857,7 +1856,7 @@ export default function ContractorTabsSimple({
                                 <TextField
                                     fullWidth
                                     label="מספר קבלן"
-                                    value={localContractorId}
+                                    value={localContractorId || 'לא קבלן רשום'}
                                     disabled={true}
                                     sx={textFieldSx}
                                 />

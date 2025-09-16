@@ -179,9 +179,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             setProject(projectData);
 
                             // Load contractor name if we have contractor ID
-                            // Prioritize contractorId, then mainContractor (ObjectId), but not contractorName
-                            const contractorId = projectData.contractorId ||
-                                (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null);
+                            // Prioritize _id (ObjectId) as primary identifier, then fallback to external identifiers
+                            const contractorId = (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null) ||
+                                projectData.contractorId;
                             console.log('🔍 Project loaded - contractorId:', contractorId);
                             console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);

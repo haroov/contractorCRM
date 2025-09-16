@@ -774,8 +774,11 @@ app.get('/api/contractors', async (req, res) => {
         // Add contractor information to each project
         projects = projects.map(project => ({
           ...project,
-          contractorId: contractor.contractor_id,
-          contractorName: contractor.name
+          contractorId: contractor._id.toString(), // Use ObjectId as primary identifier
+          contractorName: contractor.name,
+          // Keep external identifiers for display purposes
+          contractorRegistryId: contractor.contractor_id,
+          companyId: contractor.companyId
         }));
       }
 
@@ -798,16 +801,22 @@ app.get('/api/contractors/:id', async (req, res) => {
     const db = client.db('contractor-crm');
     console.log('🔍 Fetching contractor by ID:', req.params.id);
 
-    // Try to find by _id (ObjectId) first, then by contractor_id
+    // Primary lookup by _id (ObjectId) - this is the main identifier
     let contractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
 
+    // Fallback: try by contractor_id or companyId for backward compatibility
     if (!contractor) {
-      console.log('🔍 Not found by _id, trying contractor_id');
-      contractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+      console.log('🔍 Not found by _id, trying contractor_id or companyId for backward compatibility');
+      contractor = await db.collection('contractors').findOne({
+        $or: [
+          { contractor_id: req.params.id },
+          { companyId: req.params.id }
+        ]
+      });
     }
 
     if (!contractor) {
-      console.log('❌ Contractor not found by either _id or contractor_id');
+      console.log('❌ Contractor not found');
       return res.status(404).json({ error: 'Contractor not found' });
     }
 
@@ -827,8 +836,11 @@ app.get('/api/contractors/:id', async (req, res) => {
       // Add contractor information to each project
       projects = projects.map(project => ({
         ...project,
-        contractorId: contractor.contractor_id,
-        contractorName: contractor.name
+        contractorId: contractor._id.toString(), // Use ObjectId as primary identifier
+        contractorName: contractor.name,
+        // Keep external identifiers for display purposes
+        contractorRegistryId: contractor.contractor_id,
+        companyId: contractor.companyId
       }));
     }
 
