@@ -115,7 +115,11 @@ class ContractorService {
     // Update contractor
     static async update(contractorId: string, updateData: Partial<Contractor>): Promise<Contractor | null> {
         try {
-            const response = await authenticatedFetch(API_CONFIG.CONTRACTOR_URL(contractorId), {
+            console.log('🔍 ContractorService.update called with:', contractorId, updateData);
+            const url = API_CONFIG.CONTRACTOR_URL(contractorId);
+            console.log('🔍 API URL:', url);
+            
+            const response = await authenticatedFetch(url, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,22 +127,28 @@ class ContractorService {
                 body: JSON.stringify(updateData)
             });
 
+            console.log('🔍 Response status:', response.status);
+            console.log('🔍 Response ok:', response.ok);
+            
             if (!response.ok) {
                 let errorMessage = 'Failed to update contractor';
 
                 try {
                     const errorData = await response.json();
+                    console.log('🔍 Error response data:', errorData);
                     errorMessage = errorData.error || errorMessage;
                 } catch (jsonError) {
                     // If response is not JSON, use status text
+                    console.log('🔍 Error parsing JSON response');
                     errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                 }
 
+                console.log('❌ Throwing error:', errorMessage);
                 throw new Error(errorMessage);
             }
 
             const updatedContractor = await response.json();
-            console.log('✅ Updated contractor:', contractorId);
+            console.log('✅ Updated contractor successfully:', contractorId);
             return updatedContractor;
         } catch (error) {
             console.error('Error updating contractor:', error);

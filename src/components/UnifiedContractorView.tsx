@@ -371,15 +371,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     const confirmed = window.confirm(`האם אתה בטוח שברצונך לארכב את הקבלן "${contractor.name}"?`);
     if (confirmed) {
       try {
+        console.log('🔍 Archiving contractor:', contractor);
+        console.log('🔍 Contractor ID:', contractor._id);
+        console.log('🔍 Contractor ID type:', typeof contractor._id);
+        
         const { default: ContractorService } = await import('../services/contractorService');
         // Archive contractor by setting isActive to false (CRM status)
         // Note: This is different from company status from Companies Registry
+        console.log('🔍 Calling ContractorService.update with:', String(contractor._id), { isActive: false });
         await ContractorService.update(String(contractor._id), { isActive: false });
+        console.log('✅ Contractor archived successfully');
         setSnackbar({ open: true, message: 'הקבלן נארכב בהצלחה', severity: 'success' });
         // Refresh the contractors list
         loadContractors();
       } catch (error) {
-        console.error('Error archiving contractor:', error);
+        console.error('❌ Error archiving contractor:', error);
+        console.error('❌ Error details:', error.message);
         setSnackbar({ open: true, message: 'שגיאה בארכוב הקבלן', severity: 'error' });
       }
     }
