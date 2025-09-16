@@ -61,7 +61,7 @@ export default function ContractorTabsSimple({
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
-    const [localCompanyId, setLocalCompanyId] = useState<string>('');
+    const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
     const [isLoadingCompanyData, setIsLoadingCompanyData] = useState<boolean>(false);
     const [companyStatusIndicator, setCompanyStatusIndicator] = useState<string>(
@@ -620,6 +620,12 @@ export default function ContractorTabsSimple({
     const handleSave = () => {
         if (onSave && contractor) {
             console.log('💾 Starting save process...');
+            console.log('🔍 Save values:', {
+                localCompanyId,
+                localCompanyIdType: typeof localCompanyId,
+                localCompanyIdLength: localCompanyId?.length,
+                contractorMode
+            });
 
             // Update contractor with local values before saving
             const updatedContractor = {
