@@ -2168,8 +2168,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     <InputLabel sx={{
                                         backgroundColor: 'white',
                                         px: 1,
+                                        color: '#882fd7',
                                         '&.Mui-focused': {
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
+                                            color: '#882fd7'
                                         }
                                     }}>
                                         מספר כוכבי בטיחות
@@ -3103,7 +3105,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseContactDialog}>ביטול</Button>
+                    <Button onClick={handleCloseContactDialog} sx={{ color: '#882fd7' }}>ביטול</Button>
                     <Button
                         variant="contained"
                         onClick={handleSaveContact}
