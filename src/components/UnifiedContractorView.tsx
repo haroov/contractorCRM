@@ -948,14 +948,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'right', paddingRight: 0 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', direction: 'rtl', width: '100%', gap: 1 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', direction: 'rtl', width: '100%' }}>
                             {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
                               <Tooltip
                                 title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
                                 arrow
                                 placement="top"
                               >
-                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help' }}>
+                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help', marginLeft: '4px' }}>
                                   {contractorStatusIndicators[contractor.companyId || contractor.company_id]}
                                 </Box>
                               </Tooltip>
@@ -963,18 +963,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                             <Typography variant="body2" sx={{ textAlign: 'right', margin: 0 }}>
                               {contractor.companyId || contractor.company_id}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', margin: 0 }}>
-                              קבלן {contractor.contractorId || contractor.contractor_id}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', margin: 0 }}>
-                              {contractor.companyType === 'private_company' ? 'חברה פרטית' :
-                                contractor.companyType === 'public_company' ? 'חברה ציבורית' :
-                                  contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
-                                    contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
-                                      contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
-                                        contractor.companyType || 'לא צוין'}
-                            </Typography>
                           </Box>
+                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
+                            קבלן {contractor.contractorId || contractor.contractor_id}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
+                            {contractor.companyType === 'private_company' ? 'חברה פרטית' :
+                              contractor.companyType === 'public_company' ? 'חברה ציבורית' :
+                                contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
+                                  contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
+                                    contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
+                                      contractor.companyType || 'לא צוין'}
+                          </Typography>
                         </TableCell>
 
                         {/* כתובת */}
