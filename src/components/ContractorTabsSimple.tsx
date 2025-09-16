@@ -665,6 +665,9 @@ export default function ContractorTabsSimple({
                 companyLogo: companyLogo
             };
 
+            console.log('🔍 updatedContractor after creation:', updatedContractor);
+            console.log('🔍 updatedContractor.companyId:', updatedContractor.companyId);
+            console.log('🔍 updatedContractor.company_id:', updatedContractor.company_id);
             console.log('💾 Saving contractor data:', {
                 companyId: updatedContractor.companyId,
                 name: updatedContractor.name,
