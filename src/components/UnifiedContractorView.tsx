@@ -488,8 +488,19 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       console.log('🔍 Validation check - updatedContractor has companyId:', 'companyId' in updatedContractor);
       console.log('🔍 Validation check - updatedContractor has company_id:', 'company_id' in updatedContractor);
       
-      const companyId = updatedContractor.companyId || updatedContractor.company_id;
-      console.log('🔍 Validation check - companyId:', companyId);
+      // Try different ways to access companyId
+      const companyId1 = updatedContractor.companyId;
+      const companyId2 = updatedContractor.company_id;
+      const companyId3 = updatedContractor['companyId'];
+      const companyId4 = updatedContractor['company_id'];
+      
+      console.log('🔍 Validation check - companyId1 (direct):', companyId1);
+      console.log('🔍 Validation check - companyId2 (direct):', companyId2);
+      console.log('🔍 Validation check - companyId3 (bracket):', companyId3);
+      console.log('🔍 Validation check - companyId4 (bracket):', companyId4);
+      
+      const companyId = companyId1 || companyId2 || companyId3 || companyId4;
+      console.log('🔍 Validation check - companyId (final):', companyId);
       console.log('🔍 Validation check - companyId type:', typeof companyId);
       console.log('🔍 Validation check - companyId length:', companyId?.length);
       console.log('🔍 Validation check - companyId trim:', companyId?.trim());
