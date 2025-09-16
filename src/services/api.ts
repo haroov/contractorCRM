@@ -38,7 +38,7 @@ api.interceptors.response.use(
 export const projectsAPI = {
   // Get all projects
   getAll: async () => {
-    const response = await authenticatedFetch('/projects');
+    const response = await authenticatedFetch('/api/projects');
     
     if (!response.ok) {
       console.error('❌ API Error:', response.status, response.statusText);
@@ -52,7 +52,7 @@ export const projectsAPI = {
 
   // Get projects by contractor ID
   getByContractor: async (contractorId: string) => {
-    const response = await authenticatedFetch(`/projects?contractorId=${contractorId}`);
+    const response = await authenticatedFetch(`/api/projects?contractorId=${contractorId}`);
     
     if (!response.ok) {
       console.error('❌ API Error:', response.status, response.statusText);
@@ -95,7 +95,7 @@ export const projectsAPI = {
 
   // Create new project
   create: async (project: any) => {
-    const response = await authenticatedFetch('/projects', {
+    const response = await authenticatedFetch('/api/projects', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
