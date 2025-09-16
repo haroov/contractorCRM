@@ -459,6 +459,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const handleCloseContractorDetails = () => {
     setShowContractorDetails(false);
     setSelectedContractor(null);
+    setContractorMode('view');
+    
+    // Reset URL to main contractors list
+    window.history.pushState({}, '', '/');
   };
 
   const handleSaveContractor = async (updatedContractor: Contractor, skipCompanyIdCheck = false) => {
@@ -581,6 +585,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const newContractor = await ContractorService.create(updatedContractor);
         console.log('✅ New contractor created successfully:', newContractor);
         setContractors([...contractors, newContractor]);
+        
+        // After successful creation, switch to edit mode and update URL
+        setSelectedContractor(newContractor);
+        setContractorMode('edit');
+        
+        // Update URL with the new contractor's _id
+        const newUrl = `/?id=${newContractor._id}&mode=edit`;
+        window.history.pushState({}, '', newUrl);
+        
         setSnackbarMessage('הקבלן נוצר בהצלחה');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
