@@ -2628,6 +2628,9 @@ app.get('/api/search-company/:companyId', async (req, res) => {
           email: email,
           phone: phone,
           website: website,
+          companyId: companyId, // Add companyId to response
+          company_id: companyId, // Also add old field for backward compatibility
+          contractorId: contractorId,
           contractor_id: contractorId,
           // License types from contractors registry
           classifications: licenseTypes,

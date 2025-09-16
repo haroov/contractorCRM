@@ -478,6 +478,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       console.log('🔍 Validation check - companyId:', companyId);
       console.log('🔍 Validation check - updatedContractor.companyId:', updatedContractor.companyId);
       console.log('🔍 Validation check - updatedContractor.company_id:', updatedContractor.company_id);
+      console.log('🔍 Validation check - companyId type:', typeof companyId);
+      console.log('🔍 Validation check - companyId length:', companyId?.length);
+      console.log('🔍 Validation check - companyId trim:', companyId?.trim());
       if (!companyId || companyId.trim() === '') {
         console.log('❌ Save failed: Company ID is empty');
         setSnackbarMessage('נא להזין מספר חברה לפני השמירה');
