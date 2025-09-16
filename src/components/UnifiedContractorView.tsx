@@ -1163,7 +1163,10 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabs:', contractorMode)}
                 <ContractorTabs
                   contractor={selectedContractor!}
-                  onSave={handleSaveContractor}
+                  onSave={(contractorData) => {
+                    console.log('🔧 onSave called with:', contractorData);
+                    handleSaveContractor(contractorData);
+                  }}
                   onClose={handleCloseContractorDetails}
                   isContactUser={isContactUser}
                   contractorMode={contractorMode}
