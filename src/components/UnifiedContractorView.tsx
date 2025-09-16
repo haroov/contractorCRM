@@ -929,20 +929,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         </TableCell>
 
                         {/* ח"פ */}
-                        <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, direction: 'rtl' }}>
+                        <TableCell sx={{ textAlign: 'right', paddingRight: 0 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', direction: 'rtl', width: '100%' }}>
                             {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
                               <Tooltip
                                 title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
                                 arrow
                                 placement="top"
                               >
-                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help' }}>
+                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help', marginLeft: '4px' }}>
                                   {contractorStatusIndicators[contractor.companyId || contractor.company_id]}
                                 </Box>
                               </Tooltip>
                             )}
-                            <Typography variant="body2" sx={{ textAlign: 'right' }}>
+                            <Typography variant="body2" sx={{ textAlign: 'right', margin: 0 }}>
                               {contractor.companyId || contractor.company_id}
                             </Typography>
                           </Box>
