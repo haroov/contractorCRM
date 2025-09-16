@@ -333,7 +333,7 @@ export default function ContractorTabsSimple({
 
     // For company ID field specifically - allow editing ONLY for new contractors
     const canEditCompanyId = canEdit && contractorMode === 'new';
-    
+
     // Force enable for new contractors - debug
     const forceEnableCompanyId = contractorMode === 'new';
 
@@ -1756,14 +1756,13 @@ export default function ContractorTabsSimple({
                                     label="מספר חברה (ח״פ)"
                                     value={localCompanyId}
                                     disabled={(() => {
-                                        console.log('🔧 TextField disabled calculation:', {
-                                            canEditCompanyId,
-                                            forceEnableCompanyId,
+                                        const isDisabled = contractorMode !== 'new';
+                                        console.log('🔧 Simple disabled check:', {
                                             contractorMode,
-                                            '!forceEnableCompanyId': !forceEnableCompanyId,
-                                            'disabled value': !forceEnableCompanyId
+                                            'contractorMode !== "new"': contractorMode !== 'new',
+                                            isDisabled
                                         });
-                                        return !forceEnableCompanyId;
+                                        return isDisabled;
                                     })()}
                                     sx={{
                                         ...textFieldSx,
