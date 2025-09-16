@@ -651,8 +651,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             const finalCompanyId = localCompanyId || contractor?.companyId || contractor?.company_id || '';
             console.log('🔍 handleSave - finalCompanyId:', finalCompanyId);
             
+            // Remove _id field to prevent MongoDB duplicate key error
+            const { _id, ...contractorWithoutId } = contractor || {};
+            console.log('🔍 handleSave - removed _id:', _id);
+            console.log('🔍 handleSave - contractorWithoutId keys:', Object.keys(contractorWithoutId));
+            
             const updatedContractor = {
-                ...contractor,
+                ...contractorWithoutId,
                 // Basic company info
                 companyId: finalCompanyId, // Use fallback if localCompanyId is empty
                 company_id: finalCompanyId, // Also set the old field for backward compatibility
