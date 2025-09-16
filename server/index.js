@@ -878,6 +878,18 @@ app.post('/api/contractors', async (req, res) => {
     
     console.log('🔍 Final contractorData to insert:', contractorData);
     
+    // Remove any invalid _id field that might be sent from frontend
+    if (contractorData._id) {
+      console.log('🔍 Removing invalid _id field from frontend:', contractorData._id);
+      delete contractorData._id;
+    }
+    
+    // Add timestamps
+    contractorData.createdAt = new Date();
+    contractorData.updatedAt = new Date();
+    
+    console.log('🔍 About to insert contractor data (without _id):', contractorData);
+    
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
     res.status(201).json({ ...contractorData, _id: result.insertedId });
