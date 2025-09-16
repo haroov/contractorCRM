@@ -2615,23 +2615,20 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         });
       }
 
-      return res.json({
-        success: true,
-        source: 'companies_registry',
-        data: {
-          name: companyData['שם חברה'] || '',
-          nameEnglish: companyData['שם באנגלית'] || '',
-          companyType: mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId), // API data takes priority
-          foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
-          address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
-          city: companyData['שם עיר'] || '',
-          email: email,
-          phone: phone,
-          website: website,
-          companyId: companyId, // Add companyId to response
-          company_id: companyId, // Also add old field for backward compatibility
-          contractorId: contractorId,
-          contractor_id: contractorId,
+      const responseData = {
+        name: companyData['שם חברה'] || '',
+        nameEnglish: companyData['שם באנגלית'] || '',
+        companyType: mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId), // API data takes priority
+        foundationDate: formatDateForInput(companyData['תאריך התאגדות'] || ''),
+        address: `${companyData['שם רחוב'] || ''} ${companyData['מספר בית'] || ''}`.trim(),
+        city: companyData['שם עיר'] || '',
+        email: email,
+        phone: phone,
+        website: website,
+        companyId: companyId, // Add companyId to response
+        company_id: companyId, // Also add old field for backward compatibility
+        contractorId: contractorId,
+        contractor_id: contractorId,
           // License types from contractors registry
           classifications: licenseTypes,
           // Company status data for indicator
@@ -2645,6 +2642,16 @@ app.get('/api/search-company/:companyId', async (req, res) => {
             mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId)
           )
         }
+      };
+
+      console.log('🔍 Sending response data:', responseData);
+      console.log('🔍 Response companyId:', responseData.companyId);
+      console.log('🔍 Response company_id:', responseData.company_id);
+
+      return res.json({
+        success: true,
+        source: 'companies_registry',
+        data: responseData
       });
     }
 

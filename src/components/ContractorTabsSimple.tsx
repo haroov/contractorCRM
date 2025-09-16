@@ -1609,8 +1609,13 @@ export default function ContractorTabsSimple({
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
+        console.log('🔍 API Data received:', companyData);
+        console.log('🔍 API companyId:', companyData.companyId);
+        console.log('🔍 API company_id:', companyData.company_id);
         if (companyData.companyId || companyData.company_id) {
-            setLocalCompanyId(companyData.companyId || companyData.company_id);
+            const companyIdValue = companyData.companyId || companyData.company_id;
+            console.log('🔍 Setting localCompanyId to:', companyIdValue);
+            setLocalCompanyId(companyIdValue);
         }
 
         // Set company type from API (prioritize over local logic)
