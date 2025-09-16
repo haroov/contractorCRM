@@ -926,10 +926,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
                         {/* ח"פ */}
                         <TableCell sx={{ textAlign: 'right', paddingRight: '8px' }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                            <Typography variant="body2" sx={{ textAlign: 'right' }}>
-                              {contractor.companyId || contractor.company_id}
-                            </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, direction: 'rtl' }}>
                             {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
                               <Tooltip
                                 title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
@@ -941,6 +938,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                 </Box>
                               </Tooltip>
                             )}
+                            <Typography variant="body2" sx={{ textAlign: 'right' }}>
+                              {contractor.companyId || contractor.company_id}
+                            </Typography>
                           </Box>
                           <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
                             קבלן {contractor.contractorId || contractor.contractor_id}
