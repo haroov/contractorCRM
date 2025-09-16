@@ -860,6 +860,12 @@ app.get('/api/contractors/:id', async (req, res) => {
 
 app.post('/api/contractors', async (req, res) => {
   try {
+    console.log('🔍 POST /api/contractors called');
+    console.log('🔍 Request body keys:', Object.keys(req.body));
+    console.log('🔍 Request body companyId:', req.body.companyId);
+    console.log('🔍 Request body company_id:', req.body.company_id);
+    console.log('🔍 Full request body:', req.body);
+    
     const db = client.db('contractor-crm');
     const contractorData = {
       ...req.body,
@@ -869,11 +875,15 @@ app.post('/api/contractors', async (req, res) => {
       // וידוא שדה iso45001 תמיד קיים עם ערך ברירת מחדל
       iso45001: req.body.iso45001 === true ? true : false
     };
+    
+    console.log('🔍 Final contractorData to insert:', contractorData);
+    
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
     res.status(201).json({ ...contractorData, _id: result.insertedId });
   } catch (error) {
     console.error('❌ Error creating contractor:', error);
+    console.error('❌ Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to create contractor' });
   }
 });
