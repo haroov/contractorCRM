@@ -524,17 +524,22 @@ export default function ContractorTabsSimple({
             contractorName: contractor?.name
         });
 
-        if (activeTab === 1 && contractor?.company_id && contractor.company_id.length >= 9) {
+        // Use localCompanyId for new contractors, contractor.company_id for existing ones
+        const companyId = localCompanyId || contractor?.company_id;
+        
+        if (activeTab === 1 && companyId && companyId.length >= 9) {
             console.log('🔍 Loading licenses for Business Information tab');
-            loadLicensesForContractor(contractor.company_id);
+            loadLicensesForContractor(companyId);
         } else {
             console.log('🔍 Not loading licenses - conditions not met:', {
                 activeTabIs1: activeTab === 1,
-                hasCompanyId: !!contractor?.company_id,
-                companyIdLengthValid: contractor?.company_id?.length >= 9
+                hasCompanyId: !!companyId,
+                companyIdLengthValid: companyId?.length >= 9,
+                localCompanyId: localCompanyId,
+                contractorCompanyId: contractor?.company_id
             });
         }
-    }, [activeTab, contractor?.company_id]);
+    }, [activeTab, contractor?.company_id, localCompanyId]);
 
     // Auto-scrape company info when website changes
     useEffect(() => {
@@ -1320,6 +1325,9 @@ export default function ContractorTabsSimple({
 
                 console.log('✅ Loaded fresh license data from Contractors Registry:', licenseTypes.length, 'licenses');
                 console.log('🔍 License data:', licenseTypes);
+
+                // Update local state with fresh data
+                setLocalClassifications(licenseTypes);
 
                 // Update contractor with fresh data
                 if (onUpdateContractor) {
