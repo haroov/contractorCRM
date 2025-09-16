@@ -2629,20 +2629,19 @@ app.get('/api/search-company/:companyId', async (req, res) => {
         company_id: companyId, // Also add old field for backward compatibility
         contractorId: contractorId,
         contractor_id: contractorId,
-          // License types from contractors registry
-          classifications: licenseTypes,
-          // Company status data for indicator
-          companyStatus: companyData['סטטוס חברה'] || '',
-          violations: companyData['מפרה'] || '',
-          lastAnnualReport: companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
-          statusIndicator: getCompanyStatusIndicator(
-            companyData['סטטוס חברה'] || '',
-            companyData['מפרה'] || '',
-            companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
-            mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId)
-          )
-        }
-      };
+        // License types from contractors registry
+        classifications: licenseTypes,
+        // Company status data for indicator
+        companyStatus: companyData['סטטוס חברה'] || '',
+        violations: companyData['מפרה'] || '',
+        lastAnnualReport: companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
+        statusIndicator: getCompanyStatusIndicator(
+          companyData['סטטוס חברה'] || '',
+          companyData['מפרה'] || '',
+          companyData['שנה אחרונה של דוח שנתי (שהוגש)'] || '',
+          mapCompanyTypeFromAPI(companyData['סוג תאגיד']) || getCompanyTypeFromId(companyId)
+        )
+      }
 
       console.log('🔍 Sending response data:', responseData);
       console.log('🔍 Response companyId:', responseData.companyId);
