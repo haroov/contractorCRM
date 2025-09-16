@@ -1591,9 +1591,7 @@ export default function ContractorTabsSimple({
         setLocalEmail(companyData.email || '');
         setLocalPhone(companyData.phone || '');
         setLocalWebsite(companyData.website || '');
-        const contractorId = companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום';
-        console.log('🔧 Setting contractor ID:', { contractorId, companyData: companyData.contractorId, contractor_id: companyData.contractor_id });
-        setLocalContractorId(contractorId);
+        setLocalContractorId(companyData.contractorId || companyData.contractor_id || 'לא קבלן רשום');
         setLocalEmployees(companyData.employees || '');
 
         // IMPORTANT: Keep the company ID alive during sync
@@ -1865,14 +1863,6 @@ export default function ContractorTabsSimple({
                                     value={localContractorId || 'לא קבלן רשום'}
                                     disabled={true}
                                     sx={textFieldSx}
-                                    InputProps={{
-                                        readOnly: true,
-                                        startAdornment: (
-                                            <Box sx={{ fontSize: '10px', color: 'red', marginRight: 1 }}>
-                                                DEBUG: {localContractorId || 'empty'}
-                                            </Box>
-                                        )
-                                    }}
                                 />
                             </Grid>
 

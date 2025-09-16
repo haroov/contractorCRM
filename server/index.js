@@ -3627,15 +3627,27 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
   } catch (error) {
     console.error('❌ Error scraping company info:', error);
 
-    // Fallback: return basic info without scraping
-    const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
-    const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
+    // Check if it's a puppeteer/browser error (common in production)
+    if (error.message.includes('puppeteer') || error.message.includes('browser') || error.message.includes('launch')) {
+      console.log('🌐 Puppeteer not available in production environment, returning fallback');
+      
+      // Fallback: return basic info without scraping
+      const domain = website.split('//')[1]?.split('.')[0] || 'LOGO';
+      const fallbackLogo = `https://via.placeholder.com/150x100/9c27b0/ffffff?text=${encodeURIComponent(domain.toUpperCase())}`;
 
-    res.json({
-      success: true,
-      about: `מידע על החברה ${website} - לא ניתן לגשת למידע באתר החברה כרגע.`,
-      logo: fallbackLogo
-    });
+      res.json({
+        success: true,
+        about: `מידע על החברה ${website} - לא ניתן לגשת למידע באתר החברה כרגע.`,
+        logo: fallbackLogo
+      });
+    } else {
+      // For other errors, return 500
+      res.status(500).json({
+        success: false,
+        error: 'Failed to scrape company info',
+        message: error.message
+      });
+    }
   } finally {
     if (browser) {
       await browser.close();
