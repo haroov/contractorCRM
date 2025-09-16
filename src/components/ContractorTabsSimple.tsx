@@ -403,11 +403,20 @@ export default function ContractorTabsSimple({
             // Only update companyId if we're not in 'new' mode or if the contractor has a meaningful companyId
             // This prevents overriding user input when creating a new contractor
             // BUT: if localCompanyId is already set (from API data), don't override it
+            console.log('🔍 useEffect - localCompanyId before check:', localCompanyId);
+            console.log('🔍 useEffect - contractorCompanyId:', contractorCompanyId);
+            console.log('🔍 useEffect - contractorMode:', contractorMode);
+            
             if (contractorMode !== 'new' || (contractorCompanyId && contractorCompanyId.trim() !== '')) {
                 // Only update if localCompanyId is empty (not set from API)
                 if (!localCompanyId || localCompanyId.trim() === '') {
+                    console.log('🔍 useEffect - Setting localCompanyId to:', contractorCompanyId);
                     setLocalCompanyId(contractorCompanyId || '');
+                } else {
+                    console.log('🔍 useEffect - Keeping existing localCompanyId:', localCompanyId);
                 }
+            } else {
+                console.log('🔍 useEffect - Not updating localCompanyId (new mode, no contractorCompanyId)');
             }
 
             setLocalCompanyType(contractor?.companyType || 'private_company');
