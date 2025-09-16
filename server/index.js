@@ -980,7 +980,26 @@ app.put('/api/contractors/:id', async (req, res) => {
     console.log('✅ Updated contractor:', req.params.id, 'Modified count:', result.modifiedCount);
 
     // Return the updated contractor data without projects field
-    const updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
+    // Use the same search logic as before to find the updated contractor
+    let updatedContractor;
+    try {
+      // Try to find by contractorId first
+      updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
+      
+      // If not found, try by ObjectId (only if it's a valid ObjectId)
+      if (!updatedContractor && req.params.id.length === 24) {
+        updatedContractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+      }
+    } catch (error) {
+      console.log('❌ Error finding updated contractor:', error.message);
+      return res.status(500).json({ error: 'Failed to retrieve updated contractor' });
+    }
+    
+    if (!updatedContractor) {
+      console.log('❌ Updated contractor not found with ID:', req.params.id);
+      return res.status(404).json({ error: 'Updated contractor not found' });
+    }
+    
     const { projects, ...contractorWithoutProjects } = updatedContractor;
     const contractorWithProjectIds = {
       ...contractorWithoutProjects,
