@@ -610,15 +610,37 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           status: 'פעילה' // Set status to active
         };
 
-        const updated = await ContractorService.update(contractorToUpdate.contractor_id, contractorToUpdate);
+        // Use the correct ID for updating - try _id first, then contractorId, then contractor_id
+        const updateId = contractorToUpdate._id || contractorToUpdate.contractorId || contractorToUpdate.contractor_id;
+        console.log('🔍 Using updateId for contractor update:', updateId);
+        console.log('🔍 Available IDs:', {
+          _id: contractorToUpdate._id,
+          contractorId: contractorToUpdate.contractorId,
+          contractor_id: contractorToUpdate.contractor_id
+        });
+        
+        if (!updateId) {
+          console.error('❌ No valid ID found for contractor update');
+          setSnackbarMessage('שגיאה: לא נמצא מזהה קבלן לעדכון');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+          setIsSaving(false);
+          return;
+        }
+        
+        const updated = await ContractorService.update(updateId, contractorToUpdate);
         if (updated) {
           console.log('✅ Contractor updated successfully:', updated);
 
           // Update contractors list - add if not exists, update if exists
-          const existingIndex = contractors.findIndex(c => c.contractor_id === updatedContractor.contractor_id);
+          const existingIndex = contractors.findIndex(c => 
+            c._id === updateId || c.contractorId === updateId || c.contractor_id === updateId
+          );
           if (existingIndex >= 0) {
             // Update existing contractor in list
-            setContractors(contractors.map(c => c.contractor_id === updatedContractor.contractor_id ? updated : c));
+            setContractors(contractors.map(c => 
+              (c._id === updateId || c.contractorId === updateId || c.contractor_id === updateId) ? updated : c
+            ));
           } else {
             // Add contractor to list (was archived, now active)
             setContractors([...contractors, updated]);
