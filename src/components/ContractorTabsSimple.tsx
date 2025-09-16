@@ -628,6 +628,9 @@ export default function ContractorTabsSimple({
             });
 
             // Update contractor with local values before saving
+            console.log('🔍 handleSave - localCompanyId:', localCompanyId);
+            console.log('🔍 handleSave - localCompanyId type:', typeof localCompanyId);
+            console.log('🔍 handleSave - localCompanyId length:', localCompanyId?.length);
             const updatedContractor = {
                 ...contractor,
                 // Basic company info
