@@ -1802,7 +1802,18 @@ export default function ContractorTabsSimple({
                                         direction: 'rtl',
                                         '& .MuiInputBase-input': {
                                             textAlign: 'right',
-                                            direction: 'rtl'
+                                            direction: 'rtl',
+                                            fontFamily: 'monospace',
+                                            letterSpacing: '0.1em'
+                                        },
+                                        '& .MuiInputLabel-root': {
+                                            ...textFieldSx['& .MuiInputLabel-root'],
+                                            right: 0,
+                                            left: 'auto',
+                                            transformOrigin: 'top right'
+                                        },
+                                        '& .MuiInputLabel-shrink': {
+                                            transform: 'translate(-14px, -9px) scale(0.75)'
                                         }
                                     }}
                                     InputProps={{
