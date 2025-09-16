@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
@@ -16,6 +16,7 @@ interface UnifiedContractorViewProps {
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
 
   const { id } = useParams();
+  const contractorTabsRef = useRef<any>(null);
   const [contractors, setContractors] = useState<Contractor[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
@@ -1135,7 +1136,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       </Button>
                       <Button
                         variant="contained"
-                        onClick={handleSaveContractor}
+                        onClick={() => {
+                          console.log('🔘 Save button clicked - calling ContractorTabs handleSave');
+                          if (contractorTabsRef.current && contractorTabsRef.current.handleSave) {
+                            contractorTabsRef.current.handleSave();
+                          } else {
+                            console.log('🚨 ContractorTabs ref not available or handleSave not found');
+                          }
+                        }}
                         disabled={isSaving}
                         sx={{
                           minWidth: 'auto',
@@ -1162,6 +1170,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <Suspense fallback={<SkeletonLoader />}>
                 {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabs:', contractorMode)}
                 <ContractorTabs
+                  ref={contractorTabsRef}
                   contractor={selectedContractor!}
                   onSave={(contractorData) => {
                     console.log('🔧 onSave called with:', contractorData);

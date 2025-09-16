@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete, InputAdornment, Chip } from '@mui/material';
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ interface ContractorTabsSimpleProps {
     contractorMode?: 'view' | 'edit' | 'new';
 }
 
-export default function ContractorTabsSimple({
+const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     contractor,
     onSave,
     onClose,
@@ -29,7 +29,7 @@ export default function ContractorTabsSimple({
     onUpdateContractor,
     onShowNotification,
     contractorMode = 'view'
-}: ContractorTabsSimpleProps) {
+}: ContractorTabsSimpleProps, ref) => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(() => {
         // Check if there's a stored tab from URL navigation
@@ -697,6 +697,11 @@ export default function ContractorTabsSimple({
             onSave(updatedContractor);
         }
     };
+
+    // Expose handleSave function to parent component
+    useImperativeHandle(ref, () => ({
+        handleSave
+    }));
 
     const handleUploadClick = (type: 'safety' | 'iso') => {
         setUploadType(type);
@@ -3272,4 +3277,6 @@ export default function ContractorTabsSimple({
             </Dialog>
         </Box>
     );
-}
+});
+
+export default ContractorTabsSimple;
