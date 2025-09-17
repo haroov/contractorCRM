@@ -197,18 +197,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        border: '1px solid #d0d0d0'
                     }} onClick={handleFileClick}>
                         {value.toLowerCase().includes('.pdf') ? (
-                            <Typography sx={{
-                                fontSize: '12px',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                lineHeight: 1,
-                                textAlign: 'center'
-                            }}>
-                                PDF
-                            </Typography>
+                            <PdfIcon sx={{
+                                fontSize: 24,
+                                color: 'white'
+                            }} />
                         ) : (
                             <img
                                 src={value}
@@ -220,20 +216,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
                                     borderRadius: '4px'
                                 }}
                                 onError={(e) => {
-                                    // Fallback to PDF text if image fails to load
+                                    // Fallback to PDF icon if image fails to load
                                     const target = e.target as HTMLImageElement;
                                     target.style.display = 'none';
                                     const parent = target.parentElement;
                                     if (parent) {
-                                        const pdfText = document.createElement('div');
-                                        pdfText.innerHTML = '<span style="font-size: 12px; color: white; font-weight: bold; line-height: 1; text-align: center;">PDF</span>';
-                                        parent.appendChild(pdfText);
+                                        const pdfIcon = document.createElement('div');
+                                        pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                        parent.appendChild(pdfIcon);
                                     }
                                 }}
                             />
                         )}
 
-                        {/* Delete button */}
+                        {/* Delete button - small X in top-right corner */}
                         {onDelete && !disabled && (
                             <IconButton
                                 onClick={(e) => {
@@ -246,14 +242,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
                                     right: -8,
                                     width: 20,
                                     height: 20,
-                                    backgroundColor: 'error.main',
-                                    color: 'white',
+                                    backgroundColor: 'white',
+                                    border: '1px solid #d0d0d0',
+                                    color: '#f44336',
                                     '&:hover': {
-                                        backgroundColor: 'error.dark'
+                                        backgroundColor: '#ffebee',
+                                        borderColor: '#f44336'
                                     }
                                 }}
                             >
-                                <CloseIcon sx={{ fontSize: 12 }} />
+                                <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
                             </IconButton>
                         )}
                     </Box>
