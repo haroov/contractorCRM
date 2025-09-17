@@ -17,6 +17,7 @@ const { GridFSBucket } = require('mongodb');
 
 // Import routes
 const uploadRoutes = require('./routes/upload');
+const projectFilesRoutes = require('./routes/project-files');
 
 dotenv.config();
 
@@ -280,6 +281,7 @@ console.log('✅ Contact authentication routes configured');
 
 // Import upload routes
 app.use('/api/upload', uploadRoutes);
+app.use('/api', projectFilesRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes
@@ -1247,7 +1249,7 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
 
     // Get contractor with project IDs - try ObjectId first, then fallback to external IDs
     let contractor = null;
-    
+
     // Try ObjectId first (primary identifier)
     if (id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id)) {
       try {
@@ -1256,17 +1258,17 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
         console.log('🔍 ObjectId search failed:', objectIdError.message);
       }
     }
-    
+
     // If not found, try companyId (company identifier)
     if (!contractor) {
       contractor = await db.collection('contractors').findOne({ companyId: id });
     }
-    
+
     // If still not found, try contractorId (contractor identifier)
     if (!contractor) {
       contractor = await db.collection('contractors').findOne({ contractor_id: id });
     }
-    
+
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
