@@ -50,7 +50,8 @@ import SkeletonLoader from './SkeletonLoader';
 interface FileUploadProps {
     label: string;
     value?: string;
-    onChange: (file: File | null) => void;
+    thumbnailUrl?: string; // Added thumbnail URL prop
+    onChange: (url: string | null, thumbnailUrl?: string) => void; // Updated to accept thumbnail URL
     disabled?: boolean;
     accept?: string;
     showCreationDate?: boolean;
@@ -62,6 +63,7 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({
     label,
     value,
+    thumbnailUrl,
     onChange,
     disabled,
     accept = ".pdf,.jpg,.jpeg,.png",
@@ -100,6 +102,36 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         const fileDate = new Date(file.lastModified);
                         const formattedDate = fileDate.toISOString().split('T')[0];
                         onCreationDateChange(formattedDate);
+                    }
+
+                    // Generate thumbnail for PDF files
+                    if (file.type === 'application/pdf') {
+                        try {
+                            const thumbnailResponse = await fetch('/api/pdf-thumbnail/generate-from-url', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                },
+                                body: JSON.stringify({
+                                    pdfUrl: result.url,
+                                    page: 1,
+                                    width: 800,
+                                    format: 'png'
+                                })
+                            });
+
+                            if (thumbnailResponse.ok) {
+                                const thumbnailResult = await thumbnailResponse.json();
+                                // Store thumbnail URL for display
+                                onChange(result.url, thumbnailResult.thumbnailUrl);
+                            } else {
+                                console.warn('Failed to generate PDF thumbnail:', await thumbnailResponse.text());
+                            }
+                        } catch (thumbnailError) {
+                            console.warn('Error generating PDF thumbnail:', thumbnailError);
+                            // Continue without thumbnail
+                        }
                     }
                 } else {
                     throw new Error('Upload failed');
@@ -178,7 +210,30 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         cursor: 'pointer'
                     }} onClick={handleFileClick}>
                         {value.toLowerCase().includes('.pdf') ? (
-                            <PdfIcon sx={{ color: '#d32f2f', fontSize: 24 }} />
+                            thumbnailUrl ? (
+                                <img
+                                    src={thumbnailUrl}
+                                    alt="תצוגה מקדימה של PDF"
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
+                                    onError={(e) => {
+                                        // Fallback to PDF icon if thumbnail fails to load
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                            const pdfIcon = document.createElement('div');
+                                            pdfIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; color: #d32f2f;"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                            parent.appendChild(pdfIcon);
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <PdfIcon sx={{ color: '#d32f2f', fontSize: 24 }} />
+                            )
                         ) : (
                             <img
                                 src={value}
@@ -1213,8 +1268,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="תוכניות (גרמושקה)"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '')}
+                                                    thumbnailUrl={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaThumbnail}
+                                                    onChange={(url, thumbnailUrl) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail', thumbnailUrl);
+                                                        }
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '');
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail', '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.dwg,.dwf"
                                                     showCreationDate={true}
@@ -1465,8 +1529,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <FileUpload
                                                         label="העלה קובץ היתר בניה"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
-                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url)}
-                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', '')}
+                                                        thumbnailUrl={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnail}
+                                                        onChange={(url, thumbnailUrl) => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
+                                                            if (thumbnailUrl) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnail', thumbnailUrl);
+                                                            }
+                                                        }}
+                                                        onDelete={() => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', '');
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnail', '');
+                                                        }}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         showCreationDate={true}
@@ -1493,8 +1566,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <FileUpload
                                                         label="העלה קובץ היתר חפירה ודיפון"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
-                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url)}
-                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '')}
+                                                        thumbnailUrl={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnail}
+                                                        onChange={(url, thumbnailUrl) => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
+                                                            if (thumbnailUrl) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnail', thumbnailUrl);
+                                                            }
+                                                        }}
+                                                        onDelete={() => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '');
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnail', '');
+                                                        }}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         showCreationDate={true}
@@ -1506,8 +1588,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="אישור מהנדס קונסטרקטור - העלה קובץ"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '')}
+                                                    thumbnailUrl={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.thumbnail}
+                                                    onChange={(url, thumbnailUrl) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.thumbnail', thumbnailUrl);
+                                                        }
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '');
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.thumbnail', '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
@@ -1518,8 +1609,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '')}
+                                                    thumbnailUrl={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.thumbnail}
+                                                    onChange={(url, thumbnailUrl) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.thumbnail', thumbnailUrl);
+                                                        }
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '');
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.thumbnail', '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
@@ -1625,8 +1725,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <FileUpload
                                                 label="העלה דוח"
                                                 value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
-                                                onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', url)}
-                                                onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', '')}
+                                                thumbnailUrl={project?.engineeringQuestionnaire?.soilConsultantReport?.reportThumbnail}
+                                                onChange={(url, thumbnailUrl) => {
+                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', url);
+                                                    if (thumbnailUrl) {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportThumbnail', thumbnailUrl);
+                                                    }
+                                                }}
+                                                onDelete={() => {
+                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', '');
+                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportThumbnail', '');
+                                                }}
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
                                                 showCreationDate={true}
@@ -1951,8 +2060,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <FileUpload
                                             label="העלאת קובץ תוכנית הידרולוג"
                                             value={project?.hydrologicalPlan?.file}
-                                            onChange={(url) => handleNestedFieldChange('hydrologicalPlan.file', url)}
-                                            onDelete={() => handleNestedFieldChange('hydrologicalPlan.file', '')}
+                                            thumbnailUrl={project?.hydrologicalPlan?.thumbnail}
+                                            onChange={(url, thumbnailUrl) => {
+                                                handleNestedFieldChange('hydrologicalPlan.file', url);
+                                                if (thumbnailUrl) {
+                                                    handleNestedFieldChange('hydrologicalPlan.thumbnail', thumbnailUrl);
+                                                }
+                                            }}
+                                            onDelete={() => {
+                                                handleNestedFieldChange('hydrologicalPlan.file', '');
+                                                handleNestedFieldChange('hydrologicalPlan.thumbnail', '');
+                                            }}
                                             disabled={mode === 'view' || !canEdit}
                                             accept=".pdf,.jpg,.jpeg,.png"
                                             showCreationDate={true}
@@ -2033,8 +2151,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="העלה קובץ לוח זמנים"
                                                     value={project?.schedule?.file}
-                                                    onChange={(url) => handleNestedFieldChange('schedule.file', url)}
-                                                    onDelete={() => handleNestedFieldChange('schedule.file', '')}
+                                                    thumbnailUrl={project?.schedule?.thumbnail}
+                                                    onChange={(url, thumbnailUrl) => {
+                                                        handleNestedFieldChange('schedule.file', url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('schedule.thumbnail', thumbnailUrl);
+                                                        }
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('schedule.file', '');
+                                                        handleNestedFieldChange('schedule.thumbnail', '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
