@@ -2,7 +2,7 @@
   "name": "contractor-crm",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "server": "node server/index.js",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
@@ -20,7 +20,7 @@
     "docker:compose:down": "docker-compose down",
     "docker:compose:logs": "docker-compose logs -f",
     "docker:compose:restart": "docker-compose restart",
-    "thumb": "ts-node src/cli/pdf-thumb.ts"
+    "thumb": "node src/cli/pdf-thumb.ts"
   },
   "dependencies": {
     "@date-io/dayjs": "^3.2.0",
