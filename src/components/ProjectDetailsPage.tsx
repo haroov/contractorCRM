@@ -1346,7 +1346,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </FormControl>
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="government-program-label">האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
+                                                    <InputLabel id="government-program-label" sx={{ 
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
                                                     <Select
                                                         labelId="government-program-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram ? 'כן' : 'לא'}
@@ -1523,7 +1531,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="shared-basement-label">האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
+                                                    <InputLabel id="shared-basement-label" sx={{ 
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
                                                     <Select
                                                         labelId="shared-basement-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors ? 'כן' : 'לא'}
@@ -1645,7 +1661,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="work-existing-structure-label">האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים</InputLabel>
+                                                    <InputLabel id="work-existing-structure-label" sx={{ 
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים</InputLabel>
                                                     <Select
                                                         labelId="work-existing-structure-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure ? 'כן' : 'לא'}
@@ -1837,7 +1861,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם קיימים מבנים סמוכים</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם קיימים מבנים סמוכים</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.adjacentBuildings?.exists ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', e.target.value === 'כן')}
@@ -1891,7 +1923,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם קיימים כבלי חשמל במרחק מהעגורנים</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם קיימים כבלי חשמל במרחק מהעגורנים</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.electricalCables?.exists ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.electricalCables.exists', e.target.value === 'כן')}
@@ -1915,7 +1955,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.undergroundInfrastructure?.exists ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', e.target.value === 'כן')}
@@ -1939,7 +1987,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם יש גני ילדים בסביבה</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם יש גני ילדים בסביבה</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.kindergartens?.exists ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.kindergartens.exists', e.target.value === 'כן')}
@@ -1963,7 +2019,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel>קרבה לתחנת דלק</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>קרבה לתחנת דלק</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.proximityToGasStation ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToGasStation', e.target.value === 'כן')}
@@ -1975,7 +2039,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel>קרבה לתחנת משטרה</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>קרבה לתחנת משטרה</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.proximityToPoliceStation ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', e.target.value === 'כן')}
@@ -1987,7 +2059,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel>קרבה למד״א או מרכז רפואי</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>קרבה למד״א או מרכז רפואי</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.proximityToMedicalCenter ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', e.target.value === 'כן')}
@@ -1999,7 +2079,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם הפרויקט על רכס הר</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם הפרויקט על רכס הר</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.onMountainRidge ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.onMountainRidge', e.target.value === 'כן')}
@@ -2011,7 +2099,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel>האם הפרויקט בואדי</InputLabel>
+                                            <InputLabel sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם הפרויקט בואדי</InputLabel>
                                             <Select
                                                 value={project?.environmentalSurvey?.inValley ? 'כן' : 'לא'}
                                                 onChange={(e) => handleNestedFieldChange('environmentalSurvey.inValley', e.target.value === 'כן')}
@@ -2072,7 +2168,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
 
                                         <FormControl fullWidth>
-                                            <InputLabel id="basement-pumps-label">האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
+                                            <InputLabel id="basement-pumps-label" sx={{ 
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
                                             <Select
                                                 labelId="basement-pumps-label"
                                                 value={project?.hydrologicalPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
