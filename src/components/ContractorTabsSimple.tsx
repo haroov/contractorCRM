@@ -2747,7 +2747,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     variant="contained"
                                     startIcon={<AddIcon />}
                                     onClick={() => {
-                                        // Create new project with contractor name pre-filled
+                                        // Create new project with contractor ObjectId pre-filled
                                         const newProject = {
                                             _id: `new_${Date.now()}`,
                                             name: '',
@@ -2757,7 +2757,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             value: 0,
                                             duration: 12,
                                             contractorName: contractor?.name || '',
-                                            contractorId: contractor?._id || '',
+                                            contractorId: contractor?._id || '', // Use ObjectId as contractorId
                                             isActive: true,
                                             isNew: true
                                         };

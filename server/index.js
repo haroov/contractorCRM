@@ -911,19 +911,22 @@ app.put('/api/contractors/:id', async (req, res) => {
     let existingContractor;
     try {
       console.log('🔍 Searching for contractor with ID:', req.params.id);
-      // ננסה לחפש לפי contractorId קודם (מספר)
-      existingContractor = await db.collection('contractors').findOne({
-        contractorId: req.params.id
-      });
-      console.log('🔍 Search by contractorId result:', existingContractor ? 'Found' : 'Not found');
-
-      // אם לא נמצא, ננסה לחפש לפי ObjectId (רק אם זה ObjectId תקין)
-      if (!existingContractor && req.params.id.length === 24) {
-        console.log('🔍 Trying ObjectId search...');
+      // ננסה לחפש לפי ObjectId קודם (מזהה ייחודי)
+      if (req.params.id.length === 24) {
+        console.log('🔍 Trying ObjectId search first...');
         existingContractor = await db.collection('contractors').findOne({
           _id: new ObjectId(req.params.id)
         });
         console.log('🔍 Search by ObjectId result:', existingContractor ? 'Found' : 'Not found');
+      }
+
+      // אם לא נמצא, ננסה לחפש לפי contractorId (מספר חיצוני)
+      if (!existingContractor) {
+        console.log('🔍 Trying contractorId search...');
+        existingContractor = await db.collection('contractors').findOne({
+          contractorId: req.params.id
+        });
+        console.log('🔍 Search by contractorId result:', existingContractor ? 'Found' : 'Not found');
       }
     } catch (error) {
       console.log('❌ Error searching for contractor:', error.message);
@@ -952,21 +955,24 @@ app.put('/api/contractors/:id', async (req, res) => {
     let result;
     try {
       console.log('🔍 Attempting to update contractor with finalUpdateData:', finalUpdateData);
-      // ננסה לעדכן לפי contractorId קודם
-      result = await db.collection('contractors').updateOne(
-        { contractorId: req.params.id },
-        { $set: finalUpdateData }
-      );
-      console.log('🔍 Update by contractorId result:', result);
-
-      // אם לא נמצא, ננסה לפי ObjectId (רק אם זה ObjectId תקין)
-      if (result.matchedCount === 0 && req.params.id.length === 24) {
-        console.log('🔍 Trying ObjectId update...');
+      // ננסה לעדכן לפי ObjectId קודם (מזהה ייחודי)
+      if (req.params.id.length === 24) {
+        console.log('🔍 Trying ObjectId update first...');
         result = await db.collection('contractors').updateOne(
           { _id: new ObjectId(req.params.id) },
           { $set: finalUpdateData }
         );
         console.log('🔍 Update by ObjectId result:', result);
+      }
+
+      // אם לא נמצא, ננסה לפי contractorId (מספר חיצוני)
+      if (result.matchedCount === 0) {
+        console.log('🔍 Trying contractorId update...');
+        result = await db.collection('contractors').updateOne(
+          { contractorId: req.params.id },
+          { $set: finalUpdateData }
+        );
+        console.log('🔍 Update by contractorId result:', result);
       }
     } catch (error) {
       console.log('❌ Error updating contractor:', error.message);
@@ -983,12 +989,14 @@ app.put('/api/contractors/:id', async (req, res) => {
     // Use the same search logic as before to find the updated contractor
     let updatedContractor;
     try {
-      // Try to find by contractorId first
-      updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
-      
-      // If not found, try by ObjectId (only if it's a valid ObjectId)
-      if (!updatedContractor && req.params.id.length === 24) {
+      // Try to find by ObjectId first (primary identifier)
+      if (req.params.id.length === 24) {
         updatedContractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+      }
+      
+      // If not found, try by contractorId (external identifier)
+      if (!updatedContractor) {
+        updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
       }
     } catch (error) {
       console.log('❌ Error finding updated contractor:', error.message);
@@ -1354,6 +1362,7 @@ function calculateProjectStatus(startDate, durationMonths, isClosed) {
 async function updateContractorStats(db, contractorId) {
   try {
     // Get all projects for this contractor using mainContractor field
+    // mainContractor should contain the ObjectId of the contractor
     const projects = await db.collection('projects').find({
       mainContractor: contractorId
     }).toArray();
