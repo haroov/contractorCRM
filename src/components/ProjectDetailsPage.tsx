@@ -72,6 +72,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    
+    // Debug logging
+    console.log(`📁 FileUpload ${label} - value:`, value);
+    console.log(`📁 FileUpload ${label} - isUploading:`, isUploading);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -93,7 +97,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
                 if (response.ok) {
                     const result = await response.json();
-                    onChange(result.url); // Store the blob URL
+                    console.log('✅ File upload successful:', result);
+                    console.log('✅ File URL:', result.data?.url);
+                    
+                    // Use result.data.url if available, otherwise fallback to result.url
+                    const fileUrl = result.data?.url || result.url;
+                    console.log('✅ Using file URL:', fileUrl);
+                    
+                    onChange(fileUrl); // Store the blob URL
 
                     // Auto-fill creation date from file metadata
                     if (onCreationDateChange && !creationDateValue) {
@@ -105,6 +116,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     // PDF thumbnail generation temporarily disabled
                     // Will be re-enabled when server-side support is restored
                 } else {
+                    const errorText = await response.text();
+                    console.error('❌ Upload failed:', response.status, errorText);
                     throw new Error('Upload failed');
                 }
             } catch (error) {
@@ -133,7 +146,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             try {
                 // Delete from blob storage
                 if (value) {
-                    const response = await fetch('/api/upload-project-file/delete-project-file', {
+                    const response = await fetch('/api/delete-project-file', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -758,6 +771,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleNestedFieldChange = (fieldPath: string, value: any) => {
+        console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
         if (project) {
             const newProject = { ...project };
             const keys = fieldPath.split('.');
@@ -773,8 +787,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             // Set the final value
             current[keys[keys.length - 1]] = value;
+            console.log('✅ Updated project field:', fieldPath, 'to:', value);
+            console.log('✅ New project state:', newProject);
 
             setProject(newProject);
+        } else {
+            console.log('❌ No project to update');
         }
     };
 
