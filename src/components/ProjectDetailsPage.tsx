@@ -49,11 +49,11 @@ interface FileUploadProps {
     onCreationDateChange?: (date: string) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ 
-    label, 
-    value, 
-    onChange, 
-    disabled, 
+const FileUpload: React.FC<FileUploadProps> = ({
+    label,
+    value,
+    onChange,
+    disabled,
     accept = ".pdf,.jpg,.jpeg,.png",
     showCreationDate = false,
     creationDateValue = '',
@@ -66,12 +66,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
         const file = event.target.files?.[0] || null;
         onChange(file);
         
-        // Auto-fill creation date from file if available
-        if (file && onCreationDateChange && !creationDateValue) {
-            const fileDate = new Date(file.lastModified);
-            const formattedDate = fileDate.toISOString().split('T')[0];
-            onCreationDateChange(formattedDate);
-        }
+        // Note: JavaScript File API doesn't provide access to file creation date
+        // Only lastModified is available. We'll leave the date field empty
+        // for the user to fill manually with the actual creation date
     };
 
     const handleUploadClick = () => {
@@ -90,7 +87,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     onChange={handleFileChange}
                     style={{ display: 'none' }}
                 />
-                
+
                 {value ? (
                     <Box sx={{
                         width: 40,
@@ -132,16 +129,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
                     </IconButton>
                 )}
-                
+
                 <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
                     {label}
                 </Typography>
             </Box>
-            
+
             {showCreationDate && (
                 <TextField
                     fullWidth
-                    label="תאריך יצירת המסמך"
+                    label="תאריך יצירת המסמך (למלא ידנית)"
                     type="date"
                     value={creationDateValue}
                     onChange={(e) => onCreationDateChange?.(e.target.value)}
@@ -149,6 +146,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     size="small"
                     InputLabelProps={{ shrink: true }}
                     sx={{ maxWidth: 200 }}
+                    helperText="תאריך יצירת הקובץ המקורי"
                 />
             )}
         </Box>
@@ -1296,7 +1294,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
                                             דוח יועץ קרקע
                                         </Typography>
-                                        
+
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
                                             <FileUpload
                                                 label="העלה דוח"
@@ -1305,7 +1303,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
                                             />
-                                            
+
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
                                                 <Select
