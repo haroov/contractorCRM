@@ -695,7 +695,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const projectData = await projectsAPI.getById(projectId);
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
-                            setProject(projectData);
+                            
+                            // If key fields exist at root level, move them to nested structure for UI compatibility
+                            if (projectData.projectType || projectData.garmoshkaFile || projectData.garmoshkaFileCreationDate || projectData.plotDetails) {
+                                console.log('🔄 Found root-level fields, moving to nested structure for UI compatibility');
+                                const processedProjectData = {
+                                    ...projectData,
+                                    engineeringQuestionnaire: {
+                                        ...projectData.engineeringQuestionnaire,
+                                        buildingPlan: {
+                                            ...projectData.engineeringQuestionnaire?.buildingPlan,
+                                            projectType: projectData.projectType || projectData.engineeringQuestionnaire?.buildingPlan?.projectType || '',
+                                            garmoshkaFile: projectData.garmoshkaFile || projectData.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
+                                            garmoshkaFileCreationDate: projectData.garmoshkaFileCreationDate || projectData.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || '',
+                                            plotDetails: projectData.plotDetails || projectData.engineeringQuestionnaire?.buildingPlan?.plotDetails || []
+                                        }
+                                    }
+                                };
+                                console.log('🔄 Processed project data with nested fields:', processedProjectData);
+                                setProject(processedProjectData);
+                            } else {
+                                setProject(projectData);
+                            }
 
                             // Load contractor name if we have contractor ID
                             // Prioritize _id (ObjectId) as primary identifier, then fallback to external identifiers
@@ -829,17 +850,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const { projectsAPI } = await import('../services/api');
 
             if (mode === 'new') {
-                // Create new project - ensure mainContractor is set and include all data
+                // Create new project - move key fields to root level
                 const projectToSave = {
                     ...project,
-                    mainContractor: project.mainContractor || searchParams.get('contractorId') || ''
+                    mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
+                    // Move key fields from nested objects to root level
+                    projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
+                    garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
+                    garmoshkaFileCreationDate: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || '',
+                    plotDetails: project.engineeringQuestionnaire?.buildingPlan?.plotDetails || [],
+                    // Keep nested objects for other fields
+                    engineeringQuestionnaire: project.engineeringQuestionnaire,
+                    environmentalSurvey: project.environmentalSurvey,
+                    hydrologicalPlan: project.hydrologicalPlan,
+                    siteDrainagePlan: project.siteDrainagePlan,
+                    schedule: project.schedule
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
-                console.log('🔄 Engineering questionnaire data:', projectToSave.engineeringQuestionnaire);
+                console.log('🔄 Key fields moved to root:', {
+                    projectType: projectToSave.projectType,
+                    garmoshkaFile: projectToSave.garmoshkaFile,
+                    garmoshkaFileCreationDate: projectToSave.garmoshkaFileCreationDate,
+                    plotDetails: projectToSave.plotDetails
+                });
                 const savedProject = await projectsAPI.create(projectToSave);
                 console.log('✅ Project created:', savedProject);
             } else {
-                // Update existing project - send all project data including new fields
+                // Update existing project - move key fields to root level
                 const updateData = {
                     projectName: project.projectName,
                     description: project.description,
@@ -850,7 +887,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isClosed: project.isClosed,
                     status: project.status,
                     mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
-                    // Include all new fields from the plans tab
+                    // Move key fields from nested objects to root level
+                    projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
+                    garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
+                    garmoshkaFileCreationDate: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || '',
+                    plotDetails: project.engineeringQuestionnaire?.buildingPlan?.plotDetails || [],
+                    // Keep nested objects for other fields
                     engineeringQuestionnaire: project.engineeringQuestionnaire,
                     environmentalSurvey: project.environmentalSurvey,
                     hydrologicalPlan: project.hydrologicalPlan,
@@ -859,7 +901,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 };
                 const projectId = project._id || project.id;
                 console.log('🔄 Sending update data to server:', updateData);
-                console.log('🔄 Engineering questionnaire data:', updateData.engineeringQuestionnaire);
+                console.log('🔄 Key fields moved to root:', {
+                    projectType: updateData.projectType,
+                    garmoshkaFile: updateData.garmoshkaFile,
+                    garmoshkaFileCreationDate: updateData.garmoshkaFileCreationDate,
+                    plotDetails: updateData.plotDetails
+                });
                 const updatedProject = await projectsAPI.update(projectId, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
