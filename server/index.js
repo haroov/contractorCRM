@@ -911,13 +911,17 @@ app.put('/api/contractors/:id', async (req, res) => {
     let existingContractor;
     try {
       console.log('🔍 Searching for contractor with ID:', req.params.id);
-      // ננסה לחפש לפי ObjectId קודם (מזהה ייחודי)
-      if (req.params.id.length === 24) {
+      // ננסה לחפש לפי ObjectId קודם (מזהה ייחודי) - רק אם זה ObjectId תקין
+      if (req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id)) {
         console.log('🔍 Trying ObjectId search first...');
-        existingContractor = await db.collection('contractors').findOne({
-          _id: new ObjectId(req.params.id)
-        });
-        console.log('🔍 Search by ObjectId result:', existingContractor ? 'Found' : 'Not found');
+        try {
+          existingContractor = await db.collection('contractors').findOne({
+            _id: new ObjectId(req.params.id)
+          });
+          console.log('🔍 Search by ObjectId result:', existingContractor ? 'Found' : 'Not found');
+        } catch (objectIdError) {
+          console.log('🔍 ObjectId search failed:', objectIdError.message);
+        }
       }
 
       // אם לא נמצא, ננסה לחפש לפי contractorId (מספר חיצוני)
@@ -955,14 +959,21 @@ app.put('/api/contractors/:id', async (req, res) => {
     let result;
     try {
       console.log('🔍 Attempting to update contractor with finalUpdateData:', finalUpdateData);
-      // ננסה לעדכן לפי ObjectId קודם (מזהה ייחודי)
-      if (req.params.id.length === 24) {
+      // ננסה לעדכן לפי ObjectId קודם (מזהה ייחודי) - רק אם זה ObjectId תקין
+      if (req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id)) {
         console.log('🔍 Trying ObjectId update first...');
-        result = await db.collection('contractors').updateOne(
-          { _id: new ObjectId(req.params.id) },
-          { $set: finalUpdateData }
-        );
-        console.log('🔍 Update by ObjectId result:', result);
+        try {
+          result = await db.collection('contractors').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: finalUpdateData }
+          );
+          console.log('🔍 Update by ObjectId result:', result);
+        } catch (objectIdError) {
+          console.log('🔍 ObjectId update failed:', objectIdError.message);
+          result = { matchedCount: 0 };
+        }
+      } else {
+        result = { matchedCount: 0 };
       }
 
       // אם לא נמצא, ננסה לפי contractorId (מספר חיצוני)
@@ -989,9 +1000,13 @@ app.put('/api/contractors/:id', async (req, res) => {
     // Use the same search logic as before to find the updated contractor
     let updatedContractor;
     try {
-      // Try to find by ObjectId first (primary identifier)
-      if (req.params.id.length === 24) {
-        updatedContractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+      // Try to find by ObjectId first (primary identifier) - only if it's a valid ObjectId
+      if (req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+        try {
+          updatedContractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+        } catch (objectIdError) {
+          console.log('🔍 ObjectId retrieval failed:', objectIdError.message);
+        }
       }
       
       // If not found, try by contractorId (external identifier)
