@@ -144,6 +144,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const handleDelete = async () => {
         if (onDelete && window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
             try {
+                console.log('🗑️ Deleting file:', value);
+                
                 // Delete from blob storage
                 if (value) {
                     const response = await fetch('/api/delete-project-file', {
@@ -156,15 +158,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     });
 
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Delete failed:', response.status, errorText);
                         throw new Error('Failed to delete file from storage');
                     }
+                    
+                    console.log('✅ File deleted from blob storage successfully');
                 }
 
                 // Call the onDelete callback to update the state
                 onDelete();
+                console.log('✅ File deleted from UI state');
             } catch (error) {
-                console.error('Error deleting file:', error);
-                alert('שגיאה במחיקת הקובץ');
+                console.error('❌ Error deleting file:', error);
+                alert('שגיאה במחיקת הקובץ: ' + error.message);
             }
         }
     };
@@ -184,9 +191,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     <Box sx={{
                         width: 40,
                         height: 40,
-                        border: '1px solid #d0d0d0',
+                        backgroundColor: '#d32f2f',
                         borderRadius: 1,
-                        overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -194,7 +200,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         cursor: 'pointer'
                     }} onClick={handleFileClick}>
                         {value.toLowerCase().includes('.pdf') ? (
-                            <PdfIcon sx={{ color: '#d32f2f', fontSize: 24 }} />
+                            <Typography sx={{
+                                fontSize: '12px',
+                                color: 'white',
+                                fontWeight: 'bold',
+                                lineHeight: 1,
+                                textAlign: 'center'
+                            }}>
+                                PDF
+                            </Typography>
                         ) : (
                             <img
                                 src={value}
@@ -202,17 +216,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
                                 style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'cover'
+                                    objectFit: 'cover',
+                                    borderRadius: '4px'
                                 }}
                                 onError={(e) => {
-                                    // Fallback to PDF icon if image fails to load
+                                    // Fallback to PDF text if image fails to load
                                     const target = e.target as HTMLImageElement;
                                     target.style.display = 'none';
                                     const parent = target.parentElement;
                                     if (parent) {
-                                        const pdfIcon = document.createElement('div');
-                                        pdfIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; color: #d32f2f;"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
-                                        parent.appendChild(pdfIcon);
+                                        const pdfText = document.createElement('div');
+                                        pdfText.innerHTML = '<span style="font-size: 12px; color: white; font-weight: bold; line-height: 1; text-align: center;">PDF</span>';
+                                        parent.appendChild(pdfText);
                                     }
                                 }}
                             />
