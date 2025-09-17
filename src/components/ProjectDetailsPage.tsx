@@ -669,10 +669,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             // Load contractor name if we have contractor ID
                             // Prioritize _id (ObjectId) as primary identifier, then fallback to external identifiers
                             const contractorId = (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null) ||
-                                projectData.contractorId;
-                            // Debug logs removed to reduce console noise
+                                projectData.contractorId ||
+                                searchParams.get('contractorId'); // Fallback to URL parameter
+                            
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
-                            console.log('🔍 Project loaded - projectData.contractorName:', projectData.contractorName);
+                            console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
+                            console.log('🔍 Project loaded - URL contractorId:', searchParams.get('contractorId'));
+                            console.log('🔍 Project loaded - final contractorId:', contractorId);
 
                             if (contractorId) {
                                 loadContractorName(contractorId);
@@ -681,7 +684,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 console.log('❌ Available fields:', {
                                     contractorId: projectData.contractorId,
                                     mainContractor: projectData.mainContractor,
-                                    contractorName: projectData.contractorName
+                                    contractorName: projectData.contractorName,
+                                    urlContractorId: searchParams.get('contractorId')
                                 });
                             }
                         } else {
@@ -789,8 +793,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const { projectsAPI } = await import('../services/api');
 
             if (mode === 'new') {
-                // Create new project
-                const savedProject = await projectsAPI.create(project);
+                // Create new project - ensure mainContractor is set
+                const projectToSave = {
+                    ...project,
+                    mainContractor: project.mainContractor || searchParams.get('contractorId') || ''
+                };
+                const savedProject = await projectsAPI.create(projectToSave);
                 console.log('✅ Project created:', savedProject);
             } else {
                 // Update existing project - send only the fields that can be updated
@@ -803,7 +811,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     city: project.city,
                     isClosed: project.isClosed,
                     status: project.status,
-                    mainContractor: project.mainContractor
+                    mainContractor: project.mainContractor || searchParams.get('contractorId') || ''
                 };
                 const projectId = project._id || project.id;
                 const updatedProject = await projectsAPI.update(projectId, updateData);
