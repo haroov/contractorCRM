@@ -861,7 +861,7 @@ app.post('/api/contractors', async (req, res) => {
     console.log('🔍 Request body companyId:', req.body.companyId);
     console.log('🔍 Request body company_id:', req.body.company_id);
     console.log('🔍 Full request body:', req.body);
-    
+
     const db = client.db('contractor-crm');
     const contractorData = {
       ...req.body,
@@ -871,21 +871,21 @@ app.post('/api/contractors', async (req, res) => {
       // וידוא שדה iso45001 תמיד קיים עם ערך ברירת מחדל
       iso45001: req.body.iso45001 === true ? true : false
     };
-    
+
     console.log('🔍 Final contractorData to insert:', contractorData);
-    
+
     // Remove any invalid _id field that might be sent from frontend
     if (contractorData._id) {
       console.log('🔍 Removing invalid _id field from frontend:', contractorData._id);
       delete contractorData._id;
     }
-    
+
     // Add timestamps
     contractorData.createdAt = new Date();
     contractorData.updatedAt = new Date();
-    
+
     console.log('🔍 About to insert contractor data (without _id):', contractorData);
-    
+
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
     res.status(201).json({ ...contractorData, _id: result.insertedId });
@@ -924,7 +924,16 @@ app.put('/api/contractors/:id', async (req, res) => {
         }
       }
 
-      // אם לא נמצא, ננסה לחפש לפי contractorId (מספר חיצוני)
+      // אם לא נמצא, ננסה לחפש לפי companyId (מספר חברה)
+      if (!existingContractor) {
+        console.log('🔍 Trying companyId search...');
+        existingContractor = await db.collection('contractors').findOne({
+          companyId: req.params.id
+        });
+        console.log('🔍 Search by companyId result:', existingContractor ? 'Found' : 'Not found');
+      }
+
+      // אם עדיין לא נמצא, ננסה לחפש לפי contractorId (מספר קבלן) - רק לקבלנים
       if (!existingContractor) {
         console.log('🔍 Trying contractorId search...');
         existingContractor = await db.collection('contractors').findOne({
@@ -976,7 +985,17 @@ app.put('/api/contractors/:id', async (req, res) => {
         result = { matchedCount: 0 };
       }
 
-      // אם לא נמצא, ננסה לפי contractorId (מספר חיצוני)
+      // אם לא נמצא, ננסה לפי companyId (מספר חברה)
+      if (result.matchedCount === 0) {
+        console.log('🔍 Trying companyId update...');
+        result = await db.collection('contractors').updateOne(
+          { companyId: req.params.id },
+          { $set: finalUpdateData }
+        );
+        console.log('🔍 Update by companyId result:', result);
+      }
+
+      // אם עדיין לא נמצא, ננסה לפי contractorId (מספר קבלן) - רק לקבלנים
       if (result.matchedCount === 0) {
         console.log('🔍 Trying contractorId update...');
         result = await db.collection('contractors').updateOne(
@@ -1008,8 +1027,13 @@ app.put('/api/contractors/:id', async (req, res) => {
           console.log('🔍 ObjectId retrieval failed:', objectIdError.message);
         }
       }
+
+      // If not found, try by companyId (company identifier)
+      if (!updatedContractor) {
+        updatedContractor = await db.collection('contractors').findOne({ companyId: req.params.id });
+      }
       
-      // If not found, try by contractorId (external identifier)
+      // If still not found, try by contractorId (contractor identifier) - only for contractors
       if (!updatedContractor) {
         updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
       }
@@ -1017,12 +1041,12 @@ app.put('/api/contractors/:id', async (req, res) => {
       console.log('❌ Error finding updated contractor:', error.message);
       return res.status(500).json({ error: 'Failed to retrieve updated contractor' });
     }
-    
+
     if (!updatedContractor) {
       console.log('❌ Updated contractor not found with ID:', req.params.id);
       return res.status(404).json({ error: 'Updated contractor not found' });
     }
-    
+
     const { projects, ...contractorWithoutProjects } = updatedContractor;
     const contractorWithProjectIds = {
       ...contractorWithoutProjects,
@@ -1246,7 +1270,7 @@ app.post('/api/projects', async (req, res) => {
     console.log('🔍 POST /api/projects called');
     console.log('🔍 Request body keys:', Object.keys(req.body));
     console.log('🔍 Request body:', req.body);
-    
+
     const db = client.db('contractor-crm');
     const projectData = {
       ...req.body,
@@ -1265,7 +1289,7 @@ app.post('/api/projects', async (req, res) => {
       console.log('🔍 Adding project ID to contractor:', req.body.mainContractor);
       console.log('🔍 mainContractor type:', typeof req.body.mainContractor);
       console.log('🔍 mainContractor length:', req.body.mainContractor?.length);
-      
+
       try {
         const updateResult = await db.collection('contractors').updateOne(
           { _id: new ObjectId(req.body.mainContractor) },
@@ -3550,13 +3574,13 @@ app.get('/api/certificates/:id', async (req, res) => {
 app.get('/api/scrape-company-info/:companyId', scrapingLimiter, async (req, res) => {
   try {
     const { companyId } = req.params;
-    
+
     if (!companyId) {
       return res.status(400).json({ error: 'Company ID is required' });
     }
 
     console.log('🌐 Scraping company info for company ID:', companyId);
-    
+
     // For now, return fallback data since we don't have website URL
     const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
@@ -3760,10 +3784,10 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
     console.error('❌ Error scraping company info:', error);
 
     // Check if it's a puppeteer/browser error (common in production)
-    if (error.message.includes('puppeteer') || error.message.includes('browser') || error.message.includes('launch') || 
-        error.message.includes('timeout') || error.message.includes('navigation') || error.message.includes('net::')) {
+    if (error.message.includes('puppeteer') || error.message.includes('browser') || error.message.includes('launch') ||
+      error.message.includes('timeout') || error.message.includes('navigation') || error.message.includes('net::')) {
       console.log('🌐 Puppeteer/Network error, returning fallback');
-      
+
       // Fallback: return basic info without scraping
       const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
@@ -3775,7 +3799,7 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
     } else {
       // For other errors, also return fallback instead of 500
       console.log('🌐 General error, returning fallback instead of 500');
-      
+
       const fallbackLogo = `/assets/logo.svg`; // Use local logo instead of external placeholder
 
       res.json({
