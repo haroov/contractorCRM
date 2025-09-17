@@ -709,6 +709,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             garmoshkaFile: projectData.garmoshkaFile || projectData.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
                                             garmoshkaFileCreationDate: projectData.garmoshkaFileCreationDate || projectData.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || '',
                                             plotDetails: projectData.plotDetails || projectData.engineeringQuestionnaire?.buildingPlan?.plotDetails || []
+                                        },
+                                        soilConsultantReport: {
+                                            ...projectData.engineeringQuestionnaire?.soilConsultantReport,
+                                            // Move excavation fields from buildingPlan to soilConsultantReport
+                                            excavationDepth: projectData.engineeringQuestionnaire?.buildingPlan?.excavationDepth || projectData.engineeringQuestionnaire?.soilConsultantReport?.excavationDepth || '',
+                                            excavationArea: projectData.engineeringQuestionnaire?.buildingPlan?.excavationArea || projectData.engineeringQuestionnaire?.soilConsultantReport?.excavationArea || '',
+                                            foundationMethod: projectData.engineeringQuestionnaire?.buildingPlan?.foundationMethod || projectData.engineeringQuestionnaire?.soilConsultantReport?.foundationMethod || '',
+                                            perimeterDewatering: projectData.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering !== undefined ? projectData.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering : projectData.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering,
+                                            constructionMethod: projectData.engineeringQuestionnaire?.buildingPlan?.constructionMethod || projectData.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || '',
+                                            constructionMethodOther: projectData.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || projectData.engineeringQuestionnaire?.soilConsultantReport?.constructionMethodOther || '',
+                                            maxColumnSpacing: projectData.engineeringQuestionnaire?.buildingPlan?.maxColumnSpacing || projectData.engineeringQuestionnaire?.soilConsultantReport?.maxColumnSpacing || ''
                                         }
                                     }
                                 };
@@ -1422,90 +1433,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* תת-סקשן: חפירה ויסודות */}
-                                        <Box sx={{ mb: 4 }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                חפירה ויסודות
-                                            </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="עומק חפירה (מטר)"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationDepth || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationDepth', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="שטח החפירה (מ״ר)"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationArea || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationArea', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="שיטת ביצוע היסודות"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.foundationMethod || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.foundationMethod', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
-                                                    <Select
-                                                        labelId="perimeter-dewatering-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering === false ? 'לא' : ''}
-                                                        label="האם מבצעים דיפון היקפי"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.perimeterDewatering', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="">בחר אפשרות</MenuItem>
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
-                                                    <Select
-                                                        labelId="construction-method-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || ''}
-                                                        label="מה שיטת הבניה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
-                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
-                                                        <MenuItem value="טרומי">טרומי</MenuItem>
-                                                        <MenuItem value="אחר">אחר</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
-                                                    <TextField
-                                                        fullWidth
-                                                        label="אחר - פרט"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    />
-                                                )}
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="מפתח מירבי בין עמודים (במטרים)"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.maxColumnSpacing || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.maxColumnSpacing', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-                                            </Box>
-                                        </Box>
 
                                         {/* תת-סקשן: פרטי הבניינים */}
                                         <Box sx={{ mb: 4 }}>
@@ -1835,6 +1762,91 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
+                                        </Box>
+
+                                        {/* תת-סקשן: חפירה ויסודות */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                חפירה ויסודות
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="עומק חפירה (מטר)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.excavationDepth || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.excavationDepth', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="שטח החפירה (מ״ר)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.excavationArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.excavationArea', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="שיטת ביצוע היסודות"
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.foundationMethod || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.foundationMethod', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
+                                                    <Select
+                                                        labelId="perimeter-dewatering-label"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? 'כן' : project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? 'לא' : ''}
+                                                        label="האם מבצעים דיפון היקפי"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.perimeterDewatering', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
+                                                    <Select
+                                                        labelId="construction-method-label"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
+                                                        label="מה שיטת הבניה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethod', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
+                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
+                                                        <MenuItem value="טרומי">טרומי</MenuItem>
+                                                        <MenuItem value="אחר">אחר</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod === 'אחר' && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="אחר - פרט"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethodOther || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethodOther', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
+                                                )}
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מפתח מירבי בין עמודים (במטרים)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.maxColumnSpacing || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.maxColumnSpacing', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
                                         </Box>
                                     </Box>
 
