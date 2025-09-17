@@ -34,7 +34,8 @@ import {
     MoreVert as MoreVertIcon,
     CloudUpload as CloudUploadIcon,
     Add as AddIcon,
-    Delete as DeleteIcon
+    Delete as DeleteIcon,
+    PictureAsPdf as PdfIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -101,15 +102,30 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <img
-                            src={value}
-                            alt="תצוגה מקדימה"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                            }}
-                        />
+                        {value.toLowerCase().includes('.pdf') ? (
+                            <PdfIcon sx={{ color: '#d32f2f', fontSize: 24 }} />
+                        ) : (
+                            <img
+                                src={value}
+                                alt="תצוגה מקדימה"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                }}
+                                onError={(e) => {
+                                    // Fallback to PDF icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                        const pdfIcon = document.createElement('div');
+                                        pdfIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width: 24px; height: 24px; color: #d32f2f;"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                        parent.appendChild(pdfIcon);
+                                    }
+                                }}
+                            />
+                        )}
                     </Box>
                 ) : (
                     <IconButton
@@ -268,7 +284,7 @@ const PlotDetailsArray: React.FC<PlotDetailsArrayProps> = ({ plotDetails, onPlot
                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
                         גוש/חלקה {index + 1}
                     </Typography>
-                    
+
                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
                         <TextField
                             fullWidth
@@ -1025,7 +1041,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
                                                 <FileUpload
-                                                    label="העלאת קובץ הגרמושקה"
+                                                    label="תוכניות (גרמושקה)"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
                                                     onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
@@ -1210,7 +1226,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי הבניינים
                                             </Typography>
-                                            
+
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
                                                 <TextField
                                                     fullWidth
@@ -1281,6 +1297,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', file?.name || '')}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
+                                                        showCreationDate={true}
+                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
+                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
                                                     />
                                                 )}
 
@@ -1305,6 +1324,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', file?.name || '')}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
+                                                        showCreationDate={true}
+                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
+                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
                                                     />
                                                 )}
 
@@ -1314,6 +1336,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApprovalCreationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApprovalCreationDate', date)}
                                                 />
 
                                                 <FileUpload
@@ -1322,6 +1347,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclaration', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclarationCreationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclarationCreationDate', date)}
                                                 />
                                             </Box>
                                         </Box>
@@ -1425,6 +1453,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.reportFile', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
+                                                showCreationDate={true}
+                                                creationDateValue={project?.engineeringQuestionnaire?.soilReport?.reportFileCreationDate || ''}
+                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.reportFileCreationDate', date)}
                                             />
 
                                             <FormControl fullWidth>
@@ -1747,6 +1778,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             onChange={(file) => handleNestedFieldChange('hydrologicalPlan.file', file?.name || '')}
                                             disabled={mode === 'view' || !canEdit}
                                             accept=".pdf,.jpg,.jpeg,.png"
+                                            showCreationDate={true}
+                                            creationDateValue={project?.hydrologicalPlan?.fileCreationDate || ''}
+                                            onCreationDateChange={(date) => handleNestedFieldChange('hydrologicalPlan.fileCreationDate', date)}
                                         />
 
                                         <FormControl fullWidth>
@@ -1825,6 +1859,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={(file) => handleNestedFieldChange('schedule.file', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.schedule?.fileCreationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('schedule.fileCreationDate', date)}
                                                 />
 
                                                 <FormControl fullWidth>
