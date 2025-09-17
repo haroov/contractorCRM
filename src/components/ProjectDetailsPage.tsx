@@ -44,15 +44,34 @@ interface FileUploadProps {
     onChange: (file: File | null) => void;
     disabled?: boolean;
     accept?: string;
+    showCreationDate?: boolean;
+    creationDateValue?: string;
+    onCreationDateChange?: (date: string) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ label, value, onChange, disabled, accept = ".pdf,.jpg,.jpeg,.png" }) => {
+const FileUpload: React.FC<FileUploadProps> = ({ 
+    label, 
+    value, 
+    onChange, 
+    disabled, 
+    accept = ".pdf,.jpg,.jpeg,.png",
+    showCreationDate = false,
+    creationDateValue = '',
+    onCreationDateChange
+}) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         onChange(file);
+        
+        // Auto-fill creation date from file if available
+        if (file && onCreationDateChange && !creationDateValue) {
+            const fileDate = new Date(file.lastModified);
+            const formattedDate = fileDate.toISOString().split('T')[0];
+            onCreationDateChange(formattedDate);
+        }
     };
 
     const handleUploadClick = () => {
@@ -62,60 +81,76 @@ const FileUpload: React.FC<FileUploadProps> = ({ label, value, onChange, disable
     };
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept={accept}
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-            />
-            
-            {value ? (
-                <Box sx={{
-                    width: 40,
-                    height: 40,
-                    border: '1px solid #d0d0d0',
-                    borderRadius: 1,
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <img
-                        src={value}
-                        alt="תצוגה מקדימה"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                        }}
-                    />
-                </Box>
-            ) : (
-                <IconButton
-                    disabled={disabled || isUploading}
-                    title={label}
-                    onClick={handleUploadClick}
-                    sx={{
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={accept}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                />
+                
+                {value ? (
+                    <Box sx={{
+                        width: 40,
+                        height: 40,
                         border: '1px solid #d0d0d0',
                         borderRadius: 1,
-                        height: '40px',
-                        width: '40px',
-                        color: '#882fd7',
-                        '&:hover': {
-                            backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                            borderColor: '#882fd7'
-                        }
-                    }}
-                >
-                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
-                </IconButton>
-            )}
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                        <img
+                            src={value}
+                            alt="תצוגה מקדימה"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover'
+                            }}
+                        />
+                    </Box>
+                ) : (
+                    <IconButton
+                        disabled={disabled || isUploading}
+                        title={label}
+                        onClick={handleUploadClick}
+                        sx={{
+                            border: '1px solid #d0d0d0',
+                            borderRadius: 1,
+                            height: '40px',
+                            width: '40px',
+                            color: '#882fd7',
+                            '&:hover': {
+                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                                borderColor: '#882fd7'
+                            }
+                        }}
+                    >
+                        {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                    </IconButton>
+                )}
+                
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                    {label}
+                </Typography>
+            </Box>
             
-            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
-                {label}
-            </Typography>
+            {showCreationDate && (
+                <TextField
+                    fullWidth
+                    label="תאריך יצירת המסמך"
+                    type="date"
+                    value={creationDateValue}
+                    onChange={(e) => onCreationDateChange?.(e.target.value)}
+                    disabled={disabled}
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ maxWidth: 200 }}
+                />
+            )}
         </Box>
     );
 };
@@ -818,398 +853,441 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             תוכנית בניה (גרמושקה)
                                         </Typography>
 
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                            <FileUpload
-                                                label="העלאת קובץ הגרמושקה"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', file?.name || '')}
-                                                disabled={mode === 'view' || !canEdit}
-                                                accept=".pdf,.dwg,.dwf"
-                                            />
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
-                                                <Select
-                                                    labelId="project-type-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
-                                                    label="סוג הפרויקט"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="בניה">בניה</MenuItem>
-                                                    <MenuItem value="תמא 38">תמא 38</MenuItem>
-                                                    <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
-                                                    <MenuItem value="תשתיות">תשתיות</MenuItem>
-                                                    <MenuItem value="גשר">גשר</MenuItem>
-                                                    <MenuItem value="כביש">כביש</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="government-program-label">האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
-                                                <Select
-                                                    labelId="government-program-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram ? 'כן' : 'לא'}
-                                                    label="האם הפרויקט במסגרת תוכנית ממשלתית"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
-                                                <TextField
-                                                    fullWidth
-                                                    label="פרט על התוכנית הממשלתית"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgramDetails || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgramDetails', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    multiline
-                                                    rows={2}
-                                                />
-                                            )}
-
-                                            <FileUpload
-                                                label="העלה קובץ גרמושקה (DWFG, PDF)"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileUpload}
-                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileUpload', file?.name || '')}
-                                                disabled={mode === 'view' || !canEdit}
-                                                accept=".pdf,.dwg,.dwf"
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="כתובת (טקסט חופשי)"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="נ״צ X"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="נ״צ Y"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="גוש, חלקה, תת חלקה"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="עומק חפירה (מטר)"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.excavationDepth || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationDepth', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="שטח החפירה (מ״ר)"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.excavationArea || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationArea', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="שיטת ביצוע היסודות"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.foundationMethod || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.foundationMethod', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
-                                                <Select
-                                                    labelId="perimeter-dewatering-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering ? 'כן' : 'לא'}
-                                                    label="האם מבצעים דיפון היקפי"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.perimeterDewatering', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
-                                                <Select
-                                                    labelId="construction-method-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || ''}
-                                                    label="מה שיטת הבניה"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
-                                                    <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
-                                                    <MenuItem value="טרומי">טרומי</MenuItem>
-                                                    <MenuItem value="אחר">אחר</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
-                                                <TextField
-                                                    fullWidth
-                                                    label="אחר - פרט"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-                                            )}
-
-                                            <TextField
-                                                fullWidth
-                                                label="מפתח מירבי בין עמודים (במטרים)"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.maxColumnSpacing || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.maxColumnSpacing', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מספר בניינים"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', parseInt(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מספר יחידות דיור לבניין"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.unitsPerBuilding || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.unitsPerBuilding', parseInt(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מספר קומות מעל הקרקע לכל בניין"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.floorsAboveGround || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsAboveGround', parseInt(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מספר קומות מתחת לקרקע לכל בניין"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.floorsBelowGround || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsBelowGround', parseInt(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="basement-pumps-label">האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
-                                                <Select
-                                                    labelId="basement-pumps-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
-                                                    label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.basementPumpsAvailable', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="shared-basement-label">האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
-                                                <Select
-                                                    labelId="shared-basement-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors ? 'כן' : 'לא'}
-                                                    label="האם יש קומות מרתף משותפות לבניינים אחרים"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            <TextField
-                                                fullWidth
-                                                label="סה״כ מ״ר בנוי מרתף"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="סה״כ מ״ר בנוי לכל בניין"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.totalBuildingArea || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBuildingArea', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="building-permit-label">האם קיים היתר בניה</InputLabel>
-                                                <Select
-                                                    labelId="building-permit-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists ? 'כן' : 'לא'}
-                                                    label="האם קיים היתר בניה"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists && (
+                                        {/* תת-סקשן: פרטי הפרויקט */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                פרטי הפרויקט
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
                                                 <FileUpload
-                                                    label="העלה קובץ היתר בניה"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
-                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', file?.name || '')}
+                                                    label="העלאת קובץ הגרמושקה"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', file?.name || '')}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.dwg,.dwf"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
+                                                />
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
+                                                    <Select
+                                                        labelId="project-type-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
+                                                        label="סוג הפרויקט"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="בניה">בניה</MenuItem>
+                                                        <MenuItem value="תמא 38">תמא 38</MenuItem>
+                                                        <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
+                                                        <MenuItem value="תשתיות">תשתיות</MenuItem>
+                                                        <MenuItem value="גשר">גשר</MenuItem>
+                                                        <MenuItem value="כביש">כביש</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="government-program-label">האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
+                                                    <Select
+                                                        labelId="government-program-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram ? 'כן' : 'לא'}
+                                                        label="האם הפרויקט במסגרת תוכנית ממשלתית"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="פרט על התוכנית הממשלתית"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgramDetails || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgramDetails', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        multiline
+                                                        rows={2}
+                                                    />
+                                                )}
+                                            </Box>
+                                        </Box>
+
+                                        {/* תת-סקשן: מיקום וכתובת */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                מיקום וכתובת
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="כתובת (טקסט חופשי)"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="נ״צ X"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="נ״צ Y"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="גוש, חלקה, תת חלקה"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* תת-סקשן: חפירה ויסודות */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                חפירה ויסודות
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="עומק חפירה (מטר)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationDepth || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationDepth', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="שטח החפירה (מ״ר)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationArea', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="שיטת ביצוע היסודות"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.foundationMethod || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.foundationMethod', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
+                                                    <Select
+                                                        labelId="perimeter-dewatering-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering ? 'כן' : 'לא'}
+                                                        label="האם מבצעים דיפון היקפי"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.perimeterDewatering', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
+                                                    <Select
+                                                        labelId="construction-method-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || ''}
+                                                        label="מה שיטת הבניה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
+                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
+                                                        <MenuItem value="טרומי">טרומי</MenuItem>
+                                                        <MenuItem value="אחר">אחר</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="אחר - פרט"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
+                                                )}
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מפתח מירבי בין עמודים (במטרים)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.maxColumnSpacing || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.maxColumnSpacing', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* תת-סקשן: פרטי הבניינים */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                פרטי הבניינים
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="מספר בניינים"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', parseInt(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מספר יחידות דיור לבניין"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.unitsPerBuilding || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.unitsPerBuilding', parseInt(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מספר קומות מעל הקרקע לכל בניין"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.floorsAboveGround || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsAboveGround', parseInt(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מספר קומות מתחת לקרקע לכל בניין"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.floorsBelowGround || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsBelowGround', parseInt(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="basement-pumps-label">האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
+                                                    <Select
+                                                        labelId="basement-pumps-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
+                                                        label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.basementPumpsAvailable', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="shared-basement-label">האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
+                                                    <Select
+                                                        labelId="shared-basement-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors ? 'כן' : 'לא'}
+                                                        label="האם יש קומות מרתף משותפות לבניינים אחרים"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="סה״כ מ״ר בנוי מרתף"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="סה״כ מ״ר בנוי לכל בניין"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBuildingArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBuildingArea', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        {/* תת-סקשן: היתרים ואישורים */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                היתרים ואישורים
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="building-permit-label">האם קיים היתר בניה</InputLabel>
+                                                    <Select
+                                                        labelId="building-permit-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists ? 'כן' : 'לא'}
+                                                        label="האם קיים היתר בניה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists && (
+                                                    <FileUpload
+                                                        label="העלה קובץ היתר בניה"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
+                                                        onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', file?.name || '')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                    />
+                                                )}
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="excavation-permit-label">האם קיים היתר חפירה ודיפון</InputLabel>
+                                                    <Select
+                                                        labelId="excavation-permit-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists ? 'כן' : 'לא'}
+                                                        label="האם קיים היתר חפירה ודיפון"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists && (
+                                                    <FileUpload
+                                                        label="העלה קובץ היתר חפירה ודיפון"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
+                                                        onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', file?.name || '')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                    />
+                                                )}
+
+                                                <FileUpload
+                                                    label="אישור מהנדס קונסטרקטור - העלה קובץ"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval}
+                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                 />
-                                            )}
 
-                                            <FormControl fullWidth>
-                                                <InputLabel id="excavation-permit-label">האם קיים היתר חפירה ודיפון</InputLabel>
-                                                <Select
-                                                    labelId="excavation-permit-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists ? 'כן' : 'לא'}
-                                                    label="האם קיים היתר חפירה ודיפון"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists && (
                                                 <FileUpload
-                                                    label="העלה קובץ היתר חפירה ודיפון"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
-                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', file?.name || '')}
+                                                    label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclaration}
+                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclaration', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                 />
-                                            )}
+                                            </Box>
+                                        </Box>
 
-                                            <FileUpload
-                                                label="אישור מהנדס קונסטרקטור - העלה קובץ"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval}
-                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval', file?.name || '')}
-                                                disabled={mode === 'view' || !canEdit}
-                                                accept=".pdf,.jpg,.jpeg,.png"
-                                            />
+                                        {/* תת-סקשן: מבנים קיימים והריסה */}
+                                        <Box sx={{ mb: 4 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                מבנים קיימים והריסה
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="work-existing-structure-label">האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים</InputLabel>
+                                                    <Select
+                                                        labelId="work-existing-structure-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure ? 'כן' : 'לא'}
+                                                        label="האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructure', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
 
-                                            <FileUpload
-                                                label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclaration}
-                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclaration', file?.name || '')}
-                                                disabled={mode === 'view' || !canEdit}
-                                                accept=".pdf,.jpg,.jpeg,.png"
-                                            />
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="פרט על העבודה על מבנה קיים"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructureDetails || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructureDetails', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        multiline
+                                                        rows={2}
+                                                    />
+                                                )}
 
-                                            <FormControl fullWidth>
-                                                <InputLabel id="work-existing-structure-label">האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים</InputLabel>
-                                                <Select
-                                                    labelId="work-existing-structure-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure ? 'כן' : 'לא'}
-                                                    label="האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructure', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure && (
                                                 <TextField
                                                     fullWidth
-                                                    label="פרט על העבודה על מבנה קיים"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructureDetails || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructureDetails', e.target.value)}
+                                                    label="שווי המבנה הקיים במידה ותרצה לבטחו (₪)"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.existingStructureValue || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingStructureValue', parseFloat(e.target.value) || 0)}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    multiline
-                                                    rows={2}
                                                 />
-                                            )}
 
-                                            <TextField
-                                                fullWidth
-                                                label="שווי המבנה הקיים במידה ותרצה לבטחו (₪)"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.existingStructureValue || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingStructureValue', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מי הבעלים של הרכוש הקיים או התשתית הקיימת"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.existingPropertyOwner || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingPropertyOwner', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="מה השימוש שנעשה ברכוש הקיים או בתשתית הקיימת"
-                                                value={project?.engineeringQuestionnaire?.buildingPlan?.existingPropertyUsage || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingPropertyUsage', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <FormControl fullWidth>
-                                                <InputLabel id="demolition-work-label">האם מתבצעת הריסת מבנה</InputLabel>
-                                                <Select
-                                                    labelId="demolition-work-label"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork ? 'כן' : 'לא'}
-                                                    label="האם מתבצעת הריסת מבנה"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWork', e.target.value === 'כן')}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="לא">לא</MenuItem>
-                                                    <MenuItem value="כן">כן</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork && (
                                                 <TextField
                                                     fullWidth
-                                                    label="פרט על הריסת מבנה"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWorkDetails || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWorkDetails', e.target.value)}
+                                                    label="מי הבעלים של הרכוש הקיים או התשתית הקיימת"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.existingPropertyOwner || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingPropertyOwner', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    multiline
-                                                    rows={2}
                                                 />
-                                            )}
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="מה השימוש שנעשה ברכוש הקיים או בתשתית הקיימת"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.existingPropertyUsage || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.existingPropertyUsage', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="demolition-work-label">האם מתבצעת הריסת מבנה</InputLabel>
+                                                    <Select
+                                                        labelId="demolition-work-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork ? 'כן' : 'לא'}
+                                                        label="האם מתבצעת הריסת מבנה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWork', e.target.value === 'כן')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="פרט על הריסת מבנה"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWorkDetails || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWorkDetails', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        multiline
+                                                        rows={2}
+                                                    />
+                                                )}
+                                            </Box>
                                         </Box>
                                     </Box>
 
