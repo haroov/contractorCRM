@@ -57,6 +57,7 @@ interface FileUploadProps {
     creationDateValue?: string;
     onCreationDateChange?: (date: string) => void;
     onDelete?: () => void;
+    projectId?: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -68,7 +69,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     showCreationDate = false,
     creationDateValue = '',
     onCreationDateChange,
-    onDelete
+    onDelete,
+    projectId
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +87,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 // Upload to blob storage
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('projectId', 'temp'); // Will be updated when project is saved
+                formData.append('projectId', projectId || 'temp'); // Use actual project ID or temp as fallback
 
                 const response = await fetch('/api/upload-project-file', {
                     method: 'POST',
@@ -1322,6 +1324,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     showCreationDate={true}
                                                     creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
+                                                    projectId={project?._id || project?.id}
                                                 />
 
                                                 <FormControl fullWidth>
@@ -1574,6 +1577,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         showCreationDate={true}
                                                         creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
                                                         onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
+                                                        projectId={project?._id || project?.id}
                                                     />
                                                 )}
 
@@ -1602,6 +1606,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         showCreationDate={true}
                                                         creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
                                                         onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
+                                                        projectId={project?._id || project?.id}
                                                     />
                                                 )}
 
@@ -1615,6 +1620,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     showCreationDate={true}
                                                     creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.creationDate || ''}
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.creationDate', date)}
+                                                    projectId={project?._id || project?.id}
                                                 />
 
                                                 <FileUpload
@@ -1627,6 +1633,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     showCreationDate={true}
                                                     creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.creationDate || ''}
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.creationDate', date)}
+                                                    projectId={project?._id || project?.id}
                                                 />
                                             </Box>
                                         </Box>
@@ -1734,6 +1741,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 showCreationDate={true}
                                                 creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
                                                 onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
+                                                projectId={project?._id || project?.id}
                                             />
 
                                             <FormControl fullWidth>
@@ -2060,6 +2068,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             showCreationDate={true}
                                             creationDateValue={project?.hydrologicalPlan?.fileCreationDate || ''}
                                             onCreationDateChange={(date) => handleNestedFieldChange('hydrologicalPlan.fileCreationDate', date)}
+                                            projectId={project?._id || project?.id}
                                         />
 
                                         <FormControl fullWidth>
@@ -2142,6 +2151,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     showCreationDate={true}
                                                     creationDateValue={project?.schedule?.fileCreationDate || ''}
                                                     onCreationDateChange={(date) => handleNestedFieldChange('schedule.fileCreationDate', date)}
+                                                    projectId={project?._id || project?.id}
                                                 />
 
                                                 <FormControl fullWidth>
