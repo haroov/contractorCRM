@@ -1356,7 +1356,13 @@ app.put('/api/projects/:id', async (req, res) => {
     // Update contractor statistics automatically
     if (req.body.mainContractor) {
       try {
-        await updateContractorStats(db, req.body.mainContractor);
+        console.log('🔄 Attempting to update contractor stats for:', req.body.mainContractor);
+        const statsResult = await updateContractorStats(db, req.body.mainContractor);
+        if (statsResult) {
+          console.log('✅ Contractor stats updated successfully');
+        } else {
+          console.log('⚠️ Contractor stats update skipped (invalid contractorId)');
+        }
       } catch (statsError) {
         console.error('❌ Error updating contractor stats:', statsError);
         // Don't fail the main request if stats update fails
@@ -1422,11 +1428,31 @@ function calculateProjectStatus(startDate, durationMonths, isClosed) {
 
 async function updateContractorStats(db, contractorId) {
   try {
+    console.log('🔄 updateContractorStats called with contractorId:', contractorId, 'type:', typeof contractorId);
+    
+    // Validate contractorId before using it
+    if (!contractorId) {
+      console.log('❌ No contractorId provided to updateContractorStats');
+      return;
+    }
+
+    // Check if contractorId is a valid ObjectId (24 hex characters)
+    let validObjectId = null;
+    if (typeof contractorId === 'string' && contractorId.length === 24 && /^[0-9a-fA-F]{24}$/.test(contractorId)) {
+      validObjectId = contractorId;
+      console.log('✅ contractorId is valid ObjectId:', validObjectId);
+    } else {
+      console.log('❌ contractorId is not a valid ObjectId:', contractorId);
+      return;
+    }
+
     // Get all projects for this contractor using mainContractor field
     // mainContractor should contain the ObjectId of the contractor
     const projects = await db.collection('projects').find({
-      mainContractor: contractorId
+      mainContractor: validObjectId
     }).toArray();
+
+    console.log('📊 Found', projects.length, 'projects for contractor:', validObjectId);
 
     // Calculate statistics
     let currentProjects = 0;
@@ -1449,7 +1475,7 @@ async function updateContractorStats(db, contractorId) {
 
     // Update contractor with new statistics
     const result = await db.collection('contractors').updateOne(
-      { _id: new ObjectId(contractorId) },
+      { _id: new ObjectId(validObjectId) },
       {
         $set: {
           current_projects: currentProjects,
@@ -1460,17 +1486,20 @@ async function updateContractorStats(db, contractorId) {
       }
     );
 
-    console.log('✅ Updated contractor stats:', contractorId, {
+    console.log('✅ Updated contractor stats:', validObjectId, {
       currentProjects,
       currentProjectsValue,
       futureProjects,
-      futureProjectsValue
+      futureProjectsValue,
+      matchedCount: result.matchedCount
     });
 
     return { currentProjects, currentProjectsValue, futureProjects, futureProjectsValue };
   } catch (error) {
     console.error('❌ Error updating contractor stats:', error);
-    throw error;
+    console.error('❌ contractorId that caused error:', contractorId);
+    // Don't throw the error to prevent breaking the main request
+    return null;
   }
 }
 

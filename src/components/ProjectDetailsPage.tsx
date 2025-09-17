@@ -695,7 +695,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const projectData = await projectsAPI.getById(projectId);
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
-                            
+
                             // If key fields exist at root level, move them to nested structure for UI compatibility
                             if (projectData.projectType || projectData.garmoshkaFile || projectData.garmoshkaFileCreationDate || projectData.plotDetails) {
                                 console.log('🔄 Found root-level fields, moving to nested structure for UI compatibility');
