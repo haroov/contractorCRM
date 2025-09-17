@@ -11,7 +11,7 @@ export interface Project extends Document {
     city?: string;
     isClosed: boolean;
     status: 'future' | 'current' | 'completed';
-    
+
     // שאלון הנדסי - Engineering Questionnaire
     engineeringQuestionnaire?: {
         soilReport?: {
@@ -70,7 +70,7 @@ export interface Project extends Document {
             demolitionWorkDetails?: string; // פרט על הריסת מבנה
         };
     };
-    
+
     // סקר סביבתי - Environmental Survey
     environmentalSurvey?: {
         currentStateDescription?: string; // תיאור המצב הקיים
@@ -109,18 +109,18 @@ export interface Project extends Document {
         distanceFromSea?: number; // מרחק מהים
         distanceFromStreams?: number; // מרחק מנחלים ואגנים
     };
-    
+
     // תוכנית הידרולוג - Hydrological Plan (Optional)
     hydrologicalPlan?: {
         file?: string; // העלאת קובץ
     };
-    
+
     // תוכנית ניקוז לאתר - Site Drainage Plan
     drainagePlan?: {
         entrancesOppositeWaterFlow?: boolean; // האם הכניסות מנוגדות לזרימת המים
         plannedMeasures?: string; // אמצעים מתוכננים אם לא
     };
-    
+
     // לוח זמנים (גאנט) - Schedule (Gantt)
     schedule?: {
         exists?: boolean; // האם קיים לוח זמנים לפרויקט
@@ -128,7 +128,7 @@ export interface Project extends Document {
         detailLevel?: 'רבעוני' | 'חודשי' | 'דו חודשי' | 'שבועי' | 'דו שבועי' | 'יומי'; // רמת הפירוט
         adherenceLevel?: string; // מידת העמידה בהערכות לוחות הזמנים
     };
-    
+
     createdAt: Date;
     updatedAt: Date;
 }
@@ -144,7 +144,7 @@ const ProjectSchema = new Schema<Project>({
     city: { type: String, required: false },
     isClosed: { type: Boolean, required: false, default: false },
     status: { type: String, enum: ['future', 'current', 'completed'], required: false, default: 'future' },
-    
+
     // שאלון הנדסי - Engineering Questionnaire
     engineeringQuestionnaire: {
         soilReport: {
@@ -203,7 +203,7 @@ const ProjectSchema = new Schema<Project>({
             demolitionWorkDetails: { type: String }
         }
     },
-    
+
     // סקר סביבתי - Environmental Survey
     environmentalSurvey: {
         currentStateDescription: { type: String },
@@ -242,18 +242,18 @@ const ProjectSchema = new Schema<Project>({
         distanceFromSea: { type: Number },
         distanceFromStreams: { type: Number }
     },
-    
+
     // תוכנית הידרולוג - Hydrological Plan (Optional)
     hydrologicalPlan: {
         file: { type: String }
     },
-    
+
     // תוכנית ניקוז לאתר - Site Drainage Plan
     drainagePlan: {
         entrancesOppositeWaterFlow: { type: Boolean },
         plannedMeasures: { type: String }
     },
-    
+
     // לוח זמנים (גאנט) - Schedule (Gantt)
     schedule: {
         exists: { type: Boolean },

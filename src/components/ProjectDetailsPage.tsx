@@ -13,6 +13,9 @@ import {
     Tabs,
     Tab,
     TextField,
+    FormControl,
+    InputLabel,
+    Select,
     MenuItem,
     CircularProgress,
     Avatar,
@@ -113,7 +116,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 const name = contractor.name || contractor.nameEnglish || '';
                 setContractorName(name);
                 console.log('✅ Loaded contractor name:', name);
-                
+
                 // Update project with correct contractor name
                 if (project) {
                     setProject(prev => prev ? { ...prev, contractorName: name } : null);
@@ -283,7 +286,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const newProject = { ...project };
             const keys = fieldPath.split('.');
             let current: any = newProject;
-            
+
             // Navigate to the parent object
             for (let i = 0; i < keys.length - 1; i++) {
                 if (!current[keys[i]]) {
@@ -291,10 +294,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 }
                 current = current[keys[i]];
             }
-            
+
             // Set the final value
             current[keys[keys.length - 1]] = value;
-            
+
             setProject(newProject);
         }
     };
@@ -731,7 +734,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
                                             דוח יועץ קרקע
                                         </Typography>
-                                        
+
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                             <TextField
                                                 fullWidth
@@ -740,7 +743,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                                 InputLabelProps={{ shrink: true }}
                                             />
-                                            
+
                                             <FormControl fullWidth>
                                                 <InputLabel>סוג הקרקע</InputLabel>
                                                 <Select
@@ -807,7 +810,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
                                             תוכנית בניה (גרמושקה)
                                         </Typography>
-                                        
+
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                             <TextField
                                                 fullWidth
@@ -2026,8 +2029,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 onClose={() => setSnackbarOpen(false)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
-                <Alert 
-                    onClose={() => setSnackbarOpen(false)} 
+                <Alert
+                    onClose={() => setSnackbarOpen(false)}
                     severity={snackbarSeverity}
                     sx={{ width: '100%' }}
                 >
