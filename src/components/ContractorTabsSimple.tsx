@@ -41,7 +41,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         }
         return 0;
     });
-    const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('active');
+    const [activeProjectFilter, setActiveProjectFilter] = useState<'all' | 'active' | 'future' | 'closed'>('all');
     const [projectSearchTerm, setProjectSearchTerm] = useState('');
     const [contactSearchTerm, setContactSearchTerm] = useState('');
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
