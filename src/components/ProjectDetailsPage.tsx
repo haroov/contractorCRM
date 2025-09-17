@@ -133,7 +133,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             try {
                 // Delete from blob storage
                 if (value) {
-                    const response = await fetch('/api/delete-project-file', {
+                    const response = await fetch('/api/upload-project-file/delete-project-file', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -671,7 +671,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             const contractorId = (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null) ||
                                 projectData.contractorId ||
                                 searchParams.get('contractorId'); // Fallback to URL parameter
-                            
+
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
                             console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
                             console.log('🔍 Project loaded - URL contractorId:', searchParams.get('contractorId'));
