@@ -145,7 +145,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         if (onDelete && window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
             try {
                 console.log('🗑️ Deleting file:', value);
-                
+
                 // Delete from blob storage
                 if (value) {
                     const response = await fetch('/api/delete-project-file', {
@@ -162,7 +162,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         console.error('❌ Delete failed:', response.status, errorText);
                         throw new Error('Failed to delete file from storage');
                     }
-                    
+
                     console.log('✅ File deleted from blob storage successfully');
                 }
 
@@ -481,6 +481,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         onChange={(e) => handlePlotChange(index, 'block', e.target.value)}
                                         disabled={disabled}
                                         variant="outlined"
+                                        inputProps={{ maxLength: 8 }}
                                         sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                     />
                                 </TableCell>
@@ -492,6 +493,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         onChange={(e) => handlePlotChange(index, 'plot', e.target.value)}
                                         disabled={disabled}
                                         variant="outlined"
+                                        inputProps={{ maxLength: 8 }}
                                         sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                     />
                                 </TableCell>
@@ -503,6 +505,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         onChange={(e) => handlePlotChange(index, 'subPlot', e.target.value)}
                                         disabled={disabled}
                                         variant="outlined"
+                                        inputProps={{ maxLength: 8 }}
                                         sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                     />
                                 </TableCell>
