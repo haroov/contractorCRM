@@ -32,7 +32,9 @@ import {
     Logout as LogoutIcon,
     Person as PersonIcon,
     MoreVert as MoreVertIcon,
-    CloudUpload as CloudUploadIcon
+    CloudUpload as CloudUploadIcon,
+    Add as AddIcon,
+    Delete as DeleteIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -65,7 +67,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         onChange(file);
-        
+
         // Note: JavaScript File API doesn't provide access to file creation date
         // Only lastModified is available. We'll leave the date field empty
         // for the user to fill manually with the actual creation date
@@ -148,6 +150,171 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     sx={{ maxWidth: 200 }}
                     helperText="תאריך יצירת הקובץ המקורי"
                 />
+            )}
+        </Box>
+    );
+};
+
+// Building Array Component
+interface BuildingArrayProps {
+    numberOfBuildings: number;
+    buildings: any[];
+    onBuildingsChange: (buildings: any[]) => void;
+    disabled?: boolean;
+}
+
+const BuildingArray: React.FC<BuildingArrayProps> = ({ numberOfBuildings, buildings, onBuildingsChange, disabled }) => {
+    const handleBuildingChange = (index: number, field: string, value: any) => {
+        const newBuildings = [...buildings];
+        if (!newBuildings[index]) {
+            newBuildings[index] = {};
+        }
+        newBuildings[index][field] = value;
+        onBuildingsChange(newBuildings);
+    };
+
+    const renderBuildings = () => {
+        const buildingElements = [];
+        for (let i = 0; i < numberOfBuildings; i++) {
+            buildingElements.push(
+                <Box key={i} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
+                        בניין {i + 1}
+                    </Typography>
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                        <TextField
+                            fullWidth
+                            label="מספר יחידות דיור"
+                            type="number"
+                            value={buildings[i]?.unitsPerBuilding || ''}
+                            onChange={(e) => handleBuildingChange(i, 'unitsPerBuilding', parseInt(e.target.value) || 0)}
+                            disabled={disabled}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="מספר קומות מעל הקרקע"
+                            type="number"
+                            value={buildings[i]?.floorsAboveGround || ''}
+                            onChange={(e) => handleBuildingChange(i, 'floorsAboveGround', parseInt(e.target.value) || 0)}
+                            disabled={disabled}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="מספר קומות מתחת לקרקע"
+                            type="number"
+                            value={buildings[i]?.floorsBelowGround || ''}
+                            onChange={(e) => handleBuildingChange(i, 'floorsBelowGround', parseInt(e.target.value) || 0)}
+                            disabled={disabled}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="סה״כ מ״ר בנוי"
+                            type="number"
+                            value={buildings[i]?.totalBuildingArea || ''}
+                            onChange={(e) => handleBuildingChange(i, 'totalBuildingArea', parseFloat(e.target.value) || 0)}
+                            disabled={disabled}
+                        />
+                    </Box>
+                </Box>
+            );
+        }
+        return buildingElements;
+    };
+
+    if (numberOfBuildings <= 0) {
+        return null;
+    }
+
+    return (
+        <Box>
+            {renderBuildings()}
+        </Box>
+    );
+};
+
+// Plot Details Array Component
+interface PlotDetailsArrayProps {
+    plotDetails: any[];
+    onPlotDetailsChange: (plotDetails: any[]) => void;
+    disabled?: boolean;
+}
+
+const PlotDetailsArray: React.FC<PlotDetailsArrayProps> = ({ plotDetails, onPlotDetailsChange, disabled }) => {
+    const handlePlotChange = (index: number, field: string, value: any) => {
+        const newPlotDetails = [...plotDetails];
+        if (!newPlotDetails[index]) {
+            newPlotDetails[index] = {};
+        }
+        newPlotDetails[index][field] = value;
+        onPlotDetailsChange(newPlotDetails);
+    };
+
+    const addPlot = () => {
+        onPlotDetailsChange([...plotDetails, { block: '', plot: '', subPlot: '' }]);
+    };
+
+    const removePlot = (index: number) => {
+        const newPlotDetails = plotDetails.filter((_, i) => i !== index);
+        onPlotDetailsChange(newPlotDetails);
+    };
+
+    return (
+        <Box>
+            {plotDetails.map((plot, index) => (
+                <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
+                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
+                        גוש/חלקה {index + 1}
+                    </Typography>
+                    
+                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+                        <TextField
+                            fullWidth
+                            label="גוש"
+                            value={plot.block || ''}
+                            onChange={(e) => handlePlotChange(index, 'block', e.target.value)}
+                            disabled={disabled}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="חלקה"
+                            value={plot.plot || ''}
+                            onChange={(e) => handlePlotChange(index, 'plot', e.target.value)}
+                            disabled={disabled}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="תת חלקה"
+                            value={plot.subPlot || ''}
+                            onChange={(e) => handlePlotChange(index, 'subPlot', e.target.value)}
+                            disabled={disabled}
+                        />
+                    </Box>
+
+                    {!disabled && (
+                        <IconButton
+                            onClick={() => removePlot(index)}
+                            sx={{ position: 'absolute', top: 8, left: 8, color: 'error.main' }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
+                </Box>
+            ))}
+
+            {!disabled && (
+                <Button
+                    startIcon={<AddIcon />}
+                    onClick={addPlot}
+                    variant="outlined"
+                    sx={{ mt: 1 }}
+                >
+                    הוסף גוש/חלקה
+                </Button>
             )}
         </Box>
     );
@@ -946,11 +1113,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
 
-                                                <TextField
-                                                    fullWidth
-                                                    label="גוש, חלקה, תת חלקה"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', e.target.value)}
+                                                <PlotDetailsArray
+                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || []}
+                                                    onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
                                             </Box>
@@ -1045,7 +1210,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי הבניינים
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                            
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
                                                 <TextField
                                                     fullWidth
                                                     label="מספר בניינים"
@@ -1057,44 +1223,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 <TextField
                                                     fullWidth
-                                                    label="מספר יחידות דיור לבניין"
+                                                    label="סה״כ מ״ר בנוי מרתף"
                                                     type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.unitsPerBuilding || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.unitsPerBuilding', parseInt(e.target.value) || 0)}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="מספר קומות מעל הקרקע לכל בניין"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.floorsAboveGround || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsAboveGround', parseInt(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="מספר קומות מתחת לקרקע לכל בניין"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.floorsBelowGround || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.floorsBelowGround', parseInt(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="basement-pumps-label">האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
-                                                    <Select
-                                                        labelId="basement-pumps-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
-                                                        label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.basementPumpsAvailable', e.target.value === 'כן')}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
 
                                                 <FormControl fullWidth>
                                                     <InputLabel id="shared-basement-label">האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
@@ -1109,25 +1243,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
                                                 </FormControl>
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="סה״כ מ״ר בנוי מרתף"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="סה״כ מ״ר בנוי לכל בניין"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBuildingArea || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBuildingArea', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
                                             </Box>
+
+                                            <BuildingArray
+                                                numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
+                                                buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
+                                                onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
+                                                disabled={mode === 'view' || !canEdit}
+                                            />
                                         </Box>
 
                                         {/* תת-סקשן: היתרים ואישורים */}
@@ -1625,6 +1748,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             disabled={mode === 'view' || !canEdit}
                                             accept=".pdf,.jpg,.jpeg,.png"
                                         />
+
+                                        <FormControl fullWidth>
+                                            <InputLabel id="basement-pumps-label">האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
+                                            <Select
+                                                labelId="basement-pumps-label"
+                                                value={project?.hydrologicalPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
+                                                label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
+                                                onChange={(e) => handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', e.target.value === 'כן')}
+                                                disabled={mode === 'view' || !canEdit}
+                                            >
+                                                <MenuItem value="לא">לא</MenuItem>
+                                                <MenuItem value="כן">כן</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     </Box>
                                 </Box>
 
