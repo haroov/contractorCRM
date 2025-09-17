@@ -677,7 +677,7 @@ export default function ContractorTabs({ contractor: initialContractor, onSave, 
                     const existingContractor = await ContractorService.getByCompanyId(companyId);
                     if (existingContractor) {
                         // Update existing contractor by companyId
-                        const contractorId = existingContractor.contractorId || existingContractor.contractor_id;
+                        const contractorId = existingContractor._id || existingContractor.contractorId || existingContractor.contractor_id;
                         savedContractor = await ContractorService.update(contractorId, contractorToSave);
                         console.log('Updated existing contractor by companyId:', savedContractor);
                     } else {
