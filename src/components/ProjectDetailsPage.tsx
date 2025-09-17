@@ -31,10 +31,94 @@ import {
     AccountCircle as AccountCircleIcon,
     Logout as LogoutIcon,
     Person as PersonIcon,
-    MoreVert as MoreVertIcon
+    MoreVert as MoreVertIcon,
+    CloudUpload as CloudUploadIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
+
+// Custom File Upload Component
+interface FileUploadProps {
+    label: string;
+    value?: string;
+    onChange: (file: File | null) => void;
+    disabled?: boolean;
+    accept?: string;
+}
+
+const FileUpload: React.FC<FileUploadProps> = ({ label, value, onChange, disabled, accept = ".pdf,.jpg,.jpeg,.png" }) => {
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null;
+        onChange(file);
+    };
+
+    const handleUploadClick = () => {
+        if (!disabled) {
+            fileInputRef.current?.click();
+        }
+    };
+
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept={accept}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+            />
+            
+            {value ? (
+                <Box sx={{
+                    width: 40,
+                    height: 40,
+                    border: '1px solid #d0d0d0',
+                    borderRadius: 1,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <img
+                        src={value}
+                        alt="תצוגה מקדימה"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                    />
+                </Box>
+            ) : (
+                <IconButton
+                    disabled={disabled || isUploading}
+                    title={label}
+                    onClick={handleUploadClick}
+                    sx={{
+                        border: '1px solid #d0d0d0',
+                        borderRadius: 1,
+                        height: '40px',
+                        width: '40px',
+                        color: '#882fd7',
+                        '&:hover': {
+                            backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                            borderColor: '#882fd7'
+                        }
+                    }}
+                >
+                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                </IconButton>
+            )}
+            
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                {label}
+            </Typography>
+        </Box>
+    );
+};
 
 interface ProjectDetailsPageProps {
     currentUser: any;
@@ -736,12 +820,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Typography>
 
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                            <TextField
-                                                fullWidth
+                                            <FileUpload
                                                 label="העלאת קובץ הגרמושקה"
-                                                type="file"
+                                                value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
-                                                InputLabelProps={{ shrink: true }}
+                                                accept=".pdf,.dwg,.dwf"
                                             />
 
                                             <FormControl fullWidth>
@@ -788,12 +872,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
                                             )}
 
-                                            <TextField
-                                                fullWidth
+                                            <FileUpload
                                                 label="העלה קובץ גרמושקה (DWFG, PDF)"
-                                                type="file"
+                                                value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileUpload}
+                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileUpload', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
-                                                InputLabelProps={{ shrink: true }}
+                                                accept=".pdf,.dwg,.dwf"
                                             />
 
                                             <TextField
@@ -1002,12 +1086,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </FormControl>
 
                                             {project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists && (
-                                                <TextField
-                                                    fullWidth
+                                                <FileUpload
                                                     label="העלה קובץ היתר בניה"
-                                                    type="file"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
+                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    InputLabelProps={{ shrink: true }}
+                                                    accept=".pdf,.jpg,.jpeg,.png"
                                                 />
                                             )}
 
@@ -1026,29 +1110,29 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </FormControl>
 
                                             {project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists && (
-                                                <TextField
-                                                    fullWidth
+                                                <FileUpload
                                                     label="העלה קובץ היתר חפירה ודיפון"
-                                                    type="file"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
+                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    InputLabelProps={{ shrink: true }}
+                                                    accept=".pdf,.jpg,.jpeg,.png"
                                                 />
                                             )}
 
-                                            <TextField
-                                                fullWidth
+                                            <FileUpload
                                                 label="אישור מהנדס קונסטרקטור - העלה קובץ"
-                                                type="file"
+                                                value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval}
+                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
-                                                InputLabelProps={{ shrink: true }}
+                                                accept=".pdf,.jpg,.jpeg,.png"
                                             />
 
-                                            <TextField
-                                                fullWidth
+                                            <FileUpload
                                                 label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
-                                                type="file"
+                                                value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclaration}
+                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclaration', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
-                                                InputLabelProps={{ shrink: true }}
+                                                accept=".pdf,.jpg,.jpeg,.png"
                                             />
 
                                             <FormControl fullWidth>
@@ -1137,12 +1221,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Typography>
                                         
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                            <TextField
-                                                fullWidth
+                                            <FileUpload
                                                 label="העלה דוח"
-                                                type="file"
+                                                value={project?.engineeringQuestionnaire?.soilReport?.reportFile}
+                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.reportFile', file?.name || '')}
                                                 disabled={mode === 'view' || !canEdit}
-                                                InputLabelProps={{ shrink: true }}
+                                                accept=".pdf,.jpg,.jpeg,.png"
                                             />
                                             
                                             <FormControl fullWidth>
@@ -1459,12 +1543,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
-                                        <TextField
-                                            fullWidth
+                                        <FileUpload
                                             label="העלאת קובץ תוכנית הידרולוג"
-                                            type="file"
+                                            value={project?.hydrologicalPlan?.file}
+                                            onChange={(file) => handleNestedFieldChange('hydrologicalPlan.file', file?.name || '')}
                                             disabled={mode === 'view' || !canEdit}
-                                            InputLabelProps={{ shrink: true }}
+                                            accept=".pdf,.jpg,.jpeg,.png"
                                         />
                                     </Box>
                                 </Box>
@@ -1523,12 +1607,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {project?.schedule?.exists && (
                                             <>
-                                                <TextField
-                                                    fullWidth
+                                                <FileUpload
                                                     label="העלה קובץ לוח זמנים"
-                                                    type="file"
+                                                    value={project?.schedule?.file}
+                                                    onChange={(file) => handleNestedFieldChange('schedule.file', file?.name || '')}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    InputLabelProps={{ shrink: true }}
+                                                    accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png"
                                                 />
 
                                                 <FormControl fullWidth>
