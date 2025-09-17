@@ -31,6 +31,120 @@ export interface Project {
     contractorId?: string; // Contractor ID field
     contractorName?: string;
     notes?: string; // Notes field
+
+    // Technical Information Fields
+    engineeringQuestionnaire?: {
+        soilConsultantReport?: {
+            reportFile?: string;
+            soilType?: string;
+            groundwaterDepth?: number;
+            maxExcavationDepth?: number;
+            crestaArea?: string;
+            png25Rating?: string;
+        };
+        buildingPlan?: {
+            garmoshkaFile?: string;
+            projectType?: string;
+            governmentProgram?: boolean;
+            governmentProgramDetails?: string;
+            address?: string;
+            coordinates?: {
+                x?: number;
+                y?: number;
+            };
+            excavationDepth?: number;
+            excavationArea?: number;
+            foundationMethod?: string;
+            perimeterDewatering?: boolean;
+            constructionMethod?: string;
+            maxColumnSpacing?: number;
+            numberOfBuildings?: number;
+            buildings?: Array<{
+                buildingName?: string;
+                unitsPerBuilding?: number;
+                floorsAboveGround?: number;
+                floorsBelowGround?: number;
+                totalBuildingArea?: number;
+            }>;
+            sharedBasementFloors?: boolean;
+            totalBasementArea?: number;
+            buildingPermit?: {
+                exists?: boolean;
+                file?: string;
+                creationDate?: string;
+            };
+            excavationPermit?: {
+                exists?: boolean;
+                file?: string;
+                creationDate?: string;
+            };
+            structuralEngineerApproval?: {
+                file?: string;
+                creationDate?: string;
+            };
+            earthquakeStandard413?: {
+                file?: string;
+                creationDate?: string;
+            };
+            existingStructureWork?: boolean;
+            existingStructureDetails?: string;
+            existingStructureValue?: number;
+            existingPropertyOwner?: string;
+            existingPropertyUsage?: string;
+            demolitionWork?: boolean;
+            demolitionDetails?: string;
+            plotDetails?: Array<{
+                block?: string;
+                plot?: string;
+                subPlot?: string;
+            }>;
+        };
+    };
+    environmentalSurvey?: {
+        existingSituation?: string;
+        environmentDescription?: string;
+        adjacentBuildings?: {
+            north?: { distance?: number; age?: number; safetyMeasures?: string };
+            east?: { distance?: number; age?: number; safetyMeasures?: string };
+            south?: { distance?: number; age?: number; safetyMeasures?: string };
+            west?: { distance?: number; age?: number; safetyMeasures?: string };
+        };
+        electricalCablesNearCranes?: boolean;
+        electricalCablesSafetyMeasures?: string;
+        undergroundPipes?: boolean;
+        undergroundPipesSafetyMeasures?: string;
+        kindergartensNearby?: boolean;
+        kindergartensSafetyMeasures?: string;
+        civilInfrastructure?: {
+            type?: string;
+            usage?: string;
+            distance?: number;
+        };
+        proximityToGasStation?: boolean;
+        proximityToPoliceStation?: boolean;
+        proximityToMedicalCenter?: boolean;
+        onMountainRidge?: boolean;
+        inWadi?: boolean;
+        siteElevation?: number;
+        distanceFromSea?: number;
+        distanceFromStreams?: number;
+    };
+    hydrologicalPlan?: {
+        file?: string;
+        fileCreationDate?: string;
+        pumpsAvailable?: boolean;
+    };
+    drainagePlan?: {
+        entrancesOppositeWaterFlow?: boolean;
+        plannedMeasures?: string;
+    };
+    schedule?: {
+        scheduleExists?: boolean;
+        scheduleFile?: string;
+        scheduleFileCreationDate?: string;
+        detailLevel?: string;
+        adherenceLevel?: string;
+    };
 }
 
 export interface Contractor extends Document {

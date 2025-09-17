@@ -22,7 +22,13 @@ import {
     Menu,
     MenuItem as MenuItemComponent,
     ListItemIcon,
-    ListItemText
+    ListItemText,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -50,6 +56,7 @@ interface FileUploadProps {
     showCreationDate?: boolean;
     creationDateValue?: string;
     onCreationDateChange?: (date: string) => void;
+    onDelete?: () => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -60,23 +67,89 @@ const FileUpload: React.FC<FileUploadProps> = ({
     accept = ".pdf,.jpg,.jpeg,.png",
     showCreationDate = false,
     creationDateValue = '',
-    onCreationDateChange
+    onCreationDateChange,
+    onDelete
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
-        onChange(file);
+        if (file) {
+            setIsUploading(true);
+            try {
+                // Upload to blob storage
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('projectId', 'temp'); // Will be updated when project is saved
 
-        // Note: JavaScript File API doesn't provide access to file creation date
-        // Only lastModified is available. We'll leave the date field empty
-        // for the user to fill manually with the actual creation date
+                const response = await fetch('/api/upload-project-file', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    onChange(result.url); // Store the blob URL
+
+                    // Auto-fill creation date from file metadata
+                    if (onCreationDateChange && !creationDateValue) {
+                        const fileDate = new Date(file.lastModified);
+                        const formattedDate = fileDate.toISOString().split('T')[0];
+                        onCreationDateChange(formattedDate);
+                    }
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('שגיאה בהעלאת הקובץ');
+            } finally {
+                setIsUploading(false);
+            }
+        }
     };
 
     const handleUploadClick = () => {
         if (!disabled) {
             fileInputRef.current?.click();
+        }
+    };
+
+    const handleFileClick = () => {
+        if (value && !disabled) {
+            window.open(value, '_blank');
+        }
+    };
+
+    const handleDelete = async () => {
+        if (onDelete && window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
+            try {
+                // Delete from blob storage
+                if (value) {
+                    const response = await fetch('/api/delete-project-file', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({ url: value })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to delete file from storage');
+                    }
+                }
+
+                // Call the onDelete callback to update the state
+                onDelete();
+            } catch (error) {
+                console.error('Error deleting file:', error);
+                alert('שגיאה במחיקת הקובץ');
+            }
         }
     };
 
@@ -100,8 +173,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer'
+                    }} onClick={handleFileClick}>
                         {value.toLowerCase().includes('.pdf') ? (
                             <PdfIcon sx={{ color: '#d32f2f', fontSize: 24 }} />
                         ) : (
@@ -125,6 +200,30 @@ const FileUpload: React.FC<FileUploadProps> = ({
                                     }
                                 }}
                             />
+                        )}
+
+                        {/* Delete button */}
+                        {onDelete && !disabled && (
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete();
+                                }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: -8,
+                                    right: -8,
+                                    width: 20,
+                                    height: 20,
+                                    backgroundColor: 'error.main',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: 'error.dark'
+                                    }
+                                }}
+                            >
+                                <CloseIcon sx={{ fontSize: 12 }} />
+                            </IconButton>
                         )}
                     </Box>
                 ) : (
@@ -156,7 +255,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {showCreationDate && (
                 <TextField
                     fullWidth
-                    label="תאריך יצירת המסמך (למלא ידנית)"
+                    label="תאריך יצירת המסמך"
                     type="date"
                     value={creationDateValue}
                     onChange={(e) => onCreationDateChange?.(e.target.value)}
@@ -164,22 +263,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     size="small"
                     InputLabelProps={{ shrink: true }}
                     sx={{ maxWidth: 200 }}
-                    helperText="תאריך יצירת הקובץ המקורי"
                 />
             )}
         </Box>
     );
 };
 
-// Building Array Component
-interface BuildingArrayProps {
+// Building Details Table Component
+interface BuildingTableProps {
     numberOfBuildings: number;
     buildings: any[];
     onBuildingsChange: (buildings: any[]) => void;
     disabled?: boolean;
 }
 
-const BuildingArray: React.FC<BuildingArrayProps> = ({ numberOfBuildings, buildings, onBuildingsChange, disabled }) => {
+const BuildingTable: React.FC<BuildingTableProps> = ({ numberOfBuildings, buildings, onBuildingsChange, disabled }) => {
     const handleBuildingChange = (index: number, field: string, value: any) => {
         const newBuildings = [...buildings];
         if (!newBuildings[index]) {
@@ -189,76 +287,121 @@ const BuildingArray: React.FC<BuildingArrayProps> = ({ numberOfBuildings, buildi
         onBuildingsChange(newBuildings);
     };
 
-    const renderBuildings = () => {
-        const buildingElements = [];
-        for (let i = 0; i < numberOfBuildings; i++) {
-            buildingElements.push(
-                <Box key={i} sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                        בניין {i + 1}
-                    </Typography>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
-                        <TextField
-                            fullWidth
-                            label="מספר יחידות דיור"
-                            type="number"
-                            value={buildings[i]?.unitsPerBuilding || ''}
-                            onChange={(e) => handleBuildingChange(i, 'unitsPerBuilding', parseInt(e.target.value) || 0)}
-                            disabled={disabled}
-                        />
+    // Ensure we have the right number of buildings
+    const displayBuildings = [];
+    for (let i = 0; i < numberOfBuildings; i++) {
+        displayBuildings.push({
+            buildingName: buildings[i]?.buildingName || `בניין ${i + 1}`,
+            unitsPerBuilding: buildings[i]?.unitsPerBuilding || '',
+            floorsAboveGround: buildings[i]?.floorsAboveGround || '',
+            floorsBelowGround: buildings[i]?.floorsBelowGround || '',
+            totalBuildingArea: buildings[i]?.totalBuildingArea || ''
+        });
+    }
 
-                        <TextField
-                            fullWidth
-                            label="מספר קומות מעל הקרקע"
-                            type="number"
-                            value={buildings[i]?.floorsAboveGround || ''}
-                            onChange={(e) => handleBuildingChange(i, 'floorsAboveGround', parseInt(e.target.value) || 0)}
-                            disabled={disabled}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="מספר קומות מתחת לקרקע"
-                            type="number"
-                            value={buildings[i]?.floorsBelowGround || ''}
-                            onChange={(e) => handleBuildingChange(i, 'floorsBelowGround', parseInt(e.target.value) || 0)}
-                            disabled={disabled}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="סה״כ מ״ר בנוי"
-                            type="number"
-                            value={buildings[i]?.totalBuildingArea || ''}
-                            onChange={(e) => handleBuildingChange(i, 'totalBuildingArea', parseFloat(e.target.value) || 0)}
-                            disabled={disabled}
-                        />
-                    </Box>
-                </Box>
-            );
-        }
-        return buildingElements;
-    };
-
+    // Always show the table, even if no buildings
     if (numberOfBuildings <= 0) {
-        return null;
+        return (
+            <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    הזן מספר בניינים כדי לראות את הטבלה
+                </Typography>
+            </Box>
+        );
     }
 
     return (
         <Box>
-            {renderBuildings()}
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם הבניין</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר יחידות דיור</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מעל הקרקע</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מרתף</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>סה״כ מ״ר בנוי</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {displayBuildings.map((building, index) => (
+                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        value={building.buildingName}
+                                        onChange={(e) => handleBuildingChange(index, 'buildingName', e.target.value)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="number"
+                                        value={building.unitsPerBuilding}
+                                        onChange={(e) => handleBuildingChange(index, 'unitsPerBuilding', parseInt(e.target.value) || 0)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="number"
+                                        value={building.floorsAboveGround}
+                                        onChange={(e) => handleBuildingChange(index, 'floorsAboveGround', parseInt(e.target.value) || 0)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="number"
+                                        value={building.floorsBelowGround}
+                                        onChange={(e) => handleBuildingChange(index, 'floorsBelowGround', parseInt(e.target.value) || 0)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="number"
+                                        value={building.totalBuildingArea}
+                                        onChange={(e) => handleBuildingChange(index, 'totalBuildingArea', parseFloat(e.target.value) || 0)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Box>
     );
 };
 
-// Plot Details Array Component
-interface PlotDetailsArrayProps {
+// Plot Details Table Component
+interface PlotDetailsTableProps {
     plotDetails: any[];
     onPlotDetailsChange: (plotDetails: any[]) => void;
     disabled?: boolean;
 }
 
-const PlotDetailsArray: React.FC<PlotDetailsArrayProps> = ({ plotDetails, onPlotDetailsChange, disabled }) => {
+const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlotDetailsChange, disabled }) => {
     const handlePlotChange = (index: number, field: string, value: any) => {
         const newPlotDetails = [...plotDetails];
         if (!newPlotDetails[index]) {
@@ -273,63 +416,90 @@ const PlotDetailsArray: React.FC<PlotDetailsArrayProps> = ({ plotDetails, onPlot
     };
 
     const removePlot = (index: number) => {
-        const newPlotDetails = plotDetails.filter((_, i) => i !== index);
-        onPlotDetailsChange(newPlotDetails);
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את השורה?')) {
+            const newPlotDetails = plotDetails.filter((_, i) => i !== index);
+            onPlotDetailsChange(newPlotDetails);
+        }
     };
+
+    // Always show at least one empty row for input
+    const displayPlotDetails = plotDetails.length > 0 ? plotDetails : [{ block: '', plot: '', subPlot: '' }];
 
     return (
         <Box>
-            {plotDetails.map((plot, index) => (
-                <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
-                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                        גוש/חלקה {index + 1}
-                    </Typography>
-
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
-                        <TextField
-                            fullWidth
-                            label="גוש"
-                            value={plot.block || ''}
-                            onChange={(e) => handlePlotChange(index, 'block', e.target.value)}
-                            disabled={disabled}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="חלקה"
-                            value={plot.plot || ''}
-                            onChange={(e) => handlePlotChange(index, 'plot', e.target.value)}
-                            disabled={disabled}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="תת חלקה"
-                            value={plot.subPlot || ''}
-                            onChange={(e) => handlePlotChange(index, 'subPlot', e.target.value)}
-                            disabled={disabled}
-                        />
-                    </Box>
-
-                    {!disabled && (
-                        <IconButton
-                            onClick={() => removePlot(index)}
-                            sx={{ position: 'absolute', top: 8, left: 8, color: 'error.main' }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    )}
-                </Box>
-            ))}
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>גוש</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>תת חלקה</TableCell>
+                            {!disabled && (
+                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: 60 }}>פעולות</TableCell>
+                            )}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {displayPlotDetails.map((plot, index) => (
+                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        value={plot.block || ''}
+                                        onChange={(e) => handlePlotChange(index, 'block', e.target.value)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        value={plot.plot || ''}
+                                        onChange={(e) => handlePlotChange(index, 'plot', e.target.value)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        value={plot.subPlot || ''}
+                                        onChange={(e) => handlePlotChange(index, 'subPlot', e.target.value)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                    />
+                                </TableCell>
+                                {!disabled && (
+                                    <TableCell sx={{ padding: 1, textAlign: 'center' }}>
+                                        <IconButton
+                                            onClick={() => removePlot(index)}
+                                            size="small"
+                                            sx={{ color: 'error.main' }}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </TableCell>
+                                )}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
             {!disabled && (
                 <Button
                     startIcon={<AddIcon />}
                     onClick={addPlot}
                     variant="outlined"
-                    sx={{ mt: 1 }}
+                    sx={{ mt: 2 }}
                 >
-                    הוסף גוש/חלקה
+                    הוסף שורה
                 </Button>
             )}
         </Box>
@@ -1043,7 +1213,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="תוכניות (גרמושקה)"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', file?.name || '')}
+                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url)}
+                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.dwg,.dwf"
                                                     showCreationDate={true}
@@ -1129,8 +1300,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
 
-                                                <PlotDetailsArray
-                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || []}
+                                                <PlotDetailsTable
+                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '' }]}
                                                     onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
@@ -1261,7 +1432,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </FormControl>
                                             </Box>
 
-                                            <BuildingArray
+                                            <BuildingTable
                                                 numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
                                                 buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
                                                 onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
@@ -1294,7 +1465,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <FileUpload
                                                         label="העלה קובץ היתר בניה"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
-                                                        onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', file?.name || '')}
+                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url)}
+                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', '')}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         showCreationDate={true}
@@ -1321,7 +1493,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <FileUpload
                                                         label="העלה קובץ היתר חפירה ודיפון"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
-                                                        onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', file?.name || '')}
+                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url)}
+                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '')}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.jpg,.jpeg,.png"
                                                         showCreationDate={true}
@@ -1332,24 +1505,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 <FileUpload
                                                     label="אישור מהנדס קונסטרקטור - העלה קובץ"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval}
-                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval', file?.name || '')}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file}
+                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url)}
+                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApprovalCreationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApprovalCreationDate', date)}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.creationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.creationDate', date)}
                                                 />
 
                                                 <FileUpload
                                                     label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclaration}
-                                                    onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclaration', file?.name || '')}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
+                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url)}
+                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandardDeclarationCreationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandardDeclarationCreationDate', date)}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.creationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.creationDate', date)}
                                                 />
                                             </Box>
                                         </Box>
@@ -1449,22 +1624,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
                                             <FileUpload
                                                 label="העלה דוח"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.reportFile}
-                                                onChange={(file) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.reportFile', file?.name || '')}
+                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
+                                                onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', url)}
+                                                onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', '')}
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
                                                 showCreationDate={true}
-                                                creationDateValue={project?.engineeringQuestionnaire?.soilReport?.reportFileCreationDate || ''}
-                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.reportFileCreationDate', date)}
+                                                creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
+                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
                                             />
 
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
                                                 <Select
                                                     labelId="soil-type-label"
-                                                    value={project?.engineeringQuestionnaire?.soilReport?.soilType || ''}
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
                                                     label="סוג הקרקע"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.soilType', e.target.value)}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 >
                                                     <MenuItem value="חולית">חולית</MenuItem>
@@ -1775,7 +1951,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <FileUpload
                                             label="העלאת קובץ תוכנית הידרולוג"
                                             value={project?.hydrologicalPlan?.file}
-                                            onChange={(file) => handleNestedFieldChange('hydrologicalPlan.file', file?.name || '')}
+                                            onChange={(url) => handleNestedFieldChange('hydrologicalPlan.file', url)}
+                                            onDelete={() => handleNestedFieldChange('hydrologicalPlan.file', '')}
                                             disabled={mode === 'view' || !canEdit}
                                             accept=".pdf,.jpg,.jpeg,.png"
                                             showCreationDate={true}
@@ -1856,7 +2033,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="העלה קובץ לוח זמנים"
                                                     value={project?.schedule?.file}
-                                                    onChange={(file) => handleNestedFieldChange('schedule.file', file?.name || '')}
+                                                    onChange={(url) => handleNestedFieldChange('schedule.file', url)}
+                                                    onDelete={() => handleNestedFieldChange('schedule.file', '')}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
