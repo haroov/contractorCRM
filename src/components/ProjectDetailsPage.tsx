@@ -1346,7 +1346,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </FormControl>
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="government-program-label" sx={{ 
+                                                    <InputLabel id="government-program-label" sx={{
                                                         whiteSpace: 'normal',
                                                         lineHeight: 1.2,
                                                         maxWidth: '100%',
@@ -1357,11 +1357,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}>האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
                                                     <Select
                                                         labelId="government-program-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'לא' : ''}
                                                         label="האם הפרויקט במסגרת תוכנית ממשלתית"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1458,11 +1459,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
                                                     <Select
                                                         labelId="perimeter-dewatering-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.perimeterDewatering === false ? 'לא' : ''}
                                                         label="האם מבצעים דיפון היקפי"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.perimeterDewatering', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.perimeterDewatering', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1531,7 +1533,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="shared-basement-label" sx={{ 
+                                                    <InputLabel id="shared-basement-label" sx={{
                                                         whiteSpace: 'normal',
                                                         lineHeight: 1.2,
                                                         maxWidth: '100%',
@@ -1542,11 +1544,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}>האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
                                                     <Select
                                                         labelId="shared-basement-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'לא' : ''}
                                                         label="האם יש קומות מרתף משותפות לבניינים אחרים"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1572,11 +1575,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <InputLabel id="building-permit-label">האם קיים היתר בניה</InputLabel>
                                                     <Select
                                                         labelId="building-permit-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === false ? 'לא' : ''}
                                                         label="האם קיים היתר בניה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1601,11 +1605,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <InputLabel id="excavation-permit-label">האם קיים היתר חפירה ודיפון</InputLabel>
                                                     <Select
                                                         labelId="excavation-permit-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === false ? 'לא' : ''}
                                                         label="האם קיים היתר חפירה ודיפון"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1661,7 +1666,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="work-existing-structure-label" sx={{ 
+                                                    <InputLabel id="work-existing-structure-label" sx={{
                                                         whiteSpace: 'normal',
                                                         lineHeight: 1.2,
                                                         maxWidth: '100%',
@@ -1672,11 +1677,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}>האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים</InputLabel>
                                                     <Select
                                                         labelId="work-existing-structure-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? 'לא' : ''}
                                                         label="האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructure', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.workOnExistingStructure', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1723,11 +1729,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <InputLabel id="demolition-work-label">האם מתבצעת הריסת מבנה</InputLabel>
                                                     <Select
                                                         labelId="demolition-work-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork ? 'כן' : 'לא'}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? 'לא' : ''}
                                                         label="האם מתבצעת הריסת מבנה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWork', e.target.value === 'כן')}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolitionWork', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                         disabled={mode === 'view' || !canEdit}
                                                     >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
                                                         <MenuItem value="לא">לא</MenuItem>
                                                         <MenuItem value="כן">כן</MenuItem>
                                                     </Select>
@@ -1861,7 +1868,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -1871,8 +1878,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם קיימים מבנים סמוכים</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.adjacentBuildings?.exists ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.adjacentBuildings?.exists === true ? 'כן' : project?.environmentalSurvey?.adjacentBuildings?.exists === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -1923,7 +1930,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -1933,8 +1940,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם קיימים כבלי חשמל במרחק מהעגורנים</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.electricalCables?.exists ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.electricalCables.exists', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.electricalCables?.exists === true ? 'כן' : project?.environmentalSurvey?.electricalCables?.exists === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.electricalCables.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -1955,7 +1962,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -1965,8 +1972,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.undergroundInfrastructure?.exists ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? 'כן' : project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -1987,7 +1994,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -1997,8 +2004,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם יש גני ילדים בסביבה</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.kindergartens?.exists ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.kindergartens.exists', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.kindergartens?.exists === true ? 'כן' : project?.environmentalSurvey?.kindergartens?.exists === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.kindergartens.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2019,7 +2026,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2029,8 +2036,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>קרבה לתחנת דלק</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.proximityToGasStation ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToGasStation', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.proximityToGasStation === true ? 'כן' : project?.environmentalSurvey?.proximityToGasStation === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToGasStation', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2039,7 +2046,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2049,8 +2056,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>קרבה לתחנת משטרה</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.proximityToPoliceStation ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.proximityToPoliceStation === true ? 'כן' : project?.environmentalSurvey?.proximityToPoliceStation === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2059,7 +2066,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2069,8 +2076,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>קרבה למד״א או מרכז רפואי</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.proximityToMedicalCenter ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.proximityToMedicalCenter === true ? 'כן' : project?.environmentalSurvey?.proximityToMedicalCenter === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2079,7 +2086,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2089,8 +2096,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם הפרויקט על רכס הר</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.onMountainRidge ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.onMountainRidge', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.onMountainRidge === true ? 'כן' : project?.environmentalSurvey?.onMountainRidge === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.onMountainRidge', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2099,7 +2106,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
 
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{ 
+                                            <InputLabel sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2109,8 +2116,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }}>האם הפרויקט בואדי</InputLabel>
                                             <Select
-                                                value={project?.environmentalSurvey?.inValley ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.inValley', e.target.value === 'כן')}
+                                                value={project?.environmentalSurvey?.inValley === true ? 'כן' : project?.environmentalSurvey?.inValley === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.inValley', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2168,7 +2175,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
 
                                         <FormControl fullWidth>
-                                            <InputLabel id="basement-pumps-label" sx={{ 
+                                            <InputLabel id="basement-pumps-label" sx={{
                                                 whiteSpace: 'normal',
                                                 lineHeight: 1.2,
                                                 maxWidth: '100%',
@@ -2179,9 +2186,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}>האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
                                             <Select
                                                 labelId="basement-pumps-label"
-                                                value={project?.hydrologicalPlan?.basementPumpsAvailable ? 'כן' : 'לא'}
+                                                value={project?.hydrologicalPlan?.basementPumpsAvailable === true ? 'כן' : project?.hydrologicalPlan?.basementPumpsAvailable === false ? 'לא' : ''}
                                                 label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
-                                                onChange={(e) => handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', e.target.value === 'כן')}
+                                                onChange={(e) => handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2201,8 +2208,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <FormControl fullWidth>
                                             <InputLabel>האם הכניסות מנוגדות לזרימת המים</InputLabel>
                                             <Select
-                                                value={project?.drainagePlan?.entrancesOppositeWaterFlow ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', e.target.value === 'כן')}
+                                                value={project?.drainagePlan?.entrancesOppositeWaterFlow === true ? 'כן' : project?.drainagePlan?.entrancesOppositeWaterFlow === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
@@ -2234,8 +2241,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <FormControl fullWidth>
                                             <InputLabel>האם קיים לוח זמנים לפרויקט</InputLabel>
                                             <Select
-                                                value={project?.schedule?.exists ? 'כן' : 'לא'}
-                                                onChange={(e) => handleNestedFieldChange('schedule.exists', e.target.value === 'כן')}
+                                                value={project?.schedule?.exists === true ? 'כן' : project?.schedule?.exists === false ? 'לא' : ''}
+                                                onChange={(e) => handleNestedFieldChange('schedule.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
                                                 disabled={mode === 'view' || !canEdit}
                                             >
                                                 <MenuItem value="לא">לא</MenuItem>
