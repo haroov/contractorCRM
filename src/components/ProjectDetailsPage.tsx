@@ -72,7 +72,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    
+
     // Debug logging
     console.log(`📁 FileUpload ${label} - value:`, value);
     console.log(`📁 FileUpload ${label} - isUploading:`, isUploading);
@@ -99,11 +99,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     const result = await response.json();
                     console.log('✅ File upload successful:', result);
                     console.log('✅ File URL:', result.data?.url);
-                    
+
                     // Use result.data.url if available, otherwise fallback to result.url
                     const fileUrl = result.data?.url || result.url;
                     console.log('✅ Using file URL:', fileUrl);
-                    
+
                     onChange(fileUrl); // Store the blob URL
 
                     // Auto-fill creation date from file metadata
@@ -811,15 +811,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const { projectsAPI } = await import('../services/api');
 
             if (mode === 'new') {
-                // Create new project - ensure mainContractor is set
+                // Create new project - ensure mainContractor is set and include all data
                 const projectToSave = {
                     ...project,
                     mainContractor: project.mainContractor || searchParams.get('contractorId') || ''
                 };
+                console.log('🔄 Creating new project with data:', projectToSave);
+                console.log('🔄 Engineering questionnaire data:', projectToSave.engineeringQuestionnaire);
                 const savedProject = await projectsAPI.create(projectToSave);
                 console.log('✅ Project created:', savedProject);
             } else {
-                // Update existing project - send only the fields that can be updated
+                // Update existing project - send all project data including new fields
                 const updateData = {
                     projectName: project.projectName,
                     description: project.description,
@@ -829,9 +831,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     city: project.city,
                     isClosed: project.isClosed,
                     status: project.status,
-                    mainContractor: project.mainContractor || searchParams.get('contractorId') || ''
+                    mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
+                    // Include all new fields from the plans tab
+                    engineeringQuestionnaire: project.engineeringQuestionnaire,
+                    environmentalSurvey: project.environmentalSurvey,
+                    hydrologicalPlan: project.hydrologicalPlan,
+                    siteDrainagePlan: project.siteDrainagePlan,
+                    schedule: project.schedule
                 };
                 const projectId = project._id || project.id;
+                console.log('🔄 Sending update data to server:', updateData);
+                console.log('🔄 Engineering questionnaire data:', updateData.engineeringQuestionnaire);
                 const updatedProject = await projectsAPI.update(projectId, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
