@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -281,8 +281,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             // Prioritize _id (ObjectId) as primary identifier, then fallback to external identifiers
                             const contractorId = (projectData.mainContractor && projectData.mainContractor.length === 24 ? projectData.mainContractor : null) ||
                                 projectData.contractorId;
-                            console.log('🔍 Project loaded - contractorId:', contractorId);
-                            console.log('🔍 Project loaded - projectData.contractorId:', projectData.contractorId);
+                            // Debug logs removed to reduce console noise
                             console.log('🔍 Project loaded - projectData.mainContractor:', projectData.mainContractor);
                             console.log('🔍 Project loaded - projectData.contractorName:', projectData.contractorName);
 
@@ -712,7 +711,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={activeTab} onChange={handleTabChange} aria-label="project tabs">
                             <Tab label="כללי" />
-                            <Tab label="מידע טכני" />
+                            <Tab label="תוכניות" />
                             <Tab label="מפרט" />
                             <Tab label="מסמכים" />
                             <Tab label="ביטוח" />
@@ -804,7 +803,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 1 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מידע טכני
+                                    תוכניות
                                 </Typography>
 
                                 {/* שאלון הנדסי */}
