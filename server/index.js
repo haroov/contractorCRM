@@ -177,7 +177,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ companyId: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on companyId');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on companyId');
       } else {
@@ -1032,7 +1032,7 @@ app.put('/api/contractors/:id', async (req, res) => {
       if (!updatedContractor) {
         updatedContractor = await db.collection('contractors').findOne({ companyId: req.params.id });
       }
-      
+
       // If still not found, try by contractorId (contractor identifier) - only for contractors
       if (!updatedContractor) {
         updatedContractor = await db.collection('contractors').findOne({ contractorId: req.params.id });
@@ -1245,8 +1245,28 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
     const db = client.db('contractor-crm');
     const { id } = req.params;
 
-    // Get contractor with project IDs
-    const contractor = await db.collection('contractors').findOne({ contractor_id: id });
+    // Get contractor with project IDs - try ObjectId first, then fallback to external IDs
+    let contractor = null;
+    
+    // Try ObjectId first (primary identifier)
+    if (id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id)) {
+      try {
+        contractor = await db.collection('contractors').findOne({ _id: new ObjectId(id) });
+      } catch (objectIdError) {
+        console.log('🔍 ObjectId search failed:', objectIdError.message);
+      }
+    }
+    
+    // If not found, try companyId (company identifier)
+    if (!contractor) {
+      contractor = await db.collection('contractors').findOne({ companyId: id });
+    }
+    
+    // If still not found, try contractorId (contractor identifier)
+    if (!contractor) {
+      contractor = await db.collection('contractors').findOne({ contractor_id: id });
+    }
+    
     if (!contractor) {
       return res.status(404).json({ error: 'Contractor not found' });
     }

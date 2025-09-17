@@ -8,6 +8,8 @@ import {
     IconButton,
     AppBar,
     Toolbar,
+    Snackbar,
+    Alert,
     Tabs,
     Tab,
     TextField,
@@ -49,6 +51,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Check if user is a contact user
     const [isContactUser, setIsContactUser] = useState(false);
     const [contactUserPermissions, setContactUserPermissions] = useState<string>('contactUser');
+
+    // Success notification state
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
     useEffect(() => {
         const checkContactUser = () => {
@@ -106,6 +113,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 const name = contractor.name || contractor.nameEnglish || '';
                 setContractorName(name);
                 console.log('✅ Loaded contractor name:', name);
+                
+                // Update project with correct contractor name
+                if (project) {
+                    setProject(prev => prev ? { ...prev, contractorName: name } : null);
+                }
             } else {
                 console.log('❌ No contractor found for ID:', contractorId);
             }
@@ -302,12 +314,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 console.log('✅ Project updated:', updatedProject);
             }
 
-            // Don't navigate away - just show success message
+            // Show success message
             console.log('✅ Project saved successfully');
+            setSnackbarMessage('הפרויקט נשמר בהצלחה!');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
 
         } catch (error) {
             console.error('❌ Error saving project:', error);
-            alert('שגיאה בשמירת הפרויקט: ' + error.message);
+            setSnackbarMessage('שגיאה בשמירת הפרויקט: ' + error.message);
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         } finally {
             // Reset saving state
             setSaving(false);
@@ -1152,5 +1169,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             </Box>
 
         </Box>
+
+        {/* Success/Error Notification */}
+        <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={3000}
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+            <Alert 
+                onClose={() => setSnackbarOpen(false)} 
+                severity={snackbarSeverity}
+                sx={{ width: '100%' }}
+            >
+                {snackbarMessage}
+            </Alert>
+        </Snackbar>
     );
 }
