@@ -18,7 +18,6 @@ const { GridFSBucket } = require('mongodb');
 // Import routes
 const uploadRoutes = require('./routes/upload');
 const projectFilesRoutes = require('./routes/project-files');
-const pdfThumbnailRoutes = require('./routes/pdf-thumbnail.js');
 
 dotenv.config();
 
@@ -179,7 +178,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ companyId: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on companyId');
-    } catch (error) {
+  } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on companyId');
       } else {
@@ -283,7 +282,6 @@ console.log('✅ Contact authentication routes configured');
 // Import upload routes
 app.use('/api/upload', uploadRoutes);
 app.use('/api', projectFilesRoutes);
-app.use('/api/pdf-thumbnail', pdfThumbnailRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes
