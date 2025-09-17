@@ -178,7 +178,7 @@ async function connectDB() {
     try {
       await db.collection('contractors').createIndex({ companyId: 1 }, { unique: true, sparse: true });
       console.log('✅ Created unique index on companyId');
-  } catch (error) {
+    } catch (error) {
       if (error.code === 86) {
         console.log('✅ Index already exists on companyId');
       } else {
