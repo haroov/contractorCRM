@@ -1501,7 +1501,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
 
-                                        {/* תת-סקשן: פרטי הבניינים */}
+                                        {/* תת-סקשן: פרטי הבניינים - מוצג רק אם סוג הפרויקט הוא "בניה" */}
+                                        {project?.engineeringQuestionnaire?.buildingPlan?.projectType === 'בניה' && (
                                         <Box sx={{ mb: 4 }}>
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי הבניינים
@@ -1513,8 +1514,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     label="מספר בניינים"
                                                     type="number"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', parseInt(e.target.value) || 0)}
+                                                    onChange={(e) => {
+                                                        const value = parseInt(e.target.value) || 0;
+                                                        // Validate: minimum 1, maximum 100
+                                                        if (value >= 1 && value <= 100) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', value);
+                                                        } else if (value === 0) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', 0);
+                                                        }
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
+                                                    inputProps={{ min: 1, max: 100 }}
                                                 />
 
                                                 <TextField
@@ -1557,6 +1567,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                             />
                                         </Box>
+                                        )}
 
                                         {/* תת-סקשן: היתרים ואישורים */}
                                         <Box sx={{ mb: 4 }}>
