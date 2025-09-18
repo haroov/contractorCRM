@@ -447,7 +447,12 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
     };
 
     const removePlot = (index: number) => {
-        if (window.confirm('האם אתה בטוח שברצונך למחוק את השורה?')) {
+        // Prevent deletion of the first row (always keep at least one plot)
+        if (index === 0) {
+            return;
+        }
+        
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את החלקה?')) {
             const newPlotDetails = plotDetails.filter((_, i) => i !== index);
             onPlotDetailsChange(newPlotDetails);
         }
@@ -458,8 +463,8 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                <Table size="small">
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, minWidth: 600 }}>
+                <Table size="small" sx={{ minWidth: 600 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>גוש</TableCell>
@@ -482,8 +487,8 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ 
-                                            '& .MuiOutlinedInput-root': { 
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
                                                 height: 40,
                                                 '& fieldset': {
                                                     borderColor: '#e0e0e0'
@@ -507,8 +512,8 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ 
-                                            '& .MuiOutlinedInput-root': { 
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
                                                 height: 40,
                                                 '& fieldset': {
                                                     borderColor: '#e0e0e0'
@@ -532,8 +537,8 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ 
-                                            '& .MuiOutlinedInput-root': { 
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
                                                 height: 40,
                                                 '& fieldset': {
                                                     borderColor: '#e0e0e0'
@@ -553,11 +558,15 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         <IconButton
                                             onClick={() => removePlot(index)}
                                             size="small"
+                                            disabled={index === 0}
                                             sx={{ 
-                                                color: 'error.main',
+                                                color: index === 0 ? 'grey.400' : 'grey.600',
                                                 '&:hover': {
-                                                    backgroundColor: 'error.light',
-                                                    color: 'white'
+                                                    backgroundColor: index === 0 ? 'transparent' : 'grey.200',
+                                                    color: index === 0 ? 'grey.400' : 'grey.800'
+                                                },
+                                                '&.Mui-disabled': {
+                                                    color: 'grey.400'
                                                 }
                                             }}
                                         >
@@ -576,7 +585,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                     startIcon={<AddIcon />}
                     onClick={addPlot}
                     variant="outlined"
-                    sx={{ 
+                    sx={{
                         mt: 2,
                         borderColor: '#9c27b0',
                         color: '#9c27b0',
