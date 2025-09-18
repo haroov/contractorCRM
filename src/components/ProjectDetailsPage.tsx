@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -41,7 +41,8 @@ import {
     CloudUpload as CloudUploadIcon,
     Add as AddIcon,
     Delete as DeleteIcon,
-    PictureAsPdf as PdfIcon
+    PictureAsPdf as PdfIcon,
+    AutoAwesome as AutoAwesomeIcon
 } from '@mui/icons-material';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -626,6 +627,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error' | 'info' | 'warning'>('success');
 
+    // AI analysis state
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [hasAnalyzedReport, setHasAnalyzedReport] = useState(false);
+    const [analyzedFiles, setAnalyzedFiles] = useState<Set<string>>(new Set());
+
     useEffect(() => {
         const checkContactUser = () => {
             const contactUserCheck = localStorage.getItem('contactUserAuthenticated') === 'true';
@@ -906,6 +912,156 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         } else {
             console.log('❌ No project to update');
         }
+    };
+
+    // General file upload handler that resets analysis state
+    const handleFileUploadWithAnalysisReset = (fieldPath: string, url: string | null, currentFileUrl?: string) => {
+        // Reset analysis state when new file is uploaded
+        setIsAnalyzing(false);
+
+        // Remove from analyzed files if file is deleted or changed
+        if (currentFileUrl) {
+            setAnalyzedFiles(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(currentFileUrl);
+                return newSet;
+            });
+        }
+
+        // Update the file URL
+        handleNestedFieldChange(fieldPath, url);
+    };
+
+    // Handle soil report file upload
+    const handleSoilReportFileChange = (url: string | null) => {
+        handleFileUploadWithAnalysisReset(
+            'engineeringQuestionnaire.soilConsultantReport.reportFile',
+            url,
+            project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile
+        );
+    };
+
+    // General document analysis function
+    const handleDocumentAnalysis = async (fileUrl: string, documentType: string) => {
+        if (!fileUrl) {
+            setSnackbarMessage('אנא העלה מסמך תחילה');
+            setSnackbarSeverity('warning');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        try {
+            setIsAnalyzing(true);
+            setSnackbarMessage(`מנתח את המסמך (${documentType}) וממלא שדות...`);
+            setSnackbarSeverity('info');
+            setSnackbarOpen(true);
+
+            console.log('🔍 Starting document analysis:', fileUrl, documentType);
+
+            const response = await fetch('/api/document-parser/parse-soil-report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ fileUrl: fileUrl })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to parse document');
+            }
+
+            const extractedData = result.data;
+            console.log('✅ Extracted data:', extractedData);
+
+            // Update project with extracted data
+            if (project) {
+                const newProject = { ...project };
+
+                // Ensure the soilConsultantReport object exists
+                if (!newProject.engineeringQuestionnaire) {
+                    newProject.engineeringQuestionnaire = {};
+                }
+                if (!newProject.engineeringQuestionnaire.soilConsultantReport) {
+                    newProject.engineeringQuestionnaire.soilConsultantReport = {};
+                }
+
+                // Map extracted data to project fields
+                const soilReport = newProject.engineeringQuestionnaire.soilConsultantReport;
+
+                if (extractedData.soilType) {
+                    soilReport.soilType = extractedData.soilType;
+                }
+                if (extractedData.soilTypeOther) {
+                    soilReport.soilTypeOther = extractedData.soilTypeOther;
+                }
+                if (extractedData.groundwaterDepth !== undefined) {
+                    soilReport.groundwaterDepth = extractedData.groundwaterDepth;
+                }
+                if (extractedData.excavationDepth !== undefined) {
+                    soilReport.excavationDepth = extractedData.excavationDepth;
+                }
+                if (extractedData.excavationArea !== undefined) {
+                    soilReport.excavationArea = extractedData.excavationArea;
+                }
+                if (extractedData.foundationMethod) {
+                    soilReport.foundationMethod = extractedData.foundationMethod;
+                }
+                if (extractedData.perimeterDewatering !== undefined) {
+                    soilReport.perimeterDewatering = extractedData.perimeterDewatering;
+                }
+                if (extractedData.constructionMethod) {
+                    soilReport.constructionMethod = extractedData.constructionMethod;
+                }
+                if (extractedData.constructionMethodOther) {
+                    soilReport.constructionMethodOther = extractedData.constructionMethodOther;
+                }
+                if (extractedData.maxColumnSpacing !== undefined) {
+                    soilReport.maxColumnSpacing = extractedData.maxColumnSpacing;
+                }
+                if (extractedData.environmentalDescription) {
+                    soilReport.environmentalDescription = extractedData.environmentalDescription;
+                }
+                if (extractedData.currentSituationDescription) {
+                    soilReport.currentSituationDescription = extractedData.currentSituationDescription;
+                }
+                if (extractedData.png25EarthquakeRating) {
+                    soilReport.png25EarthquakeRating = extractedData.png25EarthquakeRating;
+                }
+                if (extractedData.area) {
+                    soilReport.area = extractedData.area;
+                }
+
+                setProject(newProject);
+
+                // Mark this file as analyzed
+                setAnalyzedFiles(prev => new Set([...prev, fileUrl]));
+
+                setSnackbarMessage('השדות מולאו בהצלחה מהמסמך!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+            }
+
+        } catch (error) {
+            console.error('❌ Error analyzing document:', error);
+            setSnackbarMessage(`שגיאה בניתוח המסמך: ${error.message}`);
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    // Auto-fill function for soil report
+    const handleAutoFillFromReport = async () => {
+        const reportFileUrl = project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile;
+        await handleDocumentAnalysis(reportFileUrl, 'דוח קרקע');
     };
 
     const handleSave = async () => {
@@ -1365,18 +1521,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 1 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    תוכניות
-                                </Typography>
 
                                 {/* שאלון הנדסי */}
                                 <Box sx={{ mb: 4 }}>
 
                                     {/* תוכנית בניה (גרמושקה) */}
                                     <Box sx={{ mb: 3 }}>
-                                        <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                                            תוכנית בניה (גרמושקה)
-                                        </Typography>
 
                                         {/* תת-סקשן: פרטי הפרויקט */}
                                         <Box sx={{ mb: 4 }}>
@@ -1387,8 +1537,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="תוכניות (גרמושקה)"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '')}
+                                                    onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
+                                                    onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.dwg,.dwf"
                                                     showCreationDate={true}
@@ -1396,6 +1546,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
                                                     projectId={project?._id || project?.id}
                                                 />
+
+                                                {/* AI Analysis Icon for Garmoshka */}
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile &&
+                                                    canEdit &&
+                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) && (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <IconButton
+                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile, 'תוכניות גרמושקה')}
+                                                                disabled={isAnalyzing || mode === 'view'}
+                                                                sx={{
+                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
+                                                                    color: 'white',
+                                                                    width: '48px',
+                                                                    height: '48px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#5B21B6',
+                                                                    },
+                                                                    '&:disabled': {
+                                                                        backgroundColor: '#E5E7EB',
+                                                                        color: '#9CA3AF'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {isAnalyzing ? (
+                                                                    <CircularProgress size={24} color="inherit" />
+                                                                ) : (
+                                                                    <AutoAwesomeIcon />
+                                                                )}
+                                                            </IconButton>
+                                                        </Box>
+                                                    )}
 
                                                 <FormControl fullWidth>
                                                     <InputLabel id="project-type-label" sx={{
@@ -1503,70 +1684,70 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {/* תת-סקשן: פרטי הבניינים - מוצג רק אם סוג הפרויקט הוא "בניה" */}
                                         {project?.engineeringQuestionnaire?.buildingPlan?.projectType === 'בניה' && (
-                                        <Box sx={{ mb: 4 }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                פרטי הבניינים
-                                            </Typography>
+                                            <Box sx={{ mb: 4 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                    פרטי הבניינים
+                                                </Typography>
 
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="מספר בניינים"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
-                                                    onChange={(e) => {
-                                                        const value = parseInt(e.target.value) || 0;
-                                                        // Validate: minimum 1, maximum 100
-                                                        if (value >= 1 && value <= 100) {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', value);
-                                                        } else if (value === 0) {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', 0);
-                                                        }
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    inputProps={{ min: 1, max: 100 }}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="סה״כ מ״ר בנוי מרתף"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="shared-basement-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
-                                                    <Select
-                                                        labelId="shared-basement-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'לא' : ''}
-                                                        label="האם יש קומות מרתף משותפות לבניינים אחרים"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="מספר בניינים"
+                                                        type="number"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
+                                                        onChange={(e) => {
+                                                            const value = parseInt(e.target.value) || 0;
+                                                            // Validate: minimum 1, maximum 100
+                                                            if (value >= 1 && value <= 100) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', value);
+                                                            } else if (value === 0) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', 0);
+                                                            }
+                                                        }}
                                                         disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="">בחר אפשרות</MenuItem>
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            </Box>
+                                                        inputProps={{ min: 1, max: 100 }}
+                                                    />
 
-                                            <BuildingTable
-                                                numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
-                                                buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
-                                                onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-                                        </Box>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="סה״כ מ״ר בנוי מרתף"
+                                                        type="number"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
+
+                                                    <FormControl fullWidth>
+                                                        <InputLabel id="shared-basement-label" sx={{
+                                                            whiteSpace: 'normal',
+                                                            lineHeight: 1.2,
+                                                            maxWidth: '100%',
+                                                            transform: 'translate(14px, -9px) scale(0.75)',
+                                                            '&.Mui-focused': {
+                                                                transform: 'translate(14px, -9px) scale(0.75)'
+                                                            }
+                                                        }}>האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
+                                                        <Select
+                                                            labelId="shared-basement-label"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'לא' : ''}
+                                                            label="האם יש קומות מרתף משותפות לבניינים אחרים"
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        >
+                                                            <MenuItem value="">בחר אפשרות</MenuItem>
+                                                            <MenuItem value="לא">לא</MenuItem>
+                                                            <MenuItem value="כן">כן</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Box>
+
+                                                <BuildingTable
+                                                    numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
+                                                    buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
+                                                    onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
                                         )}
 
                                         {/* תת-סקשן: היתרים ואישורים */}
@@ -1655,8 +1836,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <FileUpload
                                                     label="אישור מהנדס קונסטרקטור - העלה קובץ"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '')}
+                                                    onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url, project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
+                                                    onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '', project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
@@ -1665,11 +1846,42 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     projectId={project?._id || project?.id}
                                                 />
 
+                                                {/* AI Analysis Icon for Structural Engineer Approval */}
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file &&
+                                                    canEdit &&
+                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file) && (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <IconButton
+                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file, 'אישור מהנדס קונסטרקטור')}
+                                                                disabled={isAnalyzing || mode === 'view'}
+                                                                sx={{
+                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
+                                                                    color: 'white',
+                                                                    width: '48px',
+                                                                    height: '48px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#5B21B6',
+                                                                    },
+                                                                    '&:disabled': {
+                                                                        backgroundColor: '#E5E7EB',
+                                                                        color: '#9CA3AF'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {isAnalyzing ? (
+                                                                    <CircularProgress size={24} color="inherit" />
+                                                                ) : (
+                                                                    <AutoAwesomeIcon />
+                                                                )}
+                                                            </IconButton>
+                                                        </Box>
+                                                    )}
+
                                                 <FileUpload
                                                     label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
-                                                    onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url)}
-                                                    onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '')}
+                                                    onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url, project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
+                                                    onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '', project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
@@ -1677,6 +1889,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.creationDate', date)}
                                                     projectId={project?._id || project?.id}
                                                 />
+
+                                                {/* AI Analysis Icon for Earthquake Standard 413 */}
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file &&
+                                                    canEdit &&
+                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file) && (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                            <IconButton
+                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file, 'תקן 413 רעידות אדמה')}
+                                                                disabled={isAnalyzing || mode === 'view'}
+                                                                sx={{
+                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
+                                                                    color: 'white',
+                                                                    width: '48px',
+                                                                    height: '48px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#5B21B6',
+                                                                    },
+                                                                    '&:disabled': {
+                                                                        backgroundColor: '#E5E7EB',
+                                                                        color: '#9CA3AF'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {isAnalyzing ? (
+                                                                    <CircularProgress size={24} color="inherit" />
+                                                                ) : (
+                                                                    <AutoAwesomeIcon />
+                                                                )}
+                                                            </IconButton>
+                                                        </Box>
+                                                    )}
                                             </Box>
                                         </Box>
 
@@ -1792,10 +2035,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
                                             <FileUpload
-                                                label="העלה דוח"
+                                                label="דוח יועץ קרקע"
                                                 value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
-                                                onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', url)}
-                                                onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFile', '')}
+                                                onChange={handleSoilReportFileChange}
+                                                onDelete={() => handleSoilReportFileChange('')}
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
                                                 showCreationDate={true}
@@ -1803,6 +2046,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
                                                 projectId={project?._id || project?.id}
                                             />
+
+                                            {/* AI Analysis Icon - only show if file uploaded and not yet analyzed */}
+                                            {(() => {
+                                                const reportFile = project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile;
+                                                const isAnalyzed = analyzedFiles.has(reportFile);
+                                                console.log('🔍 AI Icon Debug:', {
+                                                    reportFile,
+                                                    canEdit,
+                                                    isAnalyzed,
+                                                    analyzedFiles: Array.from(analyzedFiles),
+                                                    shouldShow: reportFile && canEdit && !isAnalyzed
+                                                });
+                                                return reportFile && canEdit && !isAnalyzed;
+                                            })() && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <IconButton
+                                                            onClick={handleAutoFillFromReport}
+                                                            disabled={isAnalyzing || mode === 'view'}
+                                                            sx={{
+                                                                backgroundColor: '#6B46C1', // Chocolate purple color
+                                                                color: 'white',
+                                                                width: '48px',
+                                                                height: '48px',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#5B21B6',
+                                                                },
+                                                                '&:disabled': {
+                                                                    backgroundColor: '#E5E7EB',
+                                                                    color: '#9CA3AF'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {isAnalyzing ? (
+                                                                <CircularProgress size={24} color="inherit" />
+                                                            ) : (
+                                                                <AutoAwesomeIcon />
+                                                            )}
+                                                        </IconButton>
+                                                    </Box>
+                                                )}
 
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label" sx={{

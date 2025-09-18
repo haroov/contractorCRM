@@ -18,6 +18,7 @@ const { GridFSBucket } = require('mongodb');
 // Import routes
 const uploadRoutes = require('./routes/upload');
 const projectFilesRoutes = require('./routes/project-files');
+const documentParserRoutes = require('./routes/document-parser');
 
 dotenv.config();
 
@@ -282,6 +283,7 @@ console.log('✅ Contact authentication routes configured');
 // Import upload routes
 app.use('/api/upload', uploadRoutes);
 app.use('/api', projectFilesRoutes);
+app.use('/api/document-parser', documentParserRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes

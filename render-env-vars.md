@@ -20,6 +20,11 @@ Add these environment variables to your Render service:
 - **Value**: `contractor-crm-super-secret-session-key-2024`
 - **Note**: You can generate a random string for better security
 
+### 5. OPENAI_API_KEY
+- **Value**: Your OpenAI API Key (from OpenAI Platform)
+- **Example**: `sk-...`
+- **Note**: Required for document parsing and auto-filling forms
+
 ## Steps to Add in Render:
 
 1. Go to your Render service dashboard
