@@ -74,7 +74,7 @@ class DocumentParserService {
       // Convert PDF to images and use vision API
       // This is a simplified approach - in production you might want to use pdf-poppler
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4-vision-preview",
         messages: [
           {
             role: "user",
@@ -108,7 +108,7 @@ class DocumentParserService {
   static async extractTextFromImage(fileUrl) {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4-vision-preview",
         messages: [
           {
             role: "user",
@@ -171,7 +171,7 @@ ${documentText}
 `;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4",
         messages: [
           {
             role: "system",

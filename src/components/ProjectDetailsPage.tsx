@@ -191,72 +191,91 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 />
 
                 {value ? (
-                    <Box sx={{
-                        width: 40,
-                        height: 40,
-                        backgroundColor: '#d32f2f',
-                        borderRadius: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'relative',
-                        cursor: 'pointer',
-                        border: '1px solid #d0d0d0'
-                    }} onClick={handleFileClick}>
-                        {value.toLowerCase().includes('.pdf') ? (
-                            <PdfIcon sx={{
-                                fontSize: 24,
-                                color: 'white'
-                            }} />
-                        ) : (
-                            <img
-                                src={value}
-                                alt="תצוגה מקדימה"
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: '4px'
-                                }}
-                                onError={(e) => {
-                                    // Fallback to PDF icon if image fails to load
-                                    const target = e.target as HTMLImageElement;
-                                    target.style.display = 'none';
-                                    const parent = target.parentElement;
-                                    if (parent) {
-                                        const pdfIcon = document.createElement('div');
-                                        pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
-                                        parent.appendChild(pdfIcon);
-                                    }
-                                }}
-                            />
-                        )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+                        {/* File name - clickable */}
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: '#6B46C1',
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                fontSize: '0.875rem',
+                                flex: 1,
+                                textAlign: 'right'
+                            }}
+                            onClick={handleFileClick}
+                        >
+                            {value.split('/').pop()?.split('?')[0] || 'קובץ'}
+                        </Typography>
 
-                        {/* Delete button - small X in top-right corner */}
-                        {onDelete && !disabled && (
-                            <IconButton
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDelete();
-                                }}
-                                sx={{
-                                    position: 'absolute',
-                                    top: -8,
-                                    right: -8,
-                                    width: 20,
-                                    height: 20,
-                                    backgroundColor: 'white',
-                                    border: '1px solid #d0d0d0',
-                                    color: '#f44336',
-                                    '&:hover': {
-                                        backgroundColor: '#ffebee',
-                                        borderColor: '#f44336'
-                                    }
-                                }}
-                            >
-                                <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
-                            </IconButton>
-                        )}
+                        {/* File icon */}
+                        <Box sx={{
+                            width: 40,
+                            height: 40,
+                            backgroundColor: '#6B46C1', // Chocolate purple background
+                            borderRadius: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'relative',
+                            cursor: 'pointer',
+                            border: '1px solid #d0d0d0'
+                        }} onClick={handleFileClick}>
+                            {value.toLowerCase().includes('.pdf') ? (
+                                <PdfIcon sx={{
+                                    fontSize: 24,
+                                    color: 'white' // White color on purple background
+                                }} />
+                            ) : (
+                                <img
+                                    src={value}
+                                    alt="תצוגה מקדימה"
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        borderRadius: '4px'
+                                    }}
+                                    onError={(e) => {
+                                        // Fallback to PDF icon if image fails to load
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                            const pdfIcon = document.createElement('div');
+                                            pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                            parent.appendChild(pdfIcon);
+                                        }
+                                    }}
+                                />
+                            )}
+
+                            {/* Delete button - small X in top-right corner */}
+                            {onDelete && !disabled && (
+                                <IconButton
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete();
+                                    }}
+                                    sx={{
+                                        position: 'absolute',
+                                        top: -8,
+                                        right: -8,
+                                        width: 20,
+                                        height: 20,
+                                        backgroundColor: 'white',
+                                        border: '1px solid #d0d0d0',
+                                        color: '#f44336',
+                                        '&:hover': {
+                                            backgroundColor: '#ffebee',
+                                            borderColor: '#f44336'
+                                        }
+                                    }}
+                                >
+                                    <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
+                                </IconButton>
+                            )}
+                        </Box>
                     </Box>
                 ) : (
                     <IconButton
@@ -1533,25 +1552,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי הפרויקט
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
-                                                <FileUpload
-                                                    label="תוכניות (גרמושקה)"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                    onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                    onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    accept=".pdf,.dwg,.dwf"
-                                                    showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
-                                                    projectId={project?._id || project?.id}
-                                                />
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                {/* Garmoshka File Upload with AI Icon */}
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    <Box sx={{ flex: 1 }}>
+                                                        <FileUpload
+                                                            label="תוכניות (גרמושקה)"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                            onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
+                                                            onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            accept=".pdf,.dwg,.dwf"
+                                                            showCreationDate={true}
+                                                            creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
+                                                            onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
+                                                            projectId={project?._id || project?.id}
+                                                        />
+                                                    </Box>
 
-                                                {/* AI Analysis Icon for Garmoshka */}
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile &&
-                                                    canEdit &&
-                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) && (
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    {/* AI Analysis Icon for Garmoshka */}
+                                                    {(() => {
+                                                        const garmoshkaFile = project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile;
+                                                        const isAnalyzed = analyzedFiles.has(garmoshkaFile);
+                                                        console.log('🔍 Garmoshka AI Icon Debug:', {
+                                                            garmoshkaFile,
+                                                            canEdit,
+                                                            isAnalyzed,
+                                                            analyzedFiles: Array.from(analyzedFiles),
+                                                            shouldShow: garmoshkaFile && canEdit && !isAnalyzed
+                                                        });
+                                                        return garmoshkaFile && canEdit && !isAnalyzed;
+                                                    })() && (
                                                             <IconButton
                                                                 onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile, 'תוכניות גרמושקה')}
                                                                 disabled={isAnalyzing || mode === 'view'}
@@ -1575,8 +1606,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <AutoAwesomeIcon />
                                                                 )}
                                                             </IconButton>
-                                                        </Box>
-                                                    )}
+                                                        )}
+                                                </Box>
 
                                                 <FormControl fullWidth>
                                                     <InputLabel id="project-type-label" sx={{
@@ -2033,34 +2064,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             דוח יועץ קרקע
                                         </Typography>
 
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                            <FileUpload
-                                                label="דוח יועץ קרקע"
-                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
-                                                onChange={handleSoilReportFileChange}
-                                                onDelete={() => handleSoilReportFileChange('')}
-                                                disabled={mode === 'view' || !canEdit}
-                                                accept=".pdf,.jpg,.jpeg,.png"
-                                                showCreationDate={true}
-                                                creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
-                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
-                                                projectId={project?._id || project?.id}
-                                            />
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
+                                            {/* Soil Report File Upload with AI Icon */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                <Box sx={{ flex: 1 }}>
+                                                    <FileUpload
+                                                        label="דוח יועץ קרקע"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
+                                                        onChange={handleSoilReportFileChange}
+                                                        onDelete={() => handleSoilReportFileChange('')}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        showCreationDate={true}
+                                                        creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
+                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
+                                                        projectId={project?._id || project?.id}
+                                                    />
+                                                </Box>
 
-                                            {/* AI Analysis Icon - only show if file uploaded and not yet analyzed */}
-                                            {(() => {
-                                                const reportFile = project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile;
-                                                const isAnalyzed = analyzedFiles.has(reportFile);
-                                                console.log('🔍 AI Icon Debug:', {
-                                                    reportFile,
-                                                    canEdit,
-                                                    isAnalyzed,
-                                                    analyzedFiles: Array.from(analyzedFiles),
-                                                    shouldShow: reportFile && canEdit && !isAnalyzed
-                                                });
-                                                return reportFile && canEdit && !isAnalyzed;
-                                            })() && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                {/* AI Analysis Icon - only show if file uploaded and not yet analyzed */}
+                                                {(() => {
+                                                    const reportFile = project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile;
+                                                    const isAnalyzed = analyzedFiles.has(reportFile);
+                                                    console.log('🔍 Soil Report AI Icon Debug:', {
+                                                        reportFile,
+                                                        canEdit,
+                                                        isAnalyzed,
+                                                        analyzedFiles: Array.from(analyzedFiles),
+                                                        shouldShow: reportFile && canEdit && !isAnalyzed
+                                                    });
+                                                    return reportFile && canEdit && !isAnalyzed;
+                                                })() && (
                                                         <IconButton
                                                             onClick={handleAutoFillFromReport}
                                                             disabled={isAnalyzing || mode === 'view'}
@@ -2084,8 +2118,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <AutoAwesomeIcon />
                                                             )}
                                                         </IconButton>
-                                                    </Box>
-                                                )}
+                                                    )}
+                                            </Box>
 
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label" sx={{
