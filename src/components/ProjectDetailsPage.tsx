@@ -463,7 +463,26 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, minWidth: 600 }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+                {!disabled && (
+                    <Button
+                        startIcon={<AddIcon />}
+                        onClick={addPlot}
+                        variant="outlined"
+                        sx={{
+                            borderColor: '#9c27b0',
+                            color: '#9c27b0',
+                            '&:hover': {
+                                borderColor: '#7b1fa2',
+                                backgroundColor: '#f3e5f5'
+                            }
+                        }}
+                    >
+                        הוספת חלקה
+                    </Button>
+                )}
+            </Box>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, minWidth: 600, overflow: 'hidden' }}>
                 <Table size="small" sx={{ minWidth: 600 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -579,25 +598,6 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            {!disabled && (
-                <Button
-                    startIcon={<AddIcon />}
-                    onClick={addPlot}
-                    variant="outlined"
-                    sx={{
-                        mt: 2,
-                        borderColor: '#9c27b0',
-                        color: '#9c27b0',
-                        '&:hover': {
-                            borderColor: '#7b1fa2',
-                            backgroundColor: '#f3e5f5'
-                        }
-                    }}
-                >
-                    הוספת חלקה
-                </Button>
-            )}
         </Box>
     );
 };
