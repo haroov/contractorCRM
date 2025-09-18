@@ -1339,7 +1339,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
+                                                    <InputLabel id="project-type-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>סוג הפרויקט</InputLabel>
                                                     <Select
                                                         labelId="project-type-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
@@ -1499,7 +1507,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="building-permit-label">האם קיים היתר בניה</InputLabel>
+                                                    <InputLabel id="building-permit-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם קיים היתר בניה</InputLabel>
                                                     <Select
                                                         labelId="building-permit-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === false ? 'לא' : ''}
@@ -1529,7 +1545,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 )}
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="excavation-permit-label">האם קיים היתר חפירה ודיפון</InputLabel>
+                                                    <InputLabel id="excavation-permit-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם קיים היתר חפירה ודיפון</InputLabel>
                                                     <Select
                                                         labelId="excavation-permit-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === false ? 'לא' : ''}
@@ -1653,7 +1677,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="demolition-work-label">האם מתבצעת הריסת מבנה</InputLabel>
+                                                    <InputLabel id="demolition-work-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם מתבצעת הריסת מבנה</InputLabel>
                                                     <Select
                                                         labelId="demolition-work-label"
                                                         value={project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? 'לא' : ''}
@@ -1703,7 +1735,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
 
                                             <FormControl fullWidth>
-                                                <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
+                                                <InputLabel id="soil-type-label" sx={{
+                                                    whiteSpace: 'normal',
+                                                    lineHeight: 1.2,
+                                                    maxWidth: '100%',
+                                                    transform: 'translate(14px, -9px) scale(0.75)',
+                                                    '&.Mui-focused': {
+                                                        transform: 'translate(14px, -9px) scale(0.75)'
+                                                    }
+                                                }}>סוג הקרקע</InputLabel>
                                                 <Select
                                                     labelId="soil-type-label"
                                                     value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
@@ -1798,7 +1838,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="perimeter-dewatering-label">האם מבצעים דיפון היקפי</InputLabel>
+                                                    <InputLabel id="perimeter-dewatering-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>האם מבצעים דיפון היקפי</InputLabel>
                                                     <Select
                                                         labelId="perimeter-dewatering-label"
                                                         value={project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? 'כן' : project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? 'לא' : ''}
@@ -1813,7 +1861,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </FormControl>
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
+                                                    <InputLabel id="construction-method-label" sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>מה שיטת הבניה</InputLabel>
                                                     <Select
                                                         labelId="construction-method-label"
                                                         value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
@@ -2218,7 +2274,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
-                                            <InputLabel>האם הכניסות מנוגדות לזרימת המים</InputLabel>
+                                            <InputLabel sx={{
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם הכניסות מנוגדות לזרימת המים</InputLabel>
                                             <Select
                                                 value={project?.drainagePlan?.entrancesOppositeWaterFlow === true ? 'כן' : project?.drainagePlan?.entrancesOppositeWaterFlow === false ? 'לא' : ''}
                                                 onChange={(e) => handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
@@ -2251,7 +2315,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
-                                            <InputLabel>האם קיים לוח זמנים לפרויקט</InputLabel>
+                                            <InputLabel sx={{
+                                                whiteSpace: 'normal',
+                                                lineHeight: 1.2,
+                                                maxWidth: '100%',
+                                                transform: 'translate(14px, -9px) scale(0.75)',
+                                                '&.Mui-focused': {
+                                                    transform: 'translate(14px, -9px) scale(0.75)'
+                                                }
+                                            }}>האם קיים לוח זמנים לפרויקט</InputLabel>
                                             <Select
                                                 value={project?.schedule?.exists === true ? 'כן' : project?.schedule?.exists === false ? 'לא' : ''}
                                                 onChange={(e) => handleNestedFieldChange('schedule.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
@@ -2278,7 +2350,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel>רמת הפירוט</InputLabel>
+                                                    <InputLabel sx={{
+                                                        whiteSpace: 'normal',
+                                                        lineHeight: 1.2,
+                                                        maxWidth: '100%',
+                                                        transform: 'translate(14px, -9px) scale(0.75)',
+                                                        '&.Mui-focused': {
+                                                            transform: 'translate(14px, -9px) scale(0.75)'
+                                                        }
+                                                    }}>רמת הפירוט</InputLabel>
                                                     <Select
                                                         value={project?.schedule?.detailLevel || ''}
                                                         onChange={(e) => handleNestedFieldChange('schedule.detailLevel', e.target.value)}
