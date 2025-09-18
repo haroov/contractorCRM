@@ -458,15 +458,15 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>גוש</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>חלקה</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>תת חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>גוש</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>תת חלקה</TableCell>
                             {!disabled && (
-                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: 60 }}>פעולות</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: 60, fontSize: '0.875rem' }}>פעולות</TableCell>
                             )}
                         </TableRow>
                     </TableHead>
@@ -482,7 +482,20 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                        sx={{ 
+                                            '& .MuiOutlinedInput-root': { 
+                                                height: 40,
+                                                '& fieldset': {
+                                                    borderColor: '#e0e0e0'
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#bdbdbd'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#9c27b0'
+                                                }
+                                            }
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell sx={{ padding: 1 }}>
@@ -494,7 +507,20 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                        sx={{ 
+                                            '& .MuiOutlinedInput-root': { 
+                                                height: 40,
+                                                '& fieldset': {
+                                                    borderColor: '#e0e0e0'
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#bdbdbd'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#9c27b0'
+                                                }
+                                            }
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell sx={{ padding: 1 }}>
@@ -506,7 +532,20 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         inputProps={{ maxLength: 8 }}
-                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                        sx={{ 
+                                            '& .MuiOutlinedInput-root': { 
+                                                height: 40,
+                                                '& fieldset': {
+                                                    borderColor: '#e0e0e0'
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#bdbdbd'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#9c27b0'
+                                                }
+                                            }
+                                        }}
                                     />
                                 </TableCell>
                                 {!disabled && (
@@ -514,7 +553,13 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         <IconButton
                                             onClick={() => removePlot(index)}
                                             size="small"
-                                            sx={{ color: 'error.main' }}
+                                            sx={{ 
+                                                color: 'error.main',
+                                                '&:hover': {
+                                                    backgroundColor: 'error.light',
+                                                    color: 'white'
+                                                }
+                                            }}
                                         >
                                             <DeleteIcon fontSize="small" />
                                         </IconButton>
@@ -531,9 +576,17 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                     startIcon={<AddIcon />}
                     onClick={addPlot}
                     variant="outlined"
-                    sx={{ mt: 2 }}
+                    sx={{ 
+                        mt: 2,
+                        borderColor: '#9c27b0',
+                        color: '#9c27b0',
+                        '&:hover': {
+                            borderColor: '#7b1fa2',
+                            backgroundColor: '#f3e5f5'
+                        }
+                    }}
                 >
-                    הוסף שורה
+                    הוספת חלקה
                 </Button>
             )}
         </Box>
