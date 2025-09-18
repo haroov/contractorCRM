@@ -451,7 +451,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
         if (index === 0) {
             return;
         }
-        
+
         if (window.confirm('האם אתה בטוח שברצונך למחוק את החלקה?')) {
             const newPlotDetails = plotDetails.filter((_, i) => i !== index);
             onPlotDetailsChange(newPlotDetails);
@@ -559,7 +559,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             onClick={() => removePlot(index)}
                                             size="small"
                                             disabled={index === 0}
-                                            sx={{ 
+                                            sx={{
                                                 color: index === 0 ? 'grey.400' : 'grey.600',
                                                 '&:hover': {
                                                     backgroundColor: index === 0 ? 'transparent' : 'grey.200',
@@ -1371,9 +1371,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* שאלון הנדסי */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2, borderBottom: '1px solid #e0e0e0', pb: 1 }}>
-                                        שאלון הנדסי
-                                    </Typography>
 
                                     {/* תוכנית בניה (גרמושקה) */}
                                     <Box sx={{ mb: 3 }}>
@@ -1972,9 +1969,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקר סביבתי */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2, borderBottom: '1px solid #e0e0e0', pb: 1 }}>
-                                        סקר סביבתי
-                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <TextField
@@ -2286,9 +2280,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* תוכנית הידרולוג (אופציונלי) */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2, borderBottom: '1px solid #e0e0e0', pb: 1 }}>
-                                        תוכנית הידרולוג (אופציונלי)
-                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FileUpload
@@ -2330,9 +2321,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* תוכנית ניקוז לאתר */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2, borderBottom: '1px solid #e0e0e0', pb: 1 }}>
-                                        תוכנית ניקוז לאתר
-                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
@@ -2371,9 +2359,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* לוח זמנים (גאנט) */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2, borderBottom: '1px solid #e0e0e0', pb: 1 }}>
-                                        לוח זמנים (גאנט)
-                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
