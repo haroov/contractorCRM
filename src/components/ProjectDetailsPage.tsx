@@ -180,8 +180,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, direction: 'rtl' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, direction: 'rtl' }}>
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -191,7 +191,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 />
 
                 {value ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', direction: 'rtl' }}>
                         {/* File name - clickable */}
                         <Typography
                             variant="body2"
@@ -208,72 +208,72 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         </Typography>
 
                         {/* File icon */}
-                        <Box sx={{
-                            width: 40,
-                            height: 40,
+                    <Box sx={{
+                        width: 40,
+                        height: 40,
                             backgroundColor: '#6B46C1', // Chocolate purple background
-                            borderRadius: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            cursor: 'pointer',
-                            border: '1px solid #d0d0d0'
-                        }} onClick={handleFileClick}>
-                            {value.toLowerCase().includes('.pdf') ? (
-                                <PdfIcon sx={{
-                                    fontSize: 24,
+                        borderRadius: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        border: '1px solid #d0d0d0'
+                    }} onClick={handleFileClick}>
+                        {value.toLowerCase().includes('.pdf') ? (
+                            <PdfIcon sx={{
+                                fontSize: 24,
                                     color: 'white' // White color on purple background
-                                }} />
-                            ) : (
-                                <img
-                                    src={value}
-                                    alt="תצוגה מקדימה"
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover',
-                                        borderRadius: '4px'
-                                    }}
-                                    onError={(e) => {
-                                        // Fallback to PDF icon if image fails to load
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        const parent = target.parentElement;
-                                        if (parent) {
-                                            const pdfIcon = document.createElement('div');
-                                            pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
-                                            parent.appendChild(pdfIcon);
-                                        }
-                                    }}
-                                />
-                            )}
+                            }} />
+                        ) : (
+                            <img
+                                src={value}
+                                alt="תצוגה מקדימה"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: '4px'
+                                }}
+                                onError={(e) => {
+                                    // Fallback to PDF icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                        const pdfIcon = document.createElement('div');
+                                        pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                        parent.appendChild(pdfIcon);
+                                    }
+                                }}
+                            />
+                        )}
 
-                            {/* Delete button - small X in top-right corner */}
-                            {onDelete && !disabled && (
-                                <IconButton
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDelete();
-                                    }}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: -8,
-                                        right: -8,
-                                        width: 20,
-                                        height: 20,
-                                        backgroundColor: 'white',
-                                        border: '1px solid #d0d0d0',
-                                        color: '#f44336',
-                                        '&:hover': {
-                                            backgroundColor: '#ffebee',
-                                            borderColor: '#f44336'
-                                        }
-                                    }}
-                                >
-                                    <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
-                                </IconButton>
-                            )}
+                        {/* Delete button - small X in top-right corner */}
+                        {onDelete && !disabled && (
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete();
+                                }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: -8,
+                                    right: -8,
+                                    width: 20,
+                                    height: 20,
+                                    backgroundColor: 'white',
+                                    border: '1px solid #d0d0d0',
+                                    color: '#f44336',
+                                    '&:hover': {
+                                        backgroundColor: '#ffebee',
+                                        borderColor: '#f44336'
+                                    }
+                                }}
+                            >
+                                <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
+                            </IconButton>
+                        )}
                         </Box>
                     </Box>
                 ) : (
@@ -1547,11 +1547,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <Box sx={{ mb: 3 }}>
 
                                         {/* תת-סקשן: פרטי הפרויקט */}
-                                        <Box sx={{ mb: 4 }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        <Box sx={{ mb: 4, direction: 'rtl' }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
                                                 פרטי הפרויקט
                                             </Typography>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                 {/* Garmoshka File Upload with AI Icon - RTL Layout */}
                                                 <Box sx={{ 
                                                     display: 'flex', 
@@ -1561,17 +1561,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-end'
                                                 }}>
                                                     {/* File Upload Icon */}
-                                                    <FileUpload
+                                                <FileUpload
                                                         label=""
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
                                                         onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
                                                         onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.dwg,.dwf"
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.dwg,.dwf"
                                                         showCreationDate={false}
-                                                        projectId={project?._id || project?.id}
-                                                    />
-                                                    
+                                                    projectId={project?._id || project?.id}
+                                                />
+
                                                     {/* File Name */}
                                                     <Typography
                                                         variant="body1"
@@ -1648,36 +1648,36 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <FormControl>
                                                         <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
-                                                        <Select
-                                                            labelId="project-type-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
-                                                            label="סוג הפרויקט"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="בניה">בניה</MenuItem>
-                                                            <MenuItem value="תמא 38">תמא 38</MenuItem>
-                                                            <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
-                                                            <MenuItem value="תשתיות">תשתיות</MenuItem>
-                                                            <MenuItem value="גשר">גשר</MenuItem>
-                                                            <MenuItem value="כביש">כביש</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
+                                                    <Select
+                                                        labelId="project-type-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
+                                                        label="סוג הפרויקט"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="בניה">בניה</MenuItem>
+                                                        <MenuItem value="תמא 38">תמא 38</MenuItem>
+                                                        <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
+                                                        <MenuItem value="תשתיות">תשתיות</MenuItem>
+                                                        <MenuItem value="גשר">גשר</MenuItem>
+                                                        <MenuItem value="כביש">כביש</MenuItem>
+                                                    </Select>
+                                                </FormControl>
 
                                                     <FormControl>
                                                         <InputLabel id="government-program-label">תוכנית ממשלתית</InputLabel>
-                                                        <Select
-                                                            labelId="government-program-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'לא' : ''}
+                                                    <Select
+                                                        labelId="government-program-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'לא' : ''}
                                                             label="תוכנית ממשלתית"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="">בחר אפשרות</MenuItem>
-                                                            <MenuItem value="לא">לא</MenuItem>
-                                                            <MenuItem value="כן">כן</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="">בחר אפשרות</MenuItem>
+                                                        <MenuItem value="לא">לא</MenuItem>
+                                                        <MenuItem value="כן">כן</MenuItem>
+                                                    </Select>
+                                                </FormControl>
                                                 </Box>
 
                                                 {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
@@ -1695,11 +1695,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {/* תת-סקשן: מיקום וכתובת */}
-                                        <Box sx={{ mb: 4 }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        <Box sx={{ mb: 4, direction: 'rtl' }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
                                                 מיקום וכתובת
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
                                                 <TextField
                                                     fullWidth
                                                     label="כתובת (טקסט חופשי)"
@@ -2090,18 +2090,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {/* Soil Report File Upload with AI Icon */}
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                 <Box sx={{ flex: 1 }}>
-                                                    <FileUpload
+                                            <FileUpload
                                                         label="דוח יועץ קרקע"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
+                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
                                                         onChange={handleSoilReportFileChange}
                                                         onDelete={() => handleSoilReportFileChange('')}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                        showCreationDate={true}
-                                                        creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
-                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
-                                                        projectId={project?._id || project?.id}
-                                                    />
+                                                disabled={mode === 'view' || !canEdit}
+                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                showCreationDate={true}
+                                                creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
+                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
+                                                projectId={project?._id || project?.id}
+                                            />
                                                 </Box>
 
                                                 {/* AI Analysis Icon - only show if file uploaded and not yet analyzed */}
