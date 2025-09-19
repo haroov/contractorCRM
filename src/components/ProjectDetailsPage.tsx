@@ -282,11 +282,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 )}
 
             {/* Label text */}
-            <Typography 
-                variant="body2" 
-                sx={{ 
-                    color: value ? '#6B46C1' : 'text.secondary', 
-                    fontSize: '1rem', 
+            <Typography
+                variant="body2"
+                sx={{
+                    color: value ? '#6B46C1' : 'text.secondary',
+                    fontSize: '1rem',
                     minWidth: 'fit-content',
                     cursor: value ? 'pointer' : 'default',
                     textDecoration: value ? 'underline' : 'none',
@@ -2691,7 +2691,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -2807,7 +2807,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.electricalCables.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -2893,7 +2893,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -2979,7 +2979,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.kindergartens.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3065,7 +3065,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToGasStation', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3139,7 +3139,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3213,7 +3213,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3287,7 +3287,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.onMountainRidge', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3361,7 +3361,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.inValley', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3484,7 +3484,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3564,7 +3564,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3622,8 +3622,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
                                 </Box>
 
-                                {/* לוח זמנים (גאנט) */}
+                                {/* לוחות זמנים */}
                                 <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        לוחות זמנים
+                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <Box sx={{
@@ -3656,7 +3659,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('schedule.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
