@@ -286,10 +286,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             borderRadius: 1,
                             height: '40px',
                             width: '40px',
-                            color: '#882fd7',
+                            color: '#6B46C1',
                             '&:hover': {
                                 backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                borderColor: '#882fd7'
+                                borderColor: '#6B46C1'
                             }
                         }}
                     >
@@ -1367,11 +1367,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                borderColor: '#882fd7', // סגול שוקו
-                                                color: '#882fd7',
+                                                borderColor: '#6B46C1', // סגול שוקו
+                                                color: '#6B46C1',
                                                 '&:hover': {
-                                                    borderColor: '#6a1b9a',
-                                                    bgcolor: 'rgba(136, 47, 215, 0.04)'
+                                                    borderColor: '#5B21B6',
+                                                    bgcolor: 'rgba(107, 70, 193, 0.04)'
                                                 }
                                             }}
                                         >
@@ -1392,9 +1392,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                bgcolor: '#882fd7',
+                                                bgcolor: '#6B46C1',
                                                 '&:hover': {
-                                                    bgcolor: '#6a1b9a'
+                                                    bgcolor: '#5B21B6'
                                                 }
                                             }}
                                         >
@@ -1417,10 +1417,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                borderColor: '#882fd7', // סגול שוקו
-                                                color: '#882fd7',
+                                                borderColor: '#6B46C1', // סגול שוקו
+                                                color: '#6B46C1',
                                                 '&:hover': {
-                                                    borderColor: '#6a1b9a',
+                                                    borderColor: '#5B21B6',
                                                     backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                 }
                                             }}
@@ -1435,9 +1435,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             sx={{
                                                 minWidth: 'auto',
                                                 px: 2,
-                                                bgcolor: '#882fd7',
+                                                bgcolor: '#6B46C1',
                                                 '&:hover': {
-                                                    bgcolor: '#6a1b9a'
+                                                    bgcolor: '#5B21B6'
                                                 }
                                             }}
                                         >
@@ -1451,7 +1451,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                     {/* Tabs */}
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tabs value={activeTab} onChange={handleTabChange} aria-label="project tabs">
+                        <Tabs 
+                            value={activeTab} 
+                            onChange={handleTabChange} 
+                            aria-label="project tabs"
+                            sx={{
+                                '& .MuiTab-root': {
+                                    color: '#6B7280',
+                                    '&.Mui-selected': {
+                                        color: '#6B46C1',
+                                    },
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: '#6B46C1',
+                                },
+                            }}
+                        >
                             <Tab label="כללי" />
                             <Tab label="תוכניות" />
                             <Tab label="מפרט" />
@@ -1691,7 +1706,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            marginLeft: 'auto'
+                                                            marginLeft: '5px'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3088,7 +3103,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Box sx={{
                                                     height: '100%',
                                                     width: '66%',
-                                                    bgcolor: '#882fd7',
+                                                    bgcolor: '#6B46C1',
                                                     borderRadius: 10,
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -3169,7 +3184,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 בטיחות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.5
                                                 </Typography>
                                             </Box>
@@ -3204,7 +3219,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 ביטחון וגישה
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
                                                     Avg. Score 9.5
                                                 </Typography>
                                             </Box>
@@ -3239,7 +3254,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת כיבוי אש
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.1
                                                 </Typography>
                                             </Box>
@@ -3274,7 +3289,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת מים
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
                                                     Avg. Score 7.9
                                                 </Typography>
                                             </Box>
@@ -3309,7 +3324,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 רעידות מבניות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.9
                                                 </Typography>
                                             </Box>
