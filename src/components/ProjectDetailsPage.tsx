@@ -1681,7 +1681,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}>
                                                         <Typography variant="body2" sx={{ 
                                                             color: 'text.secondary', 
-                                                            fontSize: '0.875rem',
+                                                            fontSize: '1rem',
                                                             marginRight: '10px',
                                                             minWidth: '120px'
                                                         }}>
@@ -1691,7 +1691,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            marginLeft: '10px'
+                                                            marginLeft: 'auto'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -1702,9 +1702,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderRadius: '4px 0 0 4px',
+                                                                    borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
-                                                                    borderRight: 'none',
+                                                                    borderLeft: 'none',
                                                                     backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
                                                                     '&:hover': {
@@ -1728,7 +1728,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderRadius: '0 4px 4px 0',
+                                                                    borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
                                                                     backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
