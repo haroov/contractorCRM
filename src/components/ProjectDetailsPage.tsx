@@ -59,6 +59,7 @@ interface FileUploadProps {
     onCreationDateChange?: (date: string) => void;
     onDelete?: () => void;
     projectId?: string;
+    aiIcon?: React.ReactNode;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -71,7 +72,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     creationDateValue = '',
     onCreationDateChange,
     onDelete,
-    projectId
+    projectId,
+    aiIcon
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -283,6 +285,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem', minWidth: 'fit-content' }}>
                 {label}
             </Typography>
+
+            {/* AI Icon */}
+            {aiIcon}
 
             {/* Date field */}
             {showCreationDate && (
@@ -2070,26 +2075,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             דוח יועץ קרקע
                                         </Typography>
 
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 3 }}>
-                                            {/* Soil Report File Upload with AI Icon */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <Box sx={{ flex: 1 }}>
-                                                    <FileUpload
-                                                        label="דוח יועץ קרקע"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
-                                                        onChange={handleSoilReportFileChange}
-                                                        onDelete={() => handleSoilReportFileChange('')}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                        showCreationDate={true}
-                                                        creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
-                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
-                                                        projectId={project?._id || project?.id}
-                                                    />
-                                                </Box>
-
-                                                {/* AI Analysis Icon - only show if file uploaded and not yet analyzed */}
-                                                {(() => {
+                                        {/* Soil Report File Upload with AI Icon */}
+                                        <Box sx={{ mb: 3 }}>
+                                            <FileUpload
+                                                label="דוח יועץ קרקע"
+                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile}
+                                                onChange={handleSoilReportFileChange}
+                                                onDelete={() => handleSoilReportFileChange('')}
+                                                disabled={mode === 'view' || !canEdit}
+                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                showCreationDate={true}
+                                                creationDateValue={project?.engineeringQuestionnaire?.soilConsultantReport?.reportFileCreationDate || ''}
+                                                onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.reportFileCreationDate', date)}
+                                                projectId={project?._id || project?.id}
+                                                aiIcon={(() => {
                                                     const reportFile = project?.engineeringQuestionnaire?.soilConsultantReport?.reportFile;
                                                     const isAnalyzed = analyzedFiles.has(reportFile);
                                                     console.log('🔍 Soil Report AI Icon Debug:', {
@@ -2099,18 +2098,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         analyzedFiles: Array.from(analyzedFiles),
                                                         shouldShow: reportFile && canEdit && !isAnalyzed
                                                     });
-                                                    return reportFile && canEdit && !isAnalyzed;
-                                                })() && (
+                                                    return reportFile && canEdit && !isAnalyzed ? (
                                                         <IconButton
                                                             onClick={handleAutoFillFromReport}
                                                             disabled={isAnalyzing || mode === 'view'}
                                                             sx={{
-                                                                backgroundColor: '#6B46C1', // Chocolate purple color
-                                                                color: 'white',
+                                                                backgroundColor: 'white',
+                                                                color: '#6B46C1',
                                                                 width: '48px',
                                                                 height: '48px',
                                                                 '&:hover': {
-                                                                    backgroundColor: '#F3F4F6', // Light gray hover
+                                                                    backgroundColor: '#F3F4F6',
                                                                 },
                                                                 '&:disabled': {
                                                                     backgroundColor: '#E5E7EB',
@@ -2124,9 +2122,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <AutoAwesomeIcon />
                                                             )}
                                                         </IconButton>
-                                                    )}
-                                            </Box>
+                                                    ) : null;
+                                                })()}
+                                            />
+                                        </Box>
 
+                                        {/* Soil Report Fields - 4 columns layout */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 3 }}>
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label" sx={{
                                                     whiteSpace: 'normal',
