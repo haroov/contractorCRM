@@ -282,7 +282,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 )}
 
             {/* Label text */}
-            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem', minWidth: 'fit-content' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '1rem', minWidth: 'fit-content' }}>
                     {label}
                 </Typography>
 
@@ -2379,7 +2379,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 מבנים קיימים והריסה
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
