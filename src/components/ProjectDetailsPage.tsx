@@ -1587,12 +1587,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile, 'תוכניות גרמושקה')}
                                                                 disabled={isAnalyzing || mode === 'view'}
                                                                 sx={{
-                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
-                                                                    color: 'white',
+                                                                    backgroundColor: 'white', // White background
+                                                                    color: '#6B46C1', // Chocolate purple stars
+                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
-                                                                        backgroundColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6', // Light gray hover
                                                                     },
                                                                     '&:disabled': {
                                                                         backgroundColor: '#E5E7EB',
@@ -1886,12 +1887,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file, 'אישור מהנדס קונסטרקטור')}
                                                                 disabled={isAnalyzing || mode === 'view'}
                                                                 sx={{
-                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
-                                                                    color: 'white',
+                                                                    backgroundColor: 'white', // White background
+                                                                    color: '#6B46C1', // Chocolate purple stars
+                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
-                                                                        backgroundColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6', // Light gray hover
                                                                     },
                                                                     '&:disabled': {
                                                                         backgroundColor: '#E5E7EB',
@@ -1930,12 +1932,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file, 'תקן 413 רעידות אדמה')}
                                                                 disabled={isAnalyzing || mode === 'view'}
                                                                 sx={{
-                                                                    backgroundColor: '#6B46C1', // Chocolate purple color
-                                                                    color: 'white',
+                                                                    backgroundColor: 'white', // White background
+                                                                    color: '#6B46C1', // Chocolate purple stars
+                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
-                                                                        backgroundColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6', // Light gray hover
                                                                     },
                                                                     '&:disabled': {
                                                                         backgroundColor: '#E5E7EB',
@@ -2104,7 +2107,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 width: '48px',
                                                                 height: '48px',
                                                                 '&:hover': {
-                                                                    backgroundColor: '#5B21B6',
+                                                                    backgroundColor: '#F3F4F6', // Light gray hover
                                                                 },
                                                                 '&:disabled': {
                                                                     backgroundColor: '#E5E7EB',
