@@ -1589,7 +1589,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     backgroundColor: 'white', // White background
                                                                     color: '#6B46C1', // Chocolate purple stars
-                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
@@ -1889,7 +1888,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     backgroundColor: 'white', // White background
                                                                     color: '#6B46C1', // Chocolate purple stars
-                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
@@ -1934,7 +1932,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     backgroundColor: 'white', // White background
                                                                     color: '#6B46C1', // Chocolate purple stars
-                                                                    border: '2px solid #6B46C1', // Purple border
                                                                     width: '48px',
                                                                     height: '48px',
                                                                     '&:hover': {
