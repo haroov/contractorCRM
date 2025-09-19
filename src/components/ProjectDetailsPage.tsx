@@ -1505,8 +1505,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         </Box>
                     </Box>
 
-                    {/* Tabs */}
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    {/* Tabs - Sticky */}
+                    <Box sx={{ 
+                        borderBottom: 1, 
+                        borderColor: 'divider',
+                        position: 'sticky',
+                        top: '64px', // Height of the header above
+                        zIndex: 999,
+                        bgcolor: 'white',
+                        flexShrink: 0
+                    }}>
                         <Tabs
                             value={activeTab}
                             onChange={handleTabChange}
