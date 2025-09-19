@@ -1723,7 +1723,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            marginLeft: 0
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
                                                             <Button
                                                                 variant="text"
