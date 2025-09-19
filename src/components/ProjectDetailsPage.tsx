@@ -3434,8 +3434,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
                                 </Box>
 
-                                {/* תוכנית הידרולוג (אופציונלי) */}
+                                {/* תוכנית הידרולוג */}
                                 <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        תוכנית הידרולוג
+                                    </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
                                         <FileUpload
@@ -3451,27 +3454,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             projectId={project?._id || project?.id}
                                         />
 
-                                        <FormControl fullWidth>
-                                            <InputLabel id="basement-pumps-label" sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם יש משאבות זמינות באתר לשימוש במקרה הצפה</InputLabel>
-                                            <Select
-                                                labelId="basement-pumps-label"
-                                                value={project?.hydrologicalPlan?.basementPumpsAvailable === true ? 'כן' : project?.hydrologicalPlan?.basementPumpsAvailable === false ? 'לא' : ''}
-                                                label="האם יש משאבות זמינות באתר לשימוש במקרה הצפה"
-                                                onChange={(e) => handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                משאבות זמינות במקרה הצפה
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
                                     </Box>
                                 </Box>
 
@@ -3479,25 +3534,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Box sx={{ mb: 4 }}>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם הכניסות מנוגדות לזרימת המים</InputLabel>
-                                            <Select
-                                                value={project?.drainagePlan?.entrancesOppositeWaterFlow === true ? 'כן' : project?.drainagePlan?.entrancesOppositeWaterFlow === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                הכניסות מנוגדות לזרימת המים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {!project?.drainagePlan?.entrancesOppositeWaterFlow && (
                                             <TextField
@@ -3517,25 +3626,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Box sx={{ mb: 4 }}>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם קיים לוח זמנים לפרויקט</InputLabel>
-                                            <Select
-                                                value={project?.schedule?.exists === true ? 'כן' : project?.schedule?.exists === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('schedule.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                קיים לוח זמנים לפרויקט
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('schedule.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.schedule?.exists === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.schedule?.exists === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.schedule?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('schedule.exists', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.schedule?.exists === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.schedule?.exists === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.schedule?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {project?.schedule?.exists && (
                                             <>
