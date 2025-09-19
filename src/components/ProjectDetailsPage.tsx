@@ -1861,6 +1861,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         inputProps={{ min: 1, max: 100 }}
                                                     />
 
+                                                </Box>
+
+                                                <BuildingTable
+                                                    numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
+                                                    buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
+                                                    onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                {/* שדות מרתף - מוצגים אחרי הטבלה */}
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mt: 3 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="סה״כ מ״ר בנוי מרתף"
@@ -1893,13 +1904,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Select>
                                                     </FormControl>
                                                 </Box>
-
-                                                <BuildingTable
-                                                    numberOfBuildings={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || 0}
-                                                    buildings={project?.engineeringQuestionnaire?.buildingPlan?.buildings || []}
-                                                    onBuildingsChange={(buildings) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildings', buildings)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
                                             </Box>
                                         )}
 
