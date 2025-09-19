@@ -44,6 +44,7 @@ import {
     PictureAsPdf as PdfIcon,
     AutoAwesome as AutoAwesomeIcon
 } from '@mui/icons-material';
+import { YesNoSegment } from './ui/YesNoSegment';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 
@@ -977,8 +978,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔍 Starting document analysis:', fileUrl, documentType);
 
             // Choose the correct endpoint based on document type
-            const endpoint = documentType.includes('גרמושקה') || documentType.includes('תוכניות') 
-                ? '/api/document-parser/parse-garmoshka' 
+            const endpoint = documentType.includes('גרמושקה') || documentType.includes('תוכניות')
+                ? '/api/document-parser/parse-garmoshka'
                 : '/api/document-parser/parse-soil-report';
 
             const response = await fetch(endpoint, {
