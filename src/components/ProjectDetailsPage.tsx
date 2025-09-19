@@ -482,25 +482,6 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
-                {!disabled && (
-                    <Button
-                        startIcon={<AddIcon />}
-                        onClick={addPlot}
-                        variant="outlined"
-                        sx={{
-                            borderColor: '#6B46C1',
-                            color: '#6B46C1',
-                            '&:hover': {
-                                borderColor: '#5B21B6',
-                                backgroundColor: '#f3e5f5'
-                            }
-                        }}
-                    >
-                        הוספת חלקה
-                    </Button>
-                )}
-            </Box>
             <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, minWidth: 600, overflow: 'hidden' }}>
                 <Table size="small" sx={{ minWidth: 600 }}>
                     <TableHead>
@@ -614,6 +595,27 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                 )}
                             </TableRow>
                         ))}
+                        {!disabled && (
+                            <TableRow>
+                                <TableCell colSpan={4} sx={{ padding: 2, textAlign: 'center', borderTop: '2px solid #e0e0e0' }}>
+                                    <Button
+                                        startIcon={<AddIcon />}
+                                        onClick={addPlot}
+                                        variant="outlined"
+                                        sx={{
+                                            borderColor: '#6B46C1',
+                                            color: '#6B46C1',
+                                            '&:hover': {
+                                                borderColor: '#5B21B6',
+                                                backgroundColor: '#f3e5f5'
+                                            }
+                                        }}
+                                    >
+                                        הוספת חלקה
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
