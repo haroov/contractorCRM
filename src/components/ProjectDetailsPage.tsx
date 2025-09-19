@@ -1549,9 +1549,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     <Box sx={{ p: 3, pb: 6, flex: 1, display: 'flex', flexDirection: 'column' }}>
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מידע כללי
-                                </Typography>
 
                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, flex: 1, bgcolor: 'white', p: 2, borderRadius: 1 }}>
                                     <TextField
