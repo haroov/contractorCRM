@@ -1670,7 +1670,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Select>
                                                     </FormControl>
 
-                                                    <Box sx={{ display: 'flex', gap: 0, direction: 'rtl', border: '1px solid #d1d5db', borderRadius: '8px', overflow: 'hidden' }}>
+                                                    <Box sx={{ display: 'flex', gap: 0, direction: 'rtl', border: '2px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
                                                         <Box sx={{ 
                                                             display: 'flex', 
                                                             alignItems: 'center', 
@@ -1699,7 +1699,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }}>
                                                             <Button
                                                                 variant="text"
-                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false)}
+                                                                onClick={() => {
+                                                                    console.log('🔴 Clicking "לא" button, current value:', project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram);
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false);
+                                                                }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
@@ -1720,7 +1723,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Button>
                                                             <Button
                                                                 variant="text"
-                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true)}
+                                                                onClick={() => {
+                                                                    console.log('🟢 Clicking "כן" button, current value:', project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram);
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true);
+                                                                }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '0 4px 4px 0',
