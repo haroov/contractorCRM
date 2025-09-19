@@ -282,7 +282,21 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 )}
 
             {/* Label text */}
-            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '1rem', minWidth: 'fit-content' }}>
+            <Typography 
+                variant="body2" 
+                sx={{ 
+                    color: value ? '#6B46C1' : 'text.secondary', 
+                    fontSize: '1rem', 
+                    minWidth: 'fit-content',
+                    cursor: value ? 'pointer' : 'default',
+                    textDecoration: value ? 'underline' : 'none',
+                    '&:hover': value ? {
+                        color: '#5B21B6',
+                        textDecoration: 'underline'
+                    } : {}
+                }}
+                onClick={value ? () => window.open(value, '_blank') : undefined}
+            >
                     {label}
                 </Typography>
 
@@ -2363,14 +2377,43 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <FileUpload
                                                 label="דוח סקר סיכונים"
                                                 value={project?.engineeringQuestionnaire?.riskAssessmentReport?.reportFile}
-                                                onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.riskAssessmentReport.reportFile', url)}
-                                                onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.riskAssessmentReport.reportFile', '')}
+                                                onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.riskAssessmentReport.reportFile', url, project?.engineeringQuestionnaire?.riskAssessmentReport?.reportFile)}
+                                                onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.riskAssessmentReport.reportFile', '', project?.engineeringQuestionnaire?.riskAssessmentReport?.reportFile)}
                                                 disabled={mode === 'view' || !canEdit}
                                                 accept=".pdf,.jpg,.jpeg,.png"
                                                 showCreationDate={true}
                                                 creationDateValue={project?.engineeringQuestionnaire?.riskAssessmentReport?.reportFileCreationDate || ''}
                                                 onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.riskAssessmentReport.reportFileCreationDate', date)}
                                                 projectId={project?._id || project?.id}
+                                                aiIcon={(() => {
+                                                    const reportFile = project?.engineeringQuestionnaire?.riskAssessmentReport?.reportFile;
+                                                    const isAnalyzed = analyzedFiles.has(reportFile);
+                                                    return reportFile && canEdit && !isAnalyzed ? (
+                                                        <IconButton
+                                                            onClick={() => handleDocumentAnalysis(reportFile, 'risk-assessment')}
+                                                            disabled={isAnalyzing || mode === 'view'}
+                                                            sx={{
+                                                                backgroundColor: 'white',
+                                                                color: '#6B46C1',
+                                                                width: '48px',
+                                                                height: '48px',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#F3F4F6',
+                                                                },
+                                                                '&:disabled': {
+                                                                    backgroundColor: '#E5E7EB',
+                                                                    color: '#9CA3AF'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {isAnalyzing ? (
+                                                                <CircularProgress size={24} color="inherit" />
+                                                            ) : (
+                                                                <AutoAwesomeIcon />
+                                                            )}
+                                                        </IconButton>
+                                                    ) : null;
+                                                })()}
                                             />
                                         </Box>
 
