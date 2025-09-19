@@ -1881,28 +1881,84 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         disabled={mode === 'view' || !canEdit}
                                                     />
 
-                                                    <FormControl fullWidth>
-                                                        <InputLabel id="shared-basement-label" sx={{
-                                                            whiteSpace: 'normal',
-                                                            lineHeight: 1.2,
-                                                            maxWidth: '100%',
-                                                            transform: 'translate(14px, -9px) scale(0.75)',
-                                                            '&.Mui-focused': {
-                                                                transform: 'translate(14px, -9px) scale(0.75)'
-                                                            }
-                                                        }}>האם יש קומות מרתף משותפות לבניינים אחרים</InputLabel>
-                                                        <Select
-                                                            labelId="shared-basement-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'לא' : ''}
-                                                            label="האם יש קומות מרתף משותפות לבניינים אחרים"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="">בחר אפשרות</MenuItem>
-                                                            <MenuItem value="לא">לא</MenuItem>
-                                                            <MenuItem value="כן">כן</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
+                                                    {/* שדה מרתף משותף - כפתורי כן/לא */}
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
+                                                            האם יש קומות מרתף משותפות לבניינים אחרים
+                                                        </Typography>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => {
+                                                                    console.log('🔴 Clicking "לא" button for shared basement, current value:', project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors);
+                                                                    console.log('🔴 Mode:', mode, 'canEdit:', canEdit);
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', false);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#6B46C1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'white' : '#6B46C1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => {
+                                                                    console.log('🟢 Clicking "כן" button for shared basement, current value:', project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors);
+                                                                    console.log('🟢 Mode:', mode, 'canEdit:', canEdit);
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', true);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#6B46C1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'white' : '#6B46C1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
                                                 </Box>
                                             </Box>
                                         )}
