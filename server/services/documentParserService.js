@@ -1,9 +1,9 @@
 const OpenAI = require('openai');
 
 // Initialize OpenAI client
-const openai = OpenAI({
+const openai = new OpenAI.OpenAIApi(new OpenAI.Configuration({
   apiKey: process.env.OPENAI_API_KEY || '',
-});
+}));
 
 class DocumentParserService {
   /**
@@ -73,7 +73,7 @@ class DocumentParserService {
     try {
       // Convert PDF to images and use vision API
       // This is a simplified approach - in production you might want to use pdf-poppler
-      const response = await openai.chat.completions.create({
+      const response = await openai.createChatCompletion({
         model: "gpt-4-vision-preview",
         messages: [
           {
@@ -107,7 +107,7 @@ class DocumentParserService {
    */
   static async extractTextFromImage(fileUrl) {
     try {
-      const response = await openai.chat.completions.create({
+      const response = await openai.createChatCompletion({
         model: "gpt-4-vision-preview",
         messages: [
           {
@@ -170,7 +170,7 @@ ${documentText}
 חזור רק עם ה-JSON, ללא הסברים נוספים.
 `;
 
-      const response = await openai.chat.completions.create({
+      const response = await openai.createChatCompletion({
         model: "gpt-4",
         messages: [
           {
