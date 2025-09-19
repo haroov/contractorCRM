@@ -2661,25 +2661,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             rows={3}
                                         />
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם קיימים מבנים סמוכים</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.adjacentBuildings?.exists === true ? 'כן' : project?.environmentalSurvey?.adjacentBuildings?.exists === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם קיימים מבנים סמוכים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {project?.environmentalSurvey?.adjacentBuildings?.exists && (
                                             <>
@@ -2723,25 +2777,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </>
                                         )}
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם קיימים כבלי חשמל במרחק מהעגורנים</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.electricalCables?.exists === true ? 'כן' : project?.environmentalSurvey?.electricalCables?.exists === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.electricalCables.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם קיימים כבלי חשמל במרחק מהעגורנים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.electricalCables.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.electricalCables?.exists === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.electricalCables.exists', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.electricalCables?.exists === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {project?.environmentalSurvey?.electricalCables?.exists && (
                                             <TextField
@@ -2755,25 +2863,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         )}
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? 'כן' : project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {project?.environmentalSurvey?.undergroundInfrastructure?.exists && (
                                             <TextField
@@ -2787,25 +2949,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         )}
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם יש גני ילדים בסביבה</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.kindergartens?.exists === true ? 'כן' : project?.environmentalSurvey?.kindergartens?.exists === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.kindergartens.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם יש גני ילדים בסביבה
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.kindergartens.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.kindergartens?.exists === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.kindergartens.exists', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.kindergartens?.exists === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         {project?.environmentalSurvey?.kindergartens?.exists && (
                                             <TextField
@@ -2819,105 +3035,375 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         )}
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>קרבה לתחנת דלק</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.proximityToGasStation === true ? 'כן' : project?.environmentalSurvey?.proximityToGasStation === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToGasStation', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                קרבה לתחנת דלק
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToGasStation', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToGasStation === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToGasStation === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToGasStation === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToGasStation', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToGasStation === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToGasStation === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToGasStation === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>קרבה לתחנת משטרה</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.proximityToPoliceStation === true ? 'כן' : project?.environmentalSurvey?.proximityToPoliceStation === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                קרבה לתחנת משטרה
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToPoliceStation === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToPoliceStation === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>קרבה למד״א או מרכז רפואי</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.proximityToMedicalCenter === true ? 'כן' : project?.environmentalSurvey?.proximityToMedicalCenter === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                קרבה למד״א או מרכז רפואי
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToMedicalCenter === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.proximityToMedicalCenter === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם הפרויקט על רכס הר</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.onMountainRidge === true ? 'כן' : project?.environmentalSurvey?.onMountainRidge === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.onMountainRidge', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם הפרויקט על רכס הר
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.onMountainRidge', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.onMountainRidge === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.onMountainRidge', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.onMountainRidge === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
-                                        <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                whiteSpace: 'normal',
-                                                lineHeight: 1.2,
-                                                maxWidth: '100%',
-                                                transform: 'translate(14px, -9px) scale(0.75)',
-                                                '&.Mui-focused': {
-                                                    transform: 'translate(14px, -9px) scale(0.75)'
-                                                }
-                                            }}>האם הפרויקט בואדי</InputLabel>
-                                            <Select
-                                                value={project?.environmentalSurvey?.inValley === true ? 'כן' : project?.environmentalSurvey?.inValley === false ? 'לא' : ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.inValley', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            >
-                                                <MenuItem value="לא">לא</MenuItem>
-                                                <MenuItem value="כן">כן</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                האם הפרויקט בואדי
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.inValley', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.environmentalSurvey?.inValley === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.inValley === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.inValley === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('environmentalSurvey.inValley', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.environmentalSurvey?.inValley === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.inValley === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.environmentalSurvey?.inValley === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         <TextField
                                             fullWidth
