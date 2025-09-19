@@ -1671,49 +1671,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                     <Box sx={{
                                                         display: 'flex',
-                                                        gap: 0,
-                                                        direction: 'rtl',
-                                                        border: '2px solid #e5e7eb',
-                                                        borderRadius: '8px',
-                                                        overflow: 'hidden',
-                                                        position: 'relative',
-                                                        '&::before': {
-                                                            content: '""',
-                                                            position: 'absolute',
-                                                            top: '-1px',
-                                                            left: '-1px',
-                                                            right: '-1px',
-                                                            bottom: '-1px',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '8px',
-                                                            pointerEvents: 'none'
-                                                        }
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
                                                     }}>
-                                                        <Box sx={{
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            padding: '0 12px',
-                                                            backgroundColor: 'white',
-                                                            borderLeft: '1px solid #d1d5db',
-                                                            minWidth: '120px',
-                                                            justifyContent: 'center'
+                                                        <Typography variant="body2" sx={{ 
+                                                            color: 'text.secondary', 
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '120px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.875rem' }}>
-                                                                תוכנית ממשלתית
-                                                            </Typography>
-                                                        </Box>
+                                                            תוכנית ממשלתית
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
                                                             gap: 0,
-                                                            backgroundColor: '#f9fafb',
-                                                            borderLeft: '1px solid #d1d5db',
-                                                            padding: '1px',
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            border: '1px solid #e5e7eb',
-                                                            borderRadius: '6px',
-                                                            margin: '2px',
-                                                            minWidth: '120px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -1725,11 +1703,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
-                                                                    border: 'none',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderRight: 'none',
                                                                     backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#e5e7eb',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -1750,11 +1729,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '0 4px 4px 0',
-                                                                    border: 'none',
+                                                                    border: '1px solid #d1d5db',
                                                                     backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#e5e7eb',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
