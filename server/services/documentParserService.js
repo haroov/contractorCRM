@@ -46,6 +46,45 @@ class DocumentParserService {
   }
 
   /**
+   * Parse a Garmoshka (building plans) document and extract relevant information
+   */
+  static async parseGarmoshkaReport(fileUrl) {
+    try {
+      console.log('🔍 Starting Garmoshka document parsing for:', fileUrl);
+      
+      // Validate URL first
+      if (!fileUrl || typeof fileUrl !== 'string') {
+        throw new Error('Invalid file URL provided');
+      }
+      
+      try {
+        new URL(fileUrl);
+      } catch (urlError) {
+        throw new Error(`Invalid URL format: ${fileUrl}`);
+      }
+      
+      // First, we need to download and read the document
+      const documentText = await this.extractTextFromDocument(fileUrl);
+      
+      if (!documentText) {
+        throw new Error('Could not extract text from document');
+      }
+
+      console.log('📄 Extracted text length:', documentText.length);
+
+      // Use OpenAI to analyze the document and extract structured data for building plans
+      const extractedData = await this.extractGarmoshkaDataWithOpenAI(documentText);
+      
+      console.log('✅ Successfully extracted Garmoshka data:', extractedData);
+      return extractedData;
+      
+    } catch (error) {
+      console.error('❌ Error parsing Garmoshka report:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Extract text from various document formats
    */
   static async extractTextFromDocument(fileUrl) {
@@ -154,6 +193,78 @@ class DocumentParserService {
   }
 
   /**
+   * Use OpenAI to extract structured data from Garmoshka document text
+   */
+  static async extractGarmoshkaDataWithOpenAI(documentText) {
+    try {
+      const prompt = `
+אתה מומחה בקריאת תוכניות בניה (גרמושקה). אנא קרא את הטקסט הבא וחלץ את המידע הרלוונטי למילוי טופס פרויקט בניה.
+
+טקסט המסמך:
+${documentText}
+
+אנא חלץ את המידע הבא וחזור בתשובה בפורמט JSON:
+
+{
+  "projectType": "סוג הפרויקט (בניה/תשתית/אחר)",
+  "projectTypeOther": "אם סוג הפרויקט הוא 'אחר', פרט כאן",
+  "governmentProgram": true/false - האם זה פרויקט ממשלתי,
+  "buildingHeight": מספר קומות,
+  "totalArea": מספר שטח כולל במ"ר,
+  "undergroundFloors": מספר קומות תת קרקעיות,
+  "constructionMethod": "שיטת הבניה (קונבנציונאלי/טרומי/אחר)",
+  "constructionMethodOther": "אם שיטת הבניה היא 'אחר', פרט כאן",
+  "foundationType": "סוג היסודות",
+  "structuralSystem": "מערכת קונסטרוקטיבית",
+  "maxColumnSpacing": מספר מפתח מירבי בין עמודים במטרים,
+  "seismicDesign": "תכנון סיסמי",
+  "fireResistance": "עמידות באש",
+  "accessibility": "נגישות",
+  "parkingSpaces": מספר מקומות חניה,
+  "elevators": מספר מעליות",
+  "buildingMaterials": "חומרי בניה עיקריים",
+  "specialFeatures": "תכונות מיוחדות",
+  "complianceStandards": "תקנים ותקנות רלוונטיים"
+}
+
+אם מידע מסוים לא נמצא במסמך, השאר את השדה ריק או null.
+חזור רק עם ה-JSON, ללא הסברים נוספים.
+`;
+
+      const response = await openai.createChatCompletion({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "אתה מומחה בקריאת תוכניות בניה (גרמושקה). תמיד חזור עם JSON תקין בלבד."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        max_tokens: 2000,
+        temperature: 0.1
+      });
+
+      const content = response.choices[0]?.message?.content || '{}';
+      
+      try {
+        const parsedData = JSON.parse(content);
+        return this.validateAndCleanGarmoshkaData(parsedData);
+      } catch (parseError) {
+        console.error('Error parsing OpenAI response:', parseError);
+        console.log('Raw response:', content);
+        throw new Error('Failed to parse OpenAI response');
+      }
+      
+    } catch (error) {
+      console.error('Error extracting Garmoshka data with OpenAI:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Use OpenAI to extract structured data from document text
    */
   static async extractDataWithOpenAI(documentText) {
@@ -218,6 +329,88 @@ ${documentText}
       console.error('Error extracting data with OpenAI:', error);
       throw error;
     }
+  }
+
+  /**
+   * Validate and clean the extracted Garmoshka data
+   */
+  static validateAndCleanGarmoshkaData(data) {
+    const cleaned = {};
+
+    // Validate project type
+    if (data.projectType && typeof data.projectType === 'string') {
+      const validProjectTypes = ['בניה', 'תשתית', 'אחר'];
+      if (validProjectTypes.includes(data.projectType)) {
+        cleaned.projectType = data.projectType;
+        if (data.projectType === 'אחר' && data.projectTypeOther) {
+          cleaned.projectTypeOther = data.projectTypeOther;
+        }
+      }
+    }
+
+    // Validate boolean fields
+    if (typeof data.governmentProgram === 'boolean') {
+      cleaned.governmentProgram = data.governmentProgram;
+    }
+
+    // Validate numeric fields
+    if (data.buildingHeight && !isNaN(Number(data.buildingHeight))) {
+      cleaned.buildingHeight = Number(data.buildingHeight);
+    }
+    if (data.totalArea && !isNaN(Number(data.totalArea))) {
+      cleaned.totalArea = Number(data.totalArea);
+    }
+    if (data.undergroundFloors && !isNaN(Number(data.undergroundFloors))) {
+      cleaned.undergroundFloors = Number(data.undergroundFloors);
+    }
+    if (data.maxColumnSpacing && !isNaN(Number(data.maxColumnSpacing))) {
+      cleaned.maxColumnSpacing = Number(data.maxColumnSpacing);
+    }
+    if (data.parkingSpaces && !isNaN(Number(data.parkingSpaces))) {
+      cleaned.parkingSpaces = Number(data.parkingSpaces);
+    }
+    if (data.elevators && !isNaN(Number(data.elevators))) {
+      cleaned.elevators = Number(data.elevators);
+    }
+
+    // Validate construction method
+    if (data.constructionMethod && typeof data.constructionMethod === 'string') {
+      const validMethods = ['קונבנציונאלי', 'טרומי', 'אחר'];
+      if (validMethods.includes(data.constructionMethod)) {
+        cleaned.constructionMethod = data.constructionMethod;
+        if (data.constructionMethod === 'אחר' && data.constructionMethodOther) {
+          cleaned.constructionMethodOther = data.constructionMethodOther;
+        }
+      }
+    }
+
+    // Validate text fields
+    if (data.foundationType && typeof data.foundationType === 'string') {
+      cleaned.foundationType = data.foundationType;
+    }
+    if (data.structuralSystem && typeof data.structuralSystem === 'string') {
+      cleaned.structuralSystem = data.structuralSystem;
+    }
+    if (data.seismicDesign && typeof data.seismicDesign === 'string') {
+      cleaned.seismicDesign = data.seismicDesign;
+    }
+    if (data.fireResistance && typeof data.fireResistance === 'string') {
+      cleaned.fireResistance = data.fireResistance;
+    }
+    if (data.accessibility && typeof data.accessibility === 'string') {
+      cleaned.accessibility = data.accessibility;
+    }
+    if (data.buildingMaterials && typeof data.buildingMaterials === 'string') {
+      cleaned.buildingMaterials = data.buildingMaterials;
+    }
+    if (data.specialFeatures && typeof data.specialFeatures === 'string') {
+      cleaned.specialFeatures = data.specialFeatures;
+    }
+    if (data.complianceStandards && typeof data.complianceStandards === 'string') {
+      cleaned.complianceStandards = data.complianceStandards;
+    }
+
+    return cleaned;
   }
 
   /**
