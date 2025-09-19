@@ -1555,9 +1555,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 {/* Garmoshka File Upload with AI Icon */}
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                    <Box sx={{ flex: 1 }}>
+                                                    {/* File Upload Icon (right side) */}
+                                                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
                                                         <FileUpload
-                                                            label="תוכניות (גרמושקה)"
+                                                            label=""
                                                             value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
                                                             onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
                                                             onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
@@ -1569,7 +1570,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             projectId={project?._id || project?.id}
                                                         />
                                                     </Box>
-
+                                                    
+                                                    {/* File Name (clickable if file exists) */}
+                                                    <Typography
+                                                        variant="body1"
+                                                        sx={{
+                                                            color: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? '#6B46C1' : 'text.secondary',
+                                                            cursor: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'pointer' : 'default',
+                                                            textDecoration: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'underline' : 'none',
+                                                            '&:hover': project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? {
+                                                                color: '#5B21B6',
+                                                            } : {}
+                                                        }}
+                                                        onClick={() => {
+                                                            if (project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) {
+                                                                window.open(project.engineeringQuestionnaire.buildingPlan.garmoshkaFile, '_blank');
+                                                            }
+                                                        }}
+                                                    >
+                                                        תוכניות (גרמושקה)
+                                                    </Typography>
+                                                    
                                                     {/* AI Analysis Icon for Garmoshka */}
                                                     {(() => {
                                                         const garmoshkaFile = project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile;
