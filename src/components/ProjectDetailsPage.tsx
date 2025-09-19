@@ -822,8 +822,48 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 };
                                 console.log('🔄 Processed project data with nested fields:', processedProjectData);
                                 setProject(processedProjectData);
+                                
+                                // Update exists fields automatically based on file presence
+                                const updatedProjectData = {
+                                    ...processedProjectData,
+                                    engineeringQuestionnaire: {
+                                        ...processedProjectData.engineeringQuestionnaire,
+                                        buildingPlan: {
+                                            ...processedProjectData.engineeringQuestionnaire?.buildingPlan,
+                                            buildingPermit: {
+                                                ...processedProjectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
+                                                exists: !!processedProjectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file
+                                            },
+                                            excavationPermit: {
+                                                ...processedProjectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                exists: !!processedProjectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file
+                                            }
+                                        }
+                                    }
+                                };
+                                setProject(updatedProjectData);
                             } else {
                                 setProject(projectData);
+                                
+                                // Update exists fields automatically based on file presence
+                                const updatedProjectData = {
+                                    ...projectData,
+                                    engineeringQuestionnaire: {
+                                        ...projectData.engineeringQuestionnaire,
+                                        buildingPlan: {
+                                            ...projectData.engineeringQuestionnaire?.buildingPlan,
+                                            buildingPermit: {
+                                                ...projectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
+                                                exists: !!projectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file
+                                            },
+                                            excavationPermit: {
+                                                ...projectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                exists: !!projectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file
+                                            }
+                                        }
+                                    }
+                                };
+                                setProject(updatedProjectData);
                             }
 
                             // Load contractor name if we have contractor ID
@@ -1970,81 +2010,47 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
 
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="building-permit-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>האם קיים היתר בניה</InputLabel>
-                                                    <Select
-                                                        labelId="building-permit-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists === false ? 'לא' : ''}
-                                                        label="האם קיים היתר בניה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="">בחר אפשרות</MenuItem>
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
+                                                <FileUpload
+                                                    label="העלה קובץ היתר בניה"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
+                                                    onChange={(url) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
+                                                        // Update exists field automatically based on file presence
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', !!url);
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', '');
+                                                        // Update exists field automatically when file is deleted
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
+                                                    projectId={project?._id || project?.id}
+                                                />
 
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.exists && (
-                                                    <FileUpload
-                                                        label="העלה קובץ היתר בניה"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
-                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url)}
-                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', '')}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                        showCreationDate={true}
-                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
-                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
-                                                        projectId={project?._id || project?.id}
-                                                    />
-                                                )}
-
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="excavation-permit-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>האם קיים היתר חפירה ודיפון</InputLabel>
-                                                    <Select
-                                                        labelId="excavation-permit-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists === false ? 'לא' : ''}
-                                                        label="האם קיים היתר חפירה ודיפון"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="">בחר אפשרות</MenuItem>
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.exists && (
-                                                    <FileUpload
-                                                        label="העלה קובץ היתר חפירה ודיפון"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
-                                                        onChange={(url) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url)}
-                                                        onDelete={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '')}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.jpg,.jpeg,.png"
-                                                        showCreationDate={true}
-                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
-                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
-                                                        projectId={project?._id || project?.id}
-                                                    />
-                                                )}
+                                                <FileUpload
+                                                    label="העלה קובץ היתר חפירה ודיפון"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
+                                                    onChange={(url) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
+                                                        // Update exists field automatically based on file presence
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', !!url);
+                                                    }}
+                                                    onDelete={() => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '');
+                                                        // Update exists field automatically when file is deleted
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
+                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
+                                                    projectId={project?._id || project?.id}
+                                                />
 
                                                 <FileUpload
                                                     label="אישור מהנדס קונסטרקטור - העלה קובץ"
