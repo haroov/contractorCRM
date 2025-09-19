@@ -1563,7 +1563,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     alignItems: 'center',
                                                     gap: 2,
                                                     direction: 'rtl',
-                                                    justifyContent: 'flex-end'
+                                                    justifyContent: 'flex-start'
                                                 }}>
                                                     {/* File Upload Icon */}
                                                     <FileUpload
