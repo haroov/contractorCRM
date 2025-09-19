@@ -482,17 +482,17 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
                 {!disabled && (
                     <Button
                         startIcon={<AddIcon />}
                         onClick={addPlot}
                         variant="outlined"
                         sx={{
-                            borderColor: '#9c27b0',
-                            color: '#9c27b0',
+                            borderColor: '#6B46C1',
+                            color: '#6B46C1',
                             '&:hover': {
-                                borderColor: '#7b1fa2',
+                                borderColor: '#5B21B6',
                                 backgroundColor: '#f3e5f5'
                             }
                         }}
@@ -535,7 +535,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#9c27b0'
+                                                    borderColor: '#6B46C1'
                                                 }
                                             }
                                         }}
@@ -560,7 +560,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#9c27b0'
+                                                    borderColor: '#6B46C1'
                                                 }
                                             }
                                         }}
@@ -585,7 +585,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#9c27b0'
+                                                    borderColor: '#6B46C1'
                                                 }
                                             }
                                         }}
