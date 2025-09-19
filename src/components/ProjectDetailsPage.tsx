@@ -1669,52 +1669,63 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex', 
                                                             alignItems: 'center', 
                                                             padding: '0 12px',
-                                                            backgroundColor: '#f9fafb',
+                                                            backgroundColor: 'white',
                                                             borderLeft: '1px solid #d1d5db',
                                                             minWidth: '120px',
                                                             justifyContent: 'center'
                                                         }}>
                                                             <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.875rem' }}>
-                                                                האם תוכנית ממשלתית?
+                                                                תוכנית ממשלתית
                                                             </Typography>
                                                         </Box>
-                                                        <Button
-                                                            variant={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'contained' : 'outlined'}
-                                                            onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                            sx={{
-                                                                borderRadius: 0,
-                                                                border: 'none',
-                                                                borderLeft: '1px solid #d1d5db',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'white',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
-                                                                '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#F3F4F6',
-                                                                },
-                                                                minWidth: '60px',
-                                                                height: '40px'
-                                                            }}
-                                                        >
-                                                            כן
-                                                        </Button>
-                                                        <Button
-                                                            variant={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'contained' : 'outlined'}
-                                                            onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                            sx={{
-                                                                borderRadius: 0,
-                                                                border: 'none',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'white',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
-                                                                '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#F3F4F6',
-                                                                },
-                                                                minWidth: '60px',
-                                                                height: '40px'
-                                                            }}
-                                                        >
-                                                            לא
-                                                        </Button>
+                                                        <Box sx={{ 
+                                                            display: 'flex', 
+                                                            gap: 0,
+                                                            backgroundColor: '#f9fafb',
+                                                            borderLeft: '1px solid #d1d5db',
+                                                            padding: '2px'
+                                                        }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '6px',
+                                                                    border: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#e5e7eb',
+                                                                    },
+                                                                    minWidth: '60px',
+                                                                    height: '36px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '6px',
+                                                                    border: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#e5e7eb',
+                                                                    },
+                                                                    minWidth: '60px',
+                                                                    height: '36px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                        </Box>
                                                     </Box>
                                                 </Box>
 
