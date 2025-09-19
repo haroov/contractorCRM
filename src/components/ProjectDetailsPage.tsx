@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import {
     Box,
     Typography,
@@ -1031,6 +1032,44 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             setSnackbarOpen(true);
 
             console.log('🔍 Starting document analysis:', fileUrl, documentType);
+
+            // Handle risk assessment report analysis
+            if (documentType === 'risk-assessment') {
+                const { analyzeReportByUrl, mapRiskAnalysisToProject } = await import('../services/riskAnalysisService');
+                
+                const analysisResult = await analyzeReportByUrl(fileUrl);
+                const mappedData = mapRiskAnalysisToProject(analysisResult);
+                
+                // Update project with mapped data
+                if (project) {
+                    const newProject = { ...project };
+                    
+                    // Apply all mapped fields
+                    Object.entries(mappedData).forEach(([fieldPath, value]) => {
+                        const keys = fieldPath.split('.');
+                        let current = newProject;
+                        
+                        for (let i = 0; i < keys.length - 1; i++) {
+                            if (!current[keys[i]]) {
+                                current[keys[i]] = {};
+                            }
+                            current = current[keys[i]];
+                        }
+                        
+                        current[keys[keys.length - 1]] = value;
+                    });
+                    
+                    setProject(newProject);
+                }
+                
+                // Mark file as analyzed
+                setAnalyzedFiles(prev => new Set([...prev, fileUrl]));
+                
+                setSnackbarMessage('הניתוח הושלם בהצלחה! השדות מולאו אוטומטית');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+                return;
+            }
 
             // Choose the correct endpoint based on document type
             const endpoint = documentType.includes('גרמושקה') || documentType.includes('תוכניות')
