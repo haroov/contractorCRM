@@ -1688,29 +1688,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             gap: 0,
                                                             backgroundColor: '#f9fafb',
                                                             borderLeft: '1px solid #d1d5db',
-                                                            padding: '2px',
+                                                            padding: '1px',
                                                             alignItems: 'center',
                                                             justifyContent: 'flex-start',
                                                             border: '1px solid #e5e7eb',
                                                             borderRadius: '6px',
-                                                            margin: '2px'
+                                                            margin: '2px',
+                                                            minWidth: '120px'
                                                         }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderRadius: '4px',
+                                                                    borderRadius: '4px 0 0 4px',
                                                                     border: 'none',
                                                                     backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
                                                                     '&:hover': {
                                                                         backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#e5e7eb',
                                                                     },
-                                                                    minWidth: '60px',
-                                                                    height: '36px',
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -1720,15 +1722,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderRadius: '4px',
+                                                                    borderRadius: '0 4px 4px 0',
                                                                     border: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B7280' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B7280',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#4B5563' : '#e5e7eb',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#e5e7eb',
                                                                     },
-                                                                    minWidth: '60px',
-                                                                    height: '36px',
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
                                                                     textTransform: 'none',
                                                                     fontSize: '0.875rem'
                                                                 }}
