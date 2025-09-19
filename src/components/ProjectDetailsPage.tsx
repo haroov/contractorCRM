@@ -2008,10 +2008,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 היתרים ואישורים
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
                                                 <FileUpload
-                                                    label="העלה קובץ היתר בניה"
+                                                    label="היתר בניה"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
                                                     onChange={(url) => {
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
@@ -2032,7 +2032,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FileUpload
-                                                    label="העלה קובץ היתר חפירה ודיפון"
+                                                    label="היתר חפירה ודיפון"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
                                                     onChange={(url) => {
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
@@ -2053,7 +2053,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FileUpload
-                                                    label="אישור מהנדס קונסטרקטור - העלה קובץ"
+                                                    label="אישור מהנדס קונסטרקטור"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file}
                                                     onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url, project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
                                                     onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '', project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
@@ -2066,7 +2066,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FileUpload
-                                                    label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
+                                                    label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
                                                     onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url, project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
                                                     onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '', project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
