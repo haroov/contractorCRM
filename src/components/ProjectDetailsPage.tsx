@@ -44,6 +44,7 @@ import {
     PictureAsPdf as PdfIcon,
     AutoAwesome as AutoAwesomeIcon
 } from '@mui/icons-material';
+import { YesNoSegment } from './ui/YesNoSegment';
 import type { Project } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 
@@ -977,8 +978,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔍 Starting document analysis:', fileUrl, documentType);
 
             // Choose the correct endpoint based on document type
-            const endpoint = documentType.includes('גרמושקה') || documentType.includes('תוכניות') 
-                ? '/api/document-parser/parse-garmoshka' 
+            const endpoint = documentType.includes('גרמושקה') || documentType.includes('תוכניות')
+                ? '/api/document-parser/parse-garmoshka'
                 : '/api/document-parser/parse-soil-report';
 
             const response = await fetch(endpoint, {
@@ -1669,73 +1670,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Select>
                                                     </FormControl>
 
-                                                    <Box sx={{ display: 'flex', gap: 0, direction: 'rtl', border: '1px solid #d1d5db', borderRadius: '8px', overflow: 'hidden' }}>
-                                                        <Box sx={{ 
-                                                            display: 'flex', 
-                                                            alignItems: 'center', 
-                                                            padding: '0 12px',
-                                                            backgroundColor: 'white',
-                                                            borderLeft: '1px solid #d1d5db',
-                                                            minWidth: '120px',
-                                                            justifyContent: 'center'
-                                                        }}>
-                                                            <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.875rem' }}>
-                                                                תוכנית ממשלתית
-                                                            </Typography>
-                                                        </Box>
-                                                        <Box sx={{ 
-                                                            display: 'flex', 
-                                                            gap: 0,
-                                                            backgroundColor: '#f9fafb',
-                                                            borderLeft: '1px solid #d1d5db',
-                                                            padding: '2px',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            border: '1px solid #e5e7eb',
-                                                            borderRadius: '6px',
-                                                            margin: '2px'
-                                                        }}>
-                                                            <Button
-                                                                variant="text"
-                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                sx={{
-                                                                    borderRadius: '4px',
-                                                                    border: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
-                                                                    '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#e5e7eb',
-                                                                    },
-                                                                    minWidth: '60px',
-                                                                    height: '36px',
-                                                                    textTransform: 'none',
-                                                                    fontSize: '0.875rem'
-                                                                }}
-                                                            >
-                                                                לא
-                                                            </Button>
-                                                            <Button
-                                                                variant="text"
-                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', true)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                sx={{
-                                                                    borderRadius: '4px',
-                                                                    border: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B7280' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B7280',
-                                                                    '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#4B5563' : '#e5e7eb',
-                                                                    },
-                                                                    minWidth: '60px',
-                                                                    height: '36px',
-                                                                    textTransform: 'none',
-                                                                    fontSize: '0.875rem'
-                                                                }}
-                                                            >
-                                                                כן
-                                                            </Button>
-                                                        </Box>
+                                                    <Box sx={{ display: 'flex', gap: 2, direction: 'rtl', alignItems: 'center' }}>
+                                                        <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem', minWidth: '120px', textAlign: 'right' }}>
+                                                            תוכנית ממשלתית
+                                                        </Typography>
+                                                        <YesNoSegment
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram || null}
+                                                            onChange={(value) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="medium"
+                                                        />
                                                     </Box>
                                                 </Box>
 

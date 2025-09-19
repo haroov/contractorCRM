@@ -1,4 +1,6 @@
 const OpenAI = require('openai');
+const axios = require('axios');
+require('dotenv').config({ path: './server/.env' });
 
 // Initialize OpenAI client
 const openai = new OpenAI.OpenAIApi(new OpenAI.Configuration({
@@ -12,21 +14,21 @@ class DocumentParserService {
   static async parseSoilReport(fileUrl) {
     try {
       console.log('🔍 Starting document parsing for:', fileUrl);
-      
+
       // Validate URL first
       if (!fileUrl || typeof fileUrl !== 'string') {
         throw new Error('Invalid file URL provided');
       }
-      
+
       try {
         new URL(fileUrl);
       } catch (urlError) {
         throw new Error(`Invalid URL format: ${fileUrl}`);
       }
-      
+
       // First, we need to download and read the document
       const documentText = await this.extractTextFromDocument(fileUrl);
-      
+
       if (!documentText) {
         throw new Error('Could not extract text from document');
       }
@@ -35,10 +37,10 @@ class DocumentParserService {
 
       // Use OpenAI to analyze the document and extract structured data
       const extractedData = await this.extractDataWithOpenAI(documentText);
-      
+
       console.log('✅ Successfully extracted data:', extractedData);
       return extractedData;
-      
+
     } catch (error) {
       console.error('❌ Error parsing soil report:', error);
       throw error;
@@ -51,22 +53,22 @@ class DocumentParserService {
   static async parseGarmoshkaReport(fileUrl) {
     try {
       console.log('🔍 Starting Garmoshka document parsing for:', fileUrl);
-      
+
       // Validate URL first
       if (!fileUrl || typeof fileUrl !== 'string') {
         throw new Error('Invalid file URL provided');
       }
-      
+
       try {
         new URL(fileUrl);
       } catch (urlError) {
         throw new Error(`Invalid URL format: ${fileUrl}`);
       }
-      
-      // First, we need to download and read the document
-      const documentText = await this.extractTextFromDocument(fileUrl);
-      
-      if (!documentText) {
+
+      // For PDF files, use OpenAI Vision API directly
+      const documentText = await this.extractTextFromPDF(fileUrl);
+
+      if (!documentText || documentText === 'Unable to read document') {
         throw new Error('Could not extract text from document');
       }
 
@@ -74,10 +76,10 @@ class DocumentParserService {
 
       // Use OpenAI to analyze the document and extract structured data for building plans
       const extractedData = await this.extractGarmoshkaDataWithOpenAI(documentText);
-      
+
       console.log('✅ Successfully extracted Garmoshka data:', extractedData);
       return extractedData;
-      
+
     } catch (error) {
       console.error('❌ Error parsing Garmoshka report:', error);
       throw error;
@@ -91,20 +93,20 @@ class DocumentParserService {
     try {
       // For now, we'll use a simple approach
       // In production, you might want to use specialized libraries for PDF parsing
-      
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error(`Document not found (404). Please check if the file URL is correct and accessible.`);
-        } else if (response.status === 403) {
-          throw new Error(`Access denied (403). The document may be private or require authentication.`);
-        } else {
-          throw new Error(`Failed to fetch document: ${response.status} ${response.statusText}`);
-        }
-      }
 
-      const contentType = response.headers.get('content-type');
-      
+      const response = await axios.get(fileUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'application/pdf,image/*,*/*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache'
+        },
+        responseType: 'arraybuffer',
+        timeout: 30000
+      });
+
+      const contentType = response.headers['content-type'];
+
       if (contentType?.includes('application/pdf')) {
         // For PDF files, we'll use OpenAI's vision capabilities
         return await this.extractTextFromPDF(fileUrl);
@@ -113,12 +115,27 @@ class DocumentParserService {
         return await this.extractTextFromImage(fileUrl);
       } else {
         // For text files
-        return await response.text();
+        return response.data.toString('utf8');
       }
-      
+
     } catch (error) {
       console.error('Error extracting text from document:', error);
-      throw error;
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 404) {
+          throw new Error(`Document not found (404). Please check if the file URL is correct and accessible.`);
+        } else if (status === 403) {
+          throw new Error(`Access denied (403). The document may be private or require authentication.`);
+        } else if (status === 401) {
+          throw new Error(`Unauthorized (401). The document may require authentication or have restricted access.`);
+        } else {
+          throw new Error(`Failed to fetch document: ${status} ${error.response.statusText}`);
+        }
+      } else if (error.request) {
+        throw new Error(`Network error: Unable to reach the document URL.`);
+      } else {
+        throw new Error(`Error: ${error.message}`);
+      }
     }
   }
 
@@ -127,8 +144,7 @@ class DocumentParserService {
    */
   static async extractTextFromPDF(fileUrl) {
     try {
-      // Convert PDF to images and use vision API
-      // This is a simplified approach - in production you might want to use pdf-poppler
+      // Use OpenAI Vision API directly with the URL
       const response = await openai.createChatCompletion({
         model: "gpt-4-vision-preview",
         messages: [
@@ -137,7 +153,7 @@ class DocumentParserService {
             content: [
               {
                 type: "text",
-                text: "Please extract all text from this document. Return only the raw text content without any formatting or analysis."
+                text: "Please extract all text from this PDF document. Return only the raw text content without any formatting or analysis. If you cannot read the document, please return 'Unable to read document'."
               },
               {
                 type: "image_url",
@@ -248,7 +264,7 @@ ${documentText}
       });
 
       const content = response.choices[0]?.message?.content || '{}';
-      
+
       try {
         const parsedData = JSON.parse(content);
         return this.validateAndCleanGarmoshkaData(parsedData);
@@ -257,7 +273,7 @@ ${documentText}
         console.log('Raw response:', content);
         throw new Error('Failed to parse OpenAI response');
       }
-      
+
     } catch (error) {
       console.error('Error extracting Garmoshka data with OpenAI:', error);
       throw error;
@@ -315,7 +331,7 @@ ${documentText}
       });
 
       const content = response.choices[0]?.message?.content || '{}';
-      
+
       try {
         const parsedData = JSON.parse(content);
         return this.validateAndCleanData(parsedData);
@@ -324,7 +340,7 @@ ${documentText}
         console.log('Raw response:', content);
         throw new Error('Failed to parse OpenAI response');
       }
-      
+
     } catch (error) {
       console.error('Error extracting data with OpenAI:', error);
       throw error;
