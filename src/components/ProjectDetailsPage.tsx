@@ -189,25 +189,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 style={{ display: 'none' }}
             />
 
-            {/* Label text */}
-            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem', minWidth: 'fit-content' }}>
-                {label}
-            </Typography>
-
-            {/* Date field */}
-            {showCreationDate && (
-                <TextField
-                    label="תאריך יצירת המסמך"
-                    type="date"
-                    value={creationDateValue}
-                    onChange={(e) => onCreationDateChange?.(e.target.value)}
-                    disabled={disabled}
-                    size="small"
-                    InputLabelProps={{ shrink: true }}
-                    sx={{ minWidth: 200 }}
-                />
-            )}
-
             {/* Upload button or file display */}
             {value ? (
                 <Box sx={{
@@ -296,6 +277,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 >
                     {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
                 </IconButton>
+            )}
+
+            {/* Label text */}
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.875rem', minWidth: 'fit-content' }}>
+                {label}
+            </Typography>
+
+            {/* Date field */}
+            {showCreationDate && (
+                <TextField
+                    label="תאריך יצירת המסמך"
+                    type="date"
+                    value={creationDateValue}
+                    onChange={(e) => onCreationDateChange?.(e.target.value)}
+                    disabled={disabled}
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ minWidth: 200 }}
+                />
             )}
         </Box>
     );
