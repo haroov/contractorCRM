@@ -13,6 +13,17 @@ class DocumentParserService {
     try {
       console.log('🔍 Starting document parsing for:', fileUrl);
       
+      // Validate URL first
+      if (!fileUrl || typeof fileUrl !== 'string') {
+        throw new Error('Invalid file URL provided');
+      }
+      
+      try {
+        new URL(fileUrl);
+      } catch (urlError) {
+        throw new Error(`Invalid URL format: ${fileUrl}`);
+      }
+      
       // First, we need to download and read the document
       const documentText = await this.extractTextFromDocument(fileUrl);
       
@@ -44,7 +55,13 @@ class DocumentParserService {
       
       const response = await fetch(fileUrl);
       if (!response.ok) {
-        throw new Error(`Failed to fetch document: ${response.statusText}`);
+        if (response.status === 404) {
+          throw new Error(`Document not found (404). Please check if the file URL is correct and accessible.`);
+        } else if (response.status === 403) {
+          throw new Error(`Access denied (403). The document may be private or require authentication.`);
+        } else {
+          throw new Error(`Failed to fetch document: ${response.status} ${response.statusText}`);
+        }
       }
 
       const contentType = response.headers.get('content-type');
