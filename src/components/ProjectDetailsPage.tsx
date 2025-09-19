@@ -1939,7 +1939,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             color: 'text.secondary',
                                                             marginRight: '10px'
                                                         }}>
-                                                            האם יש קומות מרתף משותפות לבניינים אחרים
+                                                            מרתף משותף לבניינים
                                                         </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
@@ -2262,7 +2262,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        האם מבצעים דיפון היקפי
+                                                        דיפון היקפי
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -2439,7 +2439,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        האם הפרויקט כולל עבודה על מבנה קיים או צמוד למבנה קיים
+                                                        עבודה על מבנה קיים
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -2558,7 +2558,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        האם מתבצעת הריסת מבנה
+                                                        הריסת מבנה
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -2793,7 +2793,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 color: 'text.secondary',
                                                 marginRight: '10px'
                                             }}>
-                                                האם קיימים כבלי חשמל במרחק מהעגורנים
+                                                כבלי חשמל במרחק מהעגורנים
                                             </Typography>
                                             <Box sx={{
                                                 display: 'flex',
@@ -2879,7 +2879,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 color: 'text.secondary',
                                                 marginRight: '10px'
                                             }}>
-                                                האם בשטח האתר קיימים צינורות, מתקנים או כבלים תת קרקעיים
+                                                צינורות/מתקנים תת קרקעיים
                                             </Typography>
                                             <Box sx={{
                                                 display: 'flex',
@@ -2965,7 +2965,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 color: 'text.secondary',
                                                 marginRight: '10px'
                                             }}>
-                                                האם יש גני ילדים בסביבה
+                                                גני ילדים בסביבה
                                             </Typography>
                                             <Box sx={{
                                                 display: 'flex',
@@ -3273,7 +3273,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 color: 'text.secondary',
                                                 marginRight: '10px'
                                             }}>
-                                                האם הפרויקט על רכס הר
+                                                פרויקט על רכס הר
                                             </Typography>
                                             <Box sx={{
                                                 display: 'flex',
@@ -3347,7 +3347,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 color: 'text.secondary',
                                                 marginRight: '10px'
                                             }}>
-                                                האם הפרויקט בואדי
+                                                פרויקט בואדי
                                             </Typography>
                                             <Box sx={{
                                                 display: 'flex',
