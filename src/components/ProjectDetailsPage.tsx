@@ -1382,166 +1382,167 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             {/* Project Card - Same style as contractor card */}
             <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    {/* Project Header */}
+                    {/* Project Header and Tabs - Combined Sticky */}
                     <Box sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1.5,
-                        bgcolor: 'white',
-                        color: 'black',
-                        border: '1px solid #e0e0e0',
-                        borderBottom: 'none',
-                        borderRadius: '4px 4px 0 0',
                         position: 'sticky',
                         top: 0,
-                        zIndex: 10,
-                        flexShrink: 0
-                    }}>
-                        <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
-                            {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {/* Show buttons based on user permissions */}
-                            {(() => {
-                                console.log('🔧 ProjectDetailsPage button logic:', {
-                                    isContactUser,
-                                    contactUserPermissions
-                                });
-
-                                // contactUser: show only Close button to return to contractor
-                                if (isContactUser && contactUserPermissions === 'contactUser') {
-                                    console.log('🔧 ProjectDetailsPage: contactUser - only Close button');
-                                    return (
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => {
-                                                console.log('🔍 Close button clicked - contactUser');
-                                                handleClose();
-                                            }}
-                                            sx={{
-                                                minWidth: 'auto',
-                                                px: 2,
-                                                borderColor: '#6B46C1', // סגול שוקו
-                                                color: '#6B46C1',
-                                                '&:hover': {
-                                                    borderColor: '#5B21B6',
-                                                    bgcolor: 'rgba(107, 70, 193, 0.04)'
-                                                }
-                                            }}
-                                        >
-                                            סגירה
-                                        </Button>
-                                    );
-                                }
-
-                                // contactAdmin: show only Save button, no Close button
-                                if (isContactUser && contactUserPermissions === 'contactAdmin') {
-                                    console.log('🔧 ProjectDetailsPage: contactAdmin - only Save button');
-                                    return (
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={handleSave}
-                                            disabled={saving}
-                                            sx={{
-                                                minWidth: 'auto',
-                                                px: 2,
-                                                bgcolor: '#6B46C1',
-                                                '&:hover': {
-                                                    bgcolor: '#5B21B6'
-                                                }
-                                            }}
-                                        >
-                                            {saving ? 'שומר...' : 'שמירה'}
-                                        </Button>
-                                    );
-                                }
-
-                                // System users: show both buttons
-                                console.log('🔧 ProjectDetailsPage: system user - both buttons');
-                                return (
-                                    <>
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => {
-                                                console.log('🔍 Close button clicked - systemUser');
-                                                handleClose();
-                                            }}
-                                            sx={{
-                                                minWidth: 'auto',
-                                                px: 2,
-                                                borderColor: '#6B46C1', // סגול שוקו
-                                                color: '#6B46C1',
-                                                '&:hover': {
-                                                    borderColor: '#5B21B6',
-                                                    backgroundColor: 'rgba(136, 47, 215, 0.04)'
-                                                }
-                                            }}
-                                        >
-                                            סגירה
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={handleSave}
-                                            disabled={saving}
-                                            sx={{
-                                                minWidth: 'auto',
-                                                px: 2,
-                                                bgcolor: '#6B46C1',
-                                                '&:hover': {
-                                                    bgcolor: '#5B21B6'
-                                                }
-                                            }}
-                                        >
-                                            {saving ? 'שומר...' : 'שמירה'}
-                                        </Button>
-                                    </>
-                                );
-                            })()}
-                        </Box>
-                    </Box>
-
-                    {/* Tabs - Sticky */}
-                    <Box sx={{ 
-                        borderBottom: 1, 
-                        borderColor: 'divider',
-                        position: 'sticky',
-                        top: '64px', // Height of the header above
-                        zIndex: 999,
+                        zIndex: 1000,
                         bgcolor: 'white',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '4px 4px 0 0'
                     }}>
-                        <Tabs
-                            value={activeTab}
-                            onChange={handleTabChange}
-                            aria-label="project tabs"
-                            sx={{
-                                '& .MuiTab-root': {
-                                    color: '#6B7280',
-                                    '&.Mui-selected': {
-                                        color: '#6B46C1',
+                        {/* Project Header */}
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            p: 1.5,
+                            bgcolor: 'white',
+                            color: 'black',
+                            borderBottom: '1px solid #e0e0e0'
+                        }}>
+                            <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                                {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                {/* Show buttons based on user permissions */}
+                                {(() => {
+                                    console.log('🔧 ProjectDetailsPage button logic:', {
+                                        isContactUser,
+                                        contactUserPermissions
+                                    });
+
+                                    // contactUser: show only Close button to return to contractor
+                                    if (isContactUser && contactUserPermissions === 'contactUser') {
+                                        console.log('🔧 ProjectDetailsPage: contactUser - only Close button');
+                                        return (
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => {
+                                                    console.log('🔍 Close button clicked - contactUser');
+                                                    handleClose();
+                                                }}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    borderColor: '#6B46C1', // סגול שוקו
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        bgcolor: 'rgba(107, 70, 193, 0.04)'
+                                                    }
+                                                }}
+                                            >
+                                                סגירה
+                                            </Button>
+                                        );
+                                    }
+
+                                    // contactAdmin: show only Save button, no Close button
+                                    if (isContactUser && contactUserPermissions === 'contactAdmin') {
+                                        console.log('🔧 ProjectDetailsPage: contactAdmin - only Save button');
+                                        return (
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={handleSave}
+                                                disabled={saving}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    bgcolor: '#6B46C1',
+                                                    '&:hover': {
+                                                        bgcolor: '#5B21B6'
+                                                    }
+                                                }}
+                                            >
+                                                {saving ? 'שומר...' : 'שמירה'}
+                                            </Button>
+                                        );
+                                    }
+
+                                    // System users: show both buttons
+                                    console.log('🔧 ProjectDetailsPage: system user - both buttons');
+                                    return (
+                                        <>
+                                            <Button
+                                                variant="outlined"
+                                                size="small"
+                                                onClick={() => {
+                                                    console.log('🔍 Close button clicked - systemUser');
+                                                    handleClose();
+                                                }}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    borderColor: '#6B46C1', // סגול שוקו
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
+                                                    }
+                                                }}
+                                            >
+                                                סגירה
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                onClick={handleSave}
+                                                disabled={saving}
+                                                sx={{
+                                                    minWidth: 'auto',
+                                                    px: 2,
+                                                    bgcolor: '#6B46C1',
+                                                    '&:hover': {
+                                                        bgcolor: '#5B21B6'
+                                                    }
+                                                }}
+                                            >
+                                                {saving ? 'שומר...' : 'שמירה'}
+                                            </Button>
+                                        </>
+                                    );
+                                })()}
+                            </Box>
+                        </Box>
+
+                        {/* Tabs */}
+                        <Box sx={{ 
+                            borderBottom: 1, 
+                            borderColor: 'divider',
+                            bgcolor: 'white'
+                        }}>
+                            <Tabs
+                                value={activeTab}
+                                onChange={handleTabChange}
+                                aria-label="project tabs"
+                                sx={{
+                                    '& .MuiTab-root': {
+                                        color: '#6B7280',
+                                        '&.Mui-selected': {
+                                            color: '#6B46C1',
+                                        },
                                     },
-                                },
-                                '& .MuiTabs-indicator': {
-                                    backgroundColor: '#6B46C1',
-                                },
-                            }}
-                        >
-                            <Tab label="כללי" />
-                            <Tab label="תוכניות" />
-                            <Tab label="מפרט" />
-                            <Tab label="מסמכים" />
-                            <Tab label="ביטוח" />
-                            <Tab label="הרשאות" />
-                            <Tab label="הערות" />
-                            {(project?.status === 'current' || project?.status === 'completed') && (
-                                <Tab label="דשבורד" />
-                            )}
-                        </Tabs>
+                                    '& .MuiTabs-indicator': {
+                                        backgroundColor: '#6B46C1',
+                                    },
+                                }}
+                            >
+                                <Tab label="כללי" />
+                                <Tab label="תוכניות" />
+                                <Tab label="מפרט" />
+                                <Tab label="מסמכים" />
+                                <Tab label="ביטוח" />
+                                <Tab label="הרשאות" />
+                                <Tab label="הערות" />
+                                {(project?.status === 'current' || project?.status === 'completed') && (
+                                    <Tab label="דשבורד" />
+                                )}
+                            </Tabs>
+                        </Box>
                     </Box>
 
                     {/* Tab Content */}
