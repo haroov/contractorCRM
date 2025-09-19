@@ -205,7 +205,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             }}
                             onClick={handleFileClick}
                         >
-                            {value.split('/').pop()?.split('?')[0] || 'קובץ'}
                         </Typography>
 
                         {/* File icon */}
@@ -1553,31 +1552,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 פרטי הפרויקט
                                             </Typography>
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                                {/* Garmoshka File Upload with AI Icon */}
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                    {/* File Upload Icon (right side) */}
-                                                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                                                        <FileUpload
-                                                            label=""
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                            onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                            onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                            accept=".pdf,.dwg,.dwf"
-                                                            showCreationDate={true}
-                                                            creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
-                                                            onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', date)}
-                                                            projectId={project?._id || project?.id}
-                                                        />
-                                                    </Box>
+                                                {/* Garmoshka File Upload with AI Icon - RTL Layout */}
+                                                <Box sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    gap: 2, 
+                                                    direction: 'rtl',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    {/* File Upload Icon */}
+                                                    <FileUpload
+                                                        label=""
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                        onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
+                                                        onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.dwg,.dwf"
+                                                        showCreationDate={false}
+                                                        projectId={project?._id || project?.id}
+                                                    />
                                                     
-                                                    {/* File Name (clickable if file exists) */}
+                                                    {/* File Name */}
                                                     <Typography
                                                         variant="body1"
                                                         sx={{
                                                             color: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? '#6B46C1' : 'text.secondary',
                                                             cursor: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'pointer' : 'default',
                                                             textDecoration: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'underline' : 'none',
+                                                            minWidth: '120px',
                                                             '&:hover': project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? {
                                                                 color: '#5B21B6',
                                                             } : {}
@@ -1591,93 +1593,92 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         תוכניות (גרמושקה)
                                                     </Typography>
                                                     
-                                                    {/* AI Analysis Icon for Garmoshka */}
+                                                    {/* AI Analysis Icon */}
                                                     {(() => {
                                                         const garmoshkaFile = project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile;
                                                         const isAnalyzed = analyzedFiles.has(garmoshkaFile);
-                                                        console.log('🔍 Garmoshka AI Icon Debug:', {
-                                                            garmoshkaFile,
-                                                            canEdit,
-                                                            isAnalyzed,
-                                                            analyzedFiles: Array.from(analyzedFiles),
-                                                            shouldShow: garmoshkaFile && canEdit && !isAnalyzed
-                                                        });
                                                         return garmoshkaFile && canEdit && !isAnalyzed;
                                                     })() && (
-                                                            <IconButton
-                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile, 'תוכניות גרמושקה')}
-                                                                disabled={isAnalyzing || mode === 'view'}
-                                                                sx={{
-                                                                    backgroundColor: 'white', // White background
-                                                                    color: '#6B46C1', // Chocolate purple stars
-                                                                    width: '48px',
-                                                                    height: '48px',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#F3F4F6', // Light gray hover
-                                                                    },
-                                                                    '&:disabled': {
-                                                                        backgroundColor: '#E5E7EB',
-                                                                        color: '#9CA3AF'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isAnalyzing ? (
-                                                                    <CircularProgress size={24} color="inherit" />
-                                                                ) : (
-                                                                    <AutoAwesomeIcon />
-                                                                )}
-                                                            </IconButton>
-                                                        )}
+                                                        <IconButton
+                                                            onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile, 'תוכניות גרמושקה')}
+                                                            disabled={isAnalyzing || mode === 'view'}
+                                                            sx={{
+                                                                backgroundColor: 'white',
+                                                                color: '#6B46C1',
+                                                                width: '40px',
+                                                                height: '40px',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#F3F4F6',
+                                                                },
+                                                                '&:disabled': {
+                                                                    backgroundColor: '#E5E7EB',
+                                                                    color: '#9CA3AF'
+                                                                }
+                                                            }}
+                                                        >
+                                                            {isAnalyzing ? (
+                                                                <CircularProgress size={20} color="inherit" />
+                                                            ) : (
+                                                                <AutoAwesomeIcon />
+                                                            )}
+                                                        </IconButton>
+                                                    )}
+                                                    
+                                                    {/* Creation Date */}
+                                                    <TextField
+                                                        label="תאריך יצירת המסמך"
+                                                        type="date"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        size="small"
+                                                        sx={{ minWidth: '180px' }}
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                    />
                                                 </Box>
 
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="project-type-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>סוג הפרויקט</InputLabel>
-                                                    <Select
-                                                        labelId="project-type-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
-                                                        label="סוג הפרויקט"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="בניה">בניה</MenuItem>
-                                                        <MenuItem value="תמא 38">תמא 38</MenuItem>
-                                                        <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
-                                                        <MenuItem value="תשתיות">תשתיות</MenuItem>
-                                                        <MenuItem value="גשר">גשר</MenuItem>
-                                                        <MenuItem value="כביש">כביש</MenuItem>
-                                                    </Select>
-                                                </FormControl>
+                                                {/* Project Details Fields - 3 columns layout */}
+                                                <Box sx={{ 
+                                                    display: 'grid', 
+                                                    gridTemplateColumns: 'repeat(3, 1fr)', 
+                                                    gap: 2,
+                                                    direction: 'rtl'
+                                                }}>
+                                                    <FormControl>
+                                                        <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
+                                                        <Select
+                                                            labelId="project-type-label"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
+                                                            label="סוג הפרויקט"
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        >
+                                                            <MenuItem value="בניה">בניה</MenuItem>
+                                                            <MenuItem value="תמא 38">תמא 38</MenuItem>
+                                                            <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
+                                                            <MenuItem value="תשתיות">תשתיות</MenuItem>
+                                                            <MenuItem value="גשר">גשר</MenuItem>
+                                                            <MenuItem value="כביש">כביש</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
 
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="government-program-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>האם הפרויקט במסגרת תוכנית ממשלתית</InputLabel>
-                                                    <Select
-                                                        labelId="government-program-label"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'לא' : ''}
-                                                        label="האם הפרויקט במסגרת תוכנית ממשלתית"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="">בחר אפשרות</MenuItem>
-                                                        <MenuItem value="לא">לא</MenuItem>
-                                                        <MenuItem value="כן">כן</MenuItem>
-                                                    </Select>
-                                                </FormControl>
+                                                    <FormControl>
+                                                        <InputLabel id="government-program-label">תוכנית ממשלתית</InputLabel>
+                                                        <Select
+                                                            labelId="government-program-label"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'כן' : project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'לא' : ''}
+                                                            label="תוכנית ממשלתית"
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', e.target.value === 'כן' ? true : e.target.value === 'לא' ? false : null)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        >
+                                                            <MenuItem value="">בחר אפשרות</MenuItem>
+                                                            <MenuItem value="לא">לא</MenuItem>
+                                                            <MenuItem value="כן">כן</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Box>
 
                                                 {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
                                                     <TextField
