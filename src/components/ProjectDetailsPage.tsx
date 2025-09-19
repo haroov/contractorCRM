@@ -724,6 +724,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         const loadProjectData = () => {
             const urlMode = searchParams.get('mode') as 'view' | 'edit' | 'new';
             const projectId = searchParams.get('project_id');
+            const tabParam = searchParams.get('tab');
+
+            // Set active tab from URL parameter
+            if (tabParam) {
+                const tabIndex = parseInt(tabParam, 10);
+                if (!isNaN(tabIndex) && tabIndex >= 0) {
+                    setActiveTab(tabIndex);
+                }
+            }
 
             setMode(urlMode || 'view');
             setLoading(true);
@@ -895,6 +904,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
+        // Save active tab to URL parameters
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('tab', newValue.toString());
+        navigate(`?${newSearchParams.toString()}`, { replace: true });
     };
 
     const handleFieldChange = (field: keyof Project, value: any) => {
@@ -1575,8 +1588,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 {/* Garmoshka File Upload with AI Icon - RTL Layout */}
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: 2,
+                                                    alignItems: 'flex-start',
+                                                    gap: 1,
                                                     direction: 'rtl',
                                                     justifyContent: 'flex-start'
                                                 }}>
@@ -1600,6 +1613,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             cursor: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'pointer' : 'default',
                                                             textDecoration: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'underline' : 'none',
                                                             minWidth: '120px',
+                                                            alignSelf: 'flex-start',
+                                                            marginTop: '8px',
                                                             '&:hover': project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? {
                                                                 color: '#5B21B6',
                                                             } : {}
@@ -1627,6 +1642,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     color: '#6B46C1',
                                                                     width: '40px',
                                                                     height: '40px',
+                                                                    alignSelf: 'flex-start',
+                                                                    marginTop: '8px',
                                                                     '&:hover': {
                                                                         backgroundColor: '#F3F4F6',
                                                                     },
@@ -1706,7 +1723,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            marginLeft: '5px'
+                                                            marginLeft: 'auto'
                                                         }}>
                                                             <Button
                                                                 variant="text"
