@@ -1613,8 +1613,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             cursor: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'pointer' : 'default',
                                                             textDecoration: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'underline' : 'none',
                                                             minWidth: '120px',
-                                                            alignSelf: 'flex-start',
-                                                            marginTop: '8px',
+                                                            alignSelf: 'center',
                                                             '&:hover': project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? {
                                                                 color: '#5B21B6',
                                                             } : {}
@@ -1642,8 +1641,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     color: '#6B46C1',
                                                                     width: '40px',
                                                                     height: '40px',
-                                                                    alignSelf: 'flex-start',
-                                                                    marginTop: '8px',
+                                                                    alignSelf: 'center',
                                                                     '&:hover': {
                                                                         backgroundColor: '#F3F4F6',
                                                                     },
