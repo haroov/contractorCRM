@@ -2065,37 +2065,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     projectId={project?._id || project?.id}
                                                 />
 
-                                                {/* AI Analysis Icon for Structural Engineer Approval */}
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file &&
-                                                    canEdit &&
-                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file) && (
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <IconButton
-                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file, 'אישור מהנדס קונסטרקטור')}
-                                                                disabled={isAnalyzing || mode === 'view'}
-                                                                sx={{
-                                                                    backgroundColor: 'white', // White background
-                                                                    color: '#6B46C1', // Chocolate purple stars
-                                                                    width: '48px',
-                                                                    height: '48px',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#F3F4F6', // Light gray hover
-                                                                    },
-                                                                    '&:disabled': {
-                                                                        backgroundColor: '#E5E7EB',
-                                                                        color: '#9CA3AF'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isAnalyzing ? (
-                                                                    <CircularProgress size={24} color="inherit" />
-                                                                ) : (
-                                                                    <AutoAwesomeIcon />
-                                                                )}
-                                                            </IconButton>
-                                                        </Box>
-                                                    )}
-
                                                 <FileUpload
                                                     label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה - העלה קובץ"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
@@ -2108,37 +2077,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.creationDate', date)}
                                                     projectId={project?._id || project?.id}
                                                 />
-
-                                                {/* AI Analysis Icon for Earthquake Standard 413 */}
-                                                {project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file &&
-                                                    canEdit &&
-                                                    !analyzedFiles.has(project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file) && (
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                            <IconButton
-                                                                onClick={() => handleDocumentAnalysis(project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file, 'תקן 413 רעידות אדמה')}
-                                                                disabled={isAnalyzing || mode === 'view'}
-                                                                sx={{
-                                                                    backgroundColor: 'white', // White background
-                                                                    color: '#6B46C1', // Chocolate purple stars
-                                                                    width: '48px',
-                                                                    height: '48px',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#F3F4F6', // Light gray hover
-                                                                    },
-                                                                    '&:disabled': {
-                                                                        backgroundColor: '#E5E7EB',
-                                                                        color: '#9CA3AF'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isAnalyzing ? (
-                                                                    <CircularProgress size={24} color="inherit" />
-                                                                ) : (
-                                                                    <AutoAwesomeIcon />
-                                                                )}
-                                                            </IconButton>
-                                                        </Box>
-                                                    )}
                                             </Box>
                                         </Box>
 
