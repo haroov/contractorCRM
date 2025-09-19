@@ -1683,7 +1683,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             gap: 0,
                                                             backgroundColor: '#f9fafb',
                                                             borderLeft: '1px solid #d1d5db',
-                                                            padding: '2px'
+                                                            padding: '2px',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -1692,10 +1694,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '6px',
                                                                     border: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B7280' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B7280',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#e5e7eb',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#4B5563' : '#e5e7eb',
                                                                     },
                                                                     minWidth: '60px',
                                                                     height: '36px',
