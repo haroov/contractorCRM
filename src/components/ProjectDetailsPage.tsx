@@ -2144,15 +2144,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         {/* Soil Report Fields - 4 columns layout */}
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 3 }}>
                                             <FormControl fullWidth>
-                                                <InputLabel id="soil-type-label" sx={{
-                                                    whiteSpace: 'normal',
-                                                    lineHeight: 1.2,
-                                                    maxWidth: '100%',
-                                                    transform: 'translate(14px, -9px) scale(0.75)',
-                                                    '&.Mui-focused': {
-                                                        transform: 'translate(14px, -9px) scale(0.75)'
-                                                    }
-                                                }}>סוג הקרקע</InputLabel>
+                                                <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
                                                 <Select
                                                     labelId="soil-type-label"
                                                     value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
@@ -2325,15 +2317,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel id="construction-method-label" sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>מה שיטת הבניה</InputLabel>
+                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
                                                     <Select
                                                         labelId="construction-method-label"
                                                         value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
@@ -3719,15 +3703,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FormControl fullWidth>
-                                                    <InputLabel sx={{
-                                                        whiteSpace: 'normal',
-                                                        lineHeight: 1.2,
-                                                        maxWidth: '100%',
-                                                        transform: 'translate(14px, -9px) scale(0.75)',
-                                                        '&.Mui-focused': {
-                                                            transform: 'translate(14px, -9px) scale(0.75)'
-                                                        }
-                                                    }}>רמת הפירוט</InputLabel>
+                                                    <InputLabel>רמת הפירוט</InputLabel>
                                                     <Select
                                                         value={project?.schedule?.detailLevel || ''}
                                                         onChange={(e) => handleNestedFieldChange('schedule.detailLevel', e.target.value)}
