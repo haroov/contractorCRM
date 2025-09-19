@@ -5,10 +5,10 @@ const fetch = require("node-fetch");
 
 const router = Router();
 
-// Initialize OpenAI client
-const client = new OpenAI({ 
-    apiKey: process.env.OPENAI_API_KEY 
-});
+// Initialize OpenAI client - compatible with openai v3.3.0
+const client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
+    apiKey: process.env.OPENAI_API_KEY
+}));
 
 /**
  * Schema for risk assessment report analysis
@@ -98,15 +98,8 @@ function buildSystemPrompt() {
  */
 async function tryDirectPdfUrl(pdfUrl) {
     try {
-        const response = await client.chat.completions.create({
+        const response = await client.createChatCompletion({
             model: "gpt-4o-mini",
-            response_format: { 
-                type: "json_schema", 
-                json_schema: { 
-                    name: "RiskSurvey", 
-                    schema: schema 
-                } 
-            },
             messages: [
                 {
                     role: "system",
@@ -117,7 +110,7 @@ async function tryDirectPdfUrl(pdfUrl) {
                     content: [
                         {
                             type: "text",
-                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות."
+                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות. החזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), hazards (array of objects with category, severity, description, recommendation)."
                         },
                         {
                             type: "image_url",
@@ -157,15 +150,8 @@ async function tryTextFallback(pdfUrl) {
         const buffer = await response.buffer();
         const parsed = await pdfParse(buffer);
 
-        const aiResponse = await client.chat.completions.create({
+        const aiResponse = await client.createChatCompletion({
             model: "gpt-4o-mini",
-            response_format: { 
-                type: "json_schema", 
-                json_schema: { 
-                    name: "RiskSurvey", 
-                    schema: schema 
-                } 
-            },
             messages: [
                 {
                     role: "system",
@@ -173,7 +159,7 @@ async function tryTextFallback(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}`
+                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), hazards (array of objects with category, severity, description, recommendation).`
                 }
             ],
             max_tokens: 4000
