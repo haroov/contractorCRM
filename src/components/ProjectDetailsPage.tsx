@@ -632,6 +632,12 @@ interface ProjectDetailsPageProps {
 export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPageProps) {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+
+    // Format currency with commas and ₪ symbol
+    const formatCurrency = (value: number): string => {
+        if (!value || value === 0) return '';
+        return value.toLocaleString('he-IL');
+    };
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -1653,11 +1659,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <TextField
                                         fullWidth
-                                        label="ערך הפרויקט (₪)"
-                                        type="number"
-                                        value={project?.valueNis || project?.value || 0}
-                                        onChange={(e) => handleFieldChange('valueNis', parseInt(e.target.value) || 0)}
+                                        label="ערך הפרויקט"
+                                        value={formatCurrency(project?.valueNis || project?.value || 0)}
+                                        onChange={(e) => {
+                                            const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                            handleFieldChange('valueNis', parseInt(numericValue) || 0);
+                                        }}
                                         disabled={mode === 'view' || !canEdit}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <Typography sx={{ color: 'text.secondary', mr: 1 }}>
+                                                    ₪
+                                                </Typography>
+                                            ),
+                                        }}
+                                        sx={{
+                                            '& .MuiInputBase-input': {
+                                                textAlign: 'right',
+                                                direction: 'ltr'
+                                            }
+                                        }}
                                     />
 
 
