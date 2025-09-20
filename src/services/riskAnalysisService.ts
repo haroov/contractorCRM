@@ -55,14 +55,38 @@ export async function analyzeReportByUrl(url: string): Promise<RiskAnalysisResul
 }
 
 /**
+ * Convert date from DD.MM.YYYY format to YYYY-MM-DD format
+ */
+function convertDateFormat(dateString: string): string {
+    if (!dateString) return dateString;
+    
+    // Check if it's already in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        return dateString;
+    }
+    
+    // Convert from DD.MM.YYYY to YYYY-MM-DD
+    const parts = dateString.split('.');
+    if (parts.length === 3) {
+        const [day, month, year] = parts;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    
+    // If format is not recognized, return as is
+    return dateString;
+}
+
+/**
  * Map risk analysis result to project fields
  */
 export function mapRiskAnalysisToProject(analysisResult: RiskAnalysisResult) {
     const mappedData: any = {};
 
-    // Map date field
+    // Map date field with format conversion
     if (analysisResult.reportDate) {
-        mappedData['engineeringQuestionnaire.riskAssessmentReport.reportFileCreationDate'] = analysisResult.reportDate;
+        const convertedDate = convertDateFormat(analysisResult.reportDate);
+        console.log('📅 Converting date:', analysisResult.reportDate, '->', convertedDate);
+        mappedData['engineeringQuestionnaire.riskAssessmentReport.reportFileCreationDate'] = convertedDate;
     }
 
     // Map boolean fields
