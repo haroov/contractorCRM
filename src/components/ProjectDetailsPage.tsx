@@ -2746,6 +2746,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderColor: '#6B46C1',
                                                     },
                                                 },
+                                                '& .MuiInputLabel-root': {
+                                                    '&.Mui-focused': {
+                                                        color: '#6B46C1',
+                                                    },
+                                                },
                                             }}
                                         />
 
@@ -2765,6 +2770,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused fieldset': {
                                                         borderColor: '#6B46C1',
+                                                    },
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    '&.Mui-focused': {
+                                                        color: '#6B46C1',
                                                     },
                                                 },
                                             }}

@@ -129,7 +129,7 @@ async function tryTextFallback(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: reportDate (string), workOnExistingStructure (boolean), demolitionWork (boolean), currentStateDescription (string), environmentDescription (string).`
+                    content: `אתה מנתח דוח סקר סיכונים. הנה הטקסט של הדוח:\n\n${parsed.text}\n\nחלץ את המידע הבא וחזור JSON בלבד:\n- reportDate: תאריך הדוח\n- workOnExistingStructure: האם יש עבודה על מבנה קיים (true/false)\n- demolitionWork: האם יש הריסת מבנה (true/false)\n- currentStateDescription: תיאור המצב הקיים\n- environmentDescription: תיאור הסביבה\n\nהחזר רק JSON ללא הסברים נוספים.`
                 }
             ],
             max_tokens: 4000
