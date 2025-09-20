@@ -17,42 +17,77 @@ const schema = {
     type: "object",
     additionalProperties: false,
     properties: {
+        report_date: { 
+            type: "string", 
+            description: "יום עריכת הדוח" 
+        },
         work_on_existing_structure: { 
             type: "boolean", 
             description: "עבודה על מבנה קיים (כן/לא)" 
         },
         demolition_required: { 
             type: "boolean", 
-            description: "הרס מבנה (כן/לא)" 
+            description: "הריסת מבנים (כן/לא)" 
         },
-        incident_date: { 
+        current_state_description: { 
             type: "string", 
-            format: "date", 
-            description: "תאריך יצירת המסמך/ביקור" 
-        },
-        site_city: { 
-            type: "string",
-            description: "עיר האתר"
-        },
-        site_address: { 
-            type: "string",
-            description: "כתובת האתר"
-        },
-        contractor_name: { 
-            type: "string",
-            description: "שם הקבלן"
-        },
-        contractor_id: { 
-            type: "string", 
-            description: "ח״פ/ע.מ/ת.ז אם מופיע" 
-        },
-        risk_summary: { 
-            type: "string", 
-            description: "תיאור מצב קיים/סיכום הסוקר" 
+            description: "תאור המצב הקיים (טקסט חופשי, עד 500 תווים)" 
         },
         environment_description: { 
             type: "string", 
-            description: "תיאור הסביבה והתנאים הסביבתיים" 
+            description: "תאור הסביבה (טקסט חופשי, עד 500 תווים)" 
+        },
+        adjacent_buildings: { 
+            type: "boolean", 
+            description: "האם קיימים מבנים סמוכים (כן/לא)" 
+        },
+        electrical_cables: { 
+            type: "boolean", 
+            description: "כבלי חשמל בקרבת העגורנים (כן/לא)" 
+        },
+        underground_utilities: { 
+            type: "boolean", 
+            description: "צינורות ומתקנים תת קרקעיים (כן/לא)" 
+        },
+        schools_kindergartens: { 
+            type: "boolean", 
+            description: "גני ילדים ובתי ספר בסביבה (כן/לא)" 
+        },
+        proximity_to_gas_station: { 
+            type: "boolean", 
+            description: "קרבה לתחנת דלק (כן/לא)" 
+        },
+        proximity_to_police_station: { 
+            type: "boolean", 
+            description: "קרבה לתחנת משטרה (כן/לא)" 
+        },
+        proximity_to_fire_station: { 
+            type: "boolean", 
+            description: "קרבה לתחנת מכבי אש (כן/לא)" 
+        },
+        proximity_to_medical_center: { 
+            type: "boolean", 
+            description: "קרבת לתחנת מד״א או מרכז רפואי (כן/לא)" 
+        },
+        on_mountain_ridge: { 
+            type: "boolean", 
+            description: "האם הפרויקט על רכס הר (כן/לא)" 
+        },
+        in_valley: { 
+            type: "boolean", 
+            description: "האם הפרוייקט בודאי (כן/לא)" 
+        },
+        site_elevation: { 
+            type: "number", 
+            description: "גובה האתר מפני הים (במטרים)" 
+        },
+        distance_from_sea: { 
+            type: "number", 
+            description: "מרחק מהים (במטרים)" 
+        },
+        distance_from_streams: { 
+            type: "number", 
+            description: "מרחק מנחלים ואגנים (במטרים)" 
         },
         hazards: {
             type: "array",
@@ -90,7 +125,7 @@ const schema = {
  * Build system prompt for risk assessment analysis
  */
 function buildSystemPrompt() {
-    return "אתה מנתח דוחות סוקר סיכונים באתרי בניה. המשימה: חילוץ נתונים מובנים לפי הסכימה המצורפת (JSON Schema). אם שדה לא מופיע במסמך - החזר ערך null או מחרוזת ריקה (לפי הטיפוס). היענות בעברית היכן שמתאים בתיאורים חופשיים. חשוב: החזר תמיד JSON תקין לפי הסכימה.";
+    return "אתה חתם הנדסי בחברת ביטוח ותפקידך לנתח את דוח הסוקר ולענות במדוייק על השדות להלן (לפי השמות של השדות בדאטה): יום עריכת הדוח, עבודה על מבנה קיים לא/כן, הריסת מבנים לא/כן, תאור המצב הקיים (טקסט חופשי, עד 500 תווים), תאור הסביבה (טקסט חופשי, עד 500 תווים), האם קיימים מבנים סמוכים - לא/כן, כבלי חשמל בקרבת העגורנים - לא/כן, צינורות ומתקנים תת קרקעיים - לא/כן, גני ילדים ובתי ספר בסביבה - לא/כן, קרבה לתחנת דלק - לא/כן, קרבה לתחנת משטרה - לא/כן, קרבה לתחנת מכבי אש - לא/כן, קרבת לתחנת מד״א או מרכז רפואי - לא/כן, האם הפרויקט על רכס הר - לא/כן, האם הפרוייקט בודאי - לא/כן, גובה האתר מפני הים (במטרים), מרחק מהים (במטרים), מרחק מנחלים ואגנים (במטרים). שאלות לא/כן שלא נמצא לגביהם מידע בדוח (למשל הפרויקט אינו על צלע הר ואינו בודאי ואין שום איזכור לכך בדוח ולכן התשובות יהיו לא. במקרה שאינך מוצא תשובה לשאלה, יש להשאירה ריקה למילוי ידני. חייבים לשמור על 100% דיוק.";
 }
 
 /**
@@ -110,7 +145,7 @@ async function tryDirectPdfUrl(pdfUrl) {
                     content: [
                         {
                             type: "text",
-                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות. החזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), environment_description (string), hazards (array of objects with category, severity, description, recommendation)."
+                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות. החזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string), adjacent_buildings (boolean), electrical_cables (boolean), underground_utilities (boolean), schools_kindergartens (boolean), proximity_to_gas_station (boolean), proximity_to_police_station (boolean), proximity_to_fire_station (boolean), proximity_to_medical_center (boolean), on_mountain_ridge (boolean), in_valley (boolean), site_elevation (number), distance_from_sea (number), distance_from_streams (number)."
                         },
                         {
                             type: "image_url",
@@ -159,7 +194,7 @@ async function tryTextFallback(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), environment_description (string), hazards (array of objects with category, severity, description, recommendation).`
+                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string), adjacent_buildings (boolean), electrical_cables (boolean), underground_utilities (boolean), schools_kindergartens (boolean), proximity_to_gas_station (boolean), proximity_to_police_station (boolean), proximity_to_fire_station (boolean), proximity_to_medical_center (boolean), on_mountain_ridge (boolean), in_valley (boolean), site_elevation (number), distance_from_sea (number), distance_from_streams (number).`
                 }
             ],
             max_tokens: 4000
