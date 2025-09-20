@@ -20,11 +20,6 @@ export interface RiskAnalysisResult {
     }>;
 }
 
-export interface RiskAnalysisResponse {
-    success: boolean;
-    data?: RiskAnalysisResult;
-    error?: string;
-}
 
 /**
  * Analyze a risk assessment report by URL
@@ -46,9 +41,9 @@ export async function analyzeReportByUrl(url: string): Promise<RiskAnalysisResul
             throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const result: RiskAnalysisResponse = await response.json();
+        const result = await response.json();
         
-        if (!result.success) {
+        if (!result.ok) {
             throw new Error(result.error || 'Analysis failed');
         }
 
