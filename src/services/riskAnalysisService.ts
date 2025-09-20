@@ -3,11 +3,11 @@
  */
 
 export interface RiskAnalysisResult {
-    report_date?: string | null;
-    work_on_existing_structure: boolean | null;
-    demolition_required: boolean | null;
-    current_state_description?: string | null;
-    environment_description?: string | null;
+    reportDate?: string | null;
+    workOnExistingStructure: boolean | null;
+    demolitionWork: boolean | null;
+    currentStateDescription?: string | null;
+    environmentDescription?: string | null;
 }
 
 
@@ -57,26 +57,26 @@ export function mapRiskAnalysisToProject(analysisResult: RiskAnalysisResult) {
     const mappedData: any = {};
 
     // Map date field
-    if (analysisResult.report_date) {
-        mappedData['engineeringQuestionnaire.riskAssessmentReport.reportFileCreationDate'] = analysisResult.report_date;
+    if (analysisResult.reportDate) {
+        mappedData['engineeringQuestionnaire.riskAssessmentReport.reportFileCreationDate'] = analysisResult.reportDate;
     }
 
     // Map boolean fields
-    if (analysisResult.work_on_existing_structure !== null) {
-        mappedData['engineeringQuestionnaire.buildingPlan.workOnExistingStructure'] = analysisResult.work_on_existing_structure;
+    if (analysisResult.workOnExistingStructure !== null) {
+        mappedData['engineeringQuestionnaire.buildingPlan.workOnExistingStructure'] = analysisResult.workOnExistingStructure;
     }
 
-    if (analysisResult.demolition_required !== null) {
-        mappedData['engineeringQuestionnaire.buildingPlan.demolitionWork'] = analysisResult.demolition_required;
+    if (analysisResult.demolitionWork !== null) {
+        mappedData['engineeringQuestionnaire.buildingPlan.demolitionWork'] = analysisResult.demolitionWork;
     }
 
     // Map text descriptions
-    if (analysisResult.current_state_description) {
-        mappedData['environmentalSurvey.currentStateDescription'] = analysisResult.current_state_description;
+    if (analysisResult.currentStateDescription) {
+        mappedData['environmentalSurvey.currentStateDescription'] = analysisResult.currentStateDescription;
     }
 
-    if (analysisResult.environment_description) {
-        mappedData['environmentalSurvey.environmentDescription'] = analysisResult.environment_description;
+    if (analysisResult.environmentDescription) {
+        mappedData['environmentalSurvey.environmentDescription'] = analysisResult.environmentDescription;
     }
 
     console.log('📊 Mapped risk analysis data:', mappedData);

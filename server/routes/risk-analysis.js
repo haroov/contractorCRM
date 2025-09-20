@@ -24,35 +24,35 @@ const schema = {
     type: "object",
     additionalProperties: false,
     properties: {
-        report_date: {
-            type: "string",
-            description: "יום עריכת הדוח"
+        reportDate: { 
+            type: "string", 
+            description: "יום עריכת הדוח" 
         },
-        work_on_existing_structure: {
-            type: "boolean",
-            description: "עבודה על מבנה קיים (כן/לא)"
+        workOnExistingStructure: { 
+            type: "boolean", 
+            description: "עבודה על מבנה קיים (כן/לא)" 
         },
-        demolition_required: {
-            type: "boolean",
-            description: "הריסת מבנים (כן/לא)"
+        demolitionWork: { 
+            type: "boolean", 
+            description: "הריסת מבנים (כן/לא)" 
         },
-        current_state_description: {
-            type: "string",
-            description: "תאור המצב הקיים"
+        currentStateDescription: { 
+            type: "string", 
+            description: "תאור המצב הקיים" 
         },
-        environment_description: {
-            type: "string",
-            description: "תאור הסביבה"
+        environmentDescription: { 
+            type: "string", 
+            description: "תאור הסביבה" 
         }
     },
-    required: ["work_on_existing_structure", "demolition_required"]
+    required: ["workOnExistingStructure", "demolitionWork"]
 };
 
 /**
  * Build system prompt for risk assessment analysis
  */
 function buildSystemPrompt() {
-    return "אתה מנתח דוחות סוקר סיכונים. החזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string). אם שדה לא נמצא במסמך, החזר null.";
+    return "אתה מנתח דוחות סוקר סיכונים. החזר JSON עם השדות הבאים: reportDate (string), workOnExistingStructure (boolean), demolitionWork (boolean), currentStateDescription (string), environmentDescription (string). אם שדה לא נמצא במסמך, החזר null.";
 }
 
 /**
@@ -69,7 +69,7 @@ async function tryDirectPdfUrl(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים. החזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string).\n\nקישור למסמך: ${pdfUrl}`
+                    content: `נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים. החזר JSON עם השדות הבאים: reportDate (string), workOnExistingStructure (boolean), demolitionWork (boolean), currentStateDescription (string), environmentDescription (string).\n\nקישור למסמך: ${pdfUrl}`
                 }
             ],
             max_tokens: 4000
@@ -83,7 +83,7 @@ async function tryDirectPdfUrl(pdfUrl) {
         
         const content = response.data?.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
-
+        
         if (!content) {
             console.error("❌ No content in response. Response status:", response.status);
             console.error("❌ Response choices:", response.choices?.length || 0);
@@ -91,7 +91,16 @@ async function tryDirectPdfUrl(pdfUrl) {
             throw new Error("No content in response");
         }
 
-        return JSON.parse(content);
+        // Clean markdown formatting from content
+        let cleanContent = content.trim();
+        if (cleanContent.startsWith('```json')) {
+            cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (cleanContent.startsWith('```')) {
+            cleanContent = cleanContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+        }
+        
+        console.log("🧹 Cleaned content:", cleanContent);
+        return JSON.parse(cleanContent);
     } catch (error) {
         console.error("Direct PDF URL analysis failed:", error);
         throw error;
@@ -120,7 +129,7 @@ async function tryTextFallback(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string).`
+                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: reportDate (string), workOnExistingStructure (boolean), demolitionWork (boolean), currentStateDescription (string), environmentDescription (string).`
                 }
             ],
             max_tokens: 4000
@@ -134,7 +143,7 @@ async function tryTextFallback(pdfUrl) {
         
         const content = aiResponse.data?.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
-
+        
         if (!content) {
             console.error("❌ No content in AI response. Response status:", aiResponse.status);
             console.error("❌ Response choices:", aiResponse.choices?.length || 0);
@@ -142,7 +151,16 @@ async function tryTextFallback(pdfUrl) {
             throw new Error("No content in AI response");
         }
 
-        return JSON.parse(content);
+        // Clean markdown formatting from content
+        let cleanContent = content.trim();
+        if (cleanContent.startsWith('```json')) {
+            cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        } else if (cleanContent.startsWith('```')) {
+            cleanContent = cleanContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+        }
+        
+        console.log("🧹 Cleaned content:", cleanContent);
+        return JSON.parse(cleanContent);
     } catch (error) {
         console.error("Text fallback analysis failed:", error);
         throw error;
