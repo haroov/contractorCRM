@@ -1758,16 +1758,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <AutoAwesomeIcon 
                                                                     sx={{
                                                                         animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                        color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                        filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                         '@keyframes sparkle': {
                                                                             '0%, 100%': {
                                                                                 opacity: 1,
                                                                                 transform: 'scale(1)',
-                                                                                                                filter: 'brightness(1)'
+                                                                                filter: 'brightness(1) drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))'
                                                                             },
                                                                             '50%': {
-                                                                                opacity: 0.7,
-                                                                                transform: 'scale(1.1)',
-                                                                                                                filter: 'brightness(1.5)'
+                                                                                opacity: 0.8,
+                                                                                transform: 'scale(1.2)',
+                                                                                filter: 'brightness(1.8) drop-shadow(0 0 12px rgba(107, 70, 193, 0.8))'
                                                                             }
                                                                         }
                                                                     }}
@@ -2206,16 +2208,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <AutoAwesomeIcon 
                                                                 sx={{
                                                                     animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                    filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                     '@keyframes sparkle': {
                                                                         '0%, 100%': {
                                                                             opacity: 1,
                                                                             transform: 'scale(1)',
-                                                                                                            filter: 'brightness(1)'
+                                                                            filter: 'brightness(1) drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))'
                                                                         },
                                                                         '50%': {
-                                                                            opacity: 0.7,
-                                                                            transform: 'scale(1.1)',
-                                                                                                            filter: 'brightness(1.5)'
+                                                                            opacity: 0.8,
+                                                                            transform: 'scale(1.2)',
+                                                                            filter: 'brightness(1.8) drop-shadow(0 0 12px rgba(107, 70, 193, 0.8))'
                                                                         }
                                                                     }
                                                                 }}
@@ -2478,16 +2482,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <AutoAwesomeIcon 
                                                                 sx={{
                                                                     animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                    filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                     '@keyframes sparkle': {
                                                                         '0%, 100%': {
                                                                             opacity: 1,
                                                                             transform: 'scale(1)',
-                                                                                                            filter: 'brightness(1)'
+                                                                            filter: 'brightness(1) drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))'
                                                                         },
                                                                         '50%': {
-                                                                            opacity: 0.7,
-                                                                            transform: 'scale(1.1)',
-                                                                                                            filter: 'brightness(1.5)'
+                                                                            opacity: 0.8,
+                                                                            transform: 'scale(1.2)',
+                                                                            filter: 'brightness(1.8) drop-shadow(0 0 12px rgba(107, 70, 193, 0.8))'
                                                                         }
                                                                     }
                                                                 }}
