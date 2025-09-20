@@ -35,7 +35,7 @@ export async function analyzeReportByUrl(url: string): Promise<RiskAnalysisResul
         const result = await response.json();
         console.log('📦 riskAnalysisService: Received JSON response:', result);
         
-        if (!result.ok) {
+        if (!result.success) {
             console.error('❌ riskAnalysisService: API response indicated failure:', result.error);
             throw new Error(result.error || 'Analysis failed');
         }
