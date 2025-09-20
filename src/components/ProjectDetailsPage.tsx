@@ -1043,7 +1043,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // General document analysis function
     const handleDocumentAnalysis = async (fileUrl: string, documentType: string) => {
+        console.log('🚀 handleDocumentAnalysis called with:', { fileUrl, documentType });
+        
         if (!fileUrl) {
+            console.log('❌ No file URL provided');
             setSnackbarMessage('אנא העלה מסמך תחילה');
             setSnackbarSeverity('warning');
             setSnackbarOpen(true);
@@ -1051,6 +1054,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
 
         try {
+            console.log('🔄 Setting analyzing state to true');
             setIsAnalyzing(true);
             setSnackbarMessage(`מנתח את המסמך (${documentType}) וממלא שדות...`);
             setSnackbarSeverity('info');
@@ -1060,11 +1064,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             // Handle risk assessment report analysis
             if (documentType === 'risk-assessment') {
+                console.log('🎯 Processing risk assessment report');
                 const { analyzeReportByUrl, mapRiskAnalysisToProject } = await import('../services/riskAnalysisService');
+                console.log('📦 Services imported successfully');
 
+                console.log('📞 Calling analyzeReportByUrl with:', fileUrl);
                 const analysisResult = await analyzeReportByUrl(fileUrl);
                 console.log('📊 Analysis result received:', analysisResult);
-                
+
                 const mappedData = mapRiskAnalysisToProject(analysisResult);
                 console.log('🗺️ Mapped data:', mappedData);
 
@@ -1200,10 +1207,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
         } catch (error) {
             console.error('❌ Error analyzing document:', error);
+            console.error('❌ Error stack:', error.stack);
             setSnackbarMessage(`שגיאה בניתוח המסמך: ${error.message}`);
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         } finally {
+            console.log('🔄 Setting analyzing state to false');
             setIsAnalyzing(false);
         }
     };

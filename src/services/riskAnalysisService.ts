@@ -15,9 +15,8 @@ export interface RiskAnalysisResult {
  * Analyze a risk assessment report by URL
  */
 export async function analyzeReportByUrl(url: string): Promise<RiskAnalysisResult> {
+    console.log('📞 riskAnalysisService: Sending request to /api/risk-analysis/analyze-report with URL:', url);
     try {
-        console.log('🔍 Starting risk analysis for URL:', url);
-        
         const response = await fetch('/api/risk-analysis/analyze-report', {
             method: 'POST',
             headers: {
@@ -26,26 +25,31 @@ export async function analyzeReportByUrl(url: string): Promise<RiskAnalysisResul
             body: JSON.stringify({ url }),
         });
 
+        console.log('📡 riskAnalysisService: Received raw response status:', response.status);
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('❌ riskAnalysisService: Fetch failed with status:', response.status, 'Error text:', errorText);
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
         }
 
         const result = await response.json();
+        console.log('📦 riskAnalysisService: Received JSON response:', result);
         
         if (!result.ok) {
+            console.error('❌ riskAnalysisService: API response indicated failure:', result.error);
             throw new Error(result.error || 'Analysis failed');
         }
 
         if (!result.data) {
+            console.error('❌ riskAnalysisService: No data returned from analysis');
             throw new Error('No data returned from analysis');
         }
 
-        console.log('✅ Risk analysis completed successfully:', result.data);
+        console.log('✅ riskAnalysisService: Analysis successful, returning data:', result.data);
         return result.data;
 
     } catch (error) {
-        console.error('❌ Risk analysis failed:', error);
+        console.error('🔥 riskAnalysisService: Error during analysis:', error);
         throw error;
     }
 }
