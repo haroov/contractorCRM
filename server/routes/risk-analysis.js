@@ -112,9 +112,15 @@ async function tryDirectPdfUrl(pdfUrl) {
  */
 async function tryTextFallback(pdfUrl) {
     try {
+        console.log("🔍 Attempting to fetch PDF from URL:", pdfUrl);
         const response = await fetch(pdfUrl);
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
+        
         if (!response.ok) {
-            throw new Error(`Failed to fetch PDF: ${response.status}`);
+            const errorText = await response.text();
+            console.error("❌ Failed to fetch PDF:", response.status, errorText);
+            throw new Error(`Failed to fetch PDF: ${response.status} - ${errorText}`);
         }
 
         const buffer = await response.buffer();
@@ -181,7 +187,10 @@ router.post("/analyze-report", async (req, res) => {
             });
         }
 
-        console.log("🔍 Analyzing risk assessment report:", url);
+        console.log("🔍 Analyzing risk assessment report:");
+        console.log("📄 URL:", url);
+        console.log("📄 URL type:", typeof url);
+        console.log("📄 URL length:", url?.length);
 
         let data;
         try {
