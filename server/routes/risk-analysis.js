@@ -69,19 +69,7 @@ async function tryDirectPdfUrl(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: [
-                        {
-                            type: "text",
-                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים. החזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string)."
-                        },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: pdfUrl,
-                                detail: "high"
-                            }
-                        }
-                    ]
+                    content: `נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים. החזר JSON עם השדות הבאים: report_date (string), work_on_existing_structure (boolean), demolition_required (boolean), current_state_description (string), environment_description (string).\n\nקישור למסמך: ${pdfUrl}`
                 }
             ],
             max_tokens: 4000
