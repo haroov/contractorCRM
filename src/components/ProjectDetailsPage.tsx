@@ -1667,22 +1667,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <TextField
                                         fullWidth
                                         label="ערך הפרויקט (בש״ח)"
-                                        value={formatCurrency(project?.projectValueNis || project?.valueNis || project?.value || 0)}
+                                        value={project?.projectValueNis || project?.valueNis || project?.value ? `${(project?.projectValueNis || project?.valueNis || project?.value).toLocaleString('he-IL')} ₪` : ''}
                                         onChange={(e) => {
                                             const numericValue = e.target.value.replace(/[^\d]/g, '');
                                             handleFieldChange('projectValueNis', parseInt(numericValue) || 0);
                                         }}
                                         disabled={mode === 'view' || !canEdit}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <Typography sx={{ color: 'text.secondary', mr: 1 }}>
-                                                    ₪
-                                                </Typography>
-                                            ),
-                                        }}
                                         sx={{
                                             '& .MuiInputBase-input': {
-                                                textAlign: 'left',
+                                                textAlign: 'right',
                                                 direction: 'ltr'
                                             }
                                         }}
