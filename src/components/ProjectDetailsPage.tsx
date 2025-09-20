@@ -633,7 +633,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // Format currency with commas and ₪ symbol
+    // Format currency with commas (₪ symbol is handled by InputProps)
     const formatCurrency = (value: number): string => {
         if (!value || value === 0) return '';
         return value.toLocaleString('he-IL');
@@ -1659,11 +1659,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <TextField
                                         fullWidth
-                                        label="ערך הפרויקט"
-                                        value={formatCurrency(project?.valueNis || project?.value || 0)}
+                                        label="ערך הפרויקט (בש״ח)"
+                                        value={formatCurrency(project?.projectValueNis || project?.valueNis || project?.value || 0)}
                                         onChange={(e) => {
                                             const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                            handleFieldChange('valueNis', parseInt(numericValue) || 0);
+                                            handleFieldChange('projectValueNis', parseInt(numericValue) || 0);
                                         }}
                                         disabled={mode === 'view' || !canEdit}
                                         InputProps={{
@@ -1675,7 +1675,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         }}
                                         sx={{
                                             '& .MuiInputBase-input': {
-                                                textAlign: 'right',
+                                                textAlign: 'left',
                                                 direction: 'ltr'
                                             }
                                         }}
