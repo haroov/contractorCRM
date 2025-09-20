@@ -2777,6 +2777,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     },
                                                 },
                                                 '& .MuiInputLabel-root': {
+                                                    color: '#6B46C1',
                                                     '&.Mui-focused': {
                                                         color: '#6B46C1',
                                                     },
@@ -2803,6 +2804,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     },
                                                 },
                                                 '& .MuiInputLabel-root': {
+                                                    color: '#6B46C1',
                                                     '&.Mui-focused': {
                                                         color: '#6B46C1',
                                                     },
