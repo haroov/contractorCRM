@@ -50,6 +50,10 @@ const schema = {
             type: "string", 
             description: "תיאור מצב קיים/סיכום הסוקר" 
         },
+        environment_description: { 
+            type: "string", 
+            description: "תיאור הסביבה והתנאים הסביבתיים" 
+        },
         hazards: {
             type: "array",
             description: "רשימת סיכונים מזוהים",
@@ -110,7 +114,7 @@ async function tryDirectPdfUrl(pdfUrl) {
                     content: [
                         {
                             type: "text",
-                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות. החזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), hazards (array of objects with category, severity, description, recommendation)."
+                            text: "נתח את דוח סקר הסיכונים שבלינק וחלץ ערכים לכל השדות. החזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), environment_description (string), hazards (array of objects with category, severity, description, recommendation)."
                         },
                         {
                             type: "image_url",
@@ -159,7 +163,7 @@ async function tryTextFallback(pdfUrl) {
                 },
                 {
                     role: "user",
-                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), hazards (array of objects with category, severity, description, recommendation).`
+                    content: `הנה הטקסט של דוח סקר הסיכונים (ייתכנו איבודי פריסה/תמונות). מלא סכימה:\n\n${parsed.text}\n\nהחזר JSON עם השדות הבאים: work_on_existing_structure (boolean), demolition_required (boolean), incident_date (string), site_city (string), site_address (string), contractor_name (string), contractor_id (string), risk_summary (string), environment_description (string), hazards (array of objects with category, severity, description, recommendation).`
                 }
             ],
             max_tokens: 4000

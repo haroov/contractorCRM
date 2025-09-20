@@ -11,6 +11,7 @@ export interface RiskAnalysisResult {
     contractor_name?: string | null;
     contractor_id?: string | null;
     risk_summary?: string | null;
+    environment_description?: string | null;
     hazards?: Array<{
         category: string;
         severity?: number;
@@ -101,8 +102,14 @@ export function mapRiskAnalysisToProject(analysisResult: RiskAnalysisResult) {
         mappedData['contractorId'] = analysisResult.contractor_id;
     }
 
+    // Map risk summary to current state description
     if (analysisResult.risk_summary) {
-        mappedData['engineeringQuestionnaire.riskAssessmentReport.riskSummary'] = analysisResult.risk_summary;
+        mappedData['environmentalSurvey.currentStateDescription'] = analysisResult.risk_summary;
+    }
+
+    // Map environment description
+    if (analysisResult.environment_description) {
+        mappedData['environmentalSurvey.environmentDescription'] = analysisResult.environment_description;
     }
 
     // Map hazards array
