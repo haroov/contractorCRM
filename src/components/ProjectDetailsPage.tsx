@@ -2740,7 +2740,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 '& .MuiInputBase-input': {
                                                     color: isAnalyzing ? '#6B46C1' : 'inherit',
                                                     fontStyle: isAnalyzing ? 'italic' : 'normal'
-                                                }
+                                                },
+                                                '& .MuiOutlinedInput-root': {
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6B46C1',
+                                                    },
+                                                },
                                             }}
                                         />
 
@@ -2756,7 +2761,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 '& .MuiInputBase-input': {
                                                     color: isAnalyzing ? '#6B46C1' : 'inherit',
                                                     fontStyle: isAnalyzing ? 'italic' : 'normal'
-                                                }
+                                                },
+                                                '& .MuiOutlinedInput-root': {
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6B46C1',
+                                                    },
+                                                },
                                             }}
                                         />
 
