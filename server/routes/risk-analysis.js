@@ -76,7 +76,10 @@ async function tryDirectPdfUrl(pdfUrl) {
         });
 
         console.log("🔍 Direct PDF response status:", response.status);
+        console.log("🔍 Direct PDF response keys:", Object.keys(response));
+        console.log("🔍 Direct PDF response choices:", response.choices);
         console.log("🔍 Direct PDF response choices length:", response.choices?.length);
+        console.log("🔍 Direct PDF response data:", response.data);
         
         const content = response.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
@@ -84,6 +87,7 @@ async function tryDirectPdfUrl(pdfUrl) {
         if (!content) {
             console.error("❌ No content in response. Response status:", response.status);
             console.error("❌ Response choices:", response.choices?.length || 0);
+            console.error("❌ Full response structure:", JSON.stringify(response, null, 2));
             throw new Error("No content in response");
         }
 
@@ -123,7 +127,10 @@ async function tryTextFallback(pdfUrl) {
         });
 
         console.log("🔍 Text fallback response status:", aiResponse.status);
+        console.log("🔍 Text fallback response keys:", Object.keys(aiResponse));
+        console.log("🔍 Text fallback response choices:", aiResponse.choices);
         console.log("🔍 Text fallback response choices length:", aiResponse.choices?.length);
+        console.log("🔍 Text fallback response data:", aiResponse.data);
         
         const content = aiResponse.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
@@ -131,6 +138,7 @@ async function tryTextFallback(pdfUrl) {
         if (!content) {
             console.error("❌ No content in AI response. Response status:", aiResponse.status);
             console.error("❌ Response choices:", aiResponse.choices?.length || 0);
+            console.error("❌ Full response structure:", JSON.stringify(aiResponse, null, 2));
             throw new Error("No content in AI response");
         }
 
