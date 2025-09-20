@@ -653,6 +653,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [hasAnalyzedReport, setHasAnalyzedReport] = useState(false);
     const [analyzedFiles, setAnalyzedFiles] = useState<Set<string>>(new Set());
+    
+    // Typing effect state
+    const [typingText, setTypingText] = useState('');
+    
+    // Typing effect animation
+    useEffect(() => {
+        if (!isAnalyzing) {
+            setTypingText('');
+            return;
+        }
+        
+        let dots = '';
+        const interval = setInterval(() => {
+            dots = dots.length >= 3 ? '' : dots + '.';
+            setTypingText(dots);
+        }, 500);
+        
+        return () => clearInterval(interval);
+    }, [isAnalyzing]);
 
     useEffect(() => {
         const checkContactUser = () => {
@@ -2670,21 +2689,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <TextField
                                             fullWidth
                                             label="תיאור המצב הקיים"
-                                            value={project?.environmentalSurvey?.currentStateDescription || ''}
+                                            value={isAnalyzing ? `מנתח את המסמך${typingText}` : (project?.environmentalSurvey?.currentStateDescription || '')}
                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.currentStateDescription', e.target.value)}
-                                            disabled={mode === 'view' || !canEdit}
+                                            disabled={mode === 'view' || !canEdit || isAnalyzing}
                                             multiline
                                             rows={3}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                    fontStyle: isAnalyzing ? 'italic' : 'normal'
+                                                }
+                                            }}
                                         />
 
                                         <TextField
                                             fullWidth
                                             label="תיאור הסביבה"
-                                            value={project?.environmentalSurvey?.environmentDescription || ''}
+                                            value={isAnalyzing ? `מנתח את המסמך${typingText}` : (project?.environmentalSurvey?.environmentDescription || '')}
                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.environmentDescription', e.target.value)}
-                                            disabled={mode === 'view' || !canEdit}
+                                            disabled={mode === 'view' || !canEdit || isAnalyzing}
                                             multiline
                                             rows={3}
+                                            sx={{
+                                                '& .MuiInputBase-input': {
+                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                    fontStyle: isAnalyzing ? 'italic' : 'normal'
+                                                }
+                                            }}
                                         />
 
                                         <Box sx={{
