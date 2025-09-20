@@ -125,7 +125,7 @@ async function tryDirectPdfUrl(pdfUrl) {
             max_tokens: 4000
         });
 
-        const content = response.choices[0]?.message?.content;
+        const content = response.choices?.[0]?.message?.content;
         if (!content) {
             throw new Error("No content in response");
         }
@@ -165,7 +165,7 @@ async function tryTextFallback(pdfUrl) {
             max_tokens: 4000
         });
 
-        const content = aiResponse.choices[0]?.message?.content;
+        const content = aiResponse.choices?.[0]?.message?.content;
         if (!content) {
             throw new Error("No content in AI response");
         }
