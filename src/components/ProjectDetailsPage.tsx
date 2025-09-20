@@ -184,103 +184,103 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, direction: 'rtl' }}>
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept={accept}
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-            />
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={accept}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                />
 
             {/* Upload button or file display */}
-            {value ? (
-                <Box sx={{
-                    width: 40,
-                    height: 40,
+                {value ? (
+                    <Box sx={{
+                        width: 40,
+                        height: 40,
                     backgroundColor: '#6B46C1', // Chocolate purple background
-                    borderRadius: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                    cursor: 'pointer',
-                    border: '1px solid #d0d0d0'
-                }} onClick={handleFileClick}>
-                    {value.toLowerCase().includes('.pdf') ? (
-                        <PdfIcon sx={{
-                            fontSize: 24,
-                            color: 'white' // White color on purple background
-                        }} />
-                    ) : (
-                        <img
-                            src={value}
-                            alt="תצוגה מקדימה"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                borderRadius: '4px'
-                            }}
-                            onError={(e) => {
-                                // Fallback to PDF icon if image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                    const pdfIcon = document.createElement('div');
-                                    pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
-                                    parent.appendChild(pdfIcon);
-                                }
-                            }}
-                        />
-                    )}
-
-                    {/* Delete button - small X in top-right corner */}
-                    {onDelete && !disabled && (
-                        <IconButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete();
-                            }}
-                            sx={{
-                                position: 'absolute',
-                                top: -8,
-                                right: -8,
-                                width: 20,
-                                height: 20,
-                                backgroundColor: 'white',
-                                border: '1px solid #d0d0d0',
-                                color: '#f44336',
-                                '&:hover': {
-                                    backgroundColor: '#ffebee',
-                                    borderColor: '#f44336'
-                                }
-                            }}
-                        >
-                            <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
-                        </IconButton>
-                    )}
-                </Box>
-            ) : (
-                <IconButton
-                    disabled={disabled || isUploading}
-                    title={label}
-                    onClick={handleUploadClick}
-                    sx={{
-                        border: '1px solid #d0d0d0',
                         borderRadius: 1,
-                        height: '40px',
-                        width: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        border: '1px solid #d0d0d0'
+                    }} onClick={handleFileClick}>
+                        {value.toLowerCase().includes('.pdf') ? (
+                            <PdfIcon sx={{
+                                fontSize: 24,
+                            color: 'white' // White color on purple background
+                            }} />
+                        ) : (
+                            <img
+                                src={value}
+                                alt="תצוגה מקדימה"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: '4px'
+                                }}
+                                onError={(e) => {
+                                    // Fallback to PDF icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                        const pdfIcon = document.createElement('div');
+                                        pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                        parent.appendChild(pdfIcon);
+                                    }
+                                }}
+                            />
+                        )}
+
+                        {/* Delete button - small X in top-right corner */}
+                        {onDelete && !disabled && (
+                            <IconButton
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete();
+                                }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: -8,
+                                    right: -8,
+                                    width: 20,
+                                    height: 20,
+                                    backgroundColor: 'white',
+                                    border: '1px solid #d0d0d0',
+                                    color: '#f44336',
+                                    '&:hover': {
+                                        backgroundColor: '#ffebee',
+                                        borderColor: '#f44336'
+                                    }
+                                }}
+                            >
+                                <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
+                            </IconButton>
+                        )}
+                    </Box>
+                ) : (
+                    <IconButton
+                        disabled={disabled || isUploading}
+                        title={label}
+                        onClick={handleUploadClick}
+                        sx={{
+                            border: '1px solid #d0d0d0',
+                            borderRadius: 1,
+                            height: '40px',
+                            width: '40px',
                         color: '#6B46C1',
-                        '&:hover': {
-                            backgroundColor: 'rgba(156, 39, 176, 0.04)',
+                            '&:hover': {
+                                backgroundColor: 'rgba(156, 39, 176, 0.04)',
                             borderColor: '#6B46C1'
-                        }
-                    }}
-                >
-                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
-                </IconButton>
-            )}
+                            }
+                        }}
+                    >
+                        {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                    </IconButton>
+                )}
 
             {/* Label text */}
             <Typography
@@ -298,8 +298,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 }}
                 onClick={value ? () => window.open(value, '_blank') : undefined}
             >
-                {label}
-            </Typography>
+                    {label}
+                </Typography>
 
             {/* AI Icon */}
             {aiIcon}
@@ -1448,123 +1448,123 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         bgcolor: 'white',
                         flexShrink: 0
                     }}>
-                        {/* Project Header */}
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            p: 1.5,
-                            bgcolor: 'white',
+                    {/* Project Header */}
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        p: 1.5,
+                        bgcolor: 'white',
                             color: 'black'
-                        }}>
-                            <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
-                                {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                {/* Show buttons based on user permissions */}
-                                {(() => {
-                                    console.log('🔧 ProjectDetailsPage button logic:', {
-                                        isContactUser,
-                                        contactUserPermissions
-                                    });
+                    }}>
+                        <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                            {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {/* Show buttons based on user permissions */}
+                            {(() => {
+                                console.log('🔧 ProjectDetailsPage button logic:', {
+                                    isContactUser,
+                                    contactUserPermissions
+                                });
 
-                                    // contactUser: show only Close button to return to contractor
-                                    if (isContactUser && contactUserPermissions === 'contactUser') {
-                                        console.log('🔧 ProjectDetailsPage: contactUser - only Close button');
-                                        return (
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                onClick={() => {
-                                                    console.log('🔍 Close button clicked - contactUser');
-                                                    handleClose();
-                                                }}
-                                                sx={{
-                                                    minWidth: 'auto',
-                                                    px: 2,
+                                // contactUser: show only Close button to return to contractor
+                                if (isContactUser && contactUserPermissions === 'contactUser') {
+                                    console.log('🔧 ProjectDetailsPage: contactUser - only Close button');
+                                    return (
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => {
+                                                console.log('🔍 Close button clicked - contactUser');
+                                                handleClose();
+                                            }}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
                                                     borderColor: '#6B46C1', // סגול שוקו
                                                     color: '#6B46C1',
-                                                    '&:hover': {
+                                                '&:hover': {
                                                         borderColor: '#5B21B6',
                                                         bgcolor: 'rgba(107, 70, 193, 0.04)'
-                                                    }
-                                                }}
-                                            >
-                                                סגירה
-                                            </Button>
-                                        );
-                                    }
+                                                }
+                                            }}
+                                        >
+                                            סגירה
+                                        </Button>
+                                    );
+                                }
 
-                                    // contactAdmin: show only Save button, no Close button
-                                    if (isContactUser && contactUserPermissions === 'contactAdmin') {
-                                        console.log('🔧 ProjectDetailsPage: contactAdmin - only Save button');
-                                        return (
-                                            <Button
-                                                variant="contained"
-                                                size="small"
-                                                onClick={handleSave}
-                                                disabled={saving}
-                                                sx={{
-                                                    minWidth: 'auto',
-                                                    px: 2,
-                                                    bgcolor: '#6B46C1',
-                                                    '&:hover': {
-                                                        bgcolor: '#5B21B6'
-                                                    }
-                                                }}
-                                            >
-                                                {saving ? 'שומר...' : 'שמירה'}
-                                            </Button>
-                                        );
-                                    }
-
-                                    // System users: show both buttons
-                                    console.log('🔧 ProjectDetailsPage: system user - both buttons');
+                                // contactAdmin: show only Save button, no Close button
+                                if (isContactUser && contactUserPermissions === 'contactAdmin') {
+                                    console.log('🔧 ProjectDetailsPage: contactAdmin - only Save button');
                                     return (
-                                        <>
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                onClick={() => {
-                                                    console.log('🔍 Close button clicked - systemUser');
-                                                    handleClose();
-                                                }}
-                                                sx={{
-                                                    minWidth: 'auto',
-                                                    px: 2,
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleSave}
+                                            disabled={saving}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
+                                                    bgcolor: '#6B46C1',
+                                                '&:hover': {
+                                                        bgcolor: '#5B21B6'
+                                                }
+                                            }}
+                                        >
+                                            {saving ? 'שומר...' : 'שמירה'}
+                                        </Button>
+                                    );
+                                }
+
+                                // System users: show both buttons
+                                console.log('🔧 ProjectDetailsPage: system user - both buttons');
+                                return (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => {
+                                                console.log('🔍 Close button clicked - systemUser');
+                                                handleClose();
+                                            }}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
                                                     borderColor: '#6B46C1', // סגול שוקו
                                                     color: '#6B46C1',
-                                                    '&:hover': {
+                                                '&:hover': {
                                                         borderColor: '#5B21B6',
-                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
-                                                    }
-                                                }}
-                                            >
-                                                סגירה
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                size="small"
-                                                onClick={handleSave}
-                                                disabled={saving}
-                                                sx={{
-                                                    minWidth: 'auto',
-                                                    px: 2,
+                                                    backgroundColor: 'rgba(136, 47, 215, 0.04)'
+                                                }
+                                            }}
+                                        >
+                                            סגירה
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={handleSave}
+                                            disabled={saving}
+                                            sx={{
+                                                minWidth: 'auto',
+                                                px: 2,
                                                     bgcolor: '#6B46C1',
-                                                    '&:hover': {
+                                                '&:hover': {
                                                         bgcolor: '#5B21B6'
-                                                    }
-                                                }}
-                                            >
-                                                {saving ? 'שומר...' : 'שמירה'}
-                                            </Button>
-                                        </>
-                                    );
-                                })()}
-                            </Box>
+                                                }
+                                            }}
+                                        >
+                                            {saving ? 'שומר...' : 'שמירה'}
+                                        </Button>
+                                    </>
+                                );
+                            })()}
                         </Box>
+                    </Box>
 
-                        {/* Tabs */}
+                    {/* Tabs */}
                         <Box sx={{
                             borderBottom: 1,
                             borderColor: 'divider',
@@ -1586,17 +1586,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     },
                                 }}
                             >
-                                <Tab label="כללי" />
-                                <Tab label="תוכניות" />
-                                <Tab label="מפרט" />
-                                <Tab label="מסמכים" />
-                                <Tab label="ביטוח" />
-                                <Tab label="הרשאות" />
-                                <Tab label="הערות" />
-                                {(project?.status === 'current' || project?.status === 'completed') && (
-                                    <Tab label="דשבורד" />
-                                )}
-                            </Tabs>
+                            <Tab label="כללי" />
+                            <Tab label="תוכניות" />
+                            <Tab label="מפרט" />
+                            <Tab label="מסמכים" />
+                            <Tab label="ביטוח" />
+                            <Tab label="הרשאות" />
+                            <Tab label="הערות" />
+                            {(project?.status === 'current' || project?.status === 'completed') && (
+                                <Tab label="דשבורד" />
+                            )}
+                        </Tabs>
                         </Box>
                     </Box>
 
@@ -1698,16 +1698,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-start'
                                                 }}>
                                                     {/* File Upload Icon */}
-                                                    <FileUpload
+                                                <FileUpload
                                                         label=""
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
                                                         onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
                                                         onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.dwg,.dwf"
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.dwg,.dwf"
                                                         showCreationDate={false}
-                                                        projectId={project?._id || project?.id}
-                                                    />
+                                                    projectId={project?._id || project?.id}
+                                                />
 
                                                     {/* File Name */}
                                                     <Typography
@@ -1755,11 +1755,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     }
                                                                 }}
                                                             >
-                                                                {isAnalyzing ? (
-                                                                    <CircularProgress size={20} color="inherit" />
-                                                                ) : (
-                                                                    <AutoAwesomeIcon />
-                                                                )}
+                                                                <AutoAwesomeIcon 
+                                                                    sx={{
+                                                                        animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                        '@keyframes sparkle': {
+                                                                            '0%, 100%': {
+                                                                                opacity: 1,
+                                                                                transform: 'scale(1)',
+                                                                                                                filter: 'brightness(1)'
+                                                                            },
+                                                                            '50%': {
+                                                                                opacity: 0.7,
+                                                                                transform: 'scale(1.1)',
+                                                                                                                filter: 'brightness(1.5)'
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                />
                                                             </IconButton>
                                                         )}
 
@@ -1787,21 +1799,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <FormControl>
                                                         <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
-                                                        <Select
-                                                            labelId="project-type-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
-                                                            label="סוג הפרויקט"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="בניה">בניה</MenuItem>
-                                                            <MenuItem value="תמא 38">תמא 38</MenuItem>
-                                                            <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
-                                                            <MenuItem value="תשתיות">תשתיות</MenuItem>
-                                                            <MenuItem value="גשר">גשר</MenuItem>
-                                                            <MenuItem value="כביש">כביש</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
+                                                    <Select
+                                                        labelId="project-type-label"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
+                                                        label="סוג הפרויקט"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="בניה">בניה</MenuItem>
+                                                        <MenuItem value="תמא 38">תמא 38</MenuItem>
+                                                        <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
+                                                        <MenuItem value="תשתיות">תשתיות</MenuItem>
+                                                        <MenuItem value="גשר">גשר</MenuItem>
+                                                        <MenuItem value="כביש">כביש</MenuItem>
+                                                    </Select>
+                                                </FormControl>
 
                                                     <Box sx={{
                                                         display: 'flex',
@@ -1835,7 +1847,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     console.log('🔴 Mode:', mode, 'canEdit:', canEdit);
                                                                     handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.governmentProgram', false);
                                                                 }}
-                                                                disabled={mode === 'view' || !canEdit}
+                                                        disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
@@ -2016,7 +2028,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     console.log('🔴 Mode:', mode, 'canEdit:', canEdit);
                                                                     handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', false);
                                                                 }}
-                                                                disabled={mode === 'view' || !canEdit}
+                                                            disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
@@ -2042,7 +2054,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     console.log('🟢 Mode:', mode, 'canEdit:', canEdit);
                                                                     handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.sharedBasementFloors', true);
                                                                 }}
-                                                                disabled={mode === 'view' || !canEdit}
+                                                    disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
@@ -2072,9 +2084,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-                                                <FileUpload
+                                                    <FileUpload
                                                     label="היתר בניה"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
                                                     onChange={(url) => {
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
                                                         // Update exists field automatically based on file presence
@@ -2085,17 +2097,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         // Update exists field automatically when file is deleted
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                    showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
-                                                    projectId={project?._id || project?.id}
-                                                />
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        showCreationDate={true}
+                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
+                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
+                                                        projectId={project?._id || project?.id}
+                                                    />
 
-                                                <FileUpload
+                                                    <FileUpload
                                                     label="היתר חפירה ודיפון"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
                                                     onChange={(url) => {
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
                                                         // Update exists field automatically based on file presence
@@ -2106,13 +2118,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         // Update exists field automatically when file is deleted
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                    showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
-                                                    projectId={project?._id || project?.id}
-                                                />
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        showCreationDate={true}
+                                                        creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
+                                                        onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
+                                                        projectId={project?._id || project?.id}
+                                                    />
 
                                                 <FileUpload
                                                     label="אישור מהנדס קונסטרקטור"
@@ -2191,11 +2203,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }
                                                             }}
                                                         >
-                                                            {isAnalyzing ? (
-                                                                <CircularProgress size={24} color="inherit" />
-                                                            ) : (
-                                                                <AutoAwesomeIcon />
-                                                            )}
+                                                            <AutoAwesomeIcon 
+                                                                sx={{
+                                                                    animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                    '@keyframes sparkle': {
+                                                                        '0%, 100%': {
+                                                                            opacity: 1,
+                                                                            transform: 'scale(1)',
+                                                                                                            filter: 'brightness(1)'
+                                                                        },
+                                                                        '50%': {
+                                                                            opacity: 0.7,
+                                                                            transform: 'scale(1.1)',
+                                                                                                            filter: 'brightness(1.5)'
+                                                                        }
+                                                                    }
+                                                                }}
+                                                            />
                                                         </IconButton>
                                                     ) : null;
                                                 })()}
@@ -2331,7 +2355,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 console.log('🔴 Mode:', mode, 'canEdit:', canEdit);
                                                                 handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.perimeterDewatering', false);
                                                             }}
-                                                            disabled={mode === 'view' || !canEdit}
+                                                        disabled={mode === 'view' || !canEdit}
                                                             sx={{
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
@@ -2451,11 +2475,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }
                                                             }}
                                                         >
-                                                            {isAnalyzing ? (
-                                                                <CircularProgress size={24} color="inherit" />
-                                                            ) : (
-                                                                <AutoAwesomeIcon />
-                                                            )}
+                                                            <AutoAwesomeIcon 
+                                                                sx={{
+                                                                    animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
+                                                                    '@keyframes sparkle': {
+                                                                        '0%, 100%': {
+                                                                            opacity: 1,
+                                                                            transform: 'scale(1)',
+                                                                                                            filter: 'brightness(1)'
+                                                                        },
+                                                                        '50%': {
+                                                                            opacity: 0.7,
+                                                                            transform: 'scale(1.1)',
+                                                                                                            filter: 'brightness(1.5)'
+                                                                        }
+                                                                    }
+                                                                }}
+                                                            />
                                                         </IconButton>
                                                     ) : null;
                                                 })()}
@@ -2748,7 +2784,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.adjacentBuildings.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -2864,7 +2900,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.electricalCables.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -2950,7 +2986,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.undergroundInfrastructure.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3036,7 +3072,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.kindergartens.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3122,7 +3158,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToGasStation', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3196,7 +3232,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3270,7 +3306,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3344,7 +3380,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.onMountainRidge', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3418,7 +3454,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('environmentalSurvey.inValley', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3541,7 +3577,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('hydrologicalPlan.basementPumpsAvailable', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3621,7 +3657,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
@@ -3716,7 +3752,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={() => {
                                                         handleNestedFieldChange('schedule.exists', false);
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
+                                                disabled={mode === 'view' || !canEdit}
                                                     sx={{
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',

@@ -87,13 +87,15 @@ async function tryDirectPdfUrl(pdfUrl) {
             max_tokens: 4000
         });
 
-        console.log("🔍 Direct PDF response:", JSON.stringify(response, null, 2));
+        console.log("🔍 Direct PDF response status:", response.status);
+        console.log("🔍 Direct PDF response choices length:", response.choices?.length);
         
         const content = response.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
         
         if (!content) {
-            console.error("❌ No content in response. Full response:", response);
+            console.error("❌ No content in response. Response status:", response.status);
+            console.error("❌ Response choices:", response.choices?.length || 0);
             throw new Error("No content in response");
         }
 
@@ -132,13 +134,15 @@ async function tryTextFallback(pdfUrl) {
             max_tokens: 4000
         });
 
-        console.log("🔍 Text fallback response:", JSON.stringify(aiResponse, null, 2));
+        console.log("🔍 Text fallback response status:", aiResponse.status);
+        console.log("🔍 Text fallback response choices length:", aiResponse.choices?.length);
         
         const content = aiResponse.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
         
         if (!content) {
-            console.error("❌ No content in AI response. Full response:", aiResponse);
+            console.error("❌ No content in AI response. Response status:", aiResponse.status);
+            console.error("❌ Response choices:", aiResponse.choices?.length || 0);
             throw new Error("No content in AI response");
         }
 
