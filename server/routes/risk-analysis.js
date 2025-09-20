@@ -24,25 +24,25 @@ const schema = {
     type: "object",
     additionalProperties: false,
     properties: {
-        report_date: { 
-            type: "string", 
-            description: "יום עריכת הדוח" 
+        report_date: {
+            type: "string",
+            description: "יום עריכת הדוח"
         },
-        work_on_existing_structure: { 
-            type: "boolean", 
-            description: "עבודה על מבנה קיים (כן/לא)" 
+        work_on_existing_structure: {
+            type: "boolean",
+            description: "עבודה על מבנה קיים (כן/לא)"
         },
-        demolition_required: { 
-            type: "boolean", 
-            description: "הריסת מבנים (כן/לא)" 
+        demolition_required: {
+            type: "boolean",
+            description: "הריסת מבנים (כן/לא)"
         },
-        current_state_description: { 
-            type: "string", 
-            description: "תאור המצב הקיים" 
+        current_state_description: {
+            type: "string",
+            description: "תאור המצב הקיים"
         },
-        environment_description: { 
-            type: "string", 
-            description: "תאור הסביבה" 
+        environment_description: {
+            type: "string",
+            description: "תאור הסביבה"
         }
     },
     required: ["work_on_existing_structure", "demolition_required"]
@@ -77,13 +77,13 @@ async function tryDirectPdfUrl(pdfUrl) {
 
         console.log("🔍 Direct PDF response status:", response.status);
         console.log("🔍 Direct PDF response keys:", Object.keys(response));
-        console.log("🔍 Direct PDF response choices:", response.choices);
-        console.log("🔍 Direct PDF response choices length:", response.choices?.length);
-        console.log("🔍 Direct PDF response data:", response.data);
+        console.log("🔍 Direct PDF response data keys:", Object.keys(response.data || {}));
+        console.log("🔍 Direct PDF response data.choices:", response.data?.choices);
+        console.log("🔍 Direct PDF response data.choices length:", response.data?.choices?.length);
         
-        const content = response.choices?.[0]?.message?.content;
+        const content = response.data?.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
-        
+
         if (!content) {
             console.error("❌ No content in response. Response status:", response.status);
             console.error("❌ Response choices:", response.choices?.length || 0);
@@ -107,7 +107,7 @@ async function tryTextFallback(pdfUrl) {
         if (!response.ok) {
             throw new Error(`Failed to fetch PDF: ${response.status}`);
         }
-        
+
         const buffer = await response.buffer();
         const parsed = await pdfParse(buffer);
 
@@ -128,13 +128,13 @@ async function tryTextFallback(pdfUrl) {
 
         console.log("🔍 Text fallback response status:", aiResponse.status);
         console.log("🔍 Text fallback response keys:", Object.keys(aiResponse));
-        console.log("🔍 Text fallback response choices:", aiResponse.choices);
-        console.log("🔍 Text fallback response choices length:", aiResponse.choices?.length);
-        console.log("🔍 Text fallback response data:", aiResponse.data);
+        console.log("🔍 Text fallback response data keys:", Object.keys(aiResponse.data || {}));
+        console.log("🔍 Text fallback response data.choices:", aiResponse.data?.choices);
+        console.log("🔍 Text fallback response data.choices length:", aiResponse.data?.choices?.length);
         
-        const content = aiResponse.choices?.[0]?.message?.content;
+        const content = aiResponse.data?.choices?.[0]?.message?.content;
         console.log("📝 Extracted content:", content);
-        
+
         if (!content) {
             console.error("❌ No content in AI response. Response status:", aiResponse.status);
             console.error("❌ Response choices:", aiResponse.choices?.length || 0);
@@ -155,11 +155,11 @@ async function tryTextFallback(pdfUrl) {
 router.post("/analyze-report", async (req, res) => {
     try {
         const { url } = req.body;
-        
+
         if (!url) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "URL is required" 
+            return res.status(400).json({
+                success: false,
+                error: "URL is required"
             });
         }
 
@@ -179,16 +179,16 @@ router.post("/analyze-report", async (req, res) => {
 
         console.log("📊 Analysis result:", JSON.stringify(data, null, 2));
 
-        return res.json({ 
-            success: true, 
-            data: data 
+        return res.json({
+            success: true,
+            data: data
         });
 
     } catch (error) {
         console.error("❌ Risk analysis failed:", error);
-        return res.status(500).json({ 
-            success: false, 
-            error: error.message || "Analysis failed" 
+        return res.status(500).json({
+            success: false,
+            error: error.message || "Analysis failed"
         });
     }
 });
