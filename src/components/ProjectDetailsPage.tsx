@@ -2537,7 +2537,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 מבנים קיימים והריסה
                                             </Typography>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
