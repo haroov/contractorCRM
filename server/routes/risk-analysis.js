@@ -10,6 +10,13 @@ const client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
     apiKey: process.env.OPENAI_API_KEY
 }));
 
+// Check if API key is available
+if (!process.env.OPENAI_API_KEY) {
+    console.error("❌ OPENAI_API_KEY is not set!");
+} else {
+    console.log("✅ OPENAI_API_KEY is set:", process.env.OPENAI_API_KEY.substring(0, 10) + "...");
+}
+
 /**
  * Schema for risk assessment report analysis
  */
@@ -80,8 +87,13 @@ async function tryDirectPdfUrl(pdfUrl) {
             max_tokens: 4000
         });
 
+        console.log("🔍 Direct PDF response:", JSON.stringify(response, null, 2));
+        
         const content = response.choices?.[0]?.message?.content;
+        console.log("📝 Extracted content:", content);
+        
         if (!content) {
+            console.error("❌ No content in response. Full response:", response);
             throw new Error("No content in response");
         }
 
@@ -120,8 +132,13 @@ async function tryTextFallback(pdfUrl) {
             max_tokens: 4000
         });
 
+        console.log("🔍 Text fallback response:", JSON.stringify(aiResponse, null, 2));
+        
         const content = aiResponse.choices?.[0]?.message?.content;
+        console.log("📝 Extracted content:", content);
+        
         if (!content) {
+            console.error("❌ No content in AI response. Full response:", aiResponse);
             throw new Error("No content in AI response");
         }
 
