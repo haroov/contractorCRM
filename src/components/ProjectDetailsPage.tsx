@@ -1908,34 +1908,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden', border: '1px solid #6B46C1' }}>
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 תפקיד
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 ח״פ
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 שם החברה
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 טלפון
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 אימייל
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
                                                                 פעולות
                                                             </TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {project.stakeholders.map((stakeholder, index) => (
-                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' }, borderBottom: '1px solid #6B46C1' }}>
-                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                                <TableCell>
                                                                     <FormControl fullWidth size="small">
                                                                         <Select
                                                                             value={stakeholder.role}
@@ -1943,12 +1943,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
                                                                             variant="outlined"
                                                                             sx={{
-                                                                                '& .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#6B46C1',
-                                                                                },
-                                                                                '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#5B21B6',
-                                                                                },
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                     borderColor: '#6B46C1',
                                                                                 },
@@ -1963,7 +1957,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         </Select>
                                                                     </FormControl>
                                                                 </TableCell>
-                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                                <TableCell>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.companyId}
@@ -1972,19 +1966,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         variant="outlined"
                                                                         size="small"
                                                                         sx={{
-                                                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#5B21B6',
-                                                                            },
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
                                                                             },
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                                <TableCell>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.companyName}
@@ -1993,19 +1981,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         variant="outlined"
                                                                         size="small"
                                                                         sx={{
-                                                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#5B21B6',
-                                                                            },
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
                                                                             },
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                                <TableCell>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.phone}
@@ -2014,19 +1996,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         variant="outlined"
                                                                         size="small"
                                                                         sx={{
-                                                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#5B21B6',
-                                                                            },
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
                                                                             },
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                                <TableCell>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.email}
@@ -2035,12 +2011,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         variant="outlined"
                                                                         size="small"
                                                                         sx={{
-                                                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#5B21B6',
-                                                                            },
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
                                                                             },
