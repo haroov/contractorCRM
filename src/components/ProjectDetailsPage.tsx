@@ -46,11 +46,13 @@ import {
     PictureAsPdf as PdfIcon,
     AutoAwesome as AutoAwesomeIcon,
     ContentCopy as ContentCopyIcon,
-    Clear as ClearIcon
+    Clear as ClearIcon,
+    TableChart as ExcelIcon
 } from '@mui/icons-material';
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
+import CloudDownloadIcon from './CloudDownloadIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -1450,21 +1452,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         return `https://www.${domain}`;
     };
 
+    // Import functions for subcontractors
+    const handleCloudImport = () => {
+        // Future: Import from Safeguard system
+        console.log('Cloud import from Safeguard system - coming soon');
+        // TODO: Implement Safeguard API integration
+    };
+
+    const handleExcelImport = () => {
+        // Future: Open file browser for Excel/CSV files
+        console.log('Excel/CSV import - coming soon');
+        // TODO: Implement file browser and Excel/CSV parsing
+    };
+
     // Function to fetch subcontractor data from MongoDB first, then APIs
     const fetchSubcontractorData = async (companyId: string, subcontractorIndex: number) => {
         if (!companyId || companyId.length < 8) {
             return;
         }
-        
+
         const loadingKey = `subcontractor-${subcontractorIndex}`;
         setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: true }));
-        
+
         try {
             console.log('🔍 Fetching subcontractor data for ID:', companyId, 'at index:', subcontractorIndex);
-            
+
             // Store the original companyId to ensure it's preserved
             const originalCompanyId = companyId;
-            
+
             let companyName = '';
             let address = '';
             let contractorNumber = '';
@@ -1472,7 +1487,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             let email = '';
             let website = '';
             let isRegistered = false;
-            
+
             // First, try to find contractor in MongoDB Atlas
             try {
                 const { ContractorService } = await import('../services/contractorService');
@@ -1495,17 +1510,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             } catch (error) {
                 console.log('ℹ️ No contractor found in MongoDB, trying APIs');
             }
-            
+
             // If not found in MongoDB, try APIs
             if (!companyName) {
                 // Fetch from Companies Registry
                 const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
                 const companiesData = await companiesResponse.json();
-                
+
                 // Fetch from Contractors Registry
                 const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b&q=${companyId}`);
                 const contractorsData = await contractorsResponse.json();
-                
+
                 // Process company data
                 if (companiesData.success && companiesData.result.records.length > 0) {
                     const companyData = companiesData.result.records[0];
@@ -1517,7 +1532,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     email = companyData['דוא"ל'] || companyData['אימייל'] || '';
                     website = extractWebsiteFromEmail(email);
                 }
-                
+
                 // Process contractor data
                 if (contractorsData.success && contractorsData.result.records.length > 0) {
                     const contractorData = contractorsData.result.records[0];
@@ -1527,10 +1542,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isRegistered = false;
                 }
             }
-            
+
             if (project && project.subcontractors) {
                 const updatedSubcontractors = [...project.subcontractors];
-                
+
                 updatedSubcontractors[subcontractorIndex] = {
                     ...updatedSubcontractors[subcontractorIndex],
                     companyId: originalCompanyId,
@@ -1542,12 +1557,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     website: website,
                     isRegistered: isRegistered
                 };
-                
+
                 setProject({
                     ...project,
                     subcontractors: updatedSubcontractors
                 });
-                
+
                 console.log('✅ Updated subcontractor with data:', updatedSubcontractors[subcontractorIndex]);
             }
         } catch (error) {
@@ -2515,9 +2530,41 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 }}>
                                     {/* Subcontractors Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
-                                        <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
-                                            קבלני משנה
-                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                                                קבלני משנה
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <IconButton
+                                                    onClick={handleCloudImport}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        color: 'grey.600',
+                                                        '&:hover': {
+                                                            color: '#6B46C1',
+                                                            backgroundColor: 'rgba(107, 70, 193, 0.04)'
+                                                        }
+                                                    }}
+                                                    title="ייבוא מענן (Safeguard)"
+                                                >
+                                                    <CloudDownloadIcon fontSize="small" />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={handleExcelImport}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        color: 'grey.600',
+                                                        '&:hover': {
+                                                            color: '#6B46C1',
+                                                            backgroundColor: 'rgba(107, 70, 193, 0.04)'
+                                                        }
+                                                    }}
+                                                    title="ייבוא מאקסל/CSV"
+                                                >
+                                                    <ExcelIcon fontSize="small" />
+                                                </IconButton>
+                                            </Box>
+                                        </Box>
 
                                         {project?.subcontractors && project.subcontractors.length > 0 && (
                                             <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
