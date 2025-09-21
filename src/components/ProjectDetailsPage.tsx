@@ -2643,6 +2643,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                height: '40px',
+                                                                            },
+                                                                        }}
                                                                         renderInput={(params) => (
                                                                             <TextField
                                                                                 {...params}
