@@ -1542,7 +1542,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('✅ Found contractor in MongoDB:', existingContractor);
                         companyName = existingContractor.companyName || '';
                         fullAddress = existingContractor.address || ''; // Get full address
-                        address = extractCityFromAddress(fullAddress); // Extract city for UI
+                        address = existingContractor.city || extractCityFromAddress(fullAddress); // Use city field or extract from address
                         phone = existingContractor.phone || '';
                         email = existingContractor.email || '';
                         website = extractWebsiteFromEmail(email);
@@ -1591,10 +1591,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     const contractorData = contractorsData.result.records[0];
                     contractorNumber = contractorData['MISPAR_KABLAN'] || '';
                     isRegistered = true;
+                    
+                    // Get city from SHEM_YISHUV field
+                    const cityFromRegistry = contractorData['SHEM_YISHUV'] || '';
+                    if (cityFromRegistry && !address) {
+                        address = cityFromRegistry;
+                        console.log('✅ City from contractors registry:', cityFromRegistry);
+                    }
+                    
                     console.log('✅ Contractor data from registry:', contractorData);
                     console.log('✅ Contractor number:', contractorNumber);
+                    console.log('✅ City from registry:', cityFromRegistry);
                 } else {
                     isRegistered = false;
+                    contractorNumber = 'אינו קבלן רשום';
                     console.log('ℹ️ No contractor data found in registry');
                 }
             }
@@ -2842,7 +2852,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </TableCell>
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
-                                                                        value={subcontractor.contractorNumber || ''}
+                                                                        value={subcontractor.contractorNumber || 'אינו קבלן רשום'}
                                                                         disabled={true} // Read-only field
                                                                         size="small"
                                                                         placeholder="מספר קבלן"
