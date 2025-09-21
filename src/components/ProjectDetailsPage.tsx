@@ -1041,16 +1041,43 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     // Initialize default stakeholders if none exist
-    const initializeDefaultStakeholders = () => {
+    const initializeDefaultStakeholders = async () => {
         if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
+            // Get contractor details for entrepreneur
+            let entrepreneurDetails = {
+                companyId: '',
+                companyName: '',
+                phone: '',
+                email: ''
+            };
+
+            // Try to get contractor details from mainContractor or contractorId
+            const contractorId = project.mainContractor || project.contractorId;
+            if (contractorId) {
+                try {
+                    const { default: ContractorService } = await import('../services/contractorService');
+                    const contractor = await ContractorService.getById(contractorId);
+                    if (contractor) {
+                        entrepreneurDetails = {
+                            companyId: contractor.id || contractor._id || '',
+                            companyName: contractor.name || contractor.nameEnglish || '',
+                            phone: contractor.phone || '',
+                            email: contractor.email || ''
+                        };
+                    }
+                } catch (error) {
+                    console.error('Error loading contractor details for entrepreneur:', error);
+                }
+            }
+
             const defaultStakeholders: Stakeholder[] = [
                 {
                     id: 'default-1',
                     role: 'יזם',
-                    companyId: '',
-                    companyName: '',
-                    phone: '',
-                    email: '',
+                    companyId: entrepreneurDetails.companyId,
+                    companyName: entrepreneurDetails.companyName,
+                    phone: entrepreneurDetails.phone,
+                    email: entrepreneurDetails.email,
                     isDefault: true
                 },
                 {
@@ -1853,7 +1880,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         fullWidth
                                                                         value={stakeholder.companyId}
                                                                         onChange={(e) => handleStakeholderChange(index, 'companyId', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
                                                                     />
@@ -1863,7 +1890,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         fullWidth
                                                                         value={stakeholder.companyName}
                                                                         onChange={(e) => handleStakeholderChange(index, 'companyName', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
                                                                     />
@@ -1873,7 +1900,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         fullWidth
                                                                         value={stakeholder.phone}
                                                                         onChange={(e) => handleStakeholderChange(index, 'phone', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
                                                                     />
@@ -1883,7 +1910,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         fullWidth
                                                                         value={stakeholder.email}
                                                                         onChange={(e) => handleStakeholderChange(index, 'email', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
                                                                     />
