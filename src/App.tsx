@@ -14,7 +14,7 @@ const theme = createTheme({
   direction: 'rtl',
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#6B46C1', // סגול שוקו
     },
     secondary: {
       main: '#dc004e',
@@ -22,6 +22,74 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Assistant", "Arial", sans-serif',
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focused fieldset': {
+            borderColor: '#6B46C1', // סגול שוקו
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#6B46C1', // סגול שוקו
+          },
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+          },
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          '&.Mui-focused fieldset': {
+            borderColor: '#6B46C1', // סגול שוקו
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#6B46C1', // סגול שוקו
+          },
+        },
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#6B46C1', // סגול שוקו
+            },
+          },
+        },
+      },
+    },
   },
 });
 
