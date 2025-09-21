@@ -2605,18 +2605,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 1 }}>תחום</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>ח״פ</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 1 }}>שם החברה</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 250, px: 1 }}>עיר</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>מספר קבלן</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 80, px: 1 }}>פעולות</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>תחום</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100, px: 0.5 }}>ח״פ</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>שם החברה</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>עיר</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100, px: 0.5 }}>מספר קבלן</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 60, px: 0.5 }}>פעולות</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {project.subcontractors.map((subcontractor, index) => (
                                                             <TableRow key={subcontractor.id}>
-                                                                <TableCell sx={{ px: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
                                                                     <Autocomplete
                                                                         freeSolo
                                                                         options={[
@@ -2648,6 +2648,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 {...params}
                                                                                 placeholder="תפקיד"
                                                                                 size="small"
+                                                                                inputProps={{ style: { textAlign: 'right' } }}
                                                                                 sx={{
                                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                         borderColor: '#6B46C1',
@@ -2657,7 +2658,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
                                                                     <Box sx={{ position: 'relative' }}>
                                                                         <TextField
                                                                             value={subcontractor.companyId}
@@ -2675,7 +2676,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             inputProps={{
                                                                                 maxLength: 9,
                                                                                 pattern: '[0-9]*',
-                                                                                inputMode: 'numeric'
+                                                                                inputMode: 'numeric',
+                                                                                style: { textAlign: 'right' }
                                                                             }}
                                                                             error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
                                                                             helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
@@ -2700,7 +2702,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     </Box>
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
                                                                         value={subcontractor.companyName}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
@@ -2715,7 +2717,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
                                                                         value={subcontractor.address}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
@@ -2730,12 +2732,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
                                                                         value={subcontractor.contractorNumber || ''}
                                                                         disabled={true} // Read-only field
                                                                         size="small"
                                                                         placeholder="מספר קבלן"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '& .MuiInputBase-input': {
                                                                                 color: 'text.secondary',
@@ -2744,8 +2747,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 1 }}>
-                                                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                                         <IconButton
                                                                             onClick={() => removeSubcontractor(index)}
                                                                             disabled={mode === 'view' || !canEdit}
