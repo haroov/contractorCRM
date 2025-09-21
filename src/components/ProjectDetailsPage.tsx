@@ -2664,6 +2664,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <Autocomplete
                                                                         freeSolo
+                                                                        getOptionLabel={(option) => option}
+                                                                        isOptionEqualToValue={(option, value) => option === value}
                                                                         options={[
                                                                             'חפירה ודיפון',
                                                                             'שלד',
@@ -2752,7 +2754,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             'מערכות בידוד',
                                                                             'מערכות אטימה'
                                                                         ]}
-                                                                        value={subcontractor.role}
+                                                                        value={subcontractor.role || null}
                                                                         onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
                                                                         onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
                                                                         disabled={mode === 'view' || !canEdit}
