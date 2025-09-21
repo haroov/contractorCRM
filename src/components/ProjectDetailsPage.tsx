@@ -48,7 +48,7 @@ import {
     ContentCopy as ContentCopyIcon,
     Clear as ClearIcon
 } from '@mui/icons-material';
-import type { Project, Stakeholder } from '../types/contractor';
+import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 
@@ -1371,6 +1371,144 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    // Subcontractor management functions
+    const addSubcontractor = () => {
+        if (project) {
+            const newSubcontractor: Subcontractor = {
+                id: generateObjectId(),
+                role: '',
+                companyId: '',
+                companyName: '',
+                address: '',
+                contractorNumber: '',
+                licenses: '',
+                isRegistered: false
+            };
+            setProject({
+                ...project,
+                subcontractors: [...(project.subcontractors || []), newSubcontractor]
+            });
+        }
+    };
+
+    const removeSubcontractor = (index: number) => {
+        if (project && project.subcontractors) {
+            if (window.confirm('האם אתה בטוח שברצונך למחוק את קבלן המשנה?')) {
+                const updatedSubcontractors = project.subcontractors.filter((_, i) => i !== index);
+                setProject({
+                    ...project,
+                    subcontractors: updatedSubcontractors
+                });
+            }
+        }
+    };
+
+    const handleSubcontractorChange = (index: number, field: keyof Subcontractor, value: any) => {
+        if (project && project.subcontractors) {
+            const updatedSubcontractors = [...project.subcontractors];
+            
+            // Special handling for companyId field
+            if (field === 'companyId') {
+                const numericValue = value.replace(/\D/g, '');
+                updatedSubcontractors[index] = {
+                    ...updatedSubcontractors[index],
+                    [field]: numericValue
+                };
+                
+                // Fetch company data if companyId is long enough
+                if (numericValue.length >= 8) {
+                    fetchSubcontractorData(numericValue, index);
+                }
+            } else {
+                updatedSubcontractors[index] = {
+                    ...updatedSubcontractors[index],
+                    [field]: value
+                };
+            }
+            
+            setProject({
+                ...project,
+                subcontractors: updatedSubcontractors
+            });
+        }
+    };
+
+    // Function to fetch subcontractor data from both APIs
+    const fetchSubcontractorData = async (companyId: string, subcontractorIndex: number) => {
+        if (!companyId || companyId.length < 8) {
+            return;
+        }
+        
+        const loadingKey = `subcontractor-${subcontractorIndex}`;
+        setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: true }));
+        
+        try {
+            console.log('🔍 Fetching subcontractor data for ID:', companyId, 'at index:', subcontractorIndex);
+            
+            // Store the original companyId to ensure it's preserved
+            const originalCompanyId = companyId;
+            
+            // Fetch from Companies Registry
+            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+            const companiesData = await companiesResponse.json();
+            
+            // Fetch from Contractors Registry
+            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b&q=${companyId}`);
+            const contractorsData = await contractorsResponse.json();
+            
+            if (project && project.subcontractors) {
+                const updatedSubcontractors = [...project.subcontractors];
+                
+                // Process company data
+                let companyName = '';
+                let address = '';
+                let contractorNumber = '';
+                let licenses = '';
+                let isRegistered = false;
+                
+                if (companiesData.success && companiesData.result.records.length > 0) {
+                    const companyData = companiesData.result.records[0];
+                    companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
+                    companyName = companyName.replace(/\s+/g, ' ').trim();
+                    companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ');
+                    address = companyData['כתובת'] || '';
+                }
+                
+                // Process contractor data
+                if (contractorsData.success && contractorsData.result.records.length > 0) {
+                    const contractorData = contractorsData.result.records[0];
+                    contractorNumber = contractorData['מספר קבלן'] || '';
+                    licenses = contractorData['רישיונות'] || '';
+                    isRegistered = true;
+                } else {
+                    licenses = 'אינו קבלן רשום';
+                    isRegistered = false;
+                }
+                
+                updatedSubcontractors[subcontractorIndex] = {
+                    ...updatedSubcontractors[subcontractorIndex],
+                    companyId: originalCompanyId,
+                    companyName: companyName,
+                    address: address,
+                    contractorNumber: contractorNumber,
+                    licenses: licenses,
+                    isRegistered: isRegistered
+                };
+                
+                setProject({
+                    ...project,
+                    subcontractors: updatedSubcontractors
+                });
+                
+                console.log('✅ Updated subcontractor with data:', updatedSubcontractors[subcontractorIndex]);
+            }
+        } catch (error) {
+            console.error('❌ Error fetching subcontractor data:', error);
+        } finally {
+            setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: false }));
+        }
+    };
+
     // General file upload handler that resets analysis state
     const handleFileUploadWithAnalysisReset = (fieldPath: string, url: string | null, currentFileUrl?: string) => {
         // Reset analysis state when new file is uploaded
@@ -1609,7 +1747,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     environmentalSurvey: project.environmentalSurvey,
                     hydrologicalPlan: project.hydrologicalPlan,
                     siteDrainagePlan: project.siteDrainagePlan,
-                    schedule: project.schedule
+                    schedule: project.schedule,
+                    // Include subcontractors array
+                    subcontractors: project.subcontractors || []
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
                 console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
@@ -1635,6 +1775,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
                     // Include stakeholders array
                     stakeholders: project.stakeholders || [],
+                    // Include subcontractors array
+                    subcontractors: project.subcontractors || [],
                     // Move key fields from nested objects to root level
                     projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
                     garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
@@ -2304,6 +2446,231 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}
                                             >
                                                 + הוספה
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+
+                        {/* Subcontractors Section */}
+                        {activeTab === 0 && (
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                <Box sx={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+                                    gap: 3, 
+                                    p: 3,
+                                    backgroundColor: 'white',
+                                    borderRadius: 2,
+                                    boxShadow: 1
+                                }}>
+                                    {/* Subcontractors Table */}
+                                    <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
+                                        <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                            קבלני משנה
+                                        </Typography>
+
+                                        {project?.subcontractors && project.subcontractors.length > 0 && (
+                                            <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
+                                                <Table size="small">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120 }}>תפקיד</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100 }}>ח״פ</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150 }}>שם החברה</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200 }}>כתובת</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100 }}>מספר קבלן</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150 }}>רישיונות</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 80 }}>פעולות</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {project.subcontractors.map((subcontractor, index) => (
+                                                            <TableRow key={subcontractor.id}>
+                                                                <TableCell>
+                                                                    <Autocomplete
+                                                                        freeSolo
+                                                                        options={[
+                                                                            'חפירה ודיפון',
+                                                                            'שלד',
+                                                                            'חשמל',
+                                                                            'אינסטלציה',
+                                                                            'גמרים',
+                                                                            'ריצוף',
+                                                                            'איטום',
+                                                                            'גגן',
+                                                                            'חלונות',
+                                                                            'דלתות',
+                                                                            'נגרות',
+                                                                            'צבע',
+                                                                            'אלקטרוניקה',
+                                                                            'מיזוג אוויר',
+                                                                            'אבטחה',
+                                                                            'גינון',
+                                                                            'כבישים וחנייה'
+                                                                        ]}
+                                                                        value={subcontractor.role}
+                                                                        onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
+                                                                        onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        size="small"
+                                                                        renderInput={(params) => (
+                                                                            <TextField
+                                                                                {...params}
+                                                                                placeholder="תפקיד"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                        borderColor: '#6B46C1',
+                                                                                    },
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ position: 'relative' }}>
+                                                                        <TextField
+                                                                            value={subcontractor.companyId}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                handleSubcontractorChange(index, 'companyId', value);
+                                                                                const numericValue = value.replace(/\D/g, '');
+                                                                                if (numericValue.length >= 8) {
+                                                                                    fetchSubcontractorData(numericValue, index);
+                                                                                }
+                                                                            }}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            size="small"
+                                                                            placeholder="ח״פ"
+                                                                            inputProps={{
+                                                                                maxLength: 9,
+                                                                                pattern: '[0-9]*',
+                                                                                inputMode: 'numeric'
+                                                                            }}
+                                                                            error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
+                                                                            helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
+                                                                            sx={{
+                                                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#6B46C1',
+                                                                                },
+                                                                            }}
+                                                                        />
+                                                                        {loadingCompanyData[`subcontractor-${index}`] && (
+                                                                            <CircularProgress
+                                                                                size={16}
+                                                                                sx={{
+                                                                                    position: 'absolute',
+                                                                                    left: 8,
+                                                                                    top: '50%',
+                                                                                    transform: 'translateY(-50%)',
+                                                                                    color: '#6B46C1'
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    </Box>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        value={subcontractor.companyName}
+                                                                        onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        size="small"
+                                                                        placeholder="שם החברה"
+                                                                        sx={{
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        value={subcontractor.address}
+                                                                        onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        size="small"
+                                                                        placeholder="כתובת"
+                                                                        sx={{
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        value={subcontractor.contractorNumber || ''}
+                                                                        disabled={true} // Read-only field
+                                                                        size="small"
+                                                                        placeholder="מספר קבלן"
+                                                                        sx={{
+                                                                            '& .MuiInputBase-input': {
+                                                                                color: 'text.secondary',
+                                                                                backgroundColor: 'grey.100'
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        value={subcontractor.licenses || ''}
+                                                                        disabled={true} // Read-only field
+                                                                        size="small"
+                                                                        placeholder="רישיונות"
+                                                                        sx={{
+                                                                            '& .MuiInputBase-input': {
+                                                                                color: 'text.secondary',
+                                                                                backgroundColor: 'grey.100'
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                                                        <IconButton
+                                                                            onClick={() => removeSubcontractor(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{
+                                                                                color: 'grey.600',
+                                                                                '&:hover': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main'
+                                                                                },
+                                                                                '&:focus': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main'
+                                                                                }
+                                                                            }}
+                                                                            title="מחק קבלן משנה"
+                                                                        >
+                                                                            <TrashIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Box>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )}
+
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
+                                            <Button
+                                                variant="outlined"
+                                                onClick={addSubcontractor}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    borderColor: '#6B46C1',
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        backgroundColor: '#F3F4F6'
+                                                    }
+                                                }}
+                                            >
+                                                + הוספת קבלן משנה
                                             </Button>
                                         </Box>
                                     </Box>

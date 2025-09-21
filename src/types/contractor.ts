@@ -26,6 +26,17 @@ export interface Stakeholder {
     contractorObjectId?: string; // ObjectId of the contractor if they exist in the system
 }
 
+export interface Subcontractor {
+    id: string;
+    role: string; // Role like חפירה ודיפון, שלד, חשמל, etc.
+    companyId: string; // Company ID field
+    companyName: string;
+    address: string;
+    contractorNumber?: string; // Contractor number from פנקס הקבלנים
+    licenses?: string; // Licenses information (read-only, from API)
+    isRegistered?: boolean; // Whether contractor is registered in פנקס הקבלנים
+}
+
 export interface Project {
     id: string;
     _id?: string; // MongoDB ObjectId
@@ -43,6 +54,7 @@ export interface Project {
     contractorName?: string;
     notes?: string; // Notes field
     stakeholders?: Stakeholder[]; // Array of project stakeholders
+    subcontractors?: Subcontractor[]; // Array of project subcontractors
 
     // Technical Information Fields
     engineeringQuestionnaire?: {
