@@ -1332,6 +1332,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const companiesData = await companiesResponse.json();
             console.log('Companies Registry response:', companiesData);
 
+            // Fetch from Contractors Registry
+            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
+            const contractorsData = await contractorsResponse.json();
+            console.log('Contractors Registry response:', contractorsData);
+
             if (companiesData.success && companiesData.result.records.length > 0) {
                 const companyData = companiesData.result.records[0];
                 console.log('✅ Company data found:', companyData);
@@ -1347,6 +1352,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                     console.log('🔍 Current stakeholder before update:', updatedStakeholders[stakeholderIndex]);
                     console.log('🔍 Using stored original companyId:', originalCompanyId);
+
+                    // Check if contractor data is available
+                    let contractorNumber = '';
+                    if (contractorsData.success && contractorsData.result.records.length > 0) {
+                        const contractorData = contractorsData.result.records[0];
+                        contractorNumber = contractorData['MISPAR_KABLAN'] || '';
+                        console.log('✅ Contractor data found:', contractorData);
+                    }
 
                     updatedStakeholders[stakeholderIndex] = {
                         ...updatedStakeholders[stakeholderIndex],
@@ -1553,7 +1566,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 const companiesData = await companiesResponse.json();
 
                 // Fetch from Contractors Registry
-                const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b&q=${companyId}`);
+                const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=4eb61bd6-18cf-4e7c-9f9c-e166dfa0a2d8&q=${companyId}`);
                 const contractorsData = await contractorsResponse.json();
 
                 // Process company data
@@ -2431,8 +2444,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 sx={{
                                                                                     position: 'absolute',
                                                                                     left: 8,
-                                                                                    top: '50%',
-                                                                                    transform: 'translateY(-50%)',
+                                                                                    top: 'calc(50% - 8px)',
                                                                                     color: '#6B46C1',
                                                                                     verticalAlign: 'center'
                                                                                 }}
@@ -2771,8 +2783,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 sx={{
                                                                                     position: 'absolute',
                                                                                     left: 8,
-                                                                                    top: '50%',
-                                                                                    transform: 'translateY(-50%)',
+                                                                                    top: 'calc(50% - 8px)',
                                                                                     color: '#6B46C1',
                                                                                     verticalAlign: 'center'
                                                                                 }}
