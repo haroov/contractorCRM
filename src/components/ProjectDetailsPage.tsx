@@ -2349,7 +2349,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Row 4: ערך הפרויקט */}
-                                    <Box sx={{ maxWidth: '50%' }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
                                         <TextField
                                             fullWidth
                                             label="ערך הפרויקט (בש״ח)"
