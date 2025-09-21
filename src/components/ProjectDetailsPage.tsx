@@ -1456,7 +1456,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Function to extract city from full address
     const extractCityFromAddress = (fullAddress: string): string => {
         if (!fullAddress) return '';
-        
+
         // Split by common separators and take the last part (usually the city)
         const parts = fullAddress.split(/[,;]/).map(part => part.trim());
         return parts[parts.length - 1] || fullAddress;
@@ -1503,7 +1503,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const originalCompanyId = companyId;
 
             let companyName = '';
-            let address = '';
+            let address = ''; // This will store the city for UI display
+            let fullAddress = ''; // This will store the full address for data
             let contractorNumber = '';
             let phone = '';
             let email = '';
@@ -1515,22 +1516,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 console.log('🔍 Searching for contractor in MongoDB with companyId:', companyId);
                 const response = await fetch(`/api/contractors/search?companyId=${companyId}`);
                 console.log('📡 MongoDB search response status:', response.status);
-                
+
                 if (response.ok) {
                     const contractors = await response.json();
                     console.log('📋 MongoDB search results:', contractors);
-                    
+
                     if (contractors && contractors.length > 0) {
                         const existingContractor = contractors[0];
                         console.log('✅ Found contractor in MongoDB:', existingContractor);
                         companyName = existingContractor.companyName || '';
-                        address = existingContractor.address || '';
+                        fullAddress = existingContractor.address || ''; // Get full address
+                        address = extractCityFromAddress(fullAddress); // Extract city for UI
                         phone = existingContractor.phone || '';
                         email = existingContractor.email || '';
                         website = extractWebsiteFromEmail(email);
                         contractorNumber = existingContractor.contractorNumber || '';
                         isRegistered = !!contractorNumber;
-                        console.log('📊 Extracted data from MongoDB:', { companyName, address, phone, email, contractorNumber });
+                        console.log('📊 Extracted data from MongoDB:', { companyName, fullAddress, address, phone, email, contractorNumber });
                     } else {
                         console.log('ℹ️ No contractors found in MongoDB for companyId:', companyId);
                     }
@@ -1557,7 +1559,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
                     companyName = companyName.replace(/\s+/g, ' ').trim();
                     companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ');
-                    address = companyData['כתובת'] || '';
+                    fullAddress = companyData['כתובת'] || ''; // Get full address
+                    address = extractCityFromAddress(fullAddress); // Extract city for UI
                     phone = companyData['טלפון'] || '';
                     email = companyData['דוא"ל'] || companyData['אימייל'] || '';
                     website = extractWebsiteFromEmail(email);
@@ -1580,8 +1583,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     ...updatedSubcontractors[subcontractorIndex],
                     companyId: originalCompanyId,
                     companyName: companyName,
-                    address: extractCityFromAddress(address), // Display only city in UI
-                    fullAddress: address, // Store full address for data
+                    address: address, // Display only city in UI
+                    fullAddress: fullAddress, // Store full address for data
                     contractorNumber: contractorNumber,
                     phone: phone,
                     email: email,
