@@ -2269,6 +2269,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     '&:hover': {
                                                                                         color: 'white',
                                                                                         backgroundColor: 'error.main'
+                                                                                    },
+                                                                                    '&:focus': {
+                                                                                        color: 'white',
+                                                                                        backgroundColor: 'error.main'
                                                                                     }
                                                                                 }}
                                                                                 title="מחק בעל עניין"
