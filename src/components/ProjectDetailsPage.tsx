@@ -52,6 +52,14 @@ import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 
+// Helper function to generate ObjectId-like string
+const generateObjectId = (): string => {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const random = Math.random().toString(16).substring(2, 8);
+    const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    return timestamp + random + counter;
+};
+
 // Custom File Upload Component
 interface FileUploadProps {
     label: string;
@@ -1036,7 +1044,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const addStakeholder = () => {
         if (project) {
             const newStakeholder: Stakeholder = {
-                id: Date.now().toString(),
+                id: generateObjectId(),
                 role: '',
                 companyId: '',
                 companyName: '',
@@ -1044,6 +1052,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 email: '',
                 isDefault: false
             };
+            console.log('✅ Adding new stakeholder with ObjectId:', newStakeholder.id);
             setProject({
                 ...project,
                 stakeholders: [...(project.stakeholders || []), newStakeholder]
@@ -1127,7 +1136,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             const defaultStakeholders: Stakeholder[] = [
                 {
-                    id: 'default-1',
+                    id: generateObjectId(),
                     role: 'יזם',
                     companyId: entrepreneurDetails.companyId,
                     companyName: entrepreneurDetails.companyName,
@@ -1136,7 +1145,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isDefault: true
                 },
                 {
-                    id: 'default-2',
+                    id: generateObjectId(),
                     role: 'מזמין העבודה',
                     companyId: '',
                     companyName: '',
@@ -1145,7 +1154,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isDefault: true
                 },
                 {
-                    id: 'default-3',
+                    id: generateObjectId(),
                     role: 'קבלן ראשי',
                     companyId: '',
                     companyName: '',
@@ -1154,7 +1163,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isDefault: true
                 },
                 {
-                    id: 'default-4',
+                    id: generateObjectId(),
                     role: 'בנק / גוף פיננסי מלווה',
                     companyId: '',
                     companyName: '',
@@ -1164,7 +1173,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 }
             ];
 
-            console.log('✅ Setting default stakeholders:', defaultStakeholders);
+            console.log('✅ Setting default stakeholders with ObjectIds:', defaultStakeholders);
+            console.log('✅ Stakeholder IDs:', defaultStakeholders.map(s => ({ role: s.role, id: s.id })));
             setProject({
                 ...project,
                 stakeholders: defaultStakeholders
