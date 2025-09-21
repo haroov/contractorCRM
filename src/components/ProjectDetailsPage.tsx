@@ -1171,15 +1171,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const removeStakeholder = (index: number) => {
         if (project && project.stakeholders) {
             const stakeholder = project.stakeholders[index];
-            // Don't allow deletion of default stakeholders
-            if (stakeholder.isDefault) {
+            // Don't allow deletion of default stakeholders (except bank)
+            if (stakeholder.isDefault && stakeholder.role !== 'בנק / גוף פיננסי מלווה') {
                 return;
             }
-            const updatedStakeholders = project.stakeholders.filter((_, i) => i !== index);
-            setProject({
-                ...project,
-                stakeholders: updatedStakeholders
-            });
+            
+            // Show confirmation dialog
+            if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל העניין?')) {
+                const updatedStakeholders = project.stakeholders.filter((_, i) => i !== index);
+                setProject({
+                    ...project,
+                    stakeholders: updatedStakeholders
+                });
+            }
         }
     };
 
@@ -1915,7 +1919,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '150px' }}>
                                                                 תפקיד
                                                             </TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
@@ -1938,7 +1942,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <TableBody>
                                                         {project.stakeholders.map((stakeholder, index) => (
                                                             <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
-                                                                <TableCell>
+                                                                <TableCell sx={{ minWidth: '150px' }}>
                                                                     <Autocomplete
                                                                         value={stakeholder.role}
                                                                         onChange={(event, newValue) => {
