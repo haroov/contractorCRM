@@ -15,6 +15,14 @@ export interface Contact {
     permissions: 'user' | 'admin' | 'contactAdmin' | 'contactUser';
 }
 
+export interface Stakeholder {
+    id: string;
+    role: 'יזם' | 'מזמין העבודה' | 'קבלן ראשי' | 'בנק / גוף פיננסי מלווה' | 'קבלן משנה' | 'אחר';
+    companyName: string;
+    phone: string;
+    email: string;
+}
+
 export interface Project {
     id: string;
     _id?: string; // MongoDB ObjectId
@@ -31,6 +39,7 @@ export interface Project {
     contractorId?: string; // Contractor ID field
     contractorName?: string;
     notes?: string; // Notes field
+    stakeholders?: Stakeholder[]; // Array of project stakeholders
 
     // Technical Information Fields
     engineeringQuestionnaire?: {

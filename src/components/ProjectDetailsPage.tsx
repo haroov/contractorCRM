@@ -45,7 +45,7 @@ import {
     PictureAsPdf as PdfIcon,
     AutoAwesome as AutoAwesomeIcon
 } from '@mui/icons-material';
-import type { Project } from '../types/contractor';
+import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 
 // Custom File Upload Component
@@ -1014,6 +1014,47 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    // Stakeholder management functions
+    const addStakeholder = () => {
+        if (project) {
+            const newStakeholder: Stakeholder = {
+                id: Date.now().toString(),
+                role: 'יזם',
+                companyName: '',
+                phone: '',
+                email: ''
+            };
+            setProject({
+                ...project,
+                stakeholders: [...(project.stakeholders || []), newStakeholder]
+            });
+        }
+    };
+
+    const removeStakeholder = (index: number) => {
+        if (project && project.stakeholders) {
+            const updatedStakeholders = project.stakeholders.filter((_, i) => i !== index);
+            setProject({
+                ...project,
+                stakeholders: updatedStakeholders
+            });
+        }
+    };
+
+    const handleStakeholderChange = (index: number, field: keyof Stakeholder, value: any) => {
+        if (project && project.stakeholders) {
+            const updatedStakeholders = [...project.stakeholders];
+            updatedStakeholders[index] = {
+                ...updatedStakeholders[index],
+                [field]: value
+            };
+            setProject({
+                ...project,
+                stakeholders: updatedStakeholders
+            });
+        }
+    };
+
     // General file upload handler that resets analysis state
     const handleFileUploadWithAnalysisReset = (fieldPath: string, url: string | null, currentFileUrl?: string) => {
         // Reset analysis state when new file is uploaded
@@ -1700,15 +1741,125 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     />
 
 
-                                    <TextField
-                                        fullWidth
-                                        label="קבלן ראשי"
-                                        value={contractorName || project?.mainContractor || ''}
-                                        onChange={(e) => handleFieldChange('mainContractor', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit || mode === 'new'}
-                                        InputProps={{ readOnly: true }}
-                                        sx={{ backgroundColor: '#f5f5f5' }}
-                                    />
+                                    {/* Stakeholders Table */}
+                                    <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
+                                        <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                            בעלי עניין בפרויקט
+                                        </Typography>
+                                        
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<AddIcon />}
+                                                onClick={addStakeholder}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{ 
+                                                    borderColor: '#6B46C1',
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        backgroundColor: '#F3F4F6'
+                                                    }
+                                                }}
+                                            >
+                                                הוספת בעל עניין
+                                            </Button>
+                                        </Box>
+
+                                        {project?.stakeholders && project.stakeholders.length > 0 && (
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
+                                                <Table size="small">
+                                                    <TableHead>
+                                                        <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                                תפקיד
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                                שם החברה
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                                טלפון
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                                אימייל
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80 }}>
+                                                                פעולות
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {project.stakeholders.map((stakeholder, index) => (
+                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                                <TableCell>
+                                                                    <FormControl fullWidth size="small">
+                                                                        <Select
+                                                                            value={stakeholder.role}
+                                                                            onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            variant="outlined"
+                                                                        >
+                                                                            <MenuItem value="יזם">יזם</MenuItem>
+                                                                            <MenuItem value="מזמין העבודה">מזמין העבודה</MenuItem>
+                                                                            <MenuItem value="קבלן ראשי">קבלן ראשי</MenuItem>
+                                                                            <MenuItem value="בנק / גוף פיננסי מלווה">בנק / גוף פיננסי מלווה</MenuItem>
+                                                                            <MenuItem value="קבלן משנה">קבלן משנה</MenuItem>
+                                                                            <MenuItem value="אחר">אחר</MenuItem>
+                                                                        </Select>
+                                                                    </FormControl>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.companyName}
+                                                                        onChange={(e) => handleStakeholderChange(index, 'companyName', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.phone}
+                                                                        onChange={(e) => handleStakeholderChange(index, 'phone', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.email}
+                                                                        onChange={(e) => handleStakeholderChange(index, 'email', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <IconButton
+                                                                        onClick={() => removeStakeholder(index)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        sx={{ 
+                                                                            color: 'grey.600',
+                                                                            '&:hover': { 
+                                                                                color: 'error.main',
+                                                                                backgroundColor: 'error.light'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <DeleteIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )}
+                                    </Box>
                                 </Box>
                             </Box>
                         )}
