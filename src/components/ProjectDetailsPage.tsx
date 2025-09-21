@@ -2664,6 +2664,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <Autocomplete
                                                                         freeSolo
+                                                                        openOnFocus
                                                                         getOptionLabel={(option) => option}
                                                                         isOptionEqualToValue={(option, value) => option === value}
                                                                         options={[
@@ -2854,7 +2855,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </TableCell>
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
-                                                                        value={subcontractor.contractorNumber || 'אינו קבלן רשום'}
+                                                                        value={subcontractor.companyId && subcontractor.companyId.length >= 8 
+                                                                            ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
+                                                                            : ''}
                                                                         disabled={true} // Read-only field
                                                                         size="small"
                                                                         placeholder="מספר קבלן"
