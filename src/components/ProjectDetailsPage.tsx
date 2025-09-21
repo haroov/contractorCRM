@@ -1572,6 +1572,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 // Process company data
                 if (companiesData.success && companiesData.result.records.length > 0) {
                     const companyData = companiesData.result.records[0];
+                    console.log('✅ Company data from registry:', companyData);
                     companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
                     companyName = companyName.replace(/\s+/g, ' ').trim();
                     companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ');
@@ -1580,20 +1581,38 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     phone = companyData['טלפון'] || '';
                     email = companyData['דוא"ל'] || companyData['אימייל'] || '';
                     website = extractWebsiteFromEmail(email);
+                    console.log('✅ Processed company data:', { companyName, fullAddress, address, phone, email });
+                } else {
+                    console.log('ℹ️ No company data found in registry');
                 }
 
                 // Process contractor data
                 if (contractorsData.success && contractorsData.result.records.length > 0) {
                     const contractorData = contractorsData.result.records[0];
-                    contractorNumber = contractorData['מספר קבלן'] || '';
+                    contractorNumber = contractorData['MISPAR_KABLAN'] || '';
                     isRegistered = true;
+                    console.log('✅ Contractor data from registry:', contractorData);
+                    console.log('✅ Contractor number:', contractorNumber);
                 } else {
                     isRegistered = false;
+                    console.log('ℹ️ No contractor data found in registry');
                 }
             }
 
             if (project && project.subcontractors) {
                 const updatedSubcontractors = [...project.subcontractors];
+
+                console.log('🔍 Updating subcontractor with data:', {
+                    companyId: originalCompanyId,
+                    companyName,
+                    address,
+                    fullAddress,
+                    contractorNumber,
+                    phone,
+                    email,
+                    website,
+                    isRegistered
+                });
 
                 updatedSubcontractors[subcontractorIndex] = {
                     ...updatedSubcontractors[subcontractorIndex],
