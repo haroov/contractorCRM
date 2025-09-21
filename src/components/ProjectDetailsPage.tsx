@@ -653,6 +653,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -1243,6 +1244,52 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    // Function to fetch company data from registry
+    const fetchCompanyData = async (companyId: string, stakeholderIndex: number) => {
+        if (!companyId || companyId.length < 8) return; // Minimum company ID length
+        
+        const loadingKey = `stakeholder-${stakeholderIndex}`;
+        setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: true }));
+        
+        try {
+            console.log('🔍 Fetching company data for ID:', companyId);
+            
+            // Fetch from Companies Registry
+            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+            const companiesData = await companiesResponse.json();
+            console.log('Companies Registry response:', companiesData);
+            
+            if (companiesData.success && companiesData.result.records.length > 0) {
+                const companyData = companiesData.result.records[0];
+                console.log('✅ Company data found:', companyData);
+                
+                // Update stakeholder with company data
+                if (project && project.stakeholders) {
+                    const updatedStakeholders = [...project.stakeholders];
+                    updatedStakeholders[stakeholderIndex] = {
+                        ...updatedStakeholders[stakeholderIndex],
+                        companyName: companyData['שם חברה'] || companyData['שם התאגיד'] || '',
+                        phone: companyData['טלפון'] || '',
+                        email: companyData['דוא"ל'] || companyData['אימייל'] || ''
+                    };
+                    
+                    setProject({
+                        ...project,
+                        stakeholders: updatedStakeholders
+                    });
+                    
+                    console.log('✅ Updated stakeholder with company data');
+                }
+            } else {
+                console.log('❌ No company data found for ID:', companyId);
+            }
+        } catch (error) {
+            console.error('❌ Error fetching company data:', error);
+        } finally {
+            setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: false }));
+        }
+    };
+
     // General file upload handler that resets analysis state
     const handleFileUploadWithAnalysisReset = (fieldPath: string, url: string | null, currentFileUrl?: string) => {
         // Reset analysis state when new file is uploaded
@@ -1528,9 +1575,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     plotDetails: updateData.plotDetails,
                     stakeholders: updateData.stakeholders
                 });
-                console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({ 
-                    role: s.role, 
-                    contractorObjectId: s.contractorObjectId 
+                console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({
+                    role: s.role,
+                    contractorObjectId: s.contractorObjectId
                 })));
                 console.log('🔄 Full update data JSON:', JSON.stringify(updateData, null, 2));
 
@@ -2027,19 +2074,40 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={stakeholder.companyId}
-                                                                        onChange={(e) => handleStakeholderChange(index, 'companyId', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
+                                                                    <Box sx={{ position: 'relative' }}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            value={stakeholder.companyId}
+                                                                            onChange={(e) => {
+                                                                                handleStakeholderChange(index, 'companyId', e.target.value);
+                                                                                // Auto-fetch company data when company ID is complete
+                                                                                if (e.target.value.length >= 8) {
+                                                                                    fetchCompanyData(e.target.value, index);
+                                                                                }
+                                                                            }}
+                                                                            disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                            variant="outlined"
+                                                                            size="small"
+                                                                            placeholder="ח״פ"
+                                                                            sx={{
+                                                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#6B46C1',
+                                                                                },
+                                                                            }}
+                                                                        />
+                                                                        {loadingCompanyData[`stakeholder-${index}`] && (
+                                                                            <CircularProgress
+                                                                                size={16}
+                                                                                sx={{
+                                                                                    position: 'absolute',
+                                                                                    right: 8,
+                                                                                    top: '50%',
+                                                                                    transform: 'translateY(-50%)',
+                                                                                    color: '#6B46C1'
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    </Box>
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     <TextField
