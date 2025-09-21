@@ -971,6 +971,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         loadProjectData();
     }, [searchParams]);
 
+    // Initialize default stakeholders when project is loaded
+    useEffect(() => {
+        if (project) {
+            initializeDefaultStakeholders();
+        }
+    }, [project]);
+
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
         // Save active tab to URL parameters
@@ -1019,10 +1026,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         if (project) {
             const newStakeholder: Stakeholder = {
                 id: Date.now().toString(),
-                role: 'יזם',
+                role: '',
                 companyName: '',
                 phone: '',
-                email: ''
+                email: '',
+                isDefault: false
             };
             setProject({
                 ...project,
@@ -1031,8 +1039,57 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    // Initialize default stakeholders if none exist
+    const initializeDefaultStakeholders = () => {
+        if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
+            const defaultStakeholders: Stakeholder[] = [
+                {
+                    id: 'default-1',
+                    role: 'יזם',
+                    companyName: '',
+                    phone: '',
+                    email: '',
+                    isDefault: true
+                },
+                {
+                    id: 'default-2',
+                    role: 'מזמין העבודה',
+                    companyName: '',
+                    phone: '',
+                    email: '',
+                    isDefault: true
+                },
+                {
+                    id: 'default-3',
+                    role: 'קבלן ראשי',
+                    companyName: '',
+                    phone: '',
+                    email: '',
+                    isDefault: true
+                },
+                {
+                    id: 'default-4',
+                    role: 'בנק / גוף פיננסי מלווה',
+                    companyName: '',
+                    phone: '',
+                    email: '',
+                    isDefault: true
+                }
+            ];
+            setProject({
+                ...project,
+                stakeholders: defaultStakeholders
+            });
+        }
+    };
+
     const removeStakeholder = (index: number) => {
         if (project && project.stakeholders) {
+            const stakeholder = project.stakeholders[index];
+            // Don't allow deletion of default stakeholders
+            if (stakeholder.isDefault) {
+                return;
+            }
             const updatedStakeholders = project.stakeholders.filter((_, i) => i !== index);
             setProject({
                 ...project,
@@ -1747,24 +1804,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             בעלי עניין בפרויקט
                                         </Typography>
                                         
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-                                            <Button
-                                                variant="outlined"
-                                                startIcon={<AddIcon />}
-                                                onClick={addStakeholder}
-                                                disabled={mode === 'view' || !canEdit}
-                                                sx={{ 
-                                                    borderColor: '#6B46C1',
-                                                    color: '#6B46C1',
-                                                    '&:hover': {
-                                                        borderColor: '#5B21B6',
-                                                        backgroundColor: '#F3F4F6'
-                                                    }
-                                                }}
-                                            >
-                                                הוספת בעל עניין
-                                            </Button>
-                                        </Box>
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
                                             <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
@@ -1792,21 +1831,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         {project.stakeholders.map((stakeholder, index) => (
                                                             <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
                                                                 <TableCell>
-                                                                    <FormControl fullWidth size="small">
-                                                                        <Select
-                                                                            value={stakeholder.role}
-                                                                            onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
-                                                                            disabled={mode === 'view' || !canEdit}
-                                                                            variant="outlined"
-                                                                        >
-                                                                            <MenuItem value="יזם">יזם</MenuItem>
-                                                                            <MenuItem value="מזמין העבודה">מזמין העבודה</MenuItem>
-                                                                            <MenuItem value="קבלן ראשי">קבלן ראשי</MenuItem>
-                                                                            <MenuItem value="בנק / גוף פיננסי מלווה">בנק / גוף פיננסי מלווה</MenuItem>
-                                                                            <MenuItem value="קבלן משנה">קבלן משנה</MenuItem>
-                                                                            <MenuItem value="אחר">אחר</MenuItem>
-                                                                        </Select>
-                                                                    </FormControl>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.role}
+                                                                        onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     <TextField
@@ -1839,19 +1871,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    <IconButton
-                                                                        onClick={() => removeStakeholder(index)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        sx={{ 
-                                                                            color: 'grey.600',
-                                                                            '&:hover': { 
-                                                                                color: 'error.main',
-                                                                                backgroundColor: 'error.light'
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        <DeleteIcon fontSize="small" />
-                                                                    </IconButton>
+                                                                    {!stakeholder.isDefault && (
+                                                                        <IconButton
+                                                                            onClick={() => removeStakeholder(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{ 
+                                                                                color: 'grey.600',
+                                                                                '&:hover': { 
+                                                                                    color: 'error.main',
+                                                                                    backgroundColor: 'error.light'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            <DeleteIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    )}
                                                                 </TableCell>
                                                             </TableRow>
                                                         ))}
@@ -1859,6 +1893,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Table>
                                             </TableContainer>
                                         )}
+
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<AddIcon />}
+                                                onClick={addStakeholder}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{ 
+                                                    borderColor: '#6B46C1',
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        backgroundColor: '#F3F4F6'
+                                                    }
+                                                }}
+                                            >
+                                                + הוספה
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </Box>
                             </Box>

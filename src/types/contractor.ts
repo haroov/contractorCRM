@@ -17,10 +17,11 @@ export interface Contact {
 
 export interface Stakeholder {
     id: string;
-    role: 'יזם' | 'מזמין העבודה' | 'קבלן ראשי' | 'בנק / גוף פיננסי מלווה' | 'קבלן משנה' | 'אחר';
+    role: string;
     companyName: string;
     phone: string;
     email: string;
+    isDefault?: boolean; // Flag to identify default stakeholders
 }
 
 export interface Project {
