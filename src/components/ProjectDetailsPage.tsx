@@ -2673,6 +2673,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <Autocomplete
                                                                         freeSolo
                                                                         openOnFocus
+                                                                        disablePortal={false}
                                                                         getOptionLabel={(option) => option}
                                                                         isOptionEqualToValue={(option, value) => option === value}
                                                                         options={[
@@ -2766,6 +2767,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         value={subcontractor.role || null}
                                                                         onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
                                                                         onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
+                                                                        onOpen={() => console.log('Autocomplete opened')}
+                                                                        onClose={() => console.log('Autocomplete closed')}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         size="small"
                                                                         sx={{
@@ -2778,6 +2781,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 {...params}
                                                                                 placeholder="תחום"
                                                                                 size="small"
+                                                                                autoComplete="off"
                                                                                 inputProps={{ style: { textAlign: 'right' } }}
                                                                                 sx={{
                                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
