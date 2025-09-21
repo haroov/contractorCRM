@@ -50,6 +50,7 @@ import {
 } from '@mui/icons-material';
 import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
+import TrashIcon from './TrashIcon';
 
 // Custom File Upload Component
 interface FileUploadProps {
@@ -2055,16 +2056,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <IconButton
                                                                                 onClick={() => removeStakeholder(index)}
                                                                                 disabled={mode === 'view' || !canEdit}
-                                                                                sx={{
+                                                                                sx={{ 
                                                                                     color: 'grey.600',
-                                                                                    '&:hover': {
-                                                                                        color: 'error.main',
-                                                                                        backgroundColor: 'error.light'
+                                                                                    '&:hover': { 
+                                                                                        color: '#6B46C1',
+                                                                                        backgroundColor: '#F3F4F6'
                                                                                     }
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <ClearIcon fontSize="small" />
+                                                                                <TrashIcon fontSize="small" />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
