@@ -31,7 +31,8 @@ export interface Subcontractor {
     role: string; // Role like חפירה ודיפון, שלד, חשמל, etc.
     companyId: string; // Company ID field
     companyName: string;
-    address: string;
+    address: string; // City only (for UI display)
+    fullAddress?: string; // Full address (for data storage)
     contractorNumber?: string; // Contractor number from פנקס הקבלנים
     phone?: string; // Phone number
     email?: string; // Email address

@@ -40,7 +40,6 @@ import {
     Logout as LogoutIcon,
     Person as PersonIcon,
     MoreVert as MoreVertIcon,
-    CloudUpload as CloudUploadIcon,
     Add as AddIcon,
     Delete as DeleteIcon,
     PictureAsPdf as PdfIcon,
@@ -53,6 +52,7 @@ import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 import CloudDownloadIcon from './CloudDownloadIcon';
+import CloudUploadIcon from './CloudUploadIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -1382,6 +1382,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 companyId: '',
                 companyName: '',
                 address: '',
+                fullAddress: '',
                 contractorNumber: '',
                 phone: '',
                 email: '',
@@ -1450,6 +1451,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
         
         return `https://www.${domain}`;
+    };
+
+    // Function to extract city from full address
+    const extractCityFromAddress = (fullAddress: string): string => {
+        if (!fullAddress) return '';
+        
+        // Split by common separators and take the last part (usually the city)
+        const parts = fullAddress.split(/[,;]/).map(part => part.trim());
+        return parts[parts.length - 1] || fullAddress;
     };
 
     // Import functions for subcontractors
@@ -1550,7 +1560,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     ...updatedSubcontractors[subcontractorIndex],
                     companyId: originalCompanyId,
                     companyName: companyName,
-                    address: address,
+                    address: extractCityFromAddress(address), // Display only city in UI
+                    fullAddress: address, // Store full address for data
                     contractorNumber: contractorNumber,
                     phone: phone,
                     email: email,
@@ -2539,29 +2550,29 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={handleCloudImport}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{
-                                                        color: 'grey.600',
+                                                        color: '#6B46C1',
                                                         '&:hover': {
-                                                            color: '#6B46C1',
+                                                            color: '#5B21B6',
                                                             backgroundColor: 'rgba(107, 70, 193, 0.04)'
                                                         }
                                                     }}
                                                     title="ייבוא מענן (Safeguard)"
                                                 >
-                                                    <CloudDownloadIcon fontSize="small" />
+                                                    <CloudDownloadIcon fontSize="medium" />
                                                 </IconButton>
                                                 <IconButton
                                                     onClick={handleExcelImport}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{
-                                                        color: 'grey.600',
+                                                        color: '#6B46C1',
                                                         '&:hover': {
-                                                            color: '#6B46C1',
+                                                            color: '#5B21B6',
                                                             backgroundColor: 'rgba(107, 70, 193, 0.04)'
                                                         }
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <ExcelIcon fontSize="small" />
+                                                    <CloudUploadIcon fontSize="medium" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
@@ -2571,10 +2582,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 1 }}>תפקיד</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 1 }}>תחום</TableCell>
                                                             <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>ח״פ</TableCell>
                                                             <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 1 }}>שם החברה</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 250, px: 1 }}>כתובת</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 250, px: 1 }}>עיר</TableCell>
                                                             <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>מספר קבלן</TableCell>
                                                             <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 80, px: 1 }}>פעולות</TableCell>
                                                         </TableRow>
@@ -2685,7 +2696,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         size="small"
-                                                                        placeholder="כתובת"
+                                                                        placeholder="עיר"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
