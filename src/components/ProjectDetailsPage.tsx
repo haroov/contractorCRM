@@ -978,7 +978,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Initialize default stakeholders when project is loaded
     useEffect(() => {
-        if (project) {
+        console.log('🔄 useEffect for stakeholders initialization triggered');
+        console.log('🔄 Project exists:', !!project);
+        console.log('🔄 Stakeholders exist:', !!(project?.stakeholders && project.stakeholders.length > 0));
+        if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
             const initializeStakeholders = async () => {
                 await initializeDefaultStakeholders();
             };
