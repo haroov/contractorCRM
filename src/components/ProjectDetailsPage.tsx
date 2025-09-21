@@ -1208,13 +1208,65 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    // Function to validate Israeli company ID or personal ID
+    const validateIsraeliId = (id: string): boolean => {
+        if (!id || id.length < 8 || id.length > 9) return false;
+        if (!/^\d+$/.test(id)) return false; // Only digits
+        
+        // Israeli ID validation algorithm
+        const digits = id.split('').map(Number);
+        let sum = 0;
+        
+        for (let i = 0; i < digits.length - 1; i++) {
+            let digit = digits[i];
+            if (i % 2 === 1) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit = Math.floor(digit / 10) + (digit % 10);
+                }
+            }
+            sum += digit;
+        }
+        
+        const checkDigit = (10 - (sum % 10)) % 10;
+        return checkDigit === digits[digits.length - 1];
+    };
+
     const handleStakeholderChange = (index: number, field: keyof Stakeholder, value: any) => {
         if (project && project.stakeholders) {
             const updatedStakeholders = [...project.stakeholders];
-            updatedStakeholders[index] = {
-                ...updatedStakeholders[index],
-                [field]: value
-            };
+            
+            // Special handling for companyId field
+            if (field === 'companyId') {
+                // Only allow digits
+                const numericValue = value.replace(/\D/g, '');
+                updatedStakeholders[index] = {
+                    ...updatedStakeholders[index],
+                    [field]: numericValue
+                };
+                
+                // Check if it's a government program (starts with 50 and is 9 digits)
+                if (numericValue.length === 9 && numericValue.startsWith('50')) {
+                    console.log('🏛️ Government program detected for company ID:', numericValue);
+                    // Update government program field in project
+                    setProject(prev => ({
+                        ...prev,
+                        engineeringQuestionnaire: {
+                            ...prev?.engineeringQuestionnaire,
+                            buildingPlan: {
+                                ...prev?.engineeringQuestionnaire?.buildingPlan,
+                                governmentProgram: true
+                            }
+                        }
+                    }));
+                }
+            } else {
+                updatedStakeholders[index] = {
+                    ...updatedStakeholders[index],
+                    [field]: value
+                };
+            }
+            
             setProject({
                 ...project,
                 stakeholders: updatedStakeholders
@@ -1266,15 +1318,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 // Update stakeholder with company data
                 if (project && project.stakeholders) {
                     const updatedStakeholders = [...project.stakeholders];
-                    
+
                     // Format company name - remove double spaces and fix בע"מ format
                     let companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
                     companyName = companyName.replace(/\s+/g, ' ').trim(); // Remove double spaces
                     companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ'); // Fix בע"מ format
-                    
+
                     const originalCompanyId = updatedStakeholders[stakeholderIndex].companyId;
                     console.log('🔍 Original companyId before update:', originalCompanyId);
-                    
+
                     updatedStakeholders[stakeholderIndex] = {
                         ...updatedStakeholders[stakeholderIndex],
                         companyId: originalCompanyId, // Explicitly keep the original companyId
@@ -1282,8 +1334,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         phone: companyData['טלפון'] || '',
                         email: companyData['דוא"ל'] || companyData['אימייל'] || ''
                     };
-                    
+
                     console.log('✅ Updated stakeholder companyId after update:', updatedStakeholders[stakeholderIndex].companyId);
+                    console.log('✅ Updated stakeholder companyName after update:', updatedStakeholders[stakeholderIndex].companyName);
 
                     setProject({
                         ...project,
@@ -2093,14 +2146,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             onChange={(e) => {
                                                                                 handleStakeholderChange(index, 'companyId', e.target.value);
                                                                                 // Auto-fetch company data when company ID is complete
-                                                                                if (e.target.value.length >= 8) {
-                                                                                    fetchCompanyData(e.target.value, index);
+                                                                                if (e.target.value.replace(/\D/g, '').length >= 8) {
+                                                                                    fetchCompanyData(e.target.value.replace(/\D/g, ''), index);
                                                                                 }
                                                                             }}
                                                                             disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                             variant="outlined"
                                                                             size="small"
                                                                             placeholder="ח״פ"
+                                                                            inputProps={{
+                                                                                maxLength: 9,
+                                                                                pattern: '[0-9]*',
+                                                                                inputMode: 'numeric'
+                                                                            }}
+                                                                            error={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId)}
+                                                                            helperText={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId) ? 'ח״פ לא תקין' : ''}
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                     borderColor: '#6B46C1',
