@@ -2297,15 +2297,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, flex: 1, bgcolor: 'white', p: 2, borderRadius: 1 }}>
-                                    <TextField
-                                        fullWidth
-                                        label="שם הפרויקט"
-                                        value={project?.projectName || ''}
-                                        onChange={(e) => handleFieldChange('projectName', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit}
-                                    />
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, bgcolor: 'white', p: 2, borderRadius: 1 }}>
+                                    {/* Row 1: שם הפרויקט, עיר */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="שם הפרויקט"
+                                            value={project?.projectName || ''}
+                                            onChange={(e) => handleFieldChange('projectName', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="עיר"
+                                            value={project?.city || ''}
+                                            onChange={(e) => handleFieldChange('city', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                        />
+                                    </Box>
 
+                                    {/* Row 2: תיאור הפרויקט - על אורך כל השורה, 4 שורות */}
                                     <TextField
                                         fullWidth
                                         label="תיאור הפרויקט"
@@ -2313,36 +2324,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         onChange={(e) => handleFieldChange('description', e.target.value)}
                                         disabled={mode === 'view' || !canEdit}
                                         multiline
-                                        rows={3}
+                                        rows={4}
                                     />
 
-                                    <TextField
-                                        fullWidth
-                                        label="תאריך התחלה"
-                                        type="date"
-                                        value={project?.startDate || ''}
-                                        onChange={(e) => handleFieldChange('startDate', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit}
-                                        InputLabelProps={{ shrink: true }}
-                                    />
+                                    {/* Row 3: תאריך התחלה, משך בחודשים */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="תאריך התחלה"
+                                            type="date"
+                                            value={project?.startDate || ''}
+                                            onChange={(e) => handleFieldChange('startDate', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            InputLabelProps={{ shrink: true }}
+                                        />
+                                        <TextField
+                                            fullWidth
+                                            label="משך הפרויקט (חודשים)"
+                                            type="number"
+                                            value={project?.durationMonths || 0}
+                                            onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                        />
+                                    </Box>
 
-                                    <TextField
-                                        fullWidth
-                                        label="משך הפרויקט (חודשים)"
-                                        type="number"
-                                        value={project?.durationMonths || 0}
-                                        onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
-                                        disabled={mode === 'view' || !canEdit}
-                                    />
-
-                                    <TextField
-                                        fullWidth
-                                        label="עיר"
-                                        value={project?.city || ''}
-                                        onChange={(e) => handleFieldChange('city', e.target.value)}
-                                        disabled={mode === 'view' || !canEdit}
-                                    />
-
+                                    {/* Row 4: ערך הפרויקט */}
                                     <TextField
                                         fullWidth
                                         label="ערך הפרויקט (בש״ח)"
