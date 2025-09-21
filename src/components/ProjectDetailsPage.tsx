@@ -974,7 +974,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Initialize default stakeholders when project is loaded
     useEffect(() => {
         if (project) {
-            initializeDefaultStakeholders();
+            const initializeStakeholders = async () => {
+                await initializeDefaultStakeholders();
+            };
+            initializeStakeholders();
         }
     }, [project]);
 
@@ -1043,6 +1046,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Initialize default stakeholders if none exist
     const initializeDefaultStakeholders = async () => {
         if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
+            console.log('🔄 Initializing default stakeholders for project:', project.projectName);
+            
             // Get contractor details for entrepreneur
             let entrepreneurDetails = {
                 companyId: '',
@@ -1053,10 +1058,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             // Try to get contractor details from mainContractor or contractorId
             const contractorId = project.mainContractor || project.contractorId;
+            console.log('🔍 Looking for contractor ID:', contractorId);
+            
             if (contractorId) {
                 try {
+                    console.log('🔄 Loading contractor details for entrepreneur...');
                     const { default: ContractorService } = await import('../services/contractorService');
                     const contractor = await ContractorService.getById(contractorId);
+                    console.log('✅ Contractor loaded:', contractor);
+                    
                     if (contractor) {
                         entrepreneurDetails = {
                             companyId: contractor.id || contractor._id || '',
@@ -1064,9 +1074,24 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             phone: contractor.phone || '',
                             email: contractor.email || ''
                         };
+                        console.log('✅ Entrepreneur details populated:', entrepreneurDetails);
+                    } else {
+                        console.log('❌ No contractor found for ID:', contractorId);
                     }
                 } catch (error) {
-                    console.error('Error loading contractor details for entrepreneur:', error);
+                    console.error('❌ Error loading contractor details for entrepreneur:', error);
+                    // Fallback to contractorName if available
+                    if (contractorName) {
+                        entrepreneurDetails.companyName = contractorName;
+                        console.log('🔄 Using fallback contractor name:', contractorName);
+                    }
+                }
+            } else {
+                console.log('❌ No contractor ID found in project');
+                // Fallback to contractorName if available
+                if (contractorName) {
+                    entrepreneurDetails.companyName = contractorName;
+                    console.log('🔄 Using fallback contractor name:', contractorName);
                 }
             }
 
@@ -1108,10 +1133,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isDefault: true
                 }
             ];
+            
+            console.log('✅ Setting default stakeholders:', defaultStakeholders);
             setProject({
                 ...project,
                 stakeholders: defaultStakeholders
             });
+        } else {
+            console.log('ℹ️ Stakeholders already exist or no project loaded');
         }
     };
 
@@ -1942,7 +1971,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
                                             <Button
                                                 variant="outlined"
-                                                startIcon={<AddIcon />}
                                                 onClick={addStakeholder}
                                                 disabled={mode === 'view' || !canEdit}
                                                 sx={{ 
@@ -1954,7 +1982,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }
                                                 }}
                                             >
-                                                + הוספה
+                                                הוספה
                                             </Button>
                                         </Box>
                                     </Box>
