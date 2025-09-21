@@ -2374,7 +2374,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
                                                             <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '150px' }}>
-                                                                תפקיד
+                                                                תחום
                                                             </TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 ח״פ
@@ -2755,7 +2755,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         renderInput={(params) => (
                                                                             <TextField
                                                                                 {...params}
-                                                                                placeholder="תפקיד"
+                                                                                placeholder="תחום"
                                                                                 size="small"
                                                                                 inputProps={{ style: { textAlign: 'right' } }}
                                                                                 sx={{
