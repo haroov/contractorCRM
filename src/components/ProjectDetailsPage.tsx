@@ -1247,37 +1247,49 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Function to fetch company data from registry
     const fetchCompanyData = async (companyId: string, stakeholderIndex: number) => {
         if (!companyId || companyId.length < 8) return; // Minimum company ID length
-        
+
         const loadingKey = `stakeholder-${stakeholderIndex}`;
         setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: true }));
-        
+
         try {
             console.log('🔍 Fetching company data for ID:', companyId);
-            
+
             // Fetch from Companies Registry
             const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
             const companiesData = await companiesResponse.json();
             console.log('Companies Registry response:', companiesData);
-            
+
             if (companiesData.success && companiesData.result.records.length > 0) {
                 const companyData = companiesData.result.records[0];
                 console.log('✅ Company data found:', companyData);
-                
+
                 // Update stakeholder with company data
                 if (project && project.stakeholders) {
                     const updatedStakeholders = [...project.stakeholders];
+                    
+                    // Format company name - remove double spaces and fix בע"מ format
+                    let companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
+                    companyName = companyName.replace(/\s+/g, ' ').trim(); // Remove double spaces
+                    companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ'); // Fix בע"מ format
+                    
+                    const originalCompanyId = updatedStakeholders[stakeholderIndex].companyId;
+                    console.log('🔍 Original companyId before update:', originalCompanyId);
+                    
                     updatedStakeholders[stakeholderIndex] = {
                         ...updatedStakeholders[stakeholderIndex],
-                        companyName: companyData['שם חברה'] || companyData['שם התאגיד'] || '',
+                        companyId: originalCompanyId, // Explicitly keep the original companyId
+                        companyName: companyName,
                         phone: companyData['טלפון'] || '',
                         email: companyData['דוא"ל'] || companyData['אימייל'] || ''
                     };
                     
+                    console.log('✅ Updated stakeholder companyId after update:', updatedStakeholders[stakeholderIndex].companyId);
+
                     setProject({
                         ...project,
                         stakeholders: updatedStakeholders
                     });
-                    
+
                     console.log('✅ Updated stakeholder with company data');
                 }
             } else {
@@ -2100,7 +2112,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 size={16}
                                                                                 sx={{
                                                                                     position: 'absolute',
-                                                                                    right: 8,
+                                                                                    left: 8,
                                                                                     top: '50%',
                                                                                     transform: 'translateY(-50%)',
                                                                                     color: '#6B46C1'
