@@ -1676,16 +1676,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <TextField
                                         fullWidth
                                         label="ערך הפרויקט (בש״ח)"
-                                        value={project?.projectValueNis || project?.valueNis || project?.value ? `${(project?.projectValueNis || project?.valueNis || project?.value).toLocaleString('he-IL')} ₪` : ''}
+                                        value={project?.valueNis || project?.projectValueNis || project?.value ? `${(project?.valueNis || project?.projectValueNis || project?.value).toLocaleString('he-IL')} ₪` : ''}
                                         onChange={(e) => {
                                             const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                            handleFieldChange('projectValueNis', parseInt(numericValue) || 0);
+                                            const numValue = numericValue ? parseInt(numericValue) : 0;
+                                            handleFieldChange('valueNis', numValue);
                                         }}
                                         disabled={mode === 'view' || !canEdit}
-                                        sx={{
-                                            '& .MuiInputBase-input': {
-                                                textAlign: 'right',
-                                                direction: 'ltr'
+                                        onKeyDown={(e) => {
+                                            // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
+                                            if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
+                                                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                                                (e.keyCode === 65 && e.ctrlKey === true) ||
+                                                (e.keyCode === 67 && e.ctrlKey === true) ||
+                                                (e.keyCode === 86 && e.ctrlKey === true) ||
+                                                (e.keyCode === 88 && e.ctrlKey === true)) {
+                                                return;
+                                            }
+                                            // Ensure that it is a number and stop the keypress
+                                            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                                                e.preventDefault();
                                             }
                                         }}
                                     />
