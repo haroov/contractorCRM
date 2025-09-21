@@ -1456,11 +1456,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Function to extract city from full address
     const extractCityFromAddress = (fullAddress: string): string => {
         if (!fullAddress) return '';
-
+        
         // Split by common separators and take the last part (usually the city)
         const parts = fullAddress.split(/[,;]/).map(part => part.trim());
         return parts[parts.length - 1] || fullAddress;
     };
+
+    // Load company data for existing subcontractors on component mount
+    useEffect(() => {
+        if (project?.subcontractors) {
+            project.subcontractors.forEach((subcontractor, index) => {
+                if (subcontractor.companyId && subcontractor.companyId.length >= 8 && !subcontractor.companyName) {
+                    console.log('🔄 Auto-loading data for existing subcontractor:', subcontractor.companyId);
+                    fetchSubcontractorData(subcontractor.companyId, index);
+                }
+            });
+        }
+    }, [project?.subcontractors]);
 
     // Import functions for subcontractors
     const handleCloudImport = () => {
@@ -1500,11 +1512,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
             // First, try to find contractor in MongoDB Atlas
             try {
-                const { ContractorService } = await import('../services/contractorService');
-                // Search by company ID in the contractors collection
+                console.log('🔍 Searching for contractor in MongoDB with companyId:', companyId);
                 const response = await fetch(`/api/contractors/search?companyId=${companyId}`);
+                console.log('📡 MongoDB search response status:', response.status);
+                
                 if (response.ok) {
                     const contractors = await response.json();
+                    console.log('📋 MongoDB search results:', contractors);
+                    
                     if (contractors && contractors.length > 0) {
                         const existingContractor = contractors[0];
                         console.log('✅ Found contractor in MongoDB:', existingContractor);
@@ -1515,10 +1530,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         website = extractWebsiteFromEmail(email);
                         contractorNumber = existingContractor.contractorNumber || '';
                         isRegistered = !!contractorNumber;
+                        console.log('📊 Extracted data from MongoDB:', { companyName, address, phone, email, contractorNumber });
+                    } else {
+                        console.log('ℹ️ No contractors found in MongoDB for companyId:', companyId);
                     }
+                } else {
+                    console.log('❌ MongoDB search failed with status:', response.status);
                 }
             } catch (error) {
-                console.log('ℹ️ No contractor found in MongoDB, trying APIs');
+                console.log('❌ Error searching MongoDB:', error);
             }
 
             // If not found in MongoDB, try APIs
@@ -2670,7 +2690,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     left: 8,
                                                                                     top: '50%',
                                                                                     transform: 'translateY(-50%)',
-                                                                                    color: '#6B46C1'
+                                                                                    color: '#6B46C1',
+                                                                                    verticalAlign: 'center'
                                                                                 }}
                                                                             />
                                                                         )}
