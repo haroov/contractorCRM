@@ -2059,8 +2059,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 sx={{ 
                                                                                     color: 'grey.600',
                                                                                     '&:hover': { 
-                                                                                        color: '#6B46C1',
-                                                                                        backgroundColor: '#F3F4F6'
+                                                                                        color: 'white',
+                                                                                        backgroundColor: 'error.main'
                                                                                     }
                                                                                 }}
                                                                                 title="מחק בעל עניין"
