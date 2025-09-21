@@ -979,7 +979,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             };
             initializeStakeholders();
         }
-    }, [project]);
+    }, [project, contractorName]);
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
@@ -1056,30 +1056,47 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 email: ''
             };
 
-            // Try to get contractor details from mainContractor or contractorId
-            const contractorId = project.mainContractor || project.contractorId;
+            // Try to get contractor details from URL parameter first, then from project
+            const urlContractorId = searchParams.get('contractorId');
+            const contractorId = urlContractorId || project.mainContractor || project.contractorId;
             console.log('🔍 Looking for contractor ID:', contractorId);
+            console.log('🔍 URL contractor ID:', urlContractorId);
+            console.log('🔍 Project mainContractor:', project.mainContractor);
+            console.log('🔍 Project contractorId:', project.contractorId);
             
             if (contractorId) {
-                try {
-                    console.log('🔄 Loading contractor details for entrepreneur...');
-                    const { default: ContractorService } = await import('../services/contractorService');
-                    const contractor = await ContractorService.getById(contractorId);
-                    console.log('✅ Contractor loaded:', contractor);
-                    
-                    if (contractor) {
-                        entrepreneurDetails = {
-                            companyId: contractor.id || contractor._id || '',
-                            companyName: contractor.name || contractor.nameEnglish || '',
-                            phone: contractor.phone || '',
-                            email: contractor.email || ''
-                        };
-                        console.log('✅ Entrepreneur details populated:', entrepreneurDetails);
-                    } else {
-                        console.log('❌ No contractor found for ID:', contractorId);
+                // Check if contractorId is a valid ObjectId (24 characters)
+                const isValidObjectId = contractorId.length === 24 && /^[0-9a-fA-F]{24}$/.test(contractorId);
+                console.log('🔍 Is valid ObjectId:', isValidObjectId, 'Length:', contractorId.length);
+                
+                if (isValidObjectId) {
+                    try {
+                        console.log('🔄 Loading contractor details for entrepreneur...');
+                        const { default: ContractorService } = await import('../services/contractorService');
+                        const contractor = await ContractorService.getById(contractorId);
+                        console.log('✅ Contractor loaded:', contractor);
+                        
+                        if (contractor) {
+                            entrepreneurDetails = {
+                                companyId: contractor.id || contractor._id || '',
+                                companyName: contractor.name || contractor.nameEnglish || '',
+                                phone: contractor.phone || '',
+                                email: contractor.email || ''
+                            };
+                            console.log('✅ Entrepreneur details populated:', entrepreneurDetails);
+                        } else {
+                            console.log('❌ No contractor found for ID:', contractorId);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error loading contractor details for entrepreneur:', error);
+                        // Fallback to contractorName if available
+                        if (contractorName) {
+                            entrepreneurDetails.companyName = contractorName;
+                            console.log('🔄 Using fallback contractor name:', contractorName);
+                        }
                     }
-                } catch (error) {
-                    console.error('❌ Error loading contractor details for entrepreneur:', error);
+                } else {
+                    console.log('❌ Invalid ObjectId format, using fallback contractor name');
                     // Fallback to contractorName if available
                     if (contractorName) {
                         entrepreneurDetails.companyName = contractorName;
@@ -1982,7 +1999,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }
                                                 }}
                                             >
-                                                הוספה
+                                                + הוספה
                                             </Button>
                                         </Box>
                                     </Box>
