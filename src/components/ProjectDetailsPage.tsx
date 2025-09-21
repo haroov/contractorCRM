@@ -43,7 +43,8 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon,
     PictureAsPdf as PdfIcon,
-    AutoAwesome as AutoAwesomeIcon
+    AutoAwesome as AutoAwesomeIcon,
+    ContentCopy as ContentCopyIcon
 } from '@mui/icons-material';
 import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -1193,6 +1194,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
+    const duplicateEntrepreneurDetails = (targetIndex: number) => {
+        if (project && project.stakeholders) {
+            const entrepreneur = project.stakeholders.find(s => s.role === 'יזם');
+            if (entrepreneur) {
+                const updatedStakeholders = [...project.stakeholders];
+                updatedStakeholders[targetIndex] = {
+                    ...updatedStakeholders[targetIndex],
+                    companyId: entrepreneur.companyId,
+                    companyName: entrepreneur.companyName,
+                    phone: entrepreneur.phone,
+                    email: entrepreneur.email
+                };
+                setProject({
+                    ...project,
+                    stakeholders: updatedStakeholders
+                });
+            }
+        }
+    };
+
     // General file upload handler that resets analysis state
     const handleFileUploadWithAnalysisReset = (fieldPath: string, url: string | null, currentFileUrl?: string) => {
         // Reset analysis state when new file is uploaded
@@ -1887,44 +1908,62 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden', border: '1px solid #6B46C1' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 תפקיד
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 ח״פ
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 שם החברה
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 טלפון
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 אימייל
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right', borderBottom: '1px solid #6B46C1' }}>
                                                                 פעולות
                                                             </TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {project.stakeholders.map((stakeholder, index) => (
-                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={stakeholder.role}
-                                                                        onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
+                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' }, borderBottom: '1px solid #6B46C1' }}>
+                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
+                                                                    <FormControl fullWidth size="small">
+                                                                        <Select
+                                                                            value={stakeholder.role}
+                                                                            onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
+                                                                            disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#6B46C1',
+                                                                                },
+                                                                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#5B21B6',
+                                                                                },
+                                                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#6B46C1',
+                                                                                },
+                                                                            }}
+                                                                        >
+                                                                            <MenuItem value="יזם">יזם</MenuItem>
+                                                                            <MenuItem value="מזמין העבודה">מזמין העבודה</MenuItem>
+                                                                            <MenuItem value="קבלן ראשי">קבלן ראשי</MenuItem>
+                                                                            <MenuItem value="בנק / גוף פיננסי מלווה">בנק / גוף פיננסי מלווה</MenuItem>
+                                                                            <MenuItem value="קבלן משנה">קבלן משנה</MenuItem>
+                                                                            <MenuItem value="אחר">אחר</MenuItem>
+                                                                        </Select>
+                                                                    </FormControl>
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.companyId}
@@ -1932,9 +1971,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#5B21B6',
+                                                                            },
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.companyName}
@@ -1942,9 +1992,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#5B21B6',
+                                                                            },
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.phone}
@@ -1952,9 +2013,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#5B21B6',
+                                                                            },
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ borderRight: '1px solid #6B46C1' }}>
                                                                     <TextField
                                                                         fullWidth
                                                                         value={stakeholder.email}
@@ -1962,24 +2034,54 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
                                                                         variant="outlined"
                                                                         size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#5B21B6',
+                                                                            },
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    {!stakeholder.isDefault && (
-                                                                        <IconButton
-                                                                            onClick={() => removeStakeholder(index)}
-                                                                            disabled={mode === 'view' || !canEdit}
-                                                                            sx={{ 
-                                                                                color: 'grey.600',
-                                                                                '&:hover': { 
-                                                                                    color: 'error.main',
-                                                                                    backgroundColor: 'error.light'
-                                                                                }
-                                                                            }}
-                                                                        >
-                                                                            <DeleteIcon fontSize="small" />
-                                                                        </IconButton>
-                                                                    )}
+                                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                                        {(stakeholder.role === 'מזמין העבודה' || stakeholder.role === 'קבלן ראשי') && (
+                                                                            <IconButton
+                                                                                onClick={() => duplicateEntrepreneurDetails(index)}
+                                                                                disabled={mode === 'view' || !canEdit}
+                                                                                sx={{ 
+                                                                                    color: 'grey.600',
+                                                                                    '&:hover': { 
+                                                                                        color: '#6B46C1',
+                                                                                        backgroundColor: '#F3F4F6'
+                                                                                    }
+                                                                                }}
+                                                                                title="שכפל פרטי היזם"
+                                                                            >
+                                                                                <ContentCopyIcon fontSize="small" />
+                                                                            </IconButton>
+                                                                        )}
+                                                                        {!stakeholder.isDefault && (
+                                                                            <IconButton
+                                                                                onClick={() => removeStakeholder(index)}
+                                                                                disabled={mode === 'view' || !canEdit}
+                                                                                sx={{ 
+                                                                                    color: 'grey.600',
+                                                                                    '&:hover': { 
+                                                                                        color: 'error.main',
+                                                                                        backgroundColor: 'error.light'
+                                                                                    }
+                                                                                }}
+                                                                                title="מחק בעל עניין"
+                                                                            >
+                                                                                <DeleteIcon fontSize="small" />
+                                                                            </IconButton>
+                                                                        )}
+                                                                    </Box>
                                                                 </TableCell>
                                                             </TableRow>
                                                         ))}
