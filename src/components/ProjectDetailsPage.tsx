@@ -1441,22 +1441,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // Function to extract website from email
     const extractWebsiteFromEmail = (email: string): string => {
         if (!email) return '';
-        
+
         // Skip common email providers
         const commonProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'walla.co.il', 'nana.co.il'];
         const domain = email.split('@')[1]?.toLowerCase();
-        
+
         if (commonProviders.includes(domain)) {
             return '';
         }
-        
+
         return `https://www.${domain}`;
     };
 
     // Function to extract city from full address
     const extractCityFromAddress = (fullAddress: string): string => {
         if (!fullAddress) return '';
-        
+
         // Split by common separators and take the last part (usually the city)
         const parts = fullAddress.split(/[,;]/).map(part => part.trim());
         return parts[parts.length - 1] || fullAddress;
