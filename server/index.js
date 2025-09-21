@@ -424,9 +424,16 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
 });
 
 // Apply authentication to protected routes
-// For contractors, allow both regular auth and contact auth
+// For contractors, allow regular auth, contact auth, and system admin
 app.use('/api/contractors', (req, res, next) => {
-  // Check if it's a contact user first
+  // Check if it's a system admin first
+  const systemAdminHeader = req.headers['x-system-admin'];
+  if (systemAdminHeader) {
+    console.log('🔑 System admin access to contractors API');
+    return next(); // Allow system admin access
+  }
+  
+  // Check if it's a contact user
   const contactUserHeader = req.headers['x-contact-user'];
   if (contactUserHeader) {
     // Use contact auth middleware
