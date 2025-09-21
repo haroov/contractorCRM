@@ -1610,7 +1610,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             >
                                 <Tab label="כללי" />
                                 <Tab label="תוכניות" />
-                                <Tab label="מפרט" />
                                 <Tab label="מסמכים" />
                                 <Tab label="ביטוח" />
                                 <Tab label="הרשאות" />
@@ -3728,158 +3727,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
+
                         {activeTab === 2 && (
-                            <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מפרט טכני
-                                </Typography>
-
-                                {/* Project General Information */}
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
-                                        פרטי פרויקט
-                                    </Typography>
-
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="שם הפרויקט"
-                                                value={project.projectName || ''}
-                                                onChange={(e) => handleFieldChange('projectName', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="עיר"
-                                                value={project.city || ''}
-                                                onChange={(e) => handleFieldChange('city', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="תאריך התחלת הפרויקט"
-                                                type="date"
-                                                value={project.startDate || ''}
-                                                onChange={(e) => handleFieldChange('startDate', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                                InputLabelProps={{ shrink: true }}
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="משך הפרויקט (חודשים)"
-                                                type="number"
-                                                value={project.durationMonths || ''}
-                                                onChange={(e) => handleFieldChange('durationMonths', parseInt(e.target.value) || 0)}
-                                                variant="outlined"
-                                                size="small"
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="שווי הפרויקט"
-                                                type="text"
-                                                value={project.valueNis ? `${project.valueNis.toLocaleString('he-IL')} ₪` : ''}
-                                                onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                    const numValue = numericValue ? parseInt(numericValue) : 0;
-                                                    handleFieldChange('valueNis', numValue);
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
-                                                    if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
-                                                        // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-                                                        (e.keyCode === 65 && e.ctrlKey === true) ||
-                                                        (e.keyCode === 67 && e.ctrlKey === true) ||
-                                                        (e.keyCode === 86 && e.ctrlKey === true) ||
-                                                        (e.keyCode === 88 && e.ctrlKey === true)) {
-                                                        return;
-                                                    }
-                                                    // Ensure that it is a number and stop the keypress
-                                                    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                variant="outlined"
-                                                size="small"
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="סטטוס"
-                                                select
-                                                value={project.status || 'future'}
-                                                onChange={(e) => handleFieldChange('status', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                            >
-                                                <MenuItem value="future">עתידי</MenuItem>
-                                                <MenuItem value="current">פעיל</MenuItem>
-                                                <MenuItem value="completed">הושלם</MenuItem>
-                                            </TextField>
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="שם הקבלן הראשי"
-                                                value={contractorName || project.contractorName || ''}
-                                                onChange={(e) => handleFieldChange('contractorName', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                                disabled={mode === 'view' || !canEdit || mode === 'new'}
-                                                InputProps={{ readOnly: true }}
-                                                sx={{ backgroundColor: '#f5f5f5' }}
-                                            />
-                                        </Box>
-
-                                        <Box>
-                                            <TextField
-                                                fullWidth
-                                                label="מזהה קבלן ראשי"
-                                                value={project.contractorId || ''}
-                                                onChange={(e) => handleFieldChange('contractorId', e.target.value)}
-                                                variant="outlined"
-                                                size="small"
-                                                disabled={mode === 'view' || !canEdit || mode === 'new'}
-                                                InputProps={{ readOnly: true }}
-                                                sx={{ backgroundColor: '#f5f5f5' }}
-                                            />
-                                        </Box>
-
-                                        <Box sx={{ gridColumn: '1 / -1' }}>
-                                            <TextField
-                                                fullWidth
-                                                label="תיאור הפרויקט"
-                                                value={project.description || ''}
-                                                onChange={(e) => handleFieldChange('description', e.target.value)}
-                                                variant="outlined"
-                                                multiline
-                                                rows={4}
-                                            />
-                                        </Box>
-                                    </Box>
-                                </Box>
-                            </Box>
-                        )}
-
-                        {activeTab === 3 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     מסמכים
@@ -3890,7 +3739,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
-                        {activeTab === 4 && (
+                        {activeTab === 3 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     ביטוח
@@ -3901,7 +3750,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
-                        {activeTab === 5 && (
+                        {activeTab === 4 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     הרשאות
@@ -3912,7 +3761,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
-                        {activeTab === 6 && (
+                        {activeTab === 5 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     הערות
@@ -3930,7 +3779,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
-                        {activeTab === 7 && (project?.status === 'current' || project?.status === 'completed') && (
+                        {activeTab === 6 && (project?.status === 'current' || project?.status === 'completed') && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     דשבורד ניהול סיכונים
