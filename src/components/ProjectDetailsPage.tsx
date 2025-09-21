@@ -2672,8 +2672,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <Autocomplete
                                                                         freeSolo
-                                                                        disablePortal={false}
-                                                                        onInputClick={() => console.log('Input clicked')}
                                                                         getOptionLabel={(option) => option}
                                                                         isOptionEqualToValue={(option, value) => option === value}
                                                                         options={[
@@ -2780,9 +2778,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <TextField
                                                                                 {...params}
                                                                                 placeholder="תחום"
+                                                                                variant="outlined"
                                                                                 size="small"
-                                                                                autoComplete="off"
-                                                                                inputProps={{ style: { textAlign: 'right' } }}
                                                                                 sx={{
                                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                         borderColor: '#6B46C1',
