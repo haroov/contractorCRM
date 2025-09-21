@@ -2683,6 +2683,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         size="small"
                                                                         placeholder="שם החברה"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',

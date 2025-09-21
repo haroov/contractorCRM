@@ -2,12 +2,12 @@ import React from 'react';
 
 const CloudDownloadIcon: React.FC<{ fontSize?: 'small' | 'medium' | 'large' }> = ({ fontSize = 'small' }) => {
   const size = fontSize === 'small' ? 16 : fontSize === 'medium' ? 20 : 24;
-  
+
   return (
-    <svg 
-      style={{ width: size, height: size, verticalAlign: 'middle', fill: 'currentColor', overflow: 'hidden' }} 
-      viewBox="0 0 512 512" 
-      version="1.1" 
+    <svg
+      style={{ width: size, height: size, verticalAlign: 'middle', fill: 'currentColor', overflow: 'hidden' }}
+      viewBox="0 0 512 512"
+      version="1.1"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M255.361596 393.682461a10.001663 10.001663 0 0 1-7.448047-3.19202l-63.840399-63.840399a10.427265 10.427265 0 0 1 14.896093-14.896093l45.752286 45.539485V255.361596a10.640067 10.640067 0 0 1 21.280133 0v127.680798a10.640067 10.640067 0 0 1-6.596841 9.788861 9.150457 9.150457 0 0 1-4.043226 0.851206z" />
