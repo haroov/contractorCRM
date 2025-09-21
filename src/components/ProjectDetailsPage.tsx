@@ -107,7 +107,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 formData.append('file', file);
                 formData.append('projectId', projectId || 'temp'); // Use actual project ID or temp as fallback
 
-                const response = await fetch('/api/upload-project-file', {
+                const { authenticatedFetch } = await import('../config/api');
+                const response = await authenticatedFetch('/api/upload-project-file', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -168,7 +169,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
                 // Delete from blob storage
                 if (value) {
-                    const response = await fetch('/api/delete-project-file', {
+                    const { authenticatedFetch } = await import('../config/api');
+                    const response = await authenticatedFetch('/api/delete-project-file', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1514,7 +1516,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             // First, try to find contractor in MongoDB Atlas
             try {
                 console.log('🔍 Searching for contractor in MongoDB with companyId:', companyId);
-                const response = await fetch(`/api/contractors/search?companyId=${companyId}`);
+                const { authenticatedFetch } = await import('../config/api');
+                const response = await authenticatedFetch(`/api/contractors/search?companyId=${companyId}`);
                 console.log('📡 MongoDB search response status:', response.status);
 
                 if (response.ok) {
@@ -2430,7 +2433,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     left: 8,
                                                                                     top: '50%',
                                                                                     transform: 'translateY(-50%)',
-                                                                                    color: '#6B46C1'
+                                                                                    color: '#6B46C1',
+                                                                                    verticalAlign: 'center'
                                                                                 }}
                                                                             />
                                                                         )}
