@@ -823,6 +823,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const projectData = await projectsAPI.getById(projectId);
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
+                            console.log('✅ Stakeholders loaded from server:', projectData.stakeholders);
 
                             // If key fields exist at root level, move them to nested structure for UI compatibility
                             if (projectData.projectType || projectData.garmoshkaFile || projectData.garmoshkaFileCreationDate || projectData.plotDetails) {
@@ -1049,6 +1050,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Initialize default stakeholders if none exist
     const initializeDefaultStakeholders = async () => {
+        console.log('🔄 Checking stakeholders initialization for project:', project?.projectName);
+        console.log('🔄 Current stakeholders:', project?.stakeholders);
         if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
             console.log('🔄 Initializing default stakeholders for project:', project.projectName);
 
@@ -1462,6 +1465,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     schedule: project.schedule
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
+                console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
                 console.log('🔄 Key fields moved to root:', {
                     projectType: projectToSave.projectType,
                     garmoshkaFile: projectToSave.garmoshkaFile,
@@ -1482,6 +1486,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isClosed: project.isClosed,
                     status: project.status,
                     mainContractor: project.mainContractor || searchParams.get('contractorId') || '',
+                    // Include stakeholders array
+                    stakeholders: project.stakeholders || [],
                     // Move key fields from nested objects to root level
                     projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
                     garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
@@ -1500,10 +1506,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     projectType: updateData.projectType,
                     garmoshkaFile: updateData.garmoshkaFile,
                     garmoshkaFileCreationDate: updateData.garmoshkaFileCreationDate,
-                    plotDetails: updateData.plotDetails
+                    plotDetails: updateData.plotDetails,
+                    stakeholders: updateData.stakeholders
                 });
                 console.log('🔄 Full update data JSON:', JSON.stringify(updateData, null, 2));
-                
+
                 // Use different endpoint based on user type
                 let updatedProject;
                 if (isContactUser) {
@@ -1516,7 +1523,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         },
                         body: JSON.stringify(updateData),
                     });
-                    
+
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
