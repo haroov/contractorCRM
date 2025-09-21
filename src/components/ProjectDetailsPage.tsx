@@ -1503,7 +1503,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     plotDetails: updateData.plotDetails
                 });
                 console.log('🔄 Full update data JSON:', JSON.stringify(updateData, null, 2));
-                const updatedProject = await projectsAPI.update(projectId, updateData);
+                
+                // Use different endpoint based on user type
+                let updatedProject;
+                if (isContactUser) {
+                    console.log('🔧 Using contact API endpoint for update');
+                    const { authenticatedFetch } = await import('../config/api');
+                    const response = await authenticatedFetch(`/api/contact/projects/${projectId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updateData),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    updatedProject = await response.json();
+                } else {
+                    console.log('🔧 Using regular API endpoint for update');
+                    updatedProject = await projectsAPI.update(projectId, updateData);
+                }
                 console.log('✅ Project updated:', updatedProject);
             }
 

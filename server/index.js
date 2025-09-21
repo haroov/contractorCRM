@@ -3395,6 +3395,11 @@ app.post('/api/contact/projects', requireContactAuth, requireContactManager, asy
 // Update project (only for contact managers)
 app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, async (req, res) => {
   try {
+    console.log('🔧 PUT /api/contact/projects/:id called with ID:', req.params.id);
+    console.log('🔧 Contact user:', req.session.contactUser);
+    console.log('🔧 Request body keys:', Object.keys(req.body));
+    console.log('🔧 Full request body:', JSON.stringify(req.body, null, 2));
+    
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
 
@@ -3405,6 +3410,7 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
     });
 
     if (!project) {
+      console.log('❌ Project not found or access denied for contractor:', contractorId);
       return res.status(404).json({ error: 'Project not found or access denied' });
     }
 
@@ -3413,10 +3419,14 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
       updatedAt: new Date()
     };
 
+    console.log('🔧 Update data to be saved:', JSON.stringify(updateData, null, 2));
+
     const result = await db.collection('projects').updateOne(
       { _id: new ObjectId(req.params.id) },
       { $set: updateData }
     );
+
+    console.log('✅ Updated project via contact API:', req.params.id, 'Modified count:', result.modifiedCount);
 
     // Update contractor statistics automatically
     await updateContractorStats(db, contractorId);
