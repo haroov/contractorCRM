@@ -33,7 +33,9 @@ export interface Subcontractor {
     companyName: string;
     address: string;
     contractorNumber?: string; // Contractor number from פנקס הקבלנים
-    licenses?: string; // Licenses information (read-only, from API)
+    phone?: string; // Phone number
+    email?: string; // Email address
+    website?: string; // Website extracted from email
     isRegistered?: boolean; // Whether contractor is registered in פנקס הקבלנים
 }
 

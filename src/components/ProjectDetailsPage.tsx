@@ -1381,7 +1381,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 companyName: '',
                 address: '',
                 contractorNumber: '',
-                licenses: '',
+                phone: '',
+                email: '',
+                website: '',
                 isRegistered: false
             };
             setProject({
@@ -1406,7 +1408,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const handleSubcontractorChange = (index: number, field: keyof Subcontractor, value: any) => {
         if (project && project.subcontractors) {
             const updatedSubcontractors = [...project.subcontractors];
-            
+
             // Special handling for companyId field
             if (field === 'companyId') {
                 const numericValue = value.replace(/\D/g, '');
@@ -1414,7 +1416,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     ...updatedSubcontractors[index],
                     [field]: numericValue
                 };
-                
+
                 // Fetch company data if companyId is long enough
                 if (numericValue.length >= 8) {
                     fetchSubcontractorData(numericValue, index);
@@ -1425,7 +1427,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     [field]: value
                 };
             }
-            
+
             setProject({
                 ...project,
                 subcontractors: updatedSubcontractors
@@ -1433,7 +1435,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
-    // Function to fetch subcontractor data from both APIs
+    // Function to extract website from email
+    const extractWebsiteFromEmail = (email: string): string => {
+        if (!email) return '';
+        
+        // Skip common email providers
+        const commonProviders = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'walla.co.il', 'nana.co.il'];
+        const domain = email.split('@')[1]?.toLowerCase();
+        
+        if (commonProviders.includes(domain)) {
+            return '';
+        }
+        
+        return `https://www.${domain}`;
+    };
+
+    // Function to fetch subcontractor data from MongoDB first, then APIs
     const fetchSubcontractorData = async (companyId: string, subcontractorIndex: number) => {
         if (!companyId || companyId.length < 8) {
             return;
@@ -1448,42 +1465,71 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             // Store the original companyId to ensure it's preserved
             const originalCompanyId = companyId;
             
-            // Fetch from Companies Registry
-            const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
-            const companiesData = await companiesResponse.json();
+            let companyName = '';
+            let address = '';
+            let contractorNumber = '';
+            let phone = '';
+            let email = '';
+            let website = '';
+            let isRegistered = false;
             
-            // Fetch from Contractors Registry
-            const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b&q=${companyId}`);
-            const contractorsData = await contractorsResponse.json();
+            // First, try to find contractor in MongoDB Atlas
+            try {
+                const { ContractorService } = await import('../services/contractorService');
+                // Search by company ID in the contractors collection
+                const response = await fetch(`/api/contractors/search?companyId=${companyId}`);
+                if (response.ok) {
+                    const contractors = await response.json();
+                    if (contractors && contractors.length > 0) {
+                        const existingContractor = contractors[0];
+                        console.log('✅ Found contractor in MongoDB:', existingContractor);
+                        companyName = existingContractor.companyName || '';
+                        address = existingContractor.address || '';
+                        phone = existingContractor.phone || '';
+                        email = existingContractor.email || '';
+                        website = extractWebsiteFromEmail(email);
+                        contractorNumber = existingContractor.contractorNumber || '';
+                        isRegistered = !!contractorNumber;
+                    }
+                }
+            } catch (error) {
+                console.log('ℹ️ No contractor found in MongoDB, trying APIs');
+            }
             
-            if (project && project.subcontractors) {
-                const updatedSubcontractors = [...project.subcontractors];
+            // If not found in MongoDB, try APIs
+            if (!companyName) {
+                // Fetch from Companies Registry
+                const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
+                const companiesData = await companiesResponse.json();
+                
+                // Fetch from Contractors Registry
+                const contractorsResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=8b0b0b0b-0b0b-0b0b-0b0b-0b0b0b0b0b0b&q=${companyId}`);
+                const contractorsData = await contractorsResponse.json();
                 
                 // Process company data
-                let companyName = '';
-                let address = '';
-                let contractorNumber = '';
-                let licenses = '';
-                let isRegistered = false;
-                
                 if (companiesData.success && companiesData.result.records.length > 0) {
                     const companyData = companiesData.result.records[0];
                     companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
                     companyName = companyName.replace(/\s+/g, ' ').trim();
                     companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ');
                     address = companyData['כתובת'] || '';
+                    phone = companyData['טלפון'] || '';
+                    email = companyData['דוא"ל'] || companyData['אימייל'] || '';
+                    website = extractWebsiteFromEmail(email);
                 }
                 
                 // Process contractor data
                 if (contractorsData.success && contractorsData.result.records.length > 0) {
                     const contractorData = contractorsData.result.records[0];
                     contractorNumber = contractorData['מספר קבלן'] || '';
-                    licenses = contractorData['רישיונות'] || '';
                     isRegistered = true;
                 } else {
-                    licenses = 'אינו קבלן רשום';
                     isRegistered = false;
                 }
+            }
+            
+            if (project && project.subcontractors) {
+                const updatedSubcontractors = [...project.subcontractors];
                 
                 updatedSubcontractors[subcontractorIndex] = {
                     ...updatedSubcontractors[subcontractorIndex],
@@ -1491,7 +1537,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     companyName: companyName,
                     address: address,
                     contractorNumber: contractorNumber,
-                    licenses: licenses,
+                    phone: phone,
+                    email: email,
+                    website: website,
                     isRegistered: isRegistered
                 };
                 
@@ -2456,10 +2504,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {/* Subcontractors Section */}
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <Box sx={{ 
-                                    display: 'grid', 
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                                    gap: 3, 
+                                <Box sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                    gap: 3,
                                     p: 3,
                                     backgroundColor: 'white',
                                     borderRadius: 2,
@@ -2476,19 +2524,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120 }}>תפקיד</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100 }}>ח״פ</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150 }}>שם החברה</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200 }}>כתובת</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100 }}>מספר קבלן</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150 }}>רישיונות</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 80 }}>פעולות</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 1 }}>תפקיד</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>ח״פ</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 1 }}>שם החברה</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 250, px: 1 }}>כתובת</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 1 }}>מספר קבלן</TableCell>
+                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 80, px: 1 }}>פעולות</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {project.subcontractors.map((subcontractor, index) => (
                                                             <TableRow key={subcontractor.id}>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <Autocomplete
                                                                         freeSolo
                                                                         options={[
@@ -2529,7 +2576,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <Box sx={{ position: 'relative' }}>
                                                                         <TextField
                                                                             value={subcontractor.companyId}
@@ -2571,7 +2618,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     </Box>
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <TextField
                                                                         value={subcontractor.companyName}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
@@ -2585,7 +2632,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <TextField
                                                                         value={subcontractor.address}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
@@ -2599,7 +2646,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <TextField
                                                                         value={subcontractor.contractorNumber || ''}
                                                                         disabled={true} // Read-only field
@@ -2613,21 +2660,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        value={subcontractor.licenses || ''}
-                                                                        disabled={true} // Read-only field
-                                                                        size="small"
-                                                                        placeholder="רישיונות"
-                                                                        sx={{
-                                                                            '& .MuiInputBase-input': {
-                                                                                color: 'text.secondary',
-                                                                                backgroundColor: 'grey.100'
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ px: 1 }}>
                                                                     <Box sx={{ display: 'flex', gap: 1 }}>
                                                                         <IconButton
                                                                             onClick={() => removeSubcontractor(index)}
@@ -2670,7 +2703,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }
                                                 }}
                                             >
-                                                + הוספת קבלן משנה
+                                                + הוספה
                                             </Button>
                                         </Box>
                                     </Box>
