@@ -1212,11 +1212,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const validateIsraeliId = (id: string): boolean => {
         if (!id || id.length < 8 || id.length > 9) return false;
         if (!/^\d+$/.test(id)) return false; // Only digits
-        
+
         // Israeli ID validation algorithm
         const digits = id.split('').map(Number);
         let sum = 0;
-        
+
         for (let i = 0; i < digits.length - 1; i++) {
             let digit = digits[i];
             if (i % 2 === 1) {
@@ -1227,7 +1227,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             }
             sum += digit;
         }
-        
+
         const checkDigit = (10 - (sum % 10)) % 10;
         return checkDigit === digits[digits.length - 1];
     };
@@ -1236,14 +1236,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         if (project && project.stakeholders) {
             const updatedStakeholders = [...project.stakeholders];
             
+            console.log('🔄 handleStakeholderChange called:', { index, field, value });
+            console.log('🔄 Current stakeholder before change:', updatedStakeholders[index]);
+            
             // Special handling for companyId field
             if (field === 'companyId') {
                 // Only allow digits
                 const numericValue = value.replace(/\D/g, '');
+                console.log('🔄 Processing companyId:', { originalValue: value, numericValue });
+                
                 updatedStakeholders[index] = {
                     ...updatedStakeholders[index],
                     [field]: numericValue
                 };
+                
+                console.log('🔄 Updated stakeholder after companyId change:', updatedStakeholders[index]);
                 
                 // Check if it's a government program (starts with 50 and is 9 digits)
                 if (numericValue.length === 9 && numericValue.startsWith('50')) {
@@ -1265,12 +1272,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     ...updatedStakeholders[index],
                     [field]: value
                 };
+                console.log('🔄 Updated stakeholder after other field change:', updatedStakeholders[index]);
             }
             
             setProject({
                 ...project,
                 stakeholders: updatedStakeholders
             });
+            
+            console.log('🔄 Project stakeholders updated');
         }
     };
 
@@ -1298,52 +1308,58 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Function to fetch company data from registry
     const fetchCompanyData = async (companyId: string, stakeholderIndex: number) => {
-        if (!companyId || companyId.length < 8) return; // Minimum company ID length
-
+        if (!companyId || companyId.length < 8) {
+            console.log('❌ Company ID too short or empty:', companyId);
+            return; // Minimum company ID length
+        }
+        
         const loadingKey = `stakeholder-${stakeholderIndex}`;
         setLoadingCompanyData(prev => ({ ...prev, [loadingKey]: true }));
-
+        
         try {
-            console.log('🔍 Fetching company data for ID:', companyId);
-
+            console.log('🔍 Fetching company data for ID:', companyId, 'at index:', stakeholderIndex);
+            
+            // Store the original companyId to ensure it's preserved
+            const originalCompanyId = companyId;
+            console.log('🔍 Storing original companyId:', originalCompanyId);
+            
             // Fetch from Companies Registry
             const companiesResponse = await fetch(`https://data.gov.il/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&q=${companyId}`);
             const companiesData = await companiesResponse.json();
             console.log('Companies Registry response:', companiesData);
-
+            
             if (companiesData.success && companiesData.result.records.length > 0) {
                 const companyData = companiesData.result.records[0];
                 console.log('✅ Company data found:', companyData);
-
+                
                 // Update stakeholder with company data
                 if (project && project.stakeholders) {
                     const updatedStakeholders = [...project.stakeholders];
-
+                    
                     // Format company name - remove double spaces and fix בע"מ format
                     let companyName = companyData['שם חברה'] || companyData['שם התאגיד'] || '';
                     companyName = companyName.replace(/\s+/g, ' ').trim(); // Remove double spaces
                     companyName = companyName.replace(/בעמ|בע~מ/g, 'בע״מ'); // Fix בע"מ format
-
-                    const originalCompanyId = updatedStakeholders[stakeholderIndex].companyId;
-                    console.log('🔍 Original companyId before update:', originalCompanyId);
-
+                    
+                    console.log('🔍 Current stakeholder before update:', updatedStakeholders[stakeholderIndex]);
+                    console.log('🔍 Using stored original companyId:', originalCompanyId);
+                    
                     updatedStakeholders[stakeholderIndex] = {
                         ...updatedStakeholders[stakeholderIndex],
-                        companyId: originalCompanyId, // Explicitly keep the original companyId
+                        companyId: originalCompanyId, // Use the stored original companyId
                         companyName: companyName,
                         phone: companyData['טלפון'] || '',
                         email: companyData['דוא"ל'] || companyData['אימייל'] || ''
                     };
-
-                    console.log('✅ Updated stakeholder companyId after update:', updatedStakeholders[stakeholderIndex].companyId);
-                    console.log('✅ Updated stakeholder companyName after update:', updatedStakeholders[stakeholderIndex].companyName);
-
+                    
+                    console.log('✅ Updated stakeholder after update:', updatedStakeholders[stakeholderIndex]);
+                    
                     setProject({
                         ...project,
                         stakeholders: updatedStakeholders
                     });
-
-                    console.log('✅ Updated stakeholder with company data');
+                    
+                    console.log('✅ Updated stakeholder with company data - companyId preserved:', originalCompanyId);
                 }
             } else {
                 console.log('❌ No company data found for ID:', companyId);
