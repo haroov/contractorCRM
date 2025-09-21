@@ -3055,24 +3055,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     gap: 2,
                                                     direction: 'rtl'
                                                 }}>
-                                                    <FormControl>
-                                                        <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
-                                                        <Select
-                                                            labelId="project-type-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
-                                                            label="סוג הפרויקט"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="בניה">בניה</MenuItem>
-                                                            <MenuItem value="תמא 38">תמא 38</MenuItem>
-                                                            <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
-                                                            <MenuItem value="תשתיות">תשתיות</MenuItem>
-                                                            <MenuItem value="גשר">גשר</MenuItem>
-                                                            <MenuItem value="כביש">כביש</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-
                                                     <Box sx={{
                                                         display: 'flex',
                                                         alignItems: 'center',
@@ -3150,6 +3132,24 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Button>
                                                         </Box>
                                                     </Box>
+
+                                                    <FormControl>
+                                                        <InputLabel id="project-type-label">סוג הפרויקט</InputLabel>
+                                                        <Select
+                                                            labelId="project-type-label"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.projectType || ''}
+                                                            label="סוג הפרויקט"
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.projectType', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        >
+                                                            <MenuItem value="בניה">בניה</MenuItem>
+                                                            <MenuItem value="תמא 38">תמא 38</MenuItem>
+                                                            <MenuItem value="פינוי בינוי">פינוי בינוי</MenuItem>
+                                                            <MenuItem value="תשתיות">תשתיות</MenuItem>
+                                                            <MenuItem value="גשר">גשר</MenuItem>
+                                                            <MenuItem value="כביש">כביש</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
                                                 </Box>
 
                                                 {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
