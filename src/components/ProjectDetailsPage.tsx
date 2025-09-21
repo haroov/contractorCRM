@@ -1072,7 +1072,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 companyId: '',
                 companyName: '',
                 phone: '',
-                email: ''
+                email: '',
+                contractorObjectId: ''
             };
 
             // Try to get contractor details from URL parameter first, then from project
@@ -1103,9 +1104,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 companyId: contractor.companyId || contractor.id || contractor._id || '',
                                 companyName: contractor.name || contractor.nameEnglish || '',
                                 phone: contractor.phone || '',
-                                email: contractor.email || ''
+                                email: contractor.email || '',
+                                contractorObjectId: contractor._id || contractor.id || ''
                             };
                             console.log('✅ Entrepreneur details populated:', entrepreneurDetails);
+                            console.log('✅ Contractor ObjectId saved:', entrepreneurDetails.contractorObjectId);
                         } else {
                             console.log('❌ No contractor found for ID:', contractorId);
                         }
@@ -1142,6 +1145,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     companyName: entrepreneurDetails.companyName,
                     phone: entrepreneurDetails.phone,
                     email: entrepreneurDetails.email,
+                    contractorObjectId: entrepreneurDetails.contractorObjectId,
                     isDefault: true
                 },
                 {
@@ -1174,7 +1178,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             ];
 
             console.log('✅ Setting default stakeholders with ObjectIds:', defaultStakeholders);
-            console.log('✅ Stakeholder IDs:', defaultStakeholders.map(s => ({ role: s.role, id: s.id })));
+            console.log('✅ Stakeholder IDs:', defaultStakeholders.map(s => ({ role: s.role, id: s.id, contractorObjectId: s.contractorObjectId })));
             setProject({
                 ...project,
                 stakeholders: defaultStakeholders
@@ -1227,8 +1231,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     companyId: entrepreneur.companyId,
                     companyName: entrepreneur.companyName,
                     phone: entrepreneur.phone,
-                    email: entrepreneur.email
+                    email: entrepreneur.email,
+                    contractorObjectId: entrepreneur.contractorObjectId
                 };
+                console.log('✅ Duplicated entrepreneur details including contractorObjectId:', entrepreneur.contractorObjectId);
                 setProject({
                     ...project,
                     stakeholders: updatedStakeholders
@@ -1522,6 +1528,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     plotDetails: updateData.plotDetails,
                     stakeholders: updateData.stakeholders
                 });
+                console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({ 
+                    role: s.role, 
+                    contractorObjectId: s.contractorObjectId 
+                })));
                 console.log('🔄 Full update data JSON:', JSON.stringify(updateData, null, 2));
 
                 // Use different endpoint based on user type

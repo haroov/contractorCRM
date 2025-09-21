@@ -23,6 +23,7 @@ export interface Stakeholder {
     phone: string;
     email: string;
     isDefault?: boolean; // Flag to identify default stakeholders
+    contractorObjectId?: string; // ObjectId of the contractor if they exist in the system
 }
 
 export interface Project {
