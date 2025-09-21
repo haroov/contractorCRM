@@ -50,7 +50,6 @@ import {
 } from '@mui/icons-material';
 import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
-import EraseIcon from './EraseIcon';
 
 // Custom File Upload Component
 interface FileUploadProps {
@@ -1175,7 +1174,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             if (stakeholder.isDefault && stakeholder.role !== 'בנק / גוף פיננסי מלווה') {
                 return;
             }
-            
+
             // Show confirmation dialog
             if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל העניין?')) {
                 const updatedStakeholders = project.stakeholders.filter((_, i) => i !== index);
@@ -2065,7 +2064,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <EraseIcon fontSize="small" />
+                                                                                <ClearIcon fontSize="small" />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
