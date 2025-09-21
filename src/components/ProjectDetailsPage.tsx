@@ -1591,14 +1591,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     const contractorData = contractorsData.result.records[0];
                     contractorNumber = contractorData['MISPAR_KABLAN'] || '';
                     isRegistered = true;
-                    
+
                     // Get city from SHEM_YISHUV field
                     const cityFromRegistry = contractorData['SHEM_YISHUV'] || '';
                     if (cityFromRegistry && !address) {
                         address = cityFromRegistry;
                         console.log('✅ City from contractors registry:', cityFromRegistry);
                     }
-                    
+
                     console.log('✅ Contractor data from registry:', contractorData);
                     console.log('✅ Contractor number:', contractorNumber);
                     console.log('✅ City from registry:', cityFromRegistry);
@@ -2349,10 +2349,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Row 4: ערך הפרויקט */}
-                                    <TextField
-                                        fullWidth
-                                        label="ערך הפרויקט (בש״ח)"
-                                        value={project?.valueNis || project?.projectValueNis || project?.value ? `${(project?.valueNis || project?.projectValueNis || project?.value).toLocaleString('he-IL')} ₪` : ''}
+                                    <Box sx={{ maxWidth: '50%' }}>
+                                        <TextField
+                                            fullWidth
+                                            label="ערך הפרויקט (בש״ח)"
+                                        value={project?.valueNis || project?.value ? `${(project?.valueNis || project?.value).toLocaleString('he-IL')} ₪` : ''}
                                         onChange={(e) => {
                                             const numericValue = e.target.value.replace(/[^\d]/g, '');
                                             const numValue = numericValue ? parseInt(numericValue) : 0;
@@ -2374,7 +2375,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 e.preventDefault();
                                             }
                                         }}
-                                    />
+                                        />
+                                    </Box>
 
 
                                     {/* Stakeholders Table */}
@@ -2861,7 +2863,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </TableCell>
                                                                 <TableCell sx={{ px: 0.5 }}>
                                                                     <TextField
-                                                                        value={subcontractor.companyId && subcontractor.companyId.length >= 8 
+                                                                        value={subcontractor.companyId && subcontractor.companyId.length >= 8
                                                                             ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
                                                                             : ''}
                                                                         disabled={true} // Read-only field
