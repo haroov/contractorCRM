@@ -3186,300 +3186,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         )}
 
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                מרחק מתחנת דלק (ק״מ)
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToGasStation', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToGasStation === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToGasStation === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToGasStation === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem',
-                                                        marginRight: '0px'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToGasStation', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToGasStation === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToGasStation === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToGasStation === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
-
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                מרחק מתחנת משטרה (ק״מ)
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToPoliceStation === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem',
-                                                        marginRight: '0px'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToPoliceStation', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToPoliceStation === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToPoliceStation === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
-
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                מרחק מתחנת לוחמי אש (ק״מ)
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToFireStation', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToFireStation === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToFireStation === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToFireStation === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToFireStation', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToFireStation === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToFireStation === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToFireStation === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
-
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                מרחק ממד״א או מרכז רפואי (ק״מ)
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToMedicalCenter === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem',
-                                                        marginRight: '0px'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('environmentalSurvey.proximityToMedicalCenter', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.proximityToMedicalCenter === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.proximityToMedicalCenter === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
 
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
@@ -3654,6 +3360,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             value={project?.environmentalSurvey?.distanceFromStreams || ''}
                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromStreams', parseFloat(e.target.value) || 0)}
                                             disabled={mode === 'view' || !canEdit}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            label="מרחק מתחנת דלק (ק״מ)"
+                                            type="number"
+                                            value={project?.environmentalSurvey?.distanceFromGasStation || ''}
+                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0, max: 200 }}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            label="מרחק מתחנת משטרה (ק״מ)"
+                                            type="number"
+                                            value={project?.environmentalSurvey?.distanceFromPoliceStation || ''}
+                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0, max: 200 }}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            label="מרחק מתחנת לוחמי אש (ק״מ)"
+                                            type="number"
+                                            value={project?.environmentalSurvey?.distanceFromFireStation || ''}
+                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0, max: 200 }}
+                                        />
+
+                                        <TextField
+                                            fullWidth
+                                            label="מרחק ממד״א או מרכז רפואי (ק״מ)"
+                                            type="number"
+                                            value={project?.environmentalSurvey?.distanceFromMedicalCenter || ''}
+                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromMedicalCenter', parseFloat(e.target.value) || 0)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            inputProps={{ min: 0, max: 200 }}
                                         />
                                     </Box>
                                 </Box>
