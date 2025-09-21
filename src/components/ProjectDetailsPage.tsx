@@ -1075,10 +1075,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const { default: ContractorService } = await import('../services/contractorService');
                         const contractor = await ContractorService.getById(contractorId);
                         console.log('✅ Contractor loaded:', contractor);
+                        console.log('🔍 Contractor companyId:', contractor?.companyId);
+                        console.log('🔍 Contractor id:', contractor?.id);
+                        console.log('🔍 Contractor _id:', contractor?._id);
                         
                         if (contractor) {
                             entrepreneurDetails = {
-                                companyId: contractor.id || contractor._id || '',
+                                companyId: contractor.companyId || contractor.id || contractor._id || '',
                                 companyName: contractor.name || contractor.nameEnglish || '',
                                 phone: contractor.phone || '',
                                 email: contractor.email || ''
