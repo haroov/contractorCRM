@@ -18,6 +18,7 @@ export interface Contact {
 export interface Stakeholder {
     id: string;
     role: string;
+    companyId: string; // Company ID field
     companyName: string;
     phone: string;
     email: string;

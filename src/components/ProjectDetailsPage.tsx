@@ -1027,6 +1027,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const newStakeholder: Stakeholder = {
                 id: Date.now().toString(),
                 role: '',
+                companyId: '',
                 companyName: '',
                 phone: '',
                 email: '',
@@ -1046,6 +1047,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 {
                     id: 'default-1',
                     role: 'יזם',
+                    companyId: '',
                     companyName: '',
                     phone: '',
                     email: '',
@@ -1054,6 +1056,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 {
                     id: 'default-2',
                     role: 'מזמין העבודה',
+                    companyId: '',
                     companyName: '',
                     phone: '',
                     email: '',
@@ -1062,6 +1065,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 {
                     id: 'default-3',
                     role: 'קבלן ראשי',
+                    companyId: '',
                     companyName: '',
                     phone: '',
                     email: '',
@@ -1070,6 +1074,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 {
                     id: 'default-4',
                     role: 'בנק / גוף פיננסי מלווה',
+                    companyId: '',
                     companyName: '',
                     phone: '',
                     email: '',
@@ -1801,7 +1806,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* Stakeholders Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
                                         <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
-                                            בעלי עניין בפרויקט
+                                            בעלי עניין
                                         </Typography>
                                         
 
@@ -1810,19 +1815,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 תפקיד
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                                ח״פ
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 שם החברה
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 טלפון
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
                                                                 אימייל
                                                             </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80 }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
                                                                 פעולות
                                                             </TableCell>
                                                         </TableRow>
@@ -1836,6 +1844,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         value={stakeholder.role}
                                                                         onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.companyId}
+                                                                        onChange={(e) => handleStakeholderChange(index, 'companyId', e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
                                                                         variant="outlined"
                                                                         size="small"
                                                                     />
