@@ -29,7 +29,8 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    Autocomplete
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -44,7 +45,8 @@ import {
     Delete as DeleteIcon,
     PictureAsPdf as PdfIcon,
     AutoAwesome as AutoAwesomeIcon,
-    ContentCopy as ContentCopyIcon
+    ContentCopy as ContentCopyIcon,
+    Clear as ClearIcon
 } from '@mui/icons-material';
 import type { Project, Stakeholder } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -1048,7 +1050,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const initializeDefaultStakeholders = async () => {
         if (project && (!project.stakeholders || project.stakeholders.length === 0)) {
             console.log('🔄 Initializing default stakeholders for project:', project.projectName);
-            
+
             // Get contractor details for entrepreneur
             let entrepreneurDetails = {
                 companyId: '',
@@ -1064,12 +1066,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔍 URL contractor ID:', urlContractorId);
             console.log('🔍 Project mainContractor:', project.mainContractor);
             console.log('🔍 Project contractorId:', project.contractorId);
-            
+
             if (contractorId) {
                 // Check if contractorId is a valid ObjectId (24 characters)
                 const isValidObjectId = contractorId.length === 24 && /^[0-9a-fA-F]{24}$/.test(contractorId);
                 console.log('🔍 Is valid ObjectId:', isValidObjectId, 'Length:', contractorId.length);
-                
+
                 if (isValidObjectId) {
                     try {
                         console.log('🔄 Loading contractor details for entrepreneur...');
@@ -1079,7 +1081,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('🔍 Contractor companyId:', contractor?.companyId);
                         console.log('🔍 Contractor id:', contractor?.id);
                         console.log('🔍 Contractor _id:', contractor?._id);
-                        
+
                         if (contractor) {
                             entrepreneurDetails = {
                                 companyId: contractor.companyId || contractor.id || contractor._id || '',
@@ -1154,7 +1156,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isDefault: true
                 }
             ];
-            
+
             console.log('✅ Setting default stakeholders:', defaultStakeholders);
             setProject({
                 ...project,
@@ -1244,7 +1246,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     // General document analysis function
     const handleDocumentAnalysis = async (fileUrl: string, documentType: string) => {
         console.log('🚀 handleDocumentAnalysis called with:', { fileUrl, documentType });
-        
+
         if (!fileUrl) {
             console.log('❌ No file URL provided');
             setSnackbarMessage('אנא העלה מסמך תחילה');
@@ -1905,7 +1907,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
                                             בעלי עניין
                                         </Typography>
-                                        
+
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
                                             <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
@@ -1936,26 +1938,36 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         {project.stakeholders.map((stakeholder, index) => (
                                                             <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
                                                                 <TableCell>
-                                                                    <FormControl fullWidth size="small">
-                                                                        <Select
-                                                                            value={stakeholder.role}
-                                                                            onChange={(e) => handleStakeholderChange(index, 'role', e.target.value)}
-                                                                            disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#6B46C1',
-                                                                                },
-                                                                            }}
-                                                                        >
-                                                                            <MenuItem value="יזם">יזם</MenuItem>
-                                                                            <MenuItem value="מזמין העבודה">מזמין העבודה</MenuItem>
-                                                                            <MenuItem value="קבלן ראשי">קבלן ראשי</MenuItem>
-                                                                            <MenuItem value="בנק / גוף פיננסי מלווה">בנק / גוף פיננסי מלווה</MenuItem>
-                                                                            <MenuItem value="קבלן משנה">קבלן משנה</MenuItem>
-                                                                            <MenuItem value="אחר">אחר</MenuItem>
-                                                                        </Select>
-                                                                    </FormControl>
+                                                                    <Autocomplete
+                                                                        value={stakeholder.role}
+                                                                        onChange={(event, newValue) => {
+                                                                            handleStakeholderChange(index, 'role', newValue || '');
+                                                                        }}
+                                                                        onInputChange={(event, newInputValue) => {
+                                                                            handleStakeholderChange(index, 'role', newInputValue);
+                                                                        }}
+                                                                        freeSolo
+                                                                        options={[
+                                                                            'יזם',
+                                                                            'מזמין העבודה',
+                                                                            'קבלן ראשי',
+                                                                            'בנק / גוף פיננסי מלווה',
+                                                                            'קבלן משנה'
+                                                                        ]}
+                                                                        disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
+                                                                        renderInput={(params) => (
+                                                                            <TextField
+                                                                                {...params}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                        borderColor: '#6B46C1',
+                                                                                    },
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    />
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     <TextField
@@ -2035,7 +2047,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 <ContentCopyIcon fontSize="small" />
                                                                             </IconButton>
                                                                         )}
-                                                                        {!stakeholder.isDefault && (
+                                                                        {(!stakeholder.isDefault || stakeholder.role === 'בנק / גוף פיננסי מלווה') && (
                                                                             <IconButton
                                                                                 onClick={() => removeStakeholder(index)}
                                                                                 disabled={mode === 'view' || !canEdit}
@@ -2048,7 +2060,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <DeleteIcon fontSize="small" />
+                                                                                <ClearIcon fontSize="small" />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
@@ -2065,7 +2077,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 variant="outlined"
                                                 onClick={addStakeholder}
                                                 disabled={mode === 'view' || !canEdit}
-                                                sx={{ 
+                                                sx={{
                                                     borderColor: '#6B46C1',
                                                     color: '#6B46C1',
                                                     '&:hover': {
