@@ -1502,6 +1502,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     garmoshkaFileCreationDate: updateData.garmoshkaFileCreationDate,
                     plotDetails: updateData.plotDetails
                 });
+                console.log('🔄 Full update data JSON:', JSON.stringify(updateData, null, 2));
                 const updatedProject = await projectsAPI.update(projectId, updateData);
                 console.log('✅ Project updated:', updatedProject);
             }
@@ -2056,9 +2057,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <IconButton
                                                                                 onClick={() => removeStakeholder(index)}
                                                                                 disabled={mode === 'view' || !canEdit}
-                                                                                sx={{ 
+                                                                                sx={{
                                                                                     color: 'grey.600',
-                                                                                    '&:hover': { 
+                                                                                    '&:hover': {
                                                                                         color: 'white',
                                                                                         backgroundColor: 'error.main'
                                                                                     }

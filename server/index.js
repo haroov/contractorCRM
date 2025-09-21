@@ -1346,16 +1346,24 @@ app.post('/api/projects', async (req, res) => {
 
 app.put('/api/projects/:id', async (req, res) => {
   try {
+    console.log('🔧 PUT /api/projects/:id called with ID:', req.params.id);
+    console.log('🔧 Request body keys:', Object.keys(req.body));
+    console.log('🔧 Full request body:', JSON.stringify(req.body, null, 2));
+    
     const db = client.db('contractor-crm');
     const updateData = {
       ...req.body,
       updatedAt: new Date()
     };
+    
+    console.log('🔧 Update data to be saved:', JSON.stringify(updateData, null, 2));
+    
     const result = await db.collection('projects').updateOne(
       { _id: new ObjectId(req.params.id) },
       { $set: updateData }
     );
-    console.log('✅ Updated project:', req.params.id);
+    
+    console.log('✅ Updated project:', req.params.id, 'Modified count:', result.modifiedCount);
 
     // Update contractor statistics automatically
     if (req.body.mainContractor) {
