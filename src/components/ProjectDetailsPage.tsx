@@ -51,7 +51,7 @@ import {
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
-import CloudDownloadIcon from './CloudDownloadIcon';
+import CloudSyncIcon from './CloudSyncIcon';
 import CloudUploadIcon from './CloudUploadIcon';
 
 // Helper function to generate ObjectId-like string
@@ -1476,9 +1476,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     // Import functions for subcontractors
     const handleCloudImport = () => {
-        // Future: Import from Safeguard system
-        console.log('Cloud import from Safeguard system - coming soon');
-        // TODO: Implement Safeguard API integration
+        // Future: Sync with Safeguard system
+        console.log('Sync subcontractors with Safeguard system - coming soon');
+        // TODO: Implement Safeguard API integration for subcontractor sync
     };
 
     const handleExcelImport = () => {
@@ -2579,9 +2579,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             backgroundColor: 'rgba(107, 70, 193, 0.04)'
                                                         }
                                                     }}
-                                                    title="ייבוא מענן (Safeguard)"
+                                                    title="סינכרון קבלני משנה עם Safeguard"
                                                 >
-                                                    <CloudDownloadIcon fontSize="medium" />
+                                                    <CloudSyncIcon fontSize="medium" />
                                                 </IconButton>
                                                 <IconButton
                                                     onClick={handleExcelImport}
