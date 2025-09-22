@@ -28,7 +28,7 @@ router.get('/google', (req, res, next) => {
   // Build Google OAuth URL manually to include prompt parameter
   const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
   // Ensure we always use absolute URL for redirect_uri
-  const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'https://contractorcrm-api.onrender.com/api/auth/google/callback';
+  const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'https://contractor-crm-api.onrender.com/auth/google/callback';
   console.log('🔐 Using redirect_uri:', redirectUri);
 
   const params = new URLSearchParams({
