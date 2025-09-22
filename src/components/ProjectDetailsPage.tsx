@@ -4017,28 +4017,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                             />
 
-                                            <TextField
-                                                fullWidth
-                                                label="אזור Cresta"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.crestaArea || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            <TextField
-                                                fullWidth
-                                                label="ציון PNG25 לרעידות אדמה"
-                                                type="number"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.png25EarthquakeRating || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', parseFloat(e.target.value) || 0)}
-                                                disabled={mode === 'view' || !canEdit}
-                                            />
-
-                                            {/* GIS Calculation Button */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                                                <Button
-                                                    variant="outlined"
-                                                    startIcon={<AutoAwesomeIcon />}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="אזור Cresta"
+                                                    value={project?.engineeringQuestionnaire?.soilReport?.crestaArea || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                                <IconButton
                                                     onClick={async () => {
                                                         const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                                                         const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
@@ -4049,41 +4036,74 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                         
                                                         try {
-                                                            const gisValues = await gisService.calculateGISValues(x, y);
+                                                            const cresta = await gisService.getCrestaZone(x, y);
                                                             
-                                                            if (gisValues.gisValues.png25 !== null) {
-                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', gisValues.gisValues.png25);
-                                                            }
-                                                            
-                                                            if (gisValues.gisValues.cresta !== null) {
-                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', gisValues.gisValues.cresta);
-                                                            }
-                                                            
-                                                            if (gisValues.gisValues.png25 === null && gisValues.gisValues.cresta === null) {
-                                                                alert('לא נמצאו ערכי GIS עבור הקואורדינטות הנתונות');
+                                                            if (cresta !== null) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', cresta);
                                                             } else {
-                                                                alert('ערכי GIS חושבו בהצלחה!');
+                                                                alert('לא נמצא אזור Cresta עבור הקואורדינטות הנתונות');
                                                             }
                                                         } catch (error) {
-                                                            console.error('Error calculating GIS values:', error);
-                                                            alert('שגיאה בחישוב ערכי GIS');
+                                                            console.error('Error calculating Cresta zone:', error);
+                                                            alert('שגיאה בחישוב אזור Cresta');
                                                         }
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{ 
-                                                        borderColor: '#6B46C1',
                                                         color: '#6B46C1',
                                                         '&:hover': {
-                                                            borderColor: '#5B21B6',
                                                             backgroundColor: '#f3f4f6'
                                                         }
                                                     }}
+                                                    title="חשב אזור Cresta"
                                                 >
-                                                    חשב ערכי GIS
-                                                </Button>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    חישוב אוטומטי של PNG25 ו-Cresta על בסיס הקואורדינטות
-                                                </Typography>
+                                                    <CloudSyncIcon />
+                                                </IconButton>
+                                            </Box>
+
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="ציון PNG25 לרעידות אדמה"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.soilReport?.png25EarthquakeRating || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                                <IconButton
+                                                    onClick={async () => {
+                                                        const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+                                                        const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+                                                        
+                                                        if (!x || !y) {
+                                                            alert('אנא הזן קואורדינטות X ו-Y תחילה');
+                                                            return;
+                                                        }
+                                                        
+                                                        try {
+                                                            const png25 = await gisService.getPNG25Value(x, y);
+                                                            
+                                                            if (png25 !== null) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', png25);
+                                                            } else {
+                                                                alert('לא נמצא ערך PNG25 עבור הקואורדינטות הנתונות');
+                                                            }
+                                                        } catch (error) {
+                                                            console.error('Error calculating PNG25 value:', error);
+                                                            alert('שגיאה בחישוב ערך PNG25');
+                                                        }
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{ 
+                                                        color: '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: '#f3f4f6'
+                                                        }
+                                                    }}
+                                                    title="חשב ערך PNG25"
+                                                >
+                                                    <CloudSyncIcon />
+                                                </IconButton>
                                             </Box>
                                         </Box>
 
