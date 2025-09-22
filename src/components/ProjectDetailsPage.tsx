@@ -1076,20 +1076,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             setProject(newProject);
 
             // Auto-calculate GIS values when coordinates change
-            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' || 
+            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
                 fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
-                
+
                 const x = fieldPath.includes('.x') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                 const y = fieldPath.includes('.y') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
-                
+
                 if (x && y && typeof x === 'number' && typeof y === 'number') {
                     console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
-                    
+
                     gisService.autoCalculateGISValues(
                         x, y,
                         (gisValues) => {
                             console.log('✅ GIS values calculated:', gisValues);
-                            
+
                             // Update PNG25 value if found
                             if (gisValues.png25 !== null) {
                                 const updatedProject = { ...newProject };
@@ -1103,7 +1103,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 setProject(updatedProject);
                                 console.log('✅ Updated PNG25 value:', gisValues.png25);
                             }
-                            
+
                             // Update Cresta area if found
                             if (gisValues.cresta !== null) {
                                 const updatedProject = { ...newProject };
@@ -4029,15 +4029,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={async () => {
                                                         const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                                                         const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
-                                                        
+
                                                         if (!x || !y) {
                                                             alert('אנא הזן קואורדינטות X ו-Y תחילה');
                                                             return;
                                                         }
-                                                        
+
                                                         try {
                                                             const cresta = await gisService.getCrestaZone(x, y);
-                                                            
+
                                                             if (cresta !== null) {
                                                                 handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', cresta);
                                                             } else {
@@ -4049,7 +4049,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    sx={{ 
+                                                    sx={{
                                                         color: '#6B46C1',
                                                         '&:hover': {
                                                             backgroundColor: '#f3f4f6'
@@ -4074,15 +4074,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onClick={async () => {
                                                         const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                                                         const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
-                                                        
+
                                                         if (!x || !y) {
                                                             alert('אנא הזן קואורדינטות X ו-Y תחילה');
                                                             return;
                                                         }
-                                                        
+
                                                         try {
                                                             const png25 = await gisService.getPNG25Value(x, y);
-                                                            
+
                                                             if (png25 !== null) {
                                                                 handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', png25);
                                                             } else {
@@ -4094,7 +4094,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    sx={{ 
+                                                    sx={{
                                                         color: '#6B46C1',
                                                         '&:hover': {
                                                             backgroundColor: '#f3f4f6'
@@ -5193,7 +5193,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         תוכנית הידרולוג
                                     </Typography>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
                                         <FileUpload
                                             label="העלאת קובץ תוכנית הידרולוג"
                                             value={project?.hydrologicalPlan?.file}
@@ -5206,6 +5206,81 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             onCreationDateChange={(date) => handleNestedFieldChange('hydrologicalPlan.fileCreationDate', date)}
                                             projectId={project?._id || project?.id}
                                         />
+                                    </Box>
+
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mb: 3 }}>
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                הכניסות מנוגדות לזרימת המים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.entrancesOppositeWaterFlow', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.entrancesOppositeWaterFlow', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
 
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
@@ -5229,8 +5304,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 display: 'flex',
                                                 gap: 0,
                                                 alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
+                                                justifyContent: 'flex-start'
                                             }}>
                                                 <Button
                                                     variant="text"
