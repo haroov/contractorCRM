@@ -5160,7 +5160,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         {/* טבלת מרחקים לשירותי חירום */}
                                         <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                מרחקים לשירותי חירום
+                                                שירותי חירום
                                             </Typography>
                                             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                                                 <Table size="small">
