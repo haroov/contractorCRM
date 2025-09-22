@@ -137,8 +137,7 @@ const ContractorSchema = new Schema({
 });
 
 // Indexes for better performance
-ContractorSchema.index({ contractorId: 1 });
-ContractorSchema.index({ companyId: 1 });
+// Note: contractorId and companyId already have unique indexes from schema definition
 ContractorSchema.index({ name: 1 });
 ContractorSchema.index({ city: 1 });
 ContractorSchema.index({ sector: 1 });
