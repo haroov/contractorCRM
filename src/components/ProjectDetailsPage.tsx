@@ -635,11 +635,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                 }
                                             }}
                                         >
-                                            <img 
-                                                src="/src/assets/icon-trash.svg" 
-                                                alt="מחק" 
-                                                style={{ width: 16, height: 16, filter: 'invert(0.4)' }}
-                                            />
+                                            <TrashIcon fontSize="small" />
                                         </IconButton>
                                     </TableCell>
                                 )}
