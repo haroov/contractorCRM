@@ -3063,13 +3063,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             תוכנית ממשלתית
                                                         </Typography>
@@ -3077,8 +3077,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3142,13 +3141,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             בנייה / שיפוץ
                                                         </Typography>
@@ -3156,8 +3155,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3213,13 +3211,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             הריסה מבנים / חלקי מבנים
                                                         </Typography>
@@ -3227,8 +3225,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3284,13 +3281,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             הנדסה אזרחית / תשתיות
                                                         </Typography>
@@ -3298,8 +3295,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3355,13 +3351,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             תמ״א 38/1 חיזוק ותוספת בנייה
                                                         </Typography>
@@ -3369,8 +3365,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3426,13 +3421,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             תמ״א 38/2 פינוי בינוי
                                                         </Typography>
@@ -3440,8 +3435,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -3497,13 +3491,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl'
+                                                        direction: 'rtl',
+                                                        justifyContent: 'space-between'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px',
-                                                            minWidth: '200px'
+                                                            marginRight: '10px'
                                                         }}>
                                                             שימור וחיזוק מבנים / מבנה בשימור
                                                         </Typography>
@@ -3511,8 +3505,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start',
-                                                            marginLeft: '10px'
+                                                            justifyContent: 'flex-start'
                                                         }}>
                                                             <Button
                                                                 variant="text"
