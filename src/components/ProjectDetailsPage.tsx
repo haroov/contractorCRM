@@ -53,7 +53,7 @@ import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 import CloudSyncIcon from './CloudSyncIcon';
-import CloudUploadIcon from './CloudUploadIcon';
+import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -295,7 +295,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         }
                     }}
                 >
-                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon fontSize="xlarge" />}
+                    {isUploading ? <CircularProgress size={20} /> : <GentleCloudUploadIcon fontSize="xlarge" />}
                 </IconButton>
             )}
 
@@ -2734,7 +2734,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <CloudUploadIcon fontSize="xlarge" />
+                                                    <GentleCloudUploadIcon fontSize="xlarge" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
