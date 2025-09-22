@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
+import gisService from '../services/gisService';
 import {
     Box,
     Typography,
@@ -1073,6 +1074,56 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('✅ New project state:', newProject);
 
             setProject(newProject);
+
+            // Auto-calculate GIS values when coordinates change
+            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' || 
+                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+                
+                const x = fieldPath.includes('.x') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+                const y = fieldPath.includes('.y') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+                
+                if (x && y && typeof x === 'number' && typeof y === 'number') {
+                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+                    
+                    gisService.autoCalculateGISValues(
+                        x, y,
+                        (gisValues) => {
+                            console.log('✅ GIS values calculated:', gisValues);
+                            
+                            // Update PNG25 value if found
+                            if (gisValues.png25 !== null) {
+                                const updatedProject = { ...newProject };
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                                setProject(updatedProject);
+                                console.log('✅ Updated PNG25 value:', gisValues.png25);
+                            }
+                            
+                            // Update Cresta area if found
+                            if (gisValues.cresta !== null) {
+                                const updatedProject = { ...newProject };
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                                setProject(updatedProject);
+                                console.log('✅ Updated Cresta area:', gisValues.cresta);
+                            }
+                        },
+                        (error) => {
+                            console.error('❌ Failed to calculate GIS values:', error);
+                        }
+                    );
+                }
+            }
         } else {
             console.log('❌ No project to update');
         }
@@ -3982,6 +4033,58 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
+
+                                            {/* GIS Calculation Button */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+                                                <Button
+                                                    variant="outlined"
+                                                    startIcon={<AutoAwesomeIcon />}
+                                                    onClick={async () => {
+                                                        const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+                                                        const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+                                                        
+                                                        if (!x || !y) {
+                                                            alert('אנא הזן קואורדינטות X ו-Y תחילה');
+                                                            return;
+                                                        }
+                                                        
+                                                        try {
+                                                            const gisValues = await gisService.calculateGISValues(x, y);
+                                                            
+                                                            if (gisValues.gisValues.png25 !== null) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.png25EarthquakeRating', gisValues.gisValues.png25);
+                                                            }
+                                                            
+                                                            if (gisValues.gisValues.cresta !== null) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', gisValues.gisValues.cresta);
+                                                            }
+                                                            
+                                                            if (gisValues.gisValues.png25 === null && gisValues.gisValues.cresta === null) {
+                                                                alert('לא נמצאו ערכי GIS עבור הקואורדינטות הנתונות');
+                                                            } else {
+                                                                alert('ערכי GIS חושבו בהצלחה!');
+                                                            }
+                                                        } catch (error) {
+                                                            console.error('Error calculating GIS values:', error);
+                                                            alert('שגיאה בחישוב ערכי GIS');
+                                                        }
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{ 
+                                                        borderColor: '#6B46C1',
+                                                        color: '#6B46C1',
+                                                        '&:hover': {
+                                                            borderColor: '#5B21B6',
+                                                            backgroundColor: '#f3f4f6'
+                                                        }
+                                                    }}
+                                                >
+                                                    חשב ערכי GIS
+                                                </Button>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    חישוב אוטומטי של PNG25 ו-Cresta על בסיס הקואורדינטות
+                                                </Typography>
+                                            </Box>
                                         </Box>
 
                                         {/* תת-סקשן: חפירה ויסודות */}

@@ -20,6 +20,7 @@ const uploadRoutes = require('./routes/upload');
 const projectFilesRoutes = require('./routes/project-files');
 const documentParserRoutes = require('./routes/document-parser');
 const riskAnalysisRoutes = require('./routes/risk-analysis');
+const gisRoutes = require('./routes/gis');
 
 dotenv.config();
 
@@ -286,6 +287,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api', projectFilesRoutes);
 app.use('/api/document-parser', documentParserRoutes);
 app.use('/api/risk-analysis', riskAnalysisRoutes);
+app.use('/api/gis', gisRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes
