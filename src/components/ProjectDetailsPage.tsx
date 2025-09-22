@@ -3048,10 +3048,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     />
                                                 </Box>
 
-                                                {/* Project Details Fields - 3 columns layout */}
+                                                {/* Project Details Fields - 2 columns layout */}
                                                 <Box sx={{
                                                     display: 'grid',
-                                                    gridTemplateColumns: 'repeat(3, 1fr)',
+                                                    gridTemplateColumns: 'repeat(2, 1fr)',
                                                     gap: 2,
                                                     direction: 'rtl'
                                                 }}>
@@ -3069,7 +3069,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
                                                             marginRight: '10px',
-                                                            minWidth: '120px'
+                                                            minWidth: '200px'
                                                         }}>
                                                             תוכנית ממשלתית
                                                         </Typography>
@@ -3133,401 +3133,399 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Box>
                                                     </Box>
 
-                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                                        {/* בנייה / שיפוץ */}
+                                                    {/* בנייה / שיפוץ */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            בנייה / שיפוץ
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                בנייה / שיפוץ
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionRenovation', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionRenovation', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionRenovation', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionRenovation', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
+                                                    </Box>
 
-                                                        {/* הריסה מבנים / חלקי מבנים */}
+                                                    {/* הריסה מבנים / חלקי מבנים */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            הריסה מבנים / חלקי מבנים
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                הריסה מבנים / חלקי מבנים
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolition', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolition', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolition', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.demolition', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
+                                                    </Box>
 
-                                                        {/* הנדסה אזרחית / תשתיות */}
+                                                    {/* הנדסה אזרחית / תשתיות */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            הנדסה אזרחית / תשתיות
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                הנדסה אזרחית / תשתיות
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.civilEngineering', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.civilEngineering', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.civilEngineering', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.civilEngineering', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
+                                                    </Box>
 
-                                                        {/* תמ״א 38/1 חיזוק ותוספת בנייה */}
+                                                    {/* תמ״א 38/1 חיזוק ותוספת בנייה */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            תמ״א 38/1 חיזוק ותוספת בנייה
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                תמ״א 38/1 חיזוק ותוספת בנייה
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_1', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_1', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_1', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_1', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
+                                                    </Box>
 
-                                                        {/* תמ״א 38/2 פינוי בינוי */}
+                                                    {/* תמ״א 38/2 פינוי בינוי */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            תמ״א 38/2 פינוי בינוי
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                תמ״א 38/2 פינוי בינוי
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_2', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_2', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_2', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.tama38_2', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
+                                                    </Box>
 
-                                                        {/* שימור וחיזוק מבנים / מבנה בשימור */}
+                                                    {/* שימור וחיזוק מבנים / מבנה בשימור */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl'
+                                                    }}>
+                                                        <Typography variant="body2" sx={{
+                                                            color: 'text.secondary',
+                                                            fontSize: '1rem',
+                                                            marginRight: '10px',
+                                                            minWidth: '200px'
+                                                        }}>
+                                                            שימור וחיזוק מבנים / מבנה בשימור
+                                                        </Typography>
                                                         <Box sx={{
                                                             display: 'flex',
+                                                            gap: 0,
                                                             alignItems: 'center',
-                                                            border: '1px solid #d1d5db',
-                                                            borderRadius: '4px',
-                                                            backgroundColor: 'white',
-                                                            minHeight: '56px',
-                                                            padding: '0 14px',
-                                                            direction: 'rtl'
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
                                                         }}>
-                                                            <Typography variant="body2" sx={{
-                                                                color: 'text.secondary',
-                                                                fontSize: '1rem',
-                                                                marginRight: '10px',
-                                                                minWidth: '200px'
-                                                            }}>
-                                                                שימור וחיזוק מבנים / מבנה בשימור
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'flex',
-                                                                gap: 0,
-                                                                alignItems: 'center',
-                                                                justifyContent: 'flex-start',
-                                                                marginLeft: '10px'
-                                                            }}>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.preservation', false)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '0 4px 4px 0',
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderLeft: 'none',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    לא
-                                                                </Button>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.preservation', true)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderRadius: '4px 0 0 4px',
-                                                                        border: '1px solid #d1d5db',
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6B46C1' : 'white',
-                                                                        color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? 'white' : '#6B46C1',
-                                                                        minWidth: '60px',
-                                                                        height: '40px',
-                                                                        '&:hover': {
-                                                                            backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5B21B6' : '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    כן
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.preservation', false)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.preservation', true)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6B46C1' : 'white',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? 'white' : '#6B46C1',
+                                                                    minWidth: '60px',
+                                                                    height: '40px',
+                                                                    '&:hover': {
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5B21B6' : '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
                                                         </Box>
                                                     </Box>
                                                 </Box>
