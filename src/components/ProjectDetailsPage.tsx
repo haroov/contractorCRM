@@ -2720,7 +2720,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="סינכרון קבלני משנה עם Safeguard"
                                                 >
-                                                    <CloudSyncIcon fontSize="medium" />
+                                                    <CloudSyncIcon fontSize="xlarge" />
                                                 </IconButton>
                                                 <IconButton
                                                     onClick={handleExcelImport}
