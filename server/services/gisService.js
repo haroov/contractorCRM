@@ -61,7 +61,7 @@ class GISService {
     try {
       await this.initialize();
       
-      // Query the seismic hazard zone collection
+      // Query the seismic hazard zone collection with flattened structure
       const seismicHazardZones = await this.gisDb.collection('seismic-hazard-zone').find({}).toArray();
       
       if (!seismicHazardZones || seismicHazardZones.length === 0) {
@@ -69,9 +69,11 @@ class GISService {
         return null;
       }
 
-      // Check each feature in the FeatureCollection
+      // Check each document (flattened structure)
       for (const zone of seismicHazardZones) {
+        // Support both flattened and nested structures
         if (zone.type === 'FeatureCollection' && zone.features) {
+          // Nested structure (legacy)
           for (const feature of zone.features) {
             if (feature.type === 'Feature' && 
                 feature.geometry && 
@@ -79,14 +81,19 @@ class GISService {
                 feature.properties && 
                 feature.properties.Hazard !== undefined) {
               
-              // Get the polygon coordinates (first ring of the polygon)
               const coordinates = feature.geometry.coordinates[0];
-              
               if (this.isPointInPolygon(x, y, coordinates)) {
                 console.log(`✅ GIS Service: Found PNG25 value ${feature.properties.Hazard} for coordinates (${x}, ${y})`);
                 return feature.properties.Hazard;
               }
             }
+          }
+        } else if (zone.geometry && zone.geometry.type === 'Polygon' && zone.hazard !== undefined) {
+          // Flattened structure (new)
+          const coordinates = zone.geometry.coordinates[0];
+          if (this.isPointInPolygon(x, y, coordinates)) {
+            console.log(`✅ GIS Service: Found PNG25 value ${zone.hazard} for coordinates (${x}, ${y})`);
+            return zone.hazard;
           }
         }
       }
@@ -109,7 +116,7 @@ class GISService {
     try {
       await this.initialize();
       
-      // Query the cresta zones collection
+      // Query the cresta zones collection with flattened structure
       const crestaZones = await this.gisDb.collection('cresta-zones').find({}).toArray();
       
       if (!crestaZones || crestaZones.length === 0) {
@@ -117,24 +124,31 @@ class GISService {
         return null;
       }
 
-      // Check each feature in the FeatureCollection
+      // Check each document (flattened structure)
       for (const zone of crestaZones) {
+        // Support both flattened and nested structures
         if (zone.type === 'FeatureCollection' && zone.features) {
+          // Nested structure (legacy)
           for (const feature of zone.features) {
             if (feature.type === 'Feature' && 
                 feature.geometry && 
                 feature.geometry.type === 'Polygon' &&
                 feature.properties && 
-                feature.properties.Name) {
+                feature.properties.CRESTA_ID1) {
               
-              // Get the polygon coordinates (first ring of the polygon)
               const coordinates = feature.geometry.coordinates[0];
-              
               if (this.isPointInPolygon(x, y, coordinates)) {
-                console.log(`✅ GIS Service: Found Cresta zone ${feature.properties.Name} for coordinates (${x}, ${y})`);
-                return feature.properties.Name;
+                console.log(`✅ GIS Service: Found Cresta zone ${feature.properties.CRESTA_ID1} for coordinates (${x}, ${y})`);
+                return feature.properties.CRESTA_ID1;
               }
             }
+          }
+        } else if (zone.geometry && zone.geometry.type === 'Polygon' && zone.crestaId) {
+          // Flattened structure (new)
+          const coordinates = zone.geometry.coordinates[0];
+          if (this.isPointInPolygon(x, y, coordinates)) {
+            console.log(`✅ GIS Service: Found Cresta zone ${zone.crestaId} for coordinates (${x}, ${y})`);
+            return zone.crestaId;
           }
         }
       }
