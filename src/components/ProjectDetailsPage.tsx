@@ -617,30 +617,31 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         }}
                                     />
                                 </TableCell>
-                                {!disabled && (
+                                {!disabled && index > 0 && (
                                     <TableCell sx={{ padding: 1, textAlign: 'center' }}>
                                         <IconButton
                                             onClick={() => removePlot(index)}
                                             size="small"
-                                            disabled={index === 0}
                                             sx={{
-                                                color: index === 0 ? 'grey.400' : 'grey.600',
+                                                color: 'grey.600',
                                                 '&:hover': {
-                                                    color: index === 0 ? 'grey.400' : 'white',
-                                                    backgroundColor: index === 0 ? 'transparent' : 'error.main'
+                                                    color: 'white',
+                                                    backgroundColor: 'error.main'
                                                 },
                                                 '&:focus': {
-                                                    color: index === 0 ? 'grey.400' : 'white',
-                                                    backgroundColor: index === 0 ? 'transparent' : 'error.main'
-                                                },
-                                                '&.Mui-disabled': {
-                                                    color: 'grey.400'
+                                                    color: 'white',
+                                                    backgroundColor: 'error.main'
                                                 }
                                             }}
                                             title="מחק חלקה"
                                         >
                                             <TrashIcon fontSize="small" />
                                         </IconButton>
+                                    </TableCell>
+                                )}
+                                {!disabled && index === 0 && (
+                                    <TableCell sx={{ padding: 1, textAlign: 'center' }}>
+                                        {/* Empty cell for first row - no delete button */}
                                     </TableCell>
                                 )}
                             </TableRow>
