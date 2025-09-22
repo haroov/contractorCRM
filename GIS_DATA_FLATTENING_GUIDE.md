@@ -364,3 +364,4 @@ const ObjectId = require('mongodb').ObjectId;
 השטיחה תהפוך את נתוני ה-GIS לפשוטים יותר ויעילים יותר. השירות המעודכן יוכל לעבוד עם שני המבנים (ישן וחדש) כדי להבטיח תאימות לאחור.
 
 **לאחר השטיחה, כפתורי הסינכרון יעבדו בצורה מושלמת!** 🎯
+

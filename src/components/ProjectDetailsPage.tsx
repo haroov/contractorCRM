@@ -5157,35 +5157,276 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             inputProps={{ min: 0, max: 200 }}
                                         />
 
-                                        <TextField
-                                            fullWidth
-                                            label="מרחק מתחנת משטרה (ק״מ)"
-                                            type="number"
-                                            value={project?.environmentalSurvey?.distanceFromPoliceStation || ''}
-                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(e.target.value) || 0)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            inputProps={{ min: 0, max: 200 }}
-                                        />
-
-                                        <TextField
-                                            fullWidth
-                                            label="מרחק מתחנת לוחמי אש (ק״מ)"
-                                            type="number"
-                                            value={project?.environmentalSurvey?.distanceFromFireStation || ''}
-                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(e.target.value) || 0)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            inputProps={{ min: 0, max: 200 }}
-                                        />
-
-                                        <TextField
-                                            fullWidth
-                                            label="מרחק ממד״א או מרכז רפואי (ק״מ)"
-                                            type="number"
-                                            value={project?.environmentalSurvey?.distanceFromMedicalCenter || ''}
-                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromMedicalCenter', parseFloat(e.target.value) || 0)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            inputProps={{ min: 0, max: 200 }}
-                                        />
+                                        {/* טבלת מרחקים לשירותי חירום */}
+                                        <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                מרחקים לשירותי חירום
+                                            </Typography>
+                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                <Table size="small">
+                                                    <TableHead>
+                                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>תחום</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>שם</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>טלפון</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>מרחק (ק״מ)</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>זמן נסיעה (דק׳)</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        <TableRow>
+                                                            <TableCell sx={{ padding: 1, textAlign: 'right' }}>
+                                                                <Typography variant="body2">משטרה</Typography>
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.policeStationName || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationName', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="שם התחנה"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.policeStationPhone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationPhone', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="טלפון"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.distanceFromPoliceStation || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 0.1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.policeStationTravelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow>
+                                                            <TableCell sx={{ padding: 1, textAlign: 'right' }}>
+                                                                <Typography variant="body2">לוחמי אש</Typography>
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.fireStationName || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationName', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="שם התחנה"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.fireStationPhone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationPhone', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="טלפון"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.distanceFromFireStation || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 0.1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.fireStationTravelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        <TableRow>
+                                                            <TableCell sx={{ padding: 1, textAlign: 'right' }}>
+                                                                <Typography variant="body2">מד״א</Typography>
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.medicalCenterName || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterName', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="שם המרכז"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.medicalCenterPhone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterPhone', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="טלפון"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.distanceFromMedicalCenter || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromMedicalCenter', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 0.1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="number"
+                                                                    value={project?.environmentalSurvey?.medicalCenterTravelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    inputProps={{ min: 0, max: 200, step: 1 }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </Box>
                                     </Box>
                                 </Box>
 
