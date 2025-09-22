@@ -13,7 +13,7 @@ class GISService {
   async initialize() {
     try {
       const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm';
-      
+
       if (!this.client) {
         this.client = new MongoClient(mongoUri);
         await this.client.connect();
@@ -23,7 +23,7 @@ class GISService {
       // Connect to both databases
       this.contractorDb = this.client.db('contractor-crm');
       this.gisDb = this.client.db('GIS');
-      
+
       console.log('✅ GIS Service: Connected to contractor-crm and GIS databases');
     } catch (error) {
       console.error('❌ GIS Service: Connection error:', error);
@@ -43,7 +43,7 @@ class GISService {
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i][0], yi = polygon[i][1];
       const xj = polygon[j][0], yj = polygon[j][1];
-      
+
       if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
         inside = !inside;
       }
@@ -60,10 +60,10 @@ class GISService {
   async getPNG25Value(x, y) {
     try {
       await this.initialize();
-      
+
       // Query the seismic hazard zone collection with flattened structure
       const seismicHazardZones = await this.gisDb.collection('seismic-hazard-zone').find({}).toArray();
-      
+
       if (!seismicHazardZones || seismicHazardZones.length === 0) {
         console.log('⚠️ GIS Service: No seismic hazard zones found');
         return null;
@@ -75,12 +75,12 @@ class GISService {
         if (zone.type === 'FeatureCollection' && zone.features) {
           // Nested structure (legacy)
           for (const feature of zone.features) {
-            if (feature.type === 'Feature' && 
-                feature.geometry && 
-                feature.geometry.type === 'Polygon' &&
-                feature.properties && 
-                feature.properties.Hazard !== undefined) {
-              
+            if (feature.type === 'Feature' &&
+              feature.geometry &&
+              feature.geometry.type === 'Polygon' &&
+              feature.properties &&
+              feature.properties.Hazard !== undefined) {
+
               const coordinates = feature.geometry.coordinates[0];
               if (this.isPointInPolygon(x, y, coordinates)) {
                 console.log(`✅ GIS Service: Found PNG25 value ${feature.properties.Hazard} for coordinates (${x}, ${y})`);
@@ -115,10 +115,10 @@ class GISService {
   async getCrestaZone(x, y) {
     try {
       await this.initialize();
-      
+
       // Query the cresta zones collection with flattened structure
       const crestaZones = await this.gisDb.collection('cresta-zones').find({}).toArray();
-      
+
       if (!crestaZones || crestaZones.length === 0) {
         console.log('⚠️ GIS Service: No Cresta zones found');
         return null;
@@ -130,12 +130,12 @@ class GISService {
         if (zone.type === 'FeatureCollection' && zone.features) {
           // Nested structure (legacy)
           for (const feature of zone.features) {
-            if (feature.type === 'Feature' && 
-                feature.geometry && 
-                feature.geometry.type === 'Polygon' &&
-                feature.properties && 
-                feature.properties.CRESTA_ID1) {
-              
+            if (feature.type === 'Feature' &&
+              feature.geometry &&
+              feature.geometry.type === 'Polygon' &&
+              feature.properties &&
+              feature.properties.CRESTA_ID1) {
+
               const coordinates = feature.geometry.coordinates[0];
               if (this.isPointInPolygon(x, y, coordinates)) {
                 console.log(`✅ GIS Service: Found Cresta zone ${feature.properties.CRESTA_ID1} for coordinates (${x}, ${y})`);
@@ -201,16 +201,16 @@ class GISService {
   async updateProjectWithGISValues(projectId, x, y) {
     try {
       await this.initialize();
-      
+
       const gisValues = await this.calculateGISValues(x, y);
-      
+
       // Update the project in the database
       const updateData = {};
-      
+
       if (gisValues.png25 !== null) {
         updateData['engineeringQuestionnaire.soilReport.png25EarthquakeRating'] = gisValues.png25;
       }
-      
+
       if (gisValues.cresta !== null) {
         updateData['engineeringQuestionnaire.soilReport.crestaArea'] = gisValues.cresta;
       }
