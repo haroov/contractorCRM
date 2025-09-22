@@ -504,9 +504,10 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                 <Table size="small" sx={{ minWidth: 600 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>גוש</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>חלקה</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', fontSize: '0.875rem' }}>תת חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>גוש</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>תת חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>שטח (מ״ר)</TableCell>
                             {!disabled && (
                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: 60, fontSize: '0.875rem' }}>פעולות</TableCell>
                             )}
@@ -590,6 +591,32 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         }}
                                     />
                                 </TableCell>
+                                <TableCell sx={{ padding: 1 }}>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        value={plot.area || ''}
+                                        onChange={(e) => handlePlotChange(index, 'area', e.target.value)}
+                                        disabled={disabled}
+                                        variant="outlined"
+                                        type="number"
+                                        inputProps={{ min: 0, step: 0.01 }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                height: 40,
+                                                '& fieldset': {
+                                                    borderColor: '#e0e0e0'
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#bdbdbd'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#6B46C1'
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </TableCell>
                                 {!disabled && (
                                     <TableCell sx={{ padding: 1, textAlign: 'center' }}>
                                         <IconButton
@@ -597,17 +624,22 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             size="small"
                                             disabled={index === 0}
                                             sx={{
-                                                color: index === 0 ? 'grey.400' : 'grey.600',
+                                                color: 'grey.600',
                                                 '&:hover': {
-                                                    backgroundColor: index === 0 ? 'transparent' : 'grey.200',
-                                                    color: index === 0 ? 'grey.400' : 'grey.800'
+                                                    color: 'white',
+                                                    backgroundColor: 'error.main'
                                                 },
-                                                '&.Mui-disabled': {
-                                                    color: 'grey.400'
+                                                '&:focus': {
+                                                    color: 'white',
+                                                    backgroundColor: 'error.main'
                                                 }
                                             }}
                                         >
-                                            <DeleteIcon fontSize="small" />
+                                            <img 
+                                                src="/src/assets/icon-trash.svg" 
+                                                alt="מחק" 
+                                                style={{ width: 16, height: 16, filter: 'invert(0.4)' }}
+                                            />
                                         </IconButton>
                                     </TableCell>
                                 )}
@@ -615,7 +647,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                         ))}
                         {!disabled && (
                             <TableRow>
-                                <TableCell colSpan={4} sx={{ padding: 2, textAlign: 'center', borderTop: '1px solid #e0e0e0' }}>
+                                <TableCell colSpan={5} sx={{ padding: 2, textAlign: 'center', borderTop: '1px solid #e0e0e0' }}>
                                     <Button
                                         startIcon={<AddIcon />}
                                         onClick={addPlot}
@@ -3600,7 +3632,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <PlotDetailsTable
-                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '' }]}
+                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '', area: '' }]}
                                                     onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
