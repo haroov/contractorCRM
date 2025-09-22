@@ -3167,13 +3167,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3185,13 +3188,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
@@ -3233,13 +3238,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3251,13 +3259,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
@@ -3299,13 +3309,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3317,13 +3330,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
@@ -3365,13 +3380,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3383,13 +3401,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
@@ -3431,13 +3451,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3449,13 +3472,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
@@ -3497,13 +3522,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -3515,13 +3543,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6B46C1' : 'white',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6B46C1' : 'transparent',
                                                                     color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? 'white' : '#6B46C1',
-                                                                    minWidth: '60px',
-                                                                    height: '40px',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5B21B6' : '#F3F4F6'
-                                                                    }
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5B21B6' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
                                                                 }}
                                                             >
                                                                 כן
