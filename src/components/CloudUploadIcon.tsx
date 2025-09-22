@@ -1,7 +1,7 @@
 import React from 'react';
 
-const CloudUploadIcon: React.FC<{ fontSize?: 'small' | 'medium' | 'large' }> = ({ fontSize = 'small' }) => {
-  const size = fontSize === 'small' ? 16 : fontSize === 'medium' ? 20 : 24;
+const CloudUploadIcon: React.FC<{ fontSize?: 'small' | 'medium' | 'large' | 'xlarge' }> = ({ fontSize = 'small' }) => {
+  const size = fontSize === 'small' ? 16 : fontSize === 'medium' ? 20 : fontSize === 'large' ? 24 : 32;
   
   return (
     <svg 

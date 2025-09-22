@@ -294,7 +294,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         }
                     }}
                 >
-                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                    {isUploading ? <CircularProgress size={20} /> : <CloudUploadIcon fontSize="xlarge" />}
                 </IconButton>
             )}
 
@@ -2681,7 +2681,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <CloudUploadIcon fontSize="medium" />
+                                                    <CloudUploadIcon fontSize="xlarge" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
