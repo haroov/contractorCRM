@@ -5360,92 +5360,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* תוכנית ניקוז לאתר */}
                                 <Box sx={{ mb: 4 }}>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                הכניסות מנוגדות לזרימת המים
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem',
-                                                        marginRight: '0px'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('drainagePlan.entrancesOppositeWaterFlow', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.drainagePlan?.entrancesOppositeWaterFlow === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
-
-                                        {!project?.drainagePlan?.entrancesOppositeWaterFlow && (
-                                            <TextField
-                                                fullWidth
-                                                label="אמצעים מתוכננים"
-                                                value={project?.drainagePlan?.plannedMeasures || ''}
-                                                onChange={(e) => handleNestedFieldChange('drainagePlan.plannedMeasures', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                                multiline
-                                                rows={2}
-                                            />
-                                        )}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="אמצעים מתוכננים"
+                                            value={project?.drainagePlan?.plannedMeasures || ''}
+                                            onChange={(e) => handleNestedFieldChange('drainagePlan.plannedMeasures', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            multiline
+                                            rows={3}
+                                        />
                                     </Box>
                                 </Box>
 
