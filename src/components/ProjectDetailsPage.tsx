@@ -596,12 +596,14 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                     <TextField
                                         fullWidth
                                         size="small"
-                                        value={plot.area || ''}
-                                        onChange={(e) => handlePlotChange(index, 'area', e.target.value)}
+                                        value={plot.area ? `${parseFloat(plot.area).toLocaleString('he-IL')} מ״ר` : ''}
+                                        onChange={(e) => {
+                                            const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                            handlePlotChange(index, 'area', numericValue);
+                                        }}
                                         disabled={disabled}
                                         variant="outlined"
-                                        type="number"
-                                        inputProps={{ min: 0, step: 0.01 }}
+                                        placeholder="שטח במ״ר"
                                         sx={{
                                             '& .MuiOutlinedInput-root': {
                                                 height: 40,
