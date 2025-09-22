@@ -2734,7 +2734,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <GentleCloudUploadIcon fontSize="xlarge" />
+                                                    <GentleCloudUploadIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>

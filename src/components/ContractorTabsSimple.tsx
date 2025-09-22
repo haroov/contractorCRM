@@ -494,7 +494,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
         // Use localCompanyId for new contractors, contractor.company_id for existing ones
         const companyId = localCompanyId || contractor?.company_id;
-        
+
         if (activeTab === 1 && companyId && companyId.length >= 9) {
             console.log('🔍 Loading licenses for Business Information tab');
             loadLicensesForContractor(companyId);
@@ -599,10 +599,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             // Update contractor with local values before saving
             // Fallback: if localCompanyId is empty, try to get it from contractor object
             const finalCompanyId = localCompanyId || contractor?.companyId || contractor?.company_id || '';
-            
+
             // Remove _id field to prevent MongoDB duplicate key error
             const { _id, ...contractorWithoutId } = contractor || {};
-            
+
             const updatedContractor = {
                 ...contractorWithoutId,
                 // Basic company info
