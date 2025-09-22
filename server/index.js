@@ -270,6 +270,7 @@ app.get('/debug-users', async (req, res) => {
 // Import auth routes
 const authRoutes = require('./routes/auth.js');
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes); // Add direct auth routes for Google OAuth
 console.log('✅ Auth routes configured');
 
 // Import user management routes
