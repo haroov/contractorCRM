@@ -60,41 +60,48 @@ class GISService {
   async getPNG25Value(x, y) {
     try {
       await this.initialize();
+      
+      // Use $geoNear aggregation pipeline for efficient spatial query
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [x, y] },
+            key: "geometry",
+            spherical: true,
+            distanceField: "distance_m"
+          }
+        },
+        { $limit: 1 },
+        { 
+          $project: { 
+            _id: 1, 
+            hazard: 1,
+            "properties.Hazard": 1,
+            distance_m: 1,
+            name: 1
+          } 
+        }
+      ];
 
-      // Query the seismic hazard zone collection with flattened structure
-      const seismicHazardZones = await this.gisDb.collection('seismic-hazard-zone').find({}).toArray();
-
-      if (!seismicHazardZones || seismicHazardZones.length === 0) {
-        console.log('⚠️ GIS Service: No seismic hazard zones found');
-        return null;
-      }
-
-      // Check each document (flattened structure)
-      for (const zone of seismicHazardZones) {
+      const results = await this.gisDb.collection('seismic-hazard-zone').aggregate(pipeline).toArray();
+      
+      if (results && results.length > 0) {
+        const result = results[0];
+        
         // Support both flattened and nested structures
-        if (zone.type === 'FeatureCollection' && zone.features) {
-          // Nested structure (legacy)
-          for (const feature of zone.features) {
-            if (feature.type === 'Feature' &&
-              feature.geometry &&
-              feature.geometry.type === 'Polygon' &&
-              feature.properties &&
-              feature.properties.Hazard !== undefined) {
-
-              const coordinates = feature.geometry.coordinates[0];
-              if (this.isPointInPolygon(x, y, coordinates)) {
-                console.log(`✅ GIS Service: Found PNG25 value ${feature.properties.Hazard} for coordinates (${x}, ${y})`);
-                return feature.properties.Hazard;
-              }
-            }
-          }
-        } else if (zone.geometry && zone.geometry.type === 'Polygon' && zone.hazard !== undefined) {
-          // Flattened structure (new)
-          const coordinates = zone.geometry.coordinates[0];
-          if (this.isPointInPolygon(x, y, coordinates)) {
-            console.log(`✅ GIS Service: Found PNG25 value ${zone.hazard} for coordinates (${x}, ${y})`);
-            return zone.hazard;
-          }
+        let hazardValue = null;
+        
+        if (result.hazard !== undefined) {
+          // Flattened structure
+          hazardValue = result.hazard;
+        } else if (result.properties && result.properties.Hazard !== undefined) {
+          // Nested structure
+          hazardValue = result.properties.Hazard;
+        }
+        
+        if (hazardValue !== null) {
+          console.log(`✅ GIS Service: Found PNG25 value ${hazardValue} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
+          return hazardValue;
         }
       }
 
@@ -115,41 +122,48 @@ class GISService {
   async getCrestaZone(x, y) {
     try {
       await this.initialize();
+      
+      // Use $geoNear aggregation pipeline for efficient spatial query
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [x, y] },
+            key: "geometry",
+            spherical: true,
+            distanceField: "distance_m"
+          }
+        },
+        { $limit: 1 },
+        { 
+          $project: { 
+            _id: 1, 
+            crestaId: 1,
+            "properties.CRESTA_ID1": 1,
+            distance_m: 1,
+            name: 1
+          } 
+        }
+      ];
 
-      // Query the cresta zones collection with flattened structure
-      const crestaZones = await this.gisDb.collection('cresta-zones').find({}).toArray();
-
-      if (!crestaZones || crestaZones.length === 0) {
-        console.log('⚠️ GIS Service: No Cresta zones found');
-        return null;
-      }
-
-      // Check each document (flattened structure)
-      for (const zone of crestaZones) {
+      const results = await this.gisDb.collection('cresta-zones').aggregate(pipeline).toArray();
+      
+      if (results && results.length > 0) {
+        const result = results[0];
+        
         // Support both flattened and nested structures
-        if (zone.type === 'FeatureCollection' && zone.features) {
-          // Nested structure (legacy)
-          for (const feature of zone.features) {
-            if (feature.type === 'Feature' &&
-              feature.geometry &&
-              feature.geometry.type === 'Polygon' &&
-              feature.properties &&
-              feature.properties.CRESTA_ID1) {
-
-              const coordinates = feature.geometry.coordinates[0];
-              if (this.isPointInPolygon(x, y, coordinates)) {
-                console.log(`✅ GIS Service: Found Cresta zone ${feature.properties.CRESTA_ID1} for coordinates (${x}, ${y})`);
-                return feature.properties.CRESTA_ID1;
-              }
-            }
-          }
-        } else if (zone.geometry && zone.geometry.type === 'Polygon' && zone.crestaId) {
-          // Flattened structure (new)
-          const coordinates = zone.geometry.coordinates[0];
-          if (this.isPointInPolygon(x, y, coordinates)) {
-            console.log(`✅ GIS Service: Found Cresta zone ${zone.crestaId} for coordinates (${x}, ${y})`);
-            return zone.crestaId;
-          }
+        let crestaValue = null;
+        
+        if (result.crestaId !== undefined) {
+          // Flattened structure
+          crestaValue = result.crestaId;
+        } else if (result.properties && result.properties.CRESTA_ID1 !== undefined) {
+          // Nested structure
+          crestaValue = result.properties.CRESTA_ID1;
+        }
+        
+        if (crestaValue !== null) {
+          console.log(`✅ GIS Service: Found Cresta zone ${crestaValue} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
+          return crestaValue;
         }
       }
 
