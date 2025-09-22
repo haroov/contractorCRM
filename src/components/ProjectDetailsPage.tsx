@@ -5355,22 +5355,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                     </Box>
-                                </Box>
 
-                                {/* תוכנית ניקוז לאתר */}
-                                <Box sx={{ mb: 4 }}>
-
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mb: 3 }}>
                                         <TextField
                                             fullWidth
                                             label="אמצעים מתוכננים"
-                                            value={project?.drainagePlan?.plannedMeasures || ''}
-                                            onChange={(e) => handleNestedFieldChange('drainagePlan.plannedMeasures', e.target.value)}
+                                            value={project?.hydrologicalPlan?.plannedMeasures || ''}
+                                            onChange={(e) => handleNestedFieldChange('hydrologicalPlan.plannedMeasures', e.target.value)}
                                             disabled={mode === 'view' || !canEdit}
                                             multiline
                                             rows={3}
                                         />
                                     </Box>
+                                </Box>
+
+                                {/* תוכנית ניקוז לאתר */}
+                                <Box sx={{ mb: 4 }}>
                                 </Box>
 
                                 {/* לוחות זמנים */}
