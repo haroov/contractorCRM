@@ -624,16 +624,20 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             size="small"
                                             disabled={index === 0}
                                             sx={{
-                                                color: 'grey.600',
+                                                color: index === 0 ? 'grey.400' : 'grey.600',
                                                 '&:hover': {
-                                                    color: 'white',
-                                                    backgroundColor: 'error.main'
+                                                    color: index === 0 ? 'grey.400' : 'white',
+                                                    backgroundColor: index === 0 ? 'transparent' : 'error.main'
                                                 },
                                                 '&:focus': {
-                                                    color: 'white',
-                                                    backgroundColor: 'error.main'
+                                                    color: index === 0 ? 'grey.400' : 'white',
+                                                    backgroundColor: index === 0 ? 'transparent' : 'error.main'
+                                                },
+                                                '&.Mui-disabled': {
+                                                    color: 'grey.400'
                                                 }
                                             }}
+                                            title="מחק חלקה"
                                         >
                                             <TrashIcon fontSize="small" />
                                         </IconButton>
