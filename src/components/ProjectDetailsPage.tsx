@@ -54,7 +54,6 @@ import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
-import RefreshIcon from './RefreshIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -2735,7 +2734,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <RefreshIcon fontSize="large" />
+                                                    <GentleCloudUploadIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
@@ -3133,46 +3132,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             shrink: true,
                                                         }}
                                                     />
-                                                </Box>
-
-                                                {/* תת-סקשן: מיקום וכתובת */}
-                                                <Box sx={{ mb: 4, direction: 'rtl' }}>
-                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
-                                                        מיקום וכתובת
-                                                    </Typography>
-                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="כתובת (טקסט חופשי)"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
-
-                                                        <TextField
-                                                            fullWidth
-                                                            label="נ״צ X"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
-
-                                                        <TextField
-                                                            fullWidth
-                                                            label="נ״צ Y"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
-
-                                                        <PlotDetailsTable
-                                                            plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '', area: '' }]}
-                                                            onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
-                                                    </Box>
                                                 </Box>
 
                                                 {/* Project Details Fields - 2 columns layout */}
@@ -3678,42 +3637,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Button>
                                                         </Box>
                                                     </Box>
-
-                                                    {/* שיטת הבניה */}
-                                                    <Autocomplete
-                                                        fullWidth
-                                                        options={['קונבנציונאלי', 'ברנוביץ', 'טרומי', 'אחר']}
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || null}
-                                                        onChange={(event, newValue) => {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', newValue || '');
-                                                        }}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                label="מה שיטת הבניה"
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiInputLabel-root': {
-                                                                        color: 'text.secondary'
-                                                                    },
-                                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                                        color: 'primary.main'
-                                                                    }
-                                                                }}
-                                                            />
-                                                        )}
-                                                    />
-
-                                                    {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="אחר - פרט"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
-                                                    )}
                                                 </Box>
 
                                                 {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
@@ -3730,6 +3653,45 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
+                                        {/* תת-סקשן: מיקום וכתובת */}
+                                        <Box sx={{ mb: 4, direction: 'rtl' }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
+                                                מיקום וכתובת
+                                            </Typography>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="כתובת (טקסט חופשי)"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="נ״צ X"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="נ״צ Y"
+                                                    type="number"
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <PlotDetailsTable
+                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '', area: '' }]}
+                                                    onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
+                                        </Box>
 
 
                                         {/* תת-סקשן: פרטי הבניינים - מוצג רק אם סוג הפרויקט הוא "בניה" */}
@@ -4011,32 +3973,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         </Box>
 
-                                        {/* Soil Report Fields - Row 1: 3 fields */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
-                                            <Autocomplete
-                                                fullWidth
-                                                options={['חולית', 'סלעית', 'חרסיתית', 'אחר']}
-                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || null}
-                                                onChange={(event, newValue) => {
-                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', newValue || '');
-                                                }}
-                                                disabled={mode === 'view' || !canEdit}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="סוג הקרקע"
-                                                        variant="outlined"
-                                                        sx={{
-                                                            '& .MuiInputLabel-root': {
-                                                                color: 'text.secondary'
-                                                            },
-                                                            '& .MuiInputLabel-root.Mui-focused': {
-                                                                color: 'primary.main'
-                                                            }
-                                                        }}
-                                                    />
-                                                )}
-                                            />
+                                        {/* Soil Report Fields - 4 columns layout */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 3 }}>
+                                            <FormControl fullWidth>
+                                                <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
+                                                <Select
+                                                    labelId="soil-type-label"
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
+                                                    label="סוג הקרקע"
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                >
+                                                    <MenuItem value="חולית">חולית</MenuItem>
+                                                    <MenuItem value="סלעית">סלעית</MenuItem>
+                                                    <MenuItem value="חרסיתית">חרסיתית</MenuItem>
+                                                    <MenuItem value="אחר">אחר</MenuItem>
+                                                </Select>
+                                            </FormControl>
+
+                                            {project?.engineeringQuestionnaire?.soilReport?.soilType === 'אחר' && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="אחר - פרט"
+                                                    value={project?.engineeringQuestionnaire?.soilReport?.soilTypeOther || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.soilTypeOther', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            )}
 
                                             <TextField
                                                 fullWidth
@@ -4049,16 +4012,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                             <TextField
                                                 fullWidth
-                                                label="עומק יסודות מקסימלי (מטר)"
+                                                label="עומק חפירה מקסימאלי (מטר)"
                                                 type="number"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.maxFoundationDepth || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxFoundationDepth', parseFloat(e.target.value) || 0)}
+                                                value={project?.engineeringQuestionnaire?.soilReport?.maxExcavationDepth || ''}
+                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxExcavationDepth', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
-                                        </Box>
 
-                                        {/* Soil Report Fields - Row 2: 2 fields with refresh icons */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mb: 3 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
                                                     fullWidth
@@ -4099,7 +4059,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב אזור Cresta"
                                                 >
-                                                    <RefreshIcon fontSize="large" />
+                                                    <CloudSyncIcon />
                                                 </IconButton>
                                             </Box>
 
@@ -4144,7 +4104,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב ערך PNG25"
                                                 >
-                                                    <RefreshIcon fontSize="large" />
+                                                    <CloudSyncIcon />
                                                 </IconButton>
                                             </Box>
                                         </Box>
@@ -4260,6 +4220,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Box>
                                                 </Box>
 
+                                                <FormControl fullWidth>
+                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
+                                                    <Select
+                                                        labelId="construction-method-label"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
+                                                        label="מה שיטת הבניה"
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethod', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    >
+                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
+                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
+                                                        <MenuItem value="טרומי">טרומי</MenuItem>
+                                                        <MenuItem value="אחר">אחר</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+
+                                                {project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod === 'אחר' && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="אחר - פרט"
+                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethodOther || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethodOther', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
+                                                )}
 
                                                 <TextField
                                                     fullWidth

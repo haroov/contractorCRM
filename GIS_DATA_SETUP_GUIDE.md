@@ -15,7 +15,7 @@
 1. **פתח MongoDB Compass**
 2. **התחבר ל-Atlas Cluster**:
    ```
-   mongodb://localhost:27017/contractor-crm
+   mongodb+srv://choco_db_user:choco_db_password@cluster0.rtburip.mongodb.net/contractor-crm
    ```
 
 ### **שלב 2: יצירת דאטאבייס GIS**
