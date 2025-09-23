@@ -4048,10 +4048,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                             <TextField
                                                 fullWidth
-                                                label="עומק חפירה מקסימאלי (מטר)"
+                                                label="עומק יסודות מקסימלי (מטר)"
                                                 type="number"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.maxExcavationDepth || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxExcavationDepth', parseFloat(e.target.value) || 0)}
+                                                value={project?.engineeringQuestionnaire?.soilReport?.maxFoundationDepth || ''}
+                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxFoundationDepth', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
                                         </Box>
