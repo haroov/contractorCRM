@@ -389,7 +389,7 @@ const BuildingTable: React.FC<BuildingTableProps> = ({ numberOfBuildings, buildi
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר יחידות דיור</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מעל הקרקע</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מרתף</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>סה״כ מ״ר בנוי</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שטח בניה (מ״ר)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -3703,23 +3703,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
 
                                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                                    <TextField
-                                                        fullWidth
-                                                        label="מספר בניינים"
-                                                        type="number"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
-                                                        onChange={(e) => {
-                                                            const value = parseInt(e.target.value) || 0;
-                                                            // Validate: minimum 1, maximum 100
-                                                            if (value >= 1 && value <= 100) {
-                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', value);
-                                                            } else if (value === 0) {
-                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', 0);
-                                                            }
-                                                        }}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        inputProps={{ min: 1, max: 100 }}
-                                                    />
+                                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מספר בניינים"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings || ''}
+                                                            onChange={(e) => {
+                                                                const value = parseInt(e.target.value) || 0;
+                                                                // Validate: minimum 1, maximum 100
+                                                                if (value >= 1 && value <= 100) {
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', value);
+                                                                } else if (value === 0) {
+                                                                    handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.numberOfBuildings', 0);
+                                                                }
+                                                            }}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            inputProps={{ min: 1, max: 100 }}
+                                                        />
+                                                        
+                                                        <TextField
+                                                            fullWidth
+                                                            label="סה״כ שטח בניה (מ״ר)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.totalConstructionArea || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalConstructionArea', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+                                                    </Box>
 
                                                 </Box>
 
