@@ -5970,15 +5970,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     finalThumbnailUrl: fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl,
                                     finalCreationDate: fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''
                                 })}
-                                
-                                
+
+
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
                                     value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file || ''}
                                     thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl || ''}
+                                    projectId={project?._id || project?.id}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔄 FileUpload onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         // Update fileUploadState immediately for UI display
                                         setFileUploadState(prev => {
                                             const newState = {
@@ -5992,18 +5993,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             console.log('🔄 Updated fileUploadState:', newState);
                                             return newState;
                                         });
-                                        
+
                                         // Save to database immediately if we have a project ID
                                         if (project?._id || project?.id) {
                                             try {
                                                 console.log('💾 Saving file data to database immediately...');
                                                 const { projectsAPI } = await import('../services/api');
-                                                
+
                                                 const updateData = {
                                                     'siteOrganizationPlan.file': url,
                                                     'siteOrganizationPlan.thumbnailUrl': thumbnailUrl || ''
                                                 };
-                                                
+
                                                 console.log('💾 Update data:', updateData);
                                                 await projectsAPI.update(project._id || project.id, updateData);
                                                 console.log('✅ File data saved to database successfully');
@@ -6013,7 +6014,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         } else {
                                             console.log('⚠️ No project ID available, cannot save to database yet');
                                         }
-                                        
+
                                         // Also try to update project state (may fail if project is null)
                                         handleNestedFieldChange('siteOrganizationPlan.file', url);
                                         if (thumbnailUrl) {
@@ -6022,15 +6023,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Deleting site organization plan file');
-                                        
+
                                         try {
                                             // Get current values before deletion
                                             const currentFileUrl = fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file;
                                             const currentThumbnailUrl = fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl;
-                                            
+
                                             console.log('🗑️ Current file URL:', currentFileUrl);
                                             console.log('🗑️ Current thumbnail URL:', currentThumbnailUrl);
-                                            
+
                                             // Delete from blob storage if URLs exist
                                             if (currentFileUrl) {
                                                 console.log('🗑️ Deleting file from blob storage:', currentFileUrl);
@@ -6043,7 +6044,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     },
                                                     body: JSON.stringify({ url: currentFileUrl })
                                                 });
-                                                
+
                                                 if (!response.ok) {
                                                     const errorText = await response.text();
                                                     console.error('❌ Delete file failed:', response.status, errorText);
@@ -6051,7 +6052,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                                 console.log('✅ File deleted from blob storage successfully');
                                             }
-                                            
+
                                             if (currentThumbnailUrl) {
                                                 console.log('🗑️ Deleting thumbnail from blob storage:', currentThumbnailUrl);
                                                 const { authenticatedFetch } = await import('../config/api');
@@ -6063,7 +6064,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     },
                                                     body: JSON.stringify({ url: currentThumbnailUrl })
                                                 });
-                                                
+
                                                 if (!response.ok) {
                                                     const errorText = await response.text();
                                                     console.error('❌ Delete thumbnail failed:', response.status, errorText);
@@ -6071,23 +6072,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                                 console.log('✅ Thumbnail deleted from blob storage successfully');
                                             }
-                                            
+
                                             // Update database - clear the file data
                                             if (project?._id || project?.id) {
                                                 console.log('🗑️ Updating database to clear file data');
                                                 const { projectsAPI } = await import('../services/api');
                                                 const projectId = project._id || project.id;
-                                                
+
                                                 const updateData = {
                                                     'siteOrganizationPlan.file': '',
                                                     'siteOrganizationPlan.thumbnailUrl': '',
                                                     'siteOrganizationPlan.fileCreationDate': ''
                                                 };
-                                                
+
                                                 await projectsAPI.update(projectId, updateData);
                                                 console.log('✅ Database updated successfully');
                                             }
-                                            
+
                                             // Clear fileUploadState immediately for UI update
                                             console.log('🔄 Clearing fileUploadState for immediate UI update');
                                             setFileUploadState(prev => {
@@ -6102,14 +6103,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 console.log('🔄 New fileUploadState after clearing:', newState);
                                                 return newState;
                                             });
-                                            
+
                                             // Update local state (even if project is null, this will be saved when project loads)
                                             handleNestedFieldChange('siteOrganizationPlan.file', '');
                                             handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
                                             handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', '');
-                                            
+
                                             console.log('✅ File deletion completed successfully');
-                                            
+
                                         } catch (error) {
                                             console.error('❌ Error deleting file:', error);
                                             alert('שגיאה במחיקת הקובץ: ' + error.message);
@@ -6121,7 +6122,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     creationDateValue={fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''}
                                     onCreationDateChange={async (date) => {
                                         console.log('🔄 FileUpload onCreationDateChange called with:', date);
-                                        
+
                                         // Update fileUploadState immediately for UI display
                                         setFileUploadState(prev => {
                                             const newState = {
@@ -6134,17 +6135,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             console.log('🔄 Updated fileUploadState with creation date:', newState);
                                             return newState;
                                         });
-                                        
+
                                         // Save to database immediately if we have a project ID
                                         if (project?._id || project?.id) {
                                             try {
                                                 console.log('💾 Saving creation date to database immediately...');
                                                 const { projectsAPI } = await import('../services/api');
-                                                
+
                                                 const updateData = {
                                                     'siteOrganizationPlan.fileCreationDate': date
                                                 };
-                                                
+
                                                 console.log('💾 Update data:', updateData);
                                                 await projectsAPI.update(project._id || project.id, updateData);
                                                 console.log('✅ Creation date saved to database successfully');
@@ -6154,7 +6155,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         } else {
                                             console.log('⚠️ No project ID available, cannot save to database yet');
                                         }
-                                        
+
                                         // Also try to update project state (may fail if project is null)
                                         handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date);
                                     }}
