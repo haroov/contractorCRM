@@ -3651,49 +3651,42 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         rows={2}
                                                     />
                                                 )}
-                                            </Box>
 
-                                            {/* שיטת הבניה */}
-                                            <Box sx={{ mb: 3 }}>
-                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
-                                                    שיטת הבניה
-                                                </Typography>
-                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
-                                                    <Autocomplete
-                                                        fullWidth
-                                                        options={['קונבנציונאלי', 'ברנוביץ', 'טרומי', 'אחר']}
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || null}
-                                                        onChange={(event, newValue) => {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', newValue || '');
-                                                        }}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                label="מה שיטת הבניה"
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiInputLabel-root': {
-                                                                        color: 'text.secondary'
-                                                                    },
-                                                                    '& .MuiInputLabel-root.Mui-focused': {
-                                                                        color: 'primary.main'
-                                                                    }
-                                                                }}
-                                                            />
-                                                        )}
-                                                    />
-
-                                                    {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
+                                                {/* שיטת הבניה */}
+                                                <Autocomplete
+                                                    fullWidth
+                                                    options={['קונבנציונאלי', 'ברנוביץ', 'טרומי', 'אחר']}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || null}
+                                                    onChange={(event, newValue) => {
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', newValue || '');
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    renderInput={(params) => (
                                                         <TextField
-                                                            fullWidth
-                                                            label="אחר - פרט"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
+                                                            {...params}
+                                                            label="מה שיטת הבניה"
+                                                            variant="outlined"
+                                                            sx={{
+                                                                '& .MuiInputLabel-root': {
+                                                                    color: 'text.secondary'
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': {
+                                                                    color: 'primary.main'
+                                                                }
+                                                            }}
                                                         />
                                                     )}
-                                                </Box>
+                                                />
+
+                                                {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
+                                                    <TextField
+                                                        fullWidth
+                                                        label="אחר - פרט"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
+                                                )}
                                             </Box>
                                         </Box>
 
