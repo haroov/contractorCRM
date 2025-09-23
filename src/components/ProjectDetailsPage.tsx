@@ -739,7 +739,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [fileUploadState, setFileUploadState] = useState<{ [key: string]: { url: string; thumbnailUrl?: string } }>({});
+    const [fileUploadState, setFileUploadState] = useState<{ [key: string]: { url: string; thumbnailUrl?: string; creationDate?: string } }>({});
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
@@ -1151,6 +1151,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             siteOrganizationPlan: {
                                 ...prev.siteOrganizationPlan,
                                 thumbnailUrl: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'siteOrganizationPlan.fileCreationDate' && value) {
+                    console.log('🔄 Updating fileUploadState with creation date:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            siteOrganizationPlan: {
+                                ...prev.siteOrganizationPlan,
+                                creationDate: value
                             }
                         };
                         console.log('🔄 New fileUploadState:', newState);
@@ -5952,7 +5965,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     value: project?.siteOrganizationPlan?.file,
                                     thumbnailUrl: project?.siteOrganizationPlan?.thumbnailUrl,
                                     siteOrganizationPlan: project?.siteOrganizationPlan,
-                                    fileUploadState: fileUploadState.siteOrganizationPlan
+                                    fileUploadState: fileUploadState.siteOrganizationPlan,
+                                    finalValue: fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file,
+                                    finalThumbnailUrl: fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl,
+                                    finalCreationDate: fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''
                                 })}
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
@@ -5975,7 +5991,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     disabled={mode === 'view' || !canEdit}
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     showCreationDate={true}
-                                    creationDateValue={project?.siteOrganizationPlan?.fileCreationDate || ''}
+                                    creationDateValue={fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''}
                                     onCreationDateChange={(date) => handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date)}
                                     projectId={project?._id || project?.id}
                                 />
