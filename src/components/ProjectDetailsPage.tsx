@@ -3975,7 +3975,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {/* Soil Report Fields - 4 columns layout */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 3 }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1.5, mb: 3 }}>
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
                                                 <Select
@@ -4020,14 +4020,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                             />
 
-                                            {/* רד שורה */}
-                                            <Box sx={{ 
-                                                width: '100%', 
-                                                height: '2px', 
-                                                backgroundColor: '#ef4444', 
-                                                margin: '16px 0',
-                                                gridColumn: '1 / -1'
-                                            }} />
 
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
