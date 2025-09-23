@@ -165,3 +165,4 @@ print("Cresta Results:", JSON.stringify(crestaResults, null, 2));
 4. **נסה שוב את הסקריפט**
 
 **לאחר הוספת נתוני אכזיב, כפתורי הסינכרון יעבדו בצורה מושלמת!** 🎯
+

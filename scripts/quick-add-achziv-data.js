@@ -65,14 +65,14 @@ const png25Pipeline = [
         }
     },
     { $limit: 1 },
-    { 
-        $project: { 
-            _id: 1, 
+    {
+        $project: {
+            _id: 1,
             hazard: 1,
             "properties.Hazard": 1,
             distance_m: 1,
             name: 1
-        } 
+        }
     }
 ];
 
@@ -96,14 +96,14 @@ const crestaPipeline = [
         }
     },
     { $limit: 1 },
-    { 
-        $project: { 
-            _id: 1, 
+    {
+        $project: {
+            _id: 1,
             crestaId: 1,
             "properties.CRESTA_ID1": 1,
             distance_m: 1,
             name: 1
-        } 
+        }
     }
 ];
 
@@ -115,3 +115,4 @@ if (crestaResults && crestaResults.length > 0) {
 } else {
     print("❌ Cresta query still returns no results");
 }
+

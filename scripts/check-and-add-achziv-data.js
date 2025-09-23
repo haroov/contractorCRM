@@ -9,13 +9,13 @@
 // Function to check existing data in seismic hazard zones
 function checkSeismicHazardData() {
     print("🔍 Checking existing seismic hazard zone data...");
-    
+
     const collection = db.getCollection('seismic-hazard-zone');
-    
+
     // Count total documents
     const totalCount = collection.countDocuments();
     print(`📊 Total documents: ${totalCount}`);
-    
+
     // Check document structure
     const sampleDoc = collection.findOne();
     if (sampleDoc) {
@@ -24,28 +24,28 @@ function checkSeismicHazardData() {
     } else {
         print("❌ No documents found in seismic-hazard-zone collection");
     }
-    
+
     // Check for hazard values
     const hazardValues = collection.distinct("hazard");
     print(`📊 Available hazard values: ${hazardValues.join(", ")}`);
-    
+
     // Check for properties.Hazard values
     const propertiesHazardValues = collection.distinct("properties.Hazard");
     print(`📊 Available properties.Hazard values: ${propertiesHazardValues.join(", ")}`);
-    
+
     print("");
 }
 
 // Function to check existing data in Cresta zones
 function checkCrestaData() {
     print("🔍 Checking existing Cresta zones data...");
-    
+
     const collection = db.getCollection('cresta-zones');
-    
+
     // Count total documents
     const totalCount = collection.countDocuments();
     print(`📊 Total documents: ${totalCount}`);
-    
+
     // Check document structure
     const sampleDoc = collection.findOne();
     if (sampleDoc) {
@@ -54,26 +54,26 @@ function checkCrestaData() {
     } else {
         print("❌ No documents found in cresta-zones collection");
     }
-    
+
     // Check for crestaId values
     const crestaIds = collection.distinct("crestaId");
     print(`📊 Available crestaId values: ${crestaIds.join(", ")}`);
-    
+
     // Check for properties.CRESTA_ID1 values
     const propertiesCrestaIds = collection.distinct("properties.CRESTA_ID1");
     print(`📊 Available properties.CRESTA_ID1 values: ${propertiesCrestaIds.join(", ")}`);
-    
+
     print("");
 }
 
 // Function to add Achziv sample data
 function addAchzivSampleData() {
     print("🔄 Adding Achziv sample data...");
-    
+
     // Achziv coordinates
     const achzivX = 35.1; // longitude
     const achzivY = 33.0; // latitude
-    
+
     // Create a small polygon around Achziv (about 1km radius)
     const achzivPolygon = {
         type: "Polygon",
@@ -85,7 +85,7 @@ function addAchzivSampleData() {
             [achzivX - 0.01, achzivY - 0.01]  // close polygon
         ]]
     };
-    
+
     // Add seismic hazard zone for Achziv
     const seismicCollection = db.getCollection('seismic-hazard-zone');
     const seismicDoc = {
@@ -96,14 +96,14 @@ function addAchzivSampleData() {
         description: "Seismic hazard zone for Achziv area",
         createdAt: new Date()
     };
-    
+
     try {
         seismicCollection.insertOne(seismicDoc);
         print("✅ Added seismic hazard zone for Achziv");
     } catch (error) {
         print(`❌ Error adding seismic hazard zone: ${error.message}`);
     }
-    
+
     // Add Cresta zone for Achziv
     const crestaCollection = db.getCollection('cresta-zones');
     const crestaDoc = {
@@ -115,23 +115,23 @@ function addAchzivSampleData() {
         country: "Israel",
         createdAt: new Date()
     };
-    
+
     try {
         crestaCollection.insertOne(crestaDoc);
         print("✅ Added Cresta zone for Achziv");
     } catch (error) {
         print(`❌ Error adding Cresta zone: ${error.message}`);
     }
-    
+
     print("");
 }
 
 // Function to test queries after adding data
 function testQueriesAfterAddingData() {
     print("🧪 Testing queries after adding Achziv data...");
-    
+
     const testCoordinates = { x: 35.1, y: 33.0 };
-    
+
     // Test PNG25 query
     try {
         const png25Pipeline = [
@@ -144,17 +144,17 @@ function testQueriesAfterAddingData() {
                 }
             },
             { $limit: 1 },
-            { 
-                $project: { 
-                    _id: 1, 
+            {
+                $project: {
+                    _id: 1,
                     hazard: 1,
                     "properties.Hazard": 1,
                     distance_m: 1,
                     name: 1
-                } 
+                }
             }
         ];
-        
+
         const png25Results = db.getCollection('seismic-hazard-zone').aggregate(png25Pipeline).toArray();
         if (png25Results && png25Results.length > 0) {
             const result = png25Results[0];
@@ -167,7 +167,7 @@ function testQueriesAfterAddingData() {
     } catch (error) {
         print(`❌ PNG25 query failed: ${error.message}`);
     }
-    
+
     // Test Cresta query
     try {
         const crestaPipeline = [
@@ -180,17 +180,17 @@ function testQueriesAfterAddingData() {
                 }
             },
             { $limit: 1 },
-            { 
-                $project: { 
-                    _id: 1, 
+            {
+                $project: {
+                    _id: 1,
                     crestaId: 1,
                     "properties.CRESTA_ID1": 1,
                     distance_m: 1,
                     name: 1
-                } 
+                }
             }
         ];
-        
+
         const crestaResults = db.getCollection('cresta-zones').aggregate(crestaPipeline).toArray();
         if (crestaResults && crestaResults.length > 0) {
             const result = crestaResults[0];
@@ -203,24 +203,24 @@ function testQueriesAfterAddingData() {
     } catch (error) {
         print(`❌ Cresta query failed: ${error.message}`);
     }
-    
+
     print("");
 }
 
 // Function to test with different coordinates
 function testDifferentCoordinates() {
     print("🧪 Testing with different coordinates...");
-    
+
     const testPoints = [
         { name: "Achziv", x: 35.1, y: 33.0 },
         { name: "Tel Aviv", x: 34.8, y: 32.1 },
         { name: "Jerusalem", x: 35.2, y: 31.8 },
         { name: "Haifa", x: 35.0, y: 32.8 }
     ];
-    
+
     testPoints.forEach(point => {
         print(`📍 Testing ${point.name} (${point.x}, ${point.y}):`);
-        
+
         // Test PNG25
         try {
             const png25Pipeline = [
@@ -235,7 +235,7 @@ function testDifferentCoordinates() {
                 { $limit: 1 },
                 { $project: { hazard: 1, "properties.Hazard": 1, distance_m: 1, name: 1 } }
             ];
-            
+
             const png25Results = db.getCollection('seismic-hazard-zone').aggregate(png25Pipeline).toArray();
             if (png25Results && png25Results.length > 0) {
                 const result = png25Results[0];
@@ -247,7 +247,7 @@ function testDifferentCoordinates() {
         } catch (error) {
             print(`   PNG25: Error - ${error.message}`);
         }
-        
+
         // Test Cresta
         try {
             const crestaPipeline = [
@@ -262,7 +262,7 @@ function testDifferentCoordinates() {
                 { $limit: 1 },
                 { $project: { crestaId: 1, "properties.CRESTA_ID1": 1, distance_m: 1, name: 1 } }
             ];
-            
+
             const crestaResults = db.getCollection('cresta-zones').aggregate(crestaPipeline).toArray();
             if (crestaResults && crestaResults.length > 0) {
                 const result = crestaResults[0];
@@ -274,7 +274,7 @@ function testDifferentCoordinates() {
         } catch (error) {
             print(`   Cresta: Error - ${error.message}`);
         }
-        
+
         print("");
     });
 }
@@ -283,24 +283,24 @@ function testDifferentCoordinates() {
 function main() {
     print("🚀 Checking data and adding Achziv sample data...");
     print("=" * 60);
-    
+
     try {
         // Step 1: Check existing data
         checkSeismicHazardData();
         checkCrestaData();
-        
+
         // Step 2: Add Achziv sample data
         addAchzivSampleData();
-        
+
         // Step 3: Test queries after adding data
         testQueriesAfterAddingData();
-        
+
         // Step 4: Test with different coordinates
         testDifferentCoordinates();
-        
+
         print("🎉 Data check and Achziv sample data addition completed!");
         print("=" * 60);
-        
+
     } catch (error) {
         print(`❌ Error during data check and addition: ${error.message}`);
         print(error.stack);
@@ -309,3 +309,4 @@ function main() {
 
 // Run the main function
 main();
+

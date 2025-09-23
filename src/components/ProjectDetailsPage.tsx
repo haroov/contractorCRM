@@ -4059,7 +4059,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב אזור Cresta"
                                                 >
-                                                    <CloudSyncIcon />
+                                                    <GentleCloudUploadIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
 
@@ -4104,7 +4104,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב ערך PNG25"
                                                 >
-                                                    <CloudSyncIcon />
+                                                    <GentleCloudUploadIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
