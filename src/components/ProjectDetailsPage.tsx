@@ -3974,8 +3974,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         </Box>
 
-                                        {/* Soil Report Fields - 4 columns layout */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1.5, mb: 3 }}>
+                                        {/* Soil Report Fields - Row 1: 3 fields */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
                                             <FormControl fullWidth>
                                                 <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
                                                 <Select
@@ -3991,16 +3991,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <MenuItem value="אחר">אחר</MenuItem>
                                                 </Select>
                                             </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.soilReport?.soilType === 'אחר' && (
-                                                <TextField
-                                                    fullWidth
-                                                    label="אחר - פרט"
-                                                    value={project?.engineeringQuestionnaire?.soilReport?.soilTypeOther || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.soilTypeOther', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-                                            )}
 
                                             <TextField
                                                 fullWidth
@@ -4019,8 +4009,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxExcavationDepth', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
+                                        </Box>
 
-
+                                        {/* Soil Report Fields - Row 2: 2 fields with refresh icons */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mb: 3 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
                                                     fullWidth
