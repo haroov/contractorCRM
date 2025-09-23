@@ -54,6 +54,7 @@ import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
+import RefreshIcon from './RefreshIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -2734,7 +2735,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="ייבוא מאקסל/CSV"
                                                 >
-                                                    <CloudSyncIcon fontSize="large" />
+                                                    <RefreshIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
@@ -4059,7 +4060,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב אזור Cresta"
                                                 >
-                                                    <CloudSyncIcon fontSize="large" />
+                                                    <RefreshIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
 
@@ -4104,7 +4105,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב ערך PNG25"
                                                 >
-                                                    <CloudSyncIcon fontSize="large" />
+                                                    <RefreshIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
