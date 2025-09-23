@@ -3659,21 +3659,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     שיטת הבניה
                                                 </Typography>
                                                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
-                                                    <FormControl fullWidth>
-                                                        <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
-                                                        <Select
-                                                            labelId="construction-method-label"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || ''}
-                                                            label="מה שיטת הבניה"
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        >
-                                                            <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
-                                                            <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
-                                                            <MenuItem value="טרומי">טרומי</MenuItem>
-                                                            <MenuItem value="אחר">אחר</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
+                                                    <Autocomplete
+                                                        fullWidth
+                                                        options={['קונבנציונאלי', 'ברנוביץ', 'טרומי', 'אחר']}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || null}
+                                                        onChange={(event, newValue) => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', newValue || '');
+                                                        }}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                label="מה שיטת הבניה"
+                                                                variant="outlined"
+                                                                sx={{
+                                                                    '& .MuiInputLabel-root': {
+                                                                        color: 'text.secondary'
+                                                                    },
+                                                                    '& .MuiInputLabel-root.Mui-focused': {
+                                                                        color: 'primary.main'
+                                                                    }
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
 
                                                     {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
                                                         <TextField
