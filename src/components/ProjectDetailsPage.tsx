@@ -5489,15 +5489,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
                                 </Box>
 
-                                {/* תוכנית הידרולוג */}
+                                {/* חוות דעת הידרולוג */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        תוכנית הידרולוג
+                                        חוות דעת הידרולוג
                                     </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
                                         <FileUpload
-                                            label="העלאת קובץ תוכנית הידרולוג"
+                                            label="העלאת קובץ חוות דעת הידרולוג"
                                             value={project?.hydrologicalPlan?.file}
                                             onChange={(url) => handleNestedFieldChange('hydrologicalPlan.file', url)}
                                             onDelete={() => handleNestedFieldChange('hydrologicalPlan.file', '')}
@@ -5510,7 +5510,81 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
                                     </Box>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, mb: 3 }}>
+                                        {/* תוכנית טיפול במי נגר */}
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                תוכנית טיפול במי נגר
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.runoffTreatmentPlan', false);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => {
+                                                        handleNestedFieldChange('hydrologicalPlan.runoffTreatmentPlan', true);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
+
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
