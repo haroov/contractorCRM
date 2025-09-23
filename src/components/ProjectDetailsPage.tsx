@@ -1104,6 +1104,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleNestedFieldChange = useCallback((fieldPath: string, value: any) => {
         console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
+        console.log('🔄 Current project state:', project);
         if (project) {
             // Use functional update to ensure React detects the change
             setProject(prevProject => {
@@ -1130,21 +1131,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Also update fileUploadState for immediate UI update
                 if (fieldPath === 'siteOrganizationPlan.file' && value) {
-                    setFileUploadState(prev => ({
-                        ...prev,
-                        siteOrganizationPlan: {
-                            ...prev.siteOrganizationPlan,
-                            url: value
-                        }
-                    }));
+                    console.log('🔄 Updating fileUploadState with file URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            siteOrganizationPlan: {
+                                ...prev.siteOrganizationPlan,
+                                url: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
                 } else if (fieldPath === 'siteOrganizationPlan.thumbnailUrl' && value) {
-                    setFileUploadState(prev => ({
-                        ...prev,
-                        siteOrganizationPlan: {
-                            ...prev.siteOrganizationPlan,
-                            thumbnailUrl: value
-                        }
-                    }));
+                    console.log('🔄 Updating fileUploadState with thumbnail URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            siteOrganizationPlan: {
+                                ...prev.siteOrganizationPlan,
+                                thumbnailUrl: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
                 }
 
                 return newProject;
@@ -1154,8 +1165,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
                 fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
-                const x = fieldPath.includes('.x') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
-                const y = fieldPath.includes('.y') ? value : newProject.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+                const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+                const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
                 if (x && y && typeof x === 'number' && typeof y === 'number') {
                     console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
@@ -1167,7 +1178,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                             // Update PNG25 value if found
                             if (gisValues.png25 !== null) {
-                                const updatedProject = { ...newProject };
+                                const updatedProject = { ...project };
                                 if (!updatedProject.engineeringQuestionnaire) {
                                     updatedProject.engineeringQuestionnaire = {};
                                 }
@@ -1181,7 +1192,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                             // Update Cresta area if found
                             if (gisValues.cresta !== null) {
-                                const updatedProject = { ...newProject };
+                                const updatedProject = { ...project };
                                 if (!updatedProject.engineeringQuestionnaire) {
                                     updatedProject.engineeringQuestionnaire = {};
                                 }
