@@ -6020,13 +6020,91 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', thumbnailUrl);
                                         }
                                     }}
-                                    onDelete={() => {
-                                        handleNestedFieldChange('siteOrganizationPlan.file', '');
-                                        handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
-                                        setFileUploadState(prev => ({
-                                            ...prev,
-                                            siteOrganizationPlan: undefined
-                                        }));
+                                    onDelete={async () => {
+                                        console.log('🗑️ Deleting site organization plan file');
+                                        
+                                        try {
+                                            // Get current values before deletion
+                                            const currentFileUrl = fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file;
+                                            const currentThumbnailUrl = fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl;
+                                            
+                                            console.log('🗑️ Current file URL:', currentFileUrl);
+                                            console.log('🗑️ Current thumbnail URL:', currentThumbnailUrl);
+                                            
+                                            // Delete from blob storage if URLs exist
+                                            if (currentFileUrl) {
+                                                console.log('🗑️ Deleting file from blob storage:', currentFileUrl);
+                                                const { authenticatedFetch } = await import('../config/api');
+                                                const response = await authenticatedFetch('/api/delete-project-file', {
+                                                    method: 'DELETE',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                    },
+                                                    body: JSON.stringify({ url: currentFileUrl })
+                                                });
+                                                
+                                                if (!response.ok) {
+                                                    const errorText = await response.text();
+                                                    console.error('❌ Delete file failed:', response.status, errorText);
+                                                    throw new Error('Failed to delete file from storage');
+                                                }
+                                                console.log('✅ File deleted from blob storage successfully');
+                                            }
+                                            
+                                            if (currentThumbnailUrl) {
+                                                console.log('🗑️ Deleting thumbnail from blob storage:', currentThumbnailUrl);
+                                                const { authenticatedFetch } = await import('../config/api');
+                                                const response = await authenticatedFetch('/api/delete-project-file', {
+                                                    method: 'DELETE',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                    },
+                                                    body: JSON.stringify({ url: currentThumbnailUrl })
+                                                });
+                                                
+                                                if (!response.ok) {
+                                                    const errorText = await response.text();
+                                                    console.error('❌ Delete thumbnail failed:', response.status, errorText);
+                                                    throw new Error('Failed to delete thumbnail from storage');
+                                                }
+                                                console.log('✅ Thumbnail deleted from blob storage successfully');
+                                            }
+                                            
+                                            // Update database - clear the file data
+                                            if (project?._id || project?.id) {
+                                                console.log('🗑️ Updating database to clear file data');
+                                                const { projectsAPI } = await import('../services/api');
+                                                const projectId = project._id || project.id;
+                                                
+                                                const updateData = {
+                                                    'siteOrganizationPlan.file': '',
+                                                    'siteOrganizationPlan.thumbnailUrl': '',
+                                                    'siteOrganizationPlan.fileCreationDate': ''
+                                                };
+                                                
+                                                await projectsAPI.update(projectId, updateData);
+                                                console.log('✅ Database updated successfully');
+                                            }
+                                            
+                                            // Update local state
+                                            handleNestedFieldChange('siteOrganizationPlan.file', '');
+                                            handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
+                                            handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', '');
+                                            
+                                            // Clear fileUploadState
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                siteOrganizationPlan: undefined
+                                            }));
+                                            
+                                            console.log('✅ File deletion completed successfully');
+                                            
+                                        } catch (error) {
+                                            console.error('❌ Error deleting file:', error);
+                                            alert('שגיאה במחיקת הקובץ: ' + error.message);
+                                        }
                                     }}
                                     disabled={mode === 'view' || !canEdit}
                                     accept=".pdf,.jpg,.jpeg,.png"
