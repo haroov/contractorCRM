@@ -5492,7 +5492,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* חוות דעת הידרולוג */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        חוות דעת הידרולוג
+                                        הידרולוג
                                     </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
@@ -5510,7 +5510,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         />
                                     </Box>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, mb: 3 }}>
+                                    {/* Row 1: 2 fields */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, mb: 3 }}>
                                         {/* תוכנית טיפול במי נגר */}
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
@@ -5657,7 +5658,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Button>
                                             </Box>
                                         </Box>
+                                    </Box>
 
+                                    {/* Row 2: 1 field */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
