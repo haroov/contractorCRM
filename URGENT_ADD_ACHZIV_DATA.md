@@ -166,3 +166,4 @@ print("Cresta Results:", JSON.stringify(crestaResults, null, 2));
 
 **לאחר הוספת נתוני אכזיב, כפתורי הסינכרון יעבדו בצורה מושלמת!** 🎯
 
+
