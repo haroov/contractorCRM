@@ -3134,6 +3134,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     />
                                                 </Box>
 
+                                                {/* תת-סקשן: מיקום וכתובת */}
+                                                <Box sx={{ mb: 4, direction: 'rtl' }}>
+                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
+                                                        מיקום וכתובת
+                                                    </Typography>
+                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="כתובת (טקסט חופשי)"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Latitude (Y)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Longitude (X)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+
+                                                        <PlotDetailsTable
+                                                            plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '', area: '' }]}
+                                                            onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+                                                    </Box>
+                                                </Box>
+
                                                 {/* Project Details Fields - 2 columns layout */}
                                                 <Box sx={{
                                                     display: 'grid',
@@ -3653,45 +3693,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* תת-סקשן: מיקום וכתובת */}
-                                        <Box sx={{ mb: 4, direction: 'rtl' }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
-                                                מיקום וכתובת
-                                            </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="כתובת (טקסט חופשי)"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="Latitude (Y)"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <TextField
-                                                    fullWidth
-                                                    label="Longitude (X)"
-                                                    type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-
-                                                <PlotDetailsTable
-                                                    plotDetails={project?.engineeringQuestionnaire?.buildingPlan?.plotDetails || [{ block: '', plot: '', subPlot: '', area: '' }]}
-                                                    onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-                                            </Box>
-                                        </Box>
 
 
                                         {/* תת-סקשן: פרטי הבניינים - מוצג רק אם סוג הפרויקט הוא "בניה" */}

@@ -60,7 +60,7 @@ class GISService {
   async getPNG25Value(x, y) {
     try {
       await this.initialize();
-      
+
       // Use $geoNear aggregation pipeline for efficient spatial query
       // Note: Data is stored as [Y, X] (Latitude, Longitude) instead of standard [X, Y]
       const pipeline = [
@@ -73,25 +73,25 @@ class GISService {
           }
         },
         { $limit: 1 },
-        { 
-          $project: { 
-            _id: 1, 
+        {
+          $project: {
+            _id: 1,
             hazard: 1,
             "properties.Hazard": 1,
             distance_m: 1,
             name: 1
-          } 
+          }
         }
       ];
 
       const results = await this.gisDb.collection('seismic-hazard-zone').aggregate(pipeline).toArray();
-      
+
       if (results && results.length > 0) {
         const result = results[0];
-        
+
         // Support both flattened and nested structures
         let hazardValue = null;
-        
+
         if (result.hazard !== undefined) {
           // Flattened structure
           hazardValue = result.hazard;
@@ -99,7 +99,7 @@ class GISService {
           // Nested structure
           hazardValue = result.properties.Hazard;
         }
-        
+
         if (hazardValue !== null) {
           console.log(`✅ GIS Service: Found PNG25 value ${hazardValue} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
           return hazardValue;
@@ -123,7 +123,7 @@ class GISService {
   async getCrestaZone(x, y) {
     try {
       await this.initialize();
-      
+
       // Use $geoNear aggregation pipeline for efficient spatial query
       // Note: Data is stored as [Y, X] (Latitude, Longitude) instead of standard [X, Y]
       const pipeline = [
@@ -136,25 +136,25 @@ class GISService {
           }
         },
         { $limit: 1 },
-        { 
-          $project: { 
-            _id: 1, 
+        {
+          $project: {
+            _id: 1,
             crestaId: 1,
             "properties.CRESTA_ID1": 1,
             distance_m: 1,
             name: 1
-          } 
+          }
         }
       ];
 
       const results = await this.gisDb.collection('cresta-zones').aggregate(pipeline).toArray();
-      
+
       if (results && results.length > 0) {
         const result = results[0];
-        
+
         // Support both flattened and nested structures
         let crestaValue = null;
-        
+
         if (result.crestaId !== undefined) {
           // Flattened structure
           crestaValue = result.crestaId;
@@ -162,7 +162,7 @@ class GISService {
           // Nested structure
           crestaValue = result.properties.CRESTA_ID1;
         }
-        
+
         if (crestaValue !== null) {
           console.log(`✅ GIS Service: Found Cresta zone ${crestaValue} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
           return crestaValue;

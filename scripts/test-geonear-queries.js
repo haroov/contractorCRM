@@ -8,9 +8,10 @@
  */
 
 // Test coordinates for Achziv
+// Note: Data is stored as [Y, X] (Latitude, Longitude) instead of standard [X, Y]
 const testCoordinates = {
-    x: 35.1, // longitude
-    y: 33.0  // latitude
+    x: 35.102275, // longitude
+    y: 33.04187   // latitude
 };
 
 // Function to test PNG25 query with $geoNear
@@ -20,7 +21,7 @@ function testPNG25GeoNearQuery() {
     const pipeline = [
         {
             $geoNear: {
-                near: { type: "Point", coordinates: [testCoordinates.x, testCoordinates.y] },
+                near: { type: "Point", coordinates: [testCoordinates.y, testCoordinates.x] },
                 key: "geometry",
                 spherical: true,
                 distanceField: "distance_m"
@@ -75,7 +76,7 @@ function testCrestaGeoNearQuery() {
     const pipeline = [
         {
             $geoNear: {
-                near: { type: "Point", coordinates: [testCoordinates.x, testCoordinates.y] },
+                near: { type: "Point", coordinates: [testCoordinates.y, testCoordinates.x] },
                 key: "geometry",
                 spherical: true,
                 distanceField: "distance_m"
