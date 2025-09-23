@@ -70,13 +70,13 @@ const formatCrestaData = (crestaData: any): string => {
     if (typeof crestaData === 'string') {
         return crestaData;
     }
-    
+
     // If it's an object with the new structure, format it properly
     if (crestaData && typeof crestaData === 'object') {
         const { lowRes, highRes, name } = crestaData;
         return `${lowRes} (${highRes}) - ${name}`;
     }
-    
+
     // Fallback
     return crestaData?.toString() || '';
 };
@@ -3695,6 +3695,32 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Button>
                                                         </Box>
                                                     </Box>
+
+                                                    {/* שיטת הבניה */}
+                                                    <Autocomplete
+                                                        fullWidth
+                                                        options={['קונבנציונאלי', 'ברנוביץ', 'טרומי']}
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || null}
+                                                        onChange={(event, newValue) => {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', newValue || '');
+                                                        }}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                label="מה שיטת הבניה"
+                                                                variant="outlined"
+                                                                sx={{
+                                                                    '& .MuiInputLabel-root': {
+                                                                        color: 'text.secondary'
+                                                                    },
+                                                                    '& .MuiInputLabel-root.Mui-focused': {
+                                                                        color: 'primary.main'
+                                                                    }
+                                                                }}
+                                                            />
+                                                        )}
+                                                    />
                                                 </Box>
 
                                                 {project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram && (
@@ -4254,31 +4280,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Box>
                                                 </Box>
 
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
-                                                    <Select
-                                                        labelId="construction-method-label"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
-                                                        label="מה שיטת הבניה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethod', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
-                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
-                                                        <MenuItem value="טרומי">טרומי</MenuItem>
-                                                        <MenuItem value="אחר">אחר</MenuItem>
-                                                    </Select>
-                                                </FormControl>
 
-                                                {project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod === 'אחר' && (
-                                                    <TextField
-                                                        fullWidth
-                                                        label="אחר - פרט"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethodOther || ''}
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethodOther', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    />
-                                                )}
 
                                                 <TextField
                                                     fullWidth
