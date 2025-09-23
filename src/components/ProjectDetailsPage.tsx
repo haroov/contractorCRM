@@ -3652,6 +3652,40 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     />
                                                 )}
                                             </Box>
+
+                                            {/* שיטת הבניה */}
+                                            <Box sx={{ mb: 3 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
+                                                    שיטת הבניה
+                                                </Typography>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
+                                                    <FormControl fullWidth>
+                                                        <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
+                                                        <Select
+                                                            labelId="construction-method-label"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod || ''}
+                                                            label="מה שיטת הבניה"
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethod', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        >
+                                                            <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
+                                                            <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
+                                                            <MenuItem value="טרומי">טרומי</MenuItem>
+                                                            <MenuItem value="אחר">אחר</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+
+                                                    {project?.engineeringQuestionnaire?.buildingPlan?.constructionMethod === 'אחר' && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="אחר - פרט"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.constructionMethodOther || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.constructionMethodOther', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
                                         </Box>
 
                                         {/* תת-סקשן: מיקום וכתובת */}
@@ -4223,31 +4257,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Box>
                                                 </Box>
 
-                                                <FormControl fullWidth>
-                                                    <InputLabel id="construction-method-label">מה שיטת הבניה</InputLabel>
-                                                    <Select
-                                                        labelId="construction-method-label"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod || ''}
-                                                        label="מה שיטת הבניה"
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethod', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    >
-                                                        <MenuItem value="קונבנציונאלי">קונבנציונאלי</MenuItem>
-                                                        <MenuItem value="ברנוביץ">ברנוביץ</MenuItem>
-                                                        <MenuItem value="טרומי">טרומי</MenuItem>
-                                                        <MenuItem value="אחר">אחר</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-
-                                                {project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethod === 'אחר' && (
-                                                    <TextField
-                                                        fullWidth
-                                                        label="אחר - פרט"
-                                                        value={project?.engineeringQuestionnaire?.soilConsultantReport?.constructionMethodOther || ''}
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.constructionMethodOther', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    />
-                                                )}
 
                                                 <TextField
                                                     fullWidth
