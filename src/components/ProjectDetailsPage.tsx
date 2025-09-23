@@ -5971,25 +5971,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     finalCreationDate: fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''
                                 })}
                                 
-                                {/* Display clickable text if file exists */}
-                                {fileUploadState.siteOrganizationPlan?.url && (
-                                    <Box sx={{ mb: 2 }}>
-                                        <Typography 
-                                            variant="body2" 
-                                            sx={{ 
-                                                color: 'primary.main', 
-                                                cursor: 'pointer',
-                                                textDecoration: 'underline',
-                                                '&:hover': {
-                                                    color: 'primary.dark'
-                                                }
-                                            }}
-                                            onClick={() => window.open(fileUploadState.siteOrganizationPlan?.url, '_blank')}
-                                        >
-                                            תוכנית התארגנות אתר - לחץ לצפייה
-                                        </Typography>
-                                    </Box>
-                                )}
                                 
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
