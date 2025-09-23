@@ -65,14 +65,20 @@ const generateObjectId = (): string => {
 };
 
 // Helper function to format Cresta data as lowRes (highRes) - name
-const formatCrestaData = (crestaData: string): string => {
-    // Example: "R_22 (ISR_Z - Northern" -> "ISR_Z (ISR_22) - Northern"
-    // This is a simplified formatter - you may need to adjust based on actual data format
-    if (crestaData.includes('ISR_Z') && crestaData.includes('R_22')) {
-        return 'ISR_Z (ISR_22) - Northern';
+const formatCrestaData = (crestaData: any): string => {
+    // If it's already a string (legacy format), return as is
+    if (typeof crestaData === 'string') {
+        return crestaData;
     }
-    // For other formats, return as is or implement additional parsing logic
-    return crestaData;
+    
+    // If it's an object with the new structure, format it properly
+    if (crestaData && typeof crestaData === 'object') {
+        const { lowRes, highRes, name } = crestaData;
+        return `${lowRes} (${highRes}) - ${name}`;
+    }
+    
+    // Fallback
+    return crestaData?.toString() || '';
 };
 
 // Custom File Upload Component

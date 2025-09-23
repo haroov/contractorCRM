@@ -141,6 +141,10 @@ class GISService {
             _id: 1,
             crestaId: 1,
             "properties.CRESTA_ID1": 1,
+            "properties.Name": 1,
+            "properties.Zone_Name1": 1,
+            "properties.CRESTA_S_1": 1,
+            "properties.CRESTA_I_1": 1,
             distance_m: 1,
             name: 1
           }
@@ -153,19 +157,29 @@ class GISService {
         const result = results[0];
 
         // Support both flattened and nested structures
-        let crestaValue = null;
+        let crestaData = null;
 
         if (result.crestaId !== undefined) {
           // Flattened structure
-          crestaValue = result.crestaId;
+          crestaData = {
+            lowRes: result.crestaId,
+            highRes: result.name || result.crestaId,
+            name: result.name || 'Unknown'
+          };
         } else if (result.properties && result.properties.CRESTA_ID1 !== undefined) {
-          // Nested structure
-          crestaValue = result.properties.CRESTA_ID1;
+          // Nested structure - return full object with all properties
+          crestaData = {
+            lowRes: result.properties.CRESTA_ID1, // ISR_Z
+            highRes: result.properties.Name, // ISR_22
+            name: result.properties.Zone_Name1, // Northern
+            resolution: result.properties.CRESTA_S_1, // LowRes
+            identifier: result.properties.CRESTA_I_1 // ISR_22
+          };
         }
 
-        if (crestaValue !== null) {
-          console.log(`✅ GIS Service: Found Cresta zone ${crestaValue} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
-          return crestaValue;
+        if (crestaData !== null) {
+          console.log(`✅ GIS Service: Found Cresta zone ${crestaData.lowRes} (${crestaData.highRes}) - ${crestaData.name} for coordinates (${x}, ${y}) at distance ${result.distance_m}m`);
+          return crestaData;
         }
       }
 
