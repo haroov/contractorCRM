@@ -221,3 +221,4 @@ db.getCollection('cresta-zones').createIndex(
 השאילתה החדשה עם `$geoNear` הרבה יותר יעילה ומדויקת מהגישה הקודמת. היא תמצא את המסמך הקרוב ביותר לנקודה הנתונה ותחזיר את הערכים הנכונים.
 
 **עכשיו כפתורי הסינכרון יעבדו בצורה מושלמת!** 🎯
+
