@@ -3989,6 +3989,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         {...params}
                                                         label="סוג הקרקע"
                                                         variant="outlined"
+                                                        sx={{
+                                                            '& .MuiInputLabel-root': {
+                                                                color: 'text.secondary'
+                                                            },
+                                                            '& .MuiInputLabel-root.Mui-focused': {
+                                                                color: 'primary.main'
+                                                            }
+                                                        }}
                                                     />
                                                 )}
                                             />
