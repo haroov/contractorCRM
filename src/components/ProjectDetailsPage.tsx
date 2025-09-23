@@ -6088,16 +6088,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 console.log('✅ Database updated successfully');
                                             }
                                             
-                                            // Update local state
+                                            // Clear fileUploadState immediately for UI update
+                                            console.log('🔄 Clearing fileUploadState for immediate UI update');
+                                            setFileUploadState(prev => {
+                                                const newState = {
+                                                    ...prev,
+                                                    siteOrganizationPlan: undefined
+                                                };
+                                                console.log('🔄 New fileUploadState after clearing:', newState);
+                                                return newState;
+                                            });
+                                            
+                                            // Update local state (even if project is null, this will be saved when project loads)
                                             handleNestedFieldChange('siteOrganizationPlan.file', '');
                                             handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
                                             handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', '');
-                                            
-                                            // Clear fileUploadState
-                                            setFileUploadState(prev => ({
-                                                ...prev,
-                                                siteOrganizationPlan: undefined
-                                            }));
                                             
                                             console.log('✅ File deletion completed successfully');
                                             
