@@ -50,7 +50,7 @@
    GOOGLE_API_KEY=your_actual_api_key_here
    
    # MongoDB Configuration
-   MONGODB_URI=mongodb+srv://liav:liav123@cluster0.8jqjq.mongodb.net/contractor-crm?retryWrites=true&w=majority
+   MONGODB_URI=mongodb://localhost:27017/contractor-crm
    
    # Session Configuration
    SESSION_SECRET=your_session_secret_here

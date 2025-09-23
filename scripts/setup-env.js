@@ -46,7 +46,7 @@ async function setupEnvironment() {
 
   // MongoDB URI
   const mongoUri = await question('🗄️  MongoDB URI (press Enter for default): ');
-  const mongoUriFinal = mongoUri.trim() || 'mongodb+srv://liav:liav123@cluster0.8jqjq.mongodb.net/contractor-crm?retryWrites=true&w=majority';
+  const mongoUriFinal = mongoUri.trim() || 'mongodb://localhost:27017/contractor-crm';
 
   // Session Secret
   const sessionSecret = await question('🔐 Session Secret (press Enter to generate): ');
