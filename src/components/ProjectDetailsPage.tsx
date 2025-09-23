@@ -3976,21 +3976,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {/* Soil Report Fields - Row 1: 3 fields */}
                                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
-                                            <FormControl fullWidth>
-                                                <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
-                                                <Select
-                                                    labelId="soil-type-label"
-                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
-                                                    label="סוג הקרקע"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="חולית">חולית</MenuItem>
-                                                    <MenuItem value="סלעית">סלעית</MenuItem>
-                                                    <MenuItem value="חרסיתית">חרסיתית</MenuItem>
-                                                    <MenuItem value="אחר">אחר</MenuItem>
-                                                </Select>
-                                            </FormControl>
+                                            <Autocomplete
+                                                fullWidth
+                                                options={['חולית', 'סלעית', 'חרסיתית', 'אחר']}
+                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || null}
+                                                onChange={(event, newValue) => {
+                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', newValue || '');
+                                                }}
+                                                disabled={mode === 'view' || !canEdit}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="סוג הקרקע"
+                                                        variant="outlined"
+                                                    />
+                                                )}
+                                            />
 
                                             <TextField
                                                 fullWidth
