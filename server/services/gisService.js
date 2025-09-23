@@ -62,10 +62,11 @@ class GISService {
       await this.initialize();
       
       // Use $geoNear aggregation pipeline for efficient spatial query
+      // Note: Data is stored as [Y, X] (Latitude, Longitude) instead of standard [X, Y]
       const pipeline = [
         {
           $geoNear: {
-            near: { type: "Point", coordinates: [x, y] },
+            near: { type: "Point", coordinates: [y, x] },
             key: "geometry",
             spherical: true,
             distanceField: "distance_m"
@@ -124,10 +125,11 @@ class GISService {
       await this.initialize();
       
       // Use $geoNear aggregation pipeline for efficient spatial query
+      // Note: Data is stored as [Y, X] (Latitude, Longitude) instead of standard [X, Y]
       const pipeline = [
         {
           $geoNear: {
-            near: { type: "Point", coordinates: [x, y] },
+            near: { type: "Point", coordinates: [y, x] },
             key: "geometry",
             spherical: true,
             distanceField: "distance_m"

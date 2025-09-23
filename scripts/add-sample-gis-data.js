@@ -234,7 +234,7 @@ function testAddedData() {
         const png25Result = db.getCollection('seismic-hazard-zone').aggregate([
             {
                 $geoNear: {
-                    near: { type: "Point", coordinates: [point.x, point.y] },
+                    near: { type: "Point", coordinates: [point.y, point.x] },
                     key: "geometry",
                     spherical: true,
                     distanceField: "distance_m"
@@ -254,7 +254,7 @@ function testAddedData() {
         const crestaResult = db.getCollection('cresta-zones').aggregate([
             {
                 $geoNear: {
-                    near: { type: "Point", coordinates: [point.x, point.y] },
+                    near: { type: "Point", coordinates: [point.y, point.x] },
                     key: "geometry",
                     spherical: true,
                     distanceField: "distance_m"
