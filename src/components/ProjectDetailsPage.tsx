@@ -4291,6 +4291,29 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
                                             </Box>
+
+                                            {/* Text areas for drilling results and recommendations */}
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3, mt: 3 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="תוצאות קידוחי הניסיון שנערכו באתר"
+                                                    multiline
+                                                    rows={4}
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.drillingResults || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.drillingResults', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+
+                                                <TextField
+                                                    fullWidth
+                                                    label="המלצות לתכנון הדיפון והביסוס"
+                                                    multiline
+                                                    rows={4}
+                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.shoringRecommendations || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.shoringRecommendations', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                />
+                                            </Box>
                                         </Box>
 
                                         {/* דוח סקר סיכונים */}
