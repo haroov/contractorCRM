@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import gisService from '../services/gisService';
@@ -85,7 +85,8 @@ const formatCrestaData = (crestaData: any): string => {
 interface FileUploadProps {
     label: string;
     value?: string;
-    onChange: (url: string | null) => void;
+    thumbnailUrl?: string;
+    onChange: (url: string | null, thumbnailUrl?: string | null) => void;
     disabled?: boolean;
     accept?: string;
     showCreationDate?: boolean;
@@ -99,6 +100,7 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({
     label,
     value,
+    thumbnailUrl,
     onChange,
     disabled,
     accept = ".pdf,.jpg,.jpeg,.png",
@@ -114,6 +116,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     // Debug logging
     console.log(`📁 FileUpload ${label} - value:`, value);
+    console.log(`📁 FileUpload ${label} - thumbnailUrl:`, thumbnailUrl);
     console.log(`📁 FileUpload ${label} - isUploading:`, isUploading);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,12 +142,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     const result = await response.json();
                     console.log('✅ File upload successful:', result);
                     console.log('✅ File URL:', result.data?.url);
+                    console.log('✅ Thumbnail URL:', result.data?.thumbnailUrl);
+                    console.log('✅ Full result.data:', result.data);
 
                     // Use result.data.url if available, otherwise fallback to result.url
                     const fileUrl = result.data?.url || result.url;
+                    const thumbnailUrl = result.data?.thumbnailUrl;
                     console.log('✅ Using file URL:', fileUrl);
+                    console.log('✅ Using thumbnail URL:', thumbnailUrl);
 
-                    onChange(fileUrl); // Store the blob URL
+                    // Store both file URL and thumbnail URL
+                    console.log('🔄 Calling onChange with:', { fileUrl, thumbnailUrl });
+                    onChange(fileUrl, thumbnailUrl); // Updated to pass both URLs
 
                     // Auto-fill creation date from file metadata
                     if (onCreationDateChange && !creationDateValue) {
@@ -152,9 +161,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         const formattedDate = fileDate.toISOString().split('T')[0];
                         onCreationDateChange(formattedDate);
                     }
-
-                    // PDF thumbnail generation temporarily disabled
-                    // Will be re-enabled when server-side support is restored
                 } else {
                     const errorText = await response.text();
                     console.error('❌ Upload failed:', response.status, errorText);
@@ -241,7 +247,29 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     cursor: 'pointer',
                     border: '1px solid #d0d0d0'
                 }} onClick={handleFileClick}>
-                    {value.toLowerCase().includes('.pdf') ? (
+                    {thumbnailUrl ? (
+                        <img
+                            src={thumbnailUrl}
+                            alt="תצוגה מקדימה"
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '4px'
+                            }}
+                            onError={(e) => {
+                                // Fallback to PDF icon if thumbnail fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const parent = target.parentElement;
+                                if (parent) {
+                                    const pdfIcon = document.createElement('div');
+                                    pdfIcon.innerHTML = '<svg style="width: 24px; height: 24px; color: white;" viewBox="0 0 24 24"><path fill="currentColor" d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+                                    parent.appendChild(pdfIcon);
+                                }
+                            }}
+                        />
+                    ) : value.toLowerCase().includes('.pdf') ? (
                         <PdfIcon sx={{
                             fontSize: 24,
                             color: 'white' // White color on purple background
@@ -711,6 +739,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [fileUploadState, setFileUploadState] = useState<{ [key: string]: { url: string; thumbnailUrl?: string } }>({});
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
@@ -1073,27 +1102,53 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
-    const handleNestedFieldChange = (fieldPath: string, value: any) => {
+    const handleNestedFieldChange = useCallback((fieldPath: string, value: any) => {
         console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
         if (project) {
-            const newProject = { ...project };
-            const keys = fieldPath.split('.');
-            let current: any = newProject;
+            // Use functional update to ensure React detects the change
+            setProject(prevProject => {
+                if (!prevProject) return prevProject;
 
-            // Navigate to the parent object
-            for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) {
-                    current[keys[i]] = {};
+                // Deep clone the project to ensure React detects the change
+                const newProject = JSON.parse(JSON.stringify(prevProject));
+                const keys = fieldPath.split('.');
+                let current: any = newProject;
+
+                // Navigate to the parent object
+                for (let i = 0; i < keys.length - 1; i++) {
+                    if (!current[keys[i]]) {
+                        current[keys[i]] = {};
+                    }
+                    current = current[keys[i]];
                 }
-                current = current[keys[i]];
-            }
 
-            // Set the final value
-            current[keys[keys.length - 1]] = value;
-            console.log('✅ Updated project field:', fieldPath, 'to:', value);
-            console.log('✅ New project state:', newProject);
+                // Set the final value
+                current[keys[keys.length - 1]] = value;
+                console.log('✅ Updated project field:', fieldPath, 'to:', value);
+                console.log('✅ New project state:', newProject);
+                console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
-            setProject(newProject);
+                // Also update fileUploadState for immediate UI update
+                if (fieldPath === 'siteOrganizationPlan.file' && value) {
+                    setFileUploadState(prev => ({
+                        ...prev,
+                        siteOrganizationPlan: {
+                            ...prev.siteOrganizationPlan,
+                            url: value
+                        }
+                    }));
+                } else if (fieldPath === 'siteOrganizationPlan.thumbnailUrl' && value) {
+                    setFileUploadState(prev => ({
+                        ...prev,
+                        siteOrganizationPlan: {
+                            ...prev.siteOrganizationPlan,
+                            thumbnailUrl: value
+                        }
+                    }));
+                }
+
+                return newProject;
+            });
 
             // Auto-calculate GIS values when coordinates change
             if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
@@ -1147,7 +1202,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         } else {
             console.log('❌ No project to update');
         }
-    };
+    }, []);
 
     // Stakeholder management functions
     const addStakeholder = () => {
@@ -5882,11 +5937,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
+                                {console.log('🔍 Rendering FileUpload with:', {
+                                    value: project?.siteOrganizationPlan?.file,
+                                    thumbnailUrl: project?.siteOrganizationPlan?.thumbnailUrl,
+                                    siteOrganizationPlan: project?.siteOrganizationPlan,
+                                    fileUploadState: fileUploadState.siteOrganizationPlan
+                                })}
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
-                                    value={project?.siteOrganizationPlan?.file}
-                                    onChange={(url) => handleNestedFieldChange('siteOrganizationPlan.file', url)}
-                                    onDelete={() => handleNestedFieldChange('siteOrganizationPlan.file', '')}
+                                    value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file}
+                                    thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl}
+                                    onChange={(url, thumbnailUrl) => {
+                                        handleNestedFieldChange('siteOrganizationPlan.file', url);
+                                        if (thumbnailUrl) {
+                                            handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', thumbnailUrl);
+                                        }
+                                    }}
+                                    onDelete={() => {
+                                        handleNestedFieldChange('siteOrganizationPlan.file', '');
+                                        handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
+                                        setFileUploadState(prev => ({
+                                            ...prev,
+                                            siteOrganizationPlan: undefined
+                                        }));
+                                    }}
                                     disabled={mode === 'view' || !canEdit}
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     showCreationDate={true}
