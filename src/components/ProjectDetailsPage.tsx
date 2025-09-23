@@ -54,6 +54,7 @@ import SkeletonLoader from './SkeletonLoader';
 import TrashIcon from './TrashIcon';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
+import RefreshIcon from './RefreshIcon';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -61,6 +62,17 @@ const generateObjectId = (): string => {
     const random = Math.random().toString(16).substring(2, 8);
     const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
     return timestamp + random + counter;
+};
+
+// Helper function to format Cresta data as lowRes (highRes) - name
+const formatCrestaData = (crestaData: string): string => {
+    // Example: "R_22 (ISR_Z - Northern" -> "ISR_Z (ISR_22) - Northern"
+    // This is a simplified formatter - you may need to adjust based on actual data format
+    if (crestaData.includes('ISR_Z') && crestaData.includes('R_22')) {
+        return 'ISR_Z (ISR_22) - Northern';
+    }
+    // For other formats, return as is or implement additional parsing logic
+    return crestaData;
 };
 
 // Custom File Upload Component
@@ -3721,7 +3733,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             inputProps={{ min: 1, max: 100 }}
                                                         />
-                                                        
+
                                                         <TextField
                                                             fullWidth
                                                             label="סה״כ שטח בניה (מ״ר)"
@@ -3985,33 +3997,32 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         </Box>
 
-                                        {/* Soil Report Fields - 4 columns layout */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 3, mb: 3 }}>
-                                            <FormControl fullWidth>
-                                                <InputLabel id="soil-type-label">סוג הקרקע</InputLabel>
-                                                <Select
-                                                    labelId="soil-type-label"
-                                                    value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || ''}
-                                                    label="סוג הקרקע"
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                >
-                                                    <MenuItem value="חולית">חולית</MenuItem>
-                                                    <MenuItem value="סלעית">סלעית</MenuItem>
-                                                    <MenuItem value="חרסיתית">חרסיתית</MenuItem>
-                                                    <MenuItem value="אחר">אחר</MenuItem>
-                                                </Select>
-                                            </FormControl>
-
-                                            {project?.engineeringQuestionnaire?.soilReport?.soilType === 'אחר' && (
-                                                <TextField
-                                                    fullWidth
-                                                    label="אחר - פרט"
-                                                    value={project?.engineeringQuestionnaire?.soilReport?.soilTypeOther || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.soilTypeOther', e.target.value)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                />
-                                            )}
+                                        {/* Soil Report Fields - Row 1: 3 fields */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
+                                            <Autocomplete
+                                                fullWidth
+                                                options={['חולית', 'סלעית', 'חרסיתית', 'אחר']}
+                                                value={project?.engineeringQuestionnaire?.soilConsultantReport?.soilType || null}
+                                                onChange={(event, newValue) => {
+                                                    handleNestedFieldChange('engineeringQuestionnaire.soilConsultantReport.soilType', newValue || '');
+                                                }}
+                                                disabled={mode === 'view' || !canEdit}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="סוג הקרקע"
+                                                        variant="outlined"
+                                                        sx={{
+                                                            '& .MuiInputLabel-root': {
+                                                                color: 'text.secondary'
+                                                            },
+                                                            '& .MuiInputLabel-root.Mui-focused': {
+                                                                color: 'primary.main'
+                                                            }
+                                                        }}
+                                                    />
+                                                )}
+                                            />
 
                                             <TextField
                                                 fullWidth
@@ -4024,13 +4035,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                             <TextField
                                                 fullWidth
-                                                label="עומק חפירה מקסימאלי (מטר)"
+                                                label="עומק יסודות מקסימלי (מטר)"
                                                 type="number"
-                                                value={project?.engineeringQuestionnaire?.soilReport?.maxExcavationDepth || ''}
-                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxExcavationDepth', parseFloat(e.target.value) || 0)}
+                                                value={project?.engineeringQuestionnaire?.soilReport?.maxFoundationDepth || ''}
+                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.soilReport.maxFoundationDepth', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
+                                        </Box>
 
+                                        {/* Soil Report Fields - Row 2: 2 fields with refresh icons */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mb: 3 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
                                                     fullWidth
@@ -4053,7 +4067,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             const cresta = await gisService.getCrestaZone(x, y);
 
                                                             if (cresta !== null) {
-                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', cresta);
+                                                                // Format the data as lowRes (highRes) - name
+                                                                const formattedCresta = formatCrestaData(cresta);
+                                                                handleNestedFieldChange('engineeringQuestionnaire.soilReport.crestaArea', formattedCresta);
                                                             } else {
                                                                 alert('לא נמצא אזור Cresta עבור הקואורדינטות הנתונות');
                                                             }
@@ -4071,7 +4087,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב אזור Cresta"
                                                 >
-                                                    <CloudSyncIcon />
+                                                    <RefreshIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
 
@@ -4116,7 +4132,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="חשב ערך PNG25"
                                                 >
-                                                    <CloudSyncIcon />
+                                                    <RefreshIcon fontSize="large" />
                                                 </IconButton>
                                             </Box>
                                         </Box>
