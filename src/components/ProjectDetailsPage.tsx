@@ -5976,7 +5976,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     label="תוכנית התארגנות אתר"
                                     value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file}
                                     thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl}
-                                    onChange={(url, thumbnailUrl) => {
+                                    onChange={async (url, thumbnailUrl) => {
                                         console.log('🔄 FileUpload onChange called with:', { url, thumbnailUrl });
                                         
                                         // Update fileUploadState immediately for UI display
@@ -5992,6 +5992,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             console.log('🔄 Updated fileUploadState:', newState);
                                             return newState;
                                         });
+                                        
+                                        // Save to database immediately if we have a project ID
+                                        if (project?._id || project?.id) {
+                                            try {
+                                                console.log('💾 Saving file data to database immediately...');
+                                                const { projectsAPI } = await import('../services/api');
+                                                
+                                                const updateData = {
+                                                    'siteOrganizationPlan.file': url,
+                                                    'siteOrganizationPlan.thumbnailUrl': thumbnailUrl || ''
+                                                };
+                                                
+                                                console.log('💾 Update data:', updateData);
+                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                console.log('✅ File data saved to database successfully');
+                                            } catch (error) {
+                                                console.error('❌ Failed to save file data to database:', error);
+                                            }
+                                        } else {
+                                            console.log('⚠️ No project ID available, cannot save to database yet');
+                                        }
                                         
                                         // Also try to update project state (may fail if project is null)
                                         handleNestedFieldChange('siteOrganizationPlan.file', url);
@@ -6011,7 +6032,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     showCreationDate={true}
                                     creationDateValue={fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''}
-                                    onCreationDateChange={(date) => {
+                                    onCreationDateChange={async (date) => {
                                         console.log('🔄 FileUpload onCreationDateChange called with:', date);
                                         
                                         // Update fileUploadState immediately for UI display
@@ -6026,6 +6047,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             console.log('🔄 Updated fileUploadState with creation date:', newState);
                                             return newState;
                                         });
+                                        
+                                        // Save to database immediately if we have a project ID
+                                        if (project?._id || project?.id) {
+                                            try {
+                                                console.log('💾 Saving creation date to database immediately...');
+                                                const { projectsAPI } = await import('../services/api');
+                                                
+                                                const updateData = {
+                                                    'siteOrganizationPlan.fileCreationDate': date
+                                                };
+                                                
+                                                console.log('💾 Update data:', updateData);
+                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                console.log('✅ Creation date saved to database successfully');
+                                            } catch (error) {
+                                                console.error('❌ Failed to save creation date to database:', error);
+                                            }
+                                        } else {
+                                            console.log('⚠️ No project ID available, cannot save to database yet');
+                                        }
                                         
                                         // Also try to update project state (may fail if project is null)
                                         handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date);
