@@ -5974,8 +5974,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
-                                    value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file}
-                                    thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl}
+                                    value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file || ''}
+                                    thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔄 FileUpload onChange called with:', { url, thumbnailUrl });
                                         
@@ -6093,7 +6093,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             setFileUploadState(prev => {
                                                 const newState = {
                                                     ...prev,
-                                                    siteOrganizationPlan: undefined
+                                                    siteOrganizationPlan: {
+                                                        url: '',
+                                                        thumbnailUrl: '',
+                                                        creationDate: ''
+                                                    }
                                                 };
                                                 console.log('🔄 New fileUploadState after clearing:', newState);
                                                 return newState;
