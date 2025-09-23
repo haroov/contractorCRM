@@ -4019,15 +4019,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 disabled={mode === 'view' || !canEdit}
                                             />
 
-                                            {/* רד שורה */}
-                                            <Box sx={{ 
-                                                width: '100%', 
-                                                height: '2px', 
-                                                backgroundColor: '#ef4444', 
-                                                margin: '16px 0',
-                                                gridColumn: '1 / -1'
-                                            }} />
-
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
                                                     fullWidth
