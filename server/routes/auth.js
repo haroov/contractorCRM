@@ -528,8 +528,8 @@ router.post('/send-login-email', async (req, res) => {
             <!-- Header with Logo -->
             <div style="text-align: center; margin-bottom: 30px;">
               <div style="display: inline-flex; align-items: center; background-color: #882DD7; color: white; padding: 15px 25px; border-radius: 50px; margin-bottom: 20px;">
-                <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center; padding: 8px;">
-                  <img src="https://contractorcrm-api.onrender.com/logo-256.png" alt="שוקו ביטוח" style="width: 24px; height: 24px;" />
+                <div style="width: 40px; height: 40px; background-color: white; border-radius: 50%; margin-left: 10px; display: flex; align-items: center; justify-content: center; padding: 4px;">
+                  <img src="https://contractorcrm-api.onrender.com/logo-256.png" alt="שוקו ביטוח" style="width: 32px; height: 32px;" />
                 </div>
                 <span style="font-size: 18px; font-weight: bold;">שוקו ביטוח</span>
               </div>

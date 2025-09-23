@@ -249,7 +249,7 @@ export default function ContactLoginPage() {
         localStorage.clear();
         localStorage.setItem('contactUser', JSON.stringify(essentialUserData));
         localStorage.setItem('contactUserAuthenticated', 'true');
-        
+
         console.log('✅ Cleared localStorage and stored essential user data:', essentialUserData);
 
         console.log('🚀 Contact user selected contractor, staying on main page');

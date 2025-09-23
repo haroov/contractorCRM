@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
   // Timer effect for resend OTP
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (otpSent && resendTimer > 0) {
       interval = setInterval(() => {
         setResendTimer((prev) => {
@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
         });
       }, 1000);
     }
-    
+
     return () => {
       if (interval) {
         clearInterval(interval);
@@ -244,7 +244,7 @@ const LoginPage: React.FC = () => {
 
   const handleResendOtp = async () => {
     if (!canResend) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -348,113 +348,113 @@ const LoginPage: React.FC = () => {
               <TextField
                 fullWidth
                 label="כתובת אימייל"
-                  type="email"
-                  variant="outlined"
-                  value={email}
-                  onChange={handleEmailChange}
-                  error={!!emailError}
-                  helperText={emailError}
-                  placeholder="הזן את כתובת האימייל שלך"
-                  autoComplete="email"
-                  sx={{ mb: 1 }}
-                />
-                {error && (
-                  <Alert severity={error.includes('נשלח לך מייל') ? 'success' : 'error'} sx={{ mt: 1, mb: 1 }}>
-                    {error}
-                  </Alert>
-                )}
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-                  onClick={handleEmailLogin}
-                  disabled={loading}
-                  sx={{
-                    py: 1.5,
-                    bgcolor: '#882fd7',
-                    '&:hover': {
-                      bgcolor: '#6a1b9a'
-                    }
-                  }}
-                >
-                  {loading ? 'שולח מייל...' : 'שלח לי קוד אימות'}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Typography variant="h6" sx={{ textAlign: 'center', mb: 2 }}>
-                  הזן קוד אימות
-                </Typography>
-                <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, color: 'text.secondary' }}>
-                  נשלח קוד אימות לטלפון:
-                  <br />
-                  <strong>{email}</strong>
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="קוד אימות"
-                  type="text"
-                  variant="outlined"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="000000"
-                  inputProps={{
-                    style: { textAlign: 'center', fontSize: '24px', letterSpacing: '8px' }
-                  }}
-                  sx={{ mb: 1 }}
-                />
-                {error && (
-                  <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
-                    {error}
-                  </Alert>
-                )}
-                <Button
-                  variant="contained"
-                  size="large"
-                  fullWidth
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-                  onClick={handleOtpVerification}
-                  disabled={loading || otp.length !== 6}
-                  sx={{
-                    py: 1.5,
-                    bgcolor: '#882fd7',
-                    '&:hover': {
-                      bgcolor: '#6a1b9a'
-                    }
-                  }}
-                >
-                  {loading ? 'מאמת...' : 'התחבר'}
-                </Button>
-                
-                {/* Resend OTP Section */}
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                  {resendTimer > 0 ? (
-                    <Typography variant="body2" color="text.secondary">
-                      ניתן לשלוח קוד חדש בעוד: {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
-                    </Typography>
-                  ) : canResend ? (
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={handleResendOtp}
-                      disabled={loading}
-                      sx={{
-                        color: '#882fd7',
-                        textDecoration: 'underline',
-                        '&:hover': {
-                          backgroundColor: 'rgba(136, 47, 215, 0.04)',
-                          textDecoration: 'underline'
-                        }
-                      }}
-                    >
-                      שלח קוד חדש
-                    </Button>
-                  ) : null}
-                </Box>
-              </>
-            )}
-          </Box>
+                type="email"
+                variant="outlined"
+                value={email}
+                onChange={handleEmailChange}
+                error={!!emailError}
+                helperText={emailError}
+                placeholder="הזן את כתובת האימייל שלך"
+                autoComplete="email"
+                sx={{ mb: 1 }}
+              />
+              {error && (
+                <Alert severity={error.includes('נשלח לך מייל') ? 'success' : 'error'} sx={{ mt: 1, mb: 1 }}>
+                  {error}
+                </Alert>
+              )}
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                onClick={handleEmailLogin}
+                disabled={loading}
+                sx={{
+                  py: 1.5,
+                  bgcolor: '#882fd7',
+                  '&:hover': {
+                    bgcolor: '#6a1b9a'
+                  }
+                }}
+              >
+                {loading ? 'שולח מייל...' : 'שלח לי קוד אימות'}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" sx={{ textAlign: 'center', mb: 2 }}>
+                הזן קוד אימות
+              </Typography>
+              <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, color: 'text.secondary' }}>
+                נשלח קוד אימות לטלפון:
+                <br />
+                <strong>{email}</strong>
+              </Typography>
+              <TextField
+                fullWidth
+                label="קוד אימות"
+                type="text"
+                variant="outlined"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+                inputProps={{
+                  style: { textAlign: 'center', fontSize: '24px', letterSpacing: '8px' }
+                }}
+                sx={{ mb: 1 }}
+              />
+              {error && (
+                <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
+                  {error}
+                </Alert>
+              )}
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                onClick={handleOtpVerification}
+                disabled={loading || otp.length !== 6}
+                sx={{
+                  py: 1.5,
+                  bgcolor: '#882fd7',
+                  '&:hover': {
+                    bgcolor: '#6a1b9a'
+                  }
+                }}
+              >
+                {loading ? 'מאמת...' : 'התחבר'}
+              </Button>
+
+              {/* Resend OTP Section */}
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                {resendTimer > 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    ניתן לשלוח קוד חדש בעוד: {Math.floor(resendTimer / 60)}:{(resendTimer % 60).toString().padStart(2, '0')}
+                  </Typography>
+                ) : canResend ? (
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={handleResendOtp}
+                    disabled={loading}
+                    sx={{
+                      color: '#882fd7',
+                      textDecoration: 'underline',
+                      '&:hover': {
+                        backgroundColor: 'rgba(136, 47, 215, 0.04)',
+                        textDecoration: 'underline'
+                      }
+                    }}
+                  >
+                    שלח קוד חדש
+                  </Button>
+                ) : null}
+              </Box>
+            </>
+          )}
+        </Box>
 
         {/* Divider */}
         <Divider sx={{ my: 3 }}>
@@ -508,7 +508,7 @@ const LoginPage: React.FC = () => {
             התחבר עם Microsoft
           </Button>
         </Box>
-        
+
         {/* Terms and Privacy Links */}
         <Box sx={{ mt: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
