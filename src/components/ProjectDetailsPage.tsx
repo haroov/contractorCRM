@@ -3669,19 +3669,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 <TextField
                                                     fullWidth
-                                                    label="נ״צ X"
+                                                    label="Latitude (Y)"
                                                     type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
 
                                                 <TextField
                                                     fullWidth
-                                                    label="נ״צ Y"
+                                                    label="Longitude (X)"
                                                     type="number"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                    onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
 
