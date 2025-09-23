@@ -5970,11 +5970,49 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     finalThumbnailUrl: fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl,
                                     finalCreationDate: fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''
                                 })}
+                                
+                                {/* Display clickable text if file exists */}
+                                {fileUploadState.siteOrganizationPlan?.url && (
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography 
+                                            variant="body2" 
+                                            sx={{ 
+                                                color: 'primary.main', 
+                                                cursor: 'pointer',
+                                                textDecoration: 'underline',
+                                                '&:hover': {
+                                                    color: 'primary.dark'
+                                                }
+                                            }}
+                                            onClick={() => window.open(fileUploadState.siteOrganizationPlan?.url, '_blank')}
+                                        >
+                                            תוכנית התארגנות אתר - לחץ לצפייה
+                                        </Typography>
+                                    </Box>
+                                )}
+                                
                                 <FileUpload
                                     label="תוכנית התארגנות אתר"
                                     value={fileUploadState.siteOrganizationPlan?.url || project?.siteOrganizationPlan?.file}
                                     thumbnailUrl={fileUploadState.siteOrganizationPlan?.thumbnailUrl || project?.siteOrganizationPlan?.thumbnailUrl}
                                     onChange={(url, thumbnailUrl) => {
+                                        console.log('🔄 FileUpload onChange called with:', { url, thumbnailUrl });
+                                        
+                                        // Update fileUploadState immediately for UI display
+                                        setFileUploadState(prev => {
+                                            const newState = {
+                                                ...prev,
+                                                siteOrganizationPlan: {
+                                                    ...prev.siteOrganizationPlan,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            };
+                                            console.log('🔄 Updated fileUploadState:', newState);
+                                            return newState;
+                                        });
+                                        
+                                        // Also try to update project state (may fail if project is null)
                                         handleNestedFieldChange('siteOrganizationPlan.file', url);
                                         if (thumbnailUrl) {
                                             handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', thumbnailUrl);
@@ -5992,7 +6030,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     showCreationDate={true}
                                     creationDateValue={fileUploadState.siteOrganizationPlan?.creationDate || project?.siteOrganizationPlan?.fileCreationDate || ''}
-                                    onCreationDateChange={(date) => handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date)}
+                                    onCreationDateChange={(date) => {
+                                        console.log('🔄 FileUpload onCreationDateChange called with:', date);
+                                        
+                                        // Update fileUploadState immediately for UI display
+                                        setFileUploadState(prev => {
+                                            const newState = {
+                                                ...prev,
+                                                siteOrganizationPlan: {
+                                                    ...prev.siteOrganizationPlan,
+                                                    creationDate: date
+                                                }
+                                            };
+                                            console.log('🔄 Updated fileUploadState with creation date:', newState);
+                                            return newState;
+                                        });
+                                        
+                                        // Also try to update project state (may fail if project is null)
+                                        handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date);
+                                    }}
                                     projectId={project?._id || project?.id}
                                 />
                             </Box>
