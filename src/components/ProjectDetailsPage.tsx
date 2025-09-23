@@ -2385,7 +2385,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             >
                                 <Tab label="כללי" />
                                 <Tab label="תוכניות" />
-                                <Tab label="מסמכים" />
+                                <Tab label="נהלים" />
                                 <Tab label="ביטוח" />
                                 <Tab label="הרשאות" />
                                 <Tab label="הערות" />
@@ -5882,12 +5882,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    מסמכים
-                                </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    תוכן טכני יוצג כאן בעתיד...
-                                </Typography>
+                                <FileUpload
+                                    label="תוכנית התארגנות אתר"
+                                    value={project?.siteOrganizationPlan?.file}
+                                    onChange={(url) => handleNestedFieldChange('siteOrganizationPlan.file', url)}
+                                    onDelete={() => handleNestedFieldChange('siteOrganizationPlan.file', '')}
+                                    disabled={mode === 'view' || !canEdit}
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    showCreationDate={true}
+                                    creationDateValue={project?.siteOrganizationPlan?.fileCreationDate || ''}
+                                    onCreationDateChange={(date) => handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', date)}
+                                    projectId={project?._id || project?.id}
+                                />
                             </Box>
                         )}
 
