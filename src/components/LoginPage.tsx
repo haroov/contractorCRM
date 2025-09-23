@@ -203,7 +203,7 @@ const LoginPage: React.FC = () => {
 
   const handleOtpVerification = async () => {
     if (!otp || otp.length !== 6) {
-      setError('נא להזין קוד אימות בן 6 ספרות');
+      setError('נא להזין קוד אימות תקין');
       return;
     }
 
@@ -387,7 +387,7 @@ const LoginPage: React.FC = () => {
                   הזן קוד אימות
                 </Typography>
                 <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, color: 'text.secondary' }}>
-                  נשלח קוד אימות בן 6 ספרות לכתובת:
+                  נשלח קוד אימות לטלפון:
                   <br />
                   <strong>{email}</strong>
                 </Typography>

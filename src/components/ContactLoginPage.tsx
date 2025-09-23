@@ -154,7 +154,7 @@ export default function ContactLoginPage() {
     setError('');
 
     if (loginData.otp.length !== 6) {
-      setError('אנא הזן קוד אימות בן 6 ספרות');
+      setError('אנא הזן קוד אימות תקין');
       setLoading(false);
       return;
     }
