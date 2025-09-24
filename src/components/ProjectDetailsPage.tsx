@@ -427,7 +427,7 @@ const BuildingTable: React.FC<BuildingTableProps> = ({ numberOfBuildings, buildi
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'hidden', maxWidth: '100%' }}>
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -547,7 +547,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'hidden', maxWidth: '100%' }}>
                 <Table size="small" sx={{ minWidth: 400 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -2241,7 +2241,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', overflow: 'hidden' }}>
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', overflow: 'hidden', maxHeight: '100vh' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2478,7 +2478,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     </Box>
 
                     {/* Tab Content */}
-                    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, pb: { xs: 3, sm: 4, md: 6 }, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, pb: { xs: 3, sm: 4, md: 6 }, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
@@ -2572,7 +2572,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
@@ -2839,7 +2839,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {project?.subcontractors && project.subcontractors.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
+                                            <TableContainer component={Paper} sx={{ overflow: 'hidden', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
@@ -5302,7 +5302,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 שירותי חירום
                                             </Typography>
-                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0', overflow: 'hidden', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
