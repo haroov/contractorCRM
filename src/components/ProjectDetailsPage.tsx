@@ -427,7 +427,7 @@ const BuildingTable: React.FC<BuildingTableProps> = ({ numberOfBuildings, buildi
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
@@ -547,8 +547,8 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
 
     return (
         <Box>
-            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, minWidth: 600, overflow: 'hidden' }}>
-                <Table size="small" sx={{ minWidth: 600 }}>
+            <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
+                <Table size="small" sx={{ minWidth: 400 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>גוש</TableCell>
@@ -2241,7 +2241,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8' }}>
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', overflow: 'hidden' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2450,6 +2450,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 value={activeTab}
                                 onChange={handleTabChange}
                                 aria-label="project tabs"
+                                variant="scrollable"
+                                scrollButtons="auto"
                                 sx={{
                                     '& .MuiTab-root': {
                                         color: '#6B7280',
@@ -2476,7 +2478,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     </Box>
 
                     {/* Tab Content */}
-                    <Box sx={{ p: 3, pb: 6, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ p: 3, pb: 6, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
@@ -2570,7 +2572,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
 
                                         {project?.stakeholders && project.stakeholders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'hidden' }}>
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
@@ -2837,7 +2839,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {project?.subcontractors && project.subcontractors.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
+                                            <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
@@ -5300,7 +5302,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 שירותי חירום
                                             </Typography>
-                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
