@@ -24,17 +24,8 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
-# Expose ports
-EXPOSE 3001 5173
-
-# Create a script to run both frontend and backend
-RUN echo '#!/bin/sh\n\
-    echo "Starting Contractor CRM..."\n\
-    echo "Starting backend server..."\n\
-    npm run server &\n\
-    echo "Starting frontend..."\n\
-    npm run dev &\n\
-    wait' > /app/start.sh && chmod +x /app/start.sh
+# Build the frontend
+RUN npm run build
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -45,7 +36,10 @@ ENV MONGODB_URI=mongodb://host.docker.internal:27017/contractor-crm
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+# Expose port
+EXPOSE 10000
+
 # Start the application
-CMD ["/app/start.sh"]
+CMD ["node", "server/index.js"]
 
 

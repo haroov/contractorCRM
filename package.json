@@ -9,6 +9,8 @@
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "dev": "vite",
     "build": "vite build",
+    "postinstall": "npm run install-system-deps",
+    "install-system-deps": "echo 'Installing system dependencies for PDF processing...' && (which apt-get && apt-get update && apt-get install -y poppler-utils chromium-browser || which apk && apk add --no-cache poppler-utils chromium || echo 'System dependencies installation skipped - not supported on this platform')",
     "lint": "eslint .",
     "preview": "vite preview",
     "setup:env": "node scripts/setup-env.js",
