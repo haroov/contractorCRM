@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
+    "start": "node server/index.js",
     "server": "node server/index.js",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "dev": "vite",
