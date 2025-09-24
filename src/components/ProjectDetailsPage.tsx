@@ -2241,7 +2241,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', overflow: 'hidden', width: '100vw', maxWidth: '100vw' }}>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2331,9 +2331,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             alignItems: 'center',
                             p: 1.5,
                             bgcolor: 'white',
-                            color: 'black'
+                            color: 'black',
+                            flexWrap: 'wrap',
+                            gap: 1
                         }}>
-                            <Typography variant="h6" sx={{ fontWeight: 500, color: 'black' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
                                 {mode === 'new' ? 'פרויקט חדש' : project?.projectName || 'פרטי פרויקט'}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
