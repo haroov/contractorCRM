@@ -2243,10 +2243,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     return (
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', overflow: 'hidden' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
-            <Paper elevation={2} sx={{ p: 2, mb: 2, bgcolor: 'white' }}>
+            <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {/* Left side - Logo and title */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
                         <Box
                             sx={{
                                 width: 40,
@@ -2265,7 +2265,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         >
                             <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
                         </Box>
-                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242', fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' } }}>
                             ניהול סיכונים באתרי בניה
                         </Typography>
                     </Box>
@@ -2478,13 +2478,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     </Box>
 
                     {/* Tab Content */}
-                    <Box sx={{ p: 3, pb: 6, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, pb: { xs: 3, sm: 4, md: 6 }, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, bgcolor: 'white', p: 2, borderRadius: 1 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 }, flex: 1, bgcolor: 'white', p: { xs: 1, sm: 2 }, borderRadius: 1 }}>
                                     {/* Row 1: שם הפרויקט, עיר */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
                                         <TextField
                                             fullWidth
                                             label="שם הפרויקט"
@@ -2513,7 +2513,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     />
 
                                     {/* Row 3: תאריך התחלה, משך בחודשים */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
                                         <TextField
                                             fullWidth
                                             label="תאריך התחלה"
@@ -2534,7 +2534,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* Row 4: ערך הפרויקט */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
                                         <TextField
                                             fullWidth
                                             label="ערך הפרויקט (בש״ח)"
@@ -2793,8 +2793,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                 <Box sx={{
                                     display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                                    gap: 3,
+                                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' },
+                                    gap: { xs: 2, sm: 3 },
                                     p: 3,
                                     backgroundColor: 'white',
                                     borderRadius: 2,
@@ -3134,7 +3134,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'flex-start',
-                                                    gap: 1,
+                                                    gap: { xs: 0.5, sm: 1 },
                                                     direction: 'rtl',
                                                     justifyContent: 'flex-start'
                                                 }}>
@@ -3238,7 +3238,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
                                                         מיקום וכתובת
                                                     </Typography>
-                                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, direction: 'rtl' }}>
+                                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(250px, 1fr))' }, gap: 3, direction: 'rtl' }}>
                                                         <TextField
                                                             fullWidth
                                                             label="כתובת (טקסט חופשי)"
@@ -3276,8 +3276,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 {/* Project Details Fields - 2 columns layout */}
                                                 <Box sx={{
                                                     display: 'grid',
-                                                    gridTemplateColumns: 'repeat(2, 1fr)',
-                                                    gap: 2,
+                                                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                                                    gap: { xs: 1, sm: 2 },
                                                     direction: 'rtl'
                                                 }}>
                                                     <Box sx={{
@@ -3827,8 +3827,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     פרטי הבניינים
                                                 </Typography>
 
-                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mb: 3 }}>
-                                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(250px, 1fr))' }, gap: 3, mb: 3 }}>
+                                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
                                                         <TextField
                                                             fullWidth
                                                             label="מספר בניינים"
@@ -3867,7 +3867,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 {/* שדות מרתף - מוצגים אחרי הטבלה */}
-                                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3, mt: 3 }}>
+                                                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(250px, 1fr))' }, gap: 3, mt: 3 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="סה״כ מ״ר בנוי מרתף"
@@ -4111,7 +4111,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {/* Soil Report Fields - Row 1: 3 fields */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: { xs: 1, sm: 1.5 }, mb: 2 }}>
                                             <Autocomplete
                                                 fullWidth
                                                 options={['חולית', 'סלעית', 'חרסיתית', 'אחר']}
@@ -4157,7 +4157,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
 
                                         {/* Soil Report Fields - Row 2: 2 fields with refresh icons */}
-                                        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5, mb: 3 }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: { xs: 1, sm: 1.5 }, mb: 3 }}>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <TextField
                                                     fullWidth
@@ -4255,7 +4255,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 חפירה ויסודות
                                             </Typography>
-                                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 3 }}>
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(250px, 1fr))' }, gap: 3 }}>
 
                                                 <TextField
                                                     fullWidth
@@ -4682,7 +4682,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* סקר סביבתי */}
                                 <Box sx={{ mb: 4 }}>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
                                         <TextField
                                             fullWidth
                                             label="תיאור המצב הקיים"
@@ -5840,7 +5840,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         לוחות זמנים
                                     </Typography>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
                                         <Box sx={{
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
@@ -6126,7 +6126,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         } catch (error) {
                                             console.error('❌ Error deleting file:', error);
                                             alert('שגיאה במחיקת הקובץ: ' + error.message);
-                                            
+
                                             // Revert UI changes if deletion failed
                                             console.log('🔄 Reverting UI changes due to deletion failure');
                                             setFileUploadState(prev => {
@@ -6327,7 +6327,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 </Box>
 
                                 {/* Risk Monitors Grid */}
-                                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
+                                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3 }}>
                                     {/* Safety Monitor */}
                                     <Box sx={{
                                         p: 3,
