@@ -1,11 +1,8 @@
 const { createCanvas } = require("@napi-rs/canvas");
 const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.mjs");
 
-// לא נשתמש ב-worker נפרד בסביבה של serverless
-// pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-//   "pdf.worker.mjs",
-//   import.meta.url
-// ).toString();
+// הגדרת worker ל-pdfjs-dist
+pdfjsLib.GlobalWorkerOptions.workerSrc = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs');
 
 async function pdfFirstPageToPngBuffer(
   pdfBuffer,

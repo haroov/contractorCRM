@@ -86,35 +86,25 @@ router.post('/upload-project-file', (req, res, next) => {
 
         let thumbnailUrl = null;
 
-        // Generate thumbnail for PDF files using new API
+        // Generate thumbnail for PDF files directly
         if (file.mimetype === 'application/pdf') {
-            console.log('📄 PDF file detected, generating thumbnail using new API...');
+            console.log('📄 PDF file detected, generating thumbnail directly...');
             try {
-                // Call the new PDF thumbnail API using form-data package
-                const FormData = require('form-data');
-                const formData = new FormData();
-                formData.append('pdf', file.buffer, {
-                    filename: file.originalname,
-                    contentType: file.mimetype
-                });
-                formData.append('key', `project-${projectId || 'temp'}-${Date.now()}`);
-                formData.append('targetWidth', '200');
+                const { pdfFirstPageToPngBuffer } = require('../lib/pdfThumbnail');
+                const { savePngToVercelBlob } = require('../lib/saveToVercelBlob');
 
-                const thumbnailResponse = await fetch(`${req.protocol}://${req.get('host')}/api/pdf-thumbnail`, {
-                    method: 'POST',
-                    headers: formData.getHeaders(),
-                    body: formData
-                });
+                console.log('🖼️ Creating PDF thumbnail with targetWidth: 200');
+                const png = await pdfFirstPageToPngBuffer(file.buffer, 200);
 
-                if (thumbnailResponse.ok) {
-                    const thumbnailData = await thumbnailResponse.json();
-                    thumbnailUrl = thumbnailData.url;
-                    console.log('✅ Thumbnail generated and uploaded:', thumbnailUrl);
-                } else {
-                    console.error('❌ Thumbnail API failed:', thumbnailResponse.status, await thumbnailResponse.text());
-                }
+                const blobKey = `thumbnails/project-${projectId || 'temp'}-${Date.now()}.png`;
+                console.log('💾 Saving thumbnail to Vercel Blob with key:', blobKey);
+
+                thumbnailUrl = await savePngToVercelBlob(blobKey, png, true);
+                console.log('✅ Thumbnail generated and uploaded:', thumbnailUrl);
+
             } catch (thumbnailError) {
                 console.error('❌ Error generating thumbnail:', thumbnailError);
+                console.error('❌ Thumbnail error stack:', thumbnailError.stack);
                 // Continue without thumbnail - don't fail the upload
             }
         } else {
