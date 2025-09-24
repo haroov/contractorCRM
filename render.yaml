@@ -1,8 +1,10 @@
 services:
   - type: web
     name: contractorCRM
-    runtime: docker
-    dockerfilePath: ./Dockerfile
+    runtime: node
+    nodeVersion: "20.19.0"
+    buildCommand: npm install
+    startCommand: node server/index.js
     envVars:
       - key: MONGODB_URI
         value: "REPLACE_WITH_YOUR_MONGODB_URI"

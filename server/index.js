@@ -3694,8 +3694,18 @@ app.post('/api/scrape-company-info', scrapingLimiter, async (req, res) => {
 
     console.log('🌐 Scraping company info from:', website);
 
-    // Import puppeteer dynamically
-    const puppeteer = require('puppeteer');
+    // Import puppeteer dynamically only in development
+    let puppeteer;
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        puppeteer = require('puppeteer');
+      } catch (error) {
+        console.log('Puppeteer not available:', error.message);
+        throw new Error('Puppeteer not available in production');
+      }
+    } else {
+      throw new Error('Web scraping not available in production');
+    }
 
     // Launch browser
     browser = await puppeteer.launch({

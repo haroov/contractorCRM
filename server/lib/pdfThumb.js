@@ -1,7 +1,17 @@
 const fs = require('fs');
 const path = require('path');
-const { convert } = require('pdf-poppler');
 const pino = require('pino');
+
+// Only import pdf-poppler in development
+let convert;
+try {
+    if (process.env.NODE_ENV !== 'production') {
+        const pdfPoppler = require('pdf-poppler');
+        convert = pdfPoppler.convert;
+    }
+} catch (error) {
+    console.log('pdf-poppler not available:', error.message);
+}
 
 const logger = pino({
     transport: {
@@ -22,6 +32,20 @@ class PDFThumbnailError extends Error {
 
 async function generateThumbnail(options) {
     const startTime = Date.now();
+
+    // In production, return a fallback response
+    if (process.env.NODE_ENV === 'production') {
+        logger.info('PDF thumbnail generation disabled in production');
+        return {
+            success: false,
+            error: 'PDF thumbnail generation not available in production',
+            fallback: true
+        };
+    }
+
+    if (!convert) {
+        throw new PDFThumbnailError('pdf-poppler not available');
+    }
 
     try {
         // Validate inputs
