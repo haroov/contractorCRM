@@ -10,7 +10,7 @@ async function pdfFirstPageToPngBuffer(
   background = "#ffffff"       // רקע ללבן כדי למנוע שקיפות
 ) {
   const loadingTask = pdfjsLib.getDocument({
-    data: pdfBuffer,
+    data: new Uint8Array(pdfBuffer),
     useWorkerFetch: false,
     isEvalSupported: false,
   });
