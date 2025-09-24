@@ -6008,6 +6008,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 console.log('💾 Update data:', updateData);
                                                 await projectsAPI.update(project._id || project.id, updateData);
                                                 console.log('✅ File data saved to database successfully');
+
+                                                // Auto-save the project after successful upload
+                                                console.log('💾 Auto-saving project after upload');
+                                                await handleSave();
+                                                console.log('✅ Project auto-saved after upload');
                                             } catch (error) {
                                                 console.error('❌ Failed to save file data to database:', error);
                                             }
@@ -6032,7 +6037,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             console.log('🗑️ Current file URL:', currentFileUrl);
                                             console.log('🗑️ Current thumbnail URL:', currentThumbnailUrl);
 
-                                            // Delete from blob storage if URLs exist
+                                            // 1. FIRST: Clear UI immediately for better UX
+                                            console.log('🔄 Clearing fileUploadState for immediate UI update');
+                                            setFileUploadState(prev => {
+                                                const newState = {
+                                                    ...prev,
+                                                    siteOrganizationPlan: {
+                                                        url: '',
+                                                        thumbnailUrl: '',
+                                                        creationDate: ''
+                                                    }
+                                                };
+                                                console.log('🔄 New fileUploadState after clearing:', newState);
+                                                return newState;
+                                            });
+
+                                            // Update local state immediately
+                                            handleNestedFieldChange('siteOrganizationPlan.file', '');
+                                            handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
+                                            handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', '');
+
+                                            // 2. THEN: Delete from blob storage if URLs exist
                                             if (currentFileUrl) {
                                                 console.log('🗑️ Deleting file from blob storage:', currentFileUrl);
                                                 const { authenticatedFetch } = await import('../config/api');
@@ -6073,7 +6098,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 console.log('✅ Thumbnail deleted from blob storage successfully');
                                             }
 
-                                            // Update database - clear the file data
+                                            // 3. FINALLY: Update database and auto-save
                                             if (project?._id || project?.id) {
                                                 console.log('🗑️ Updating database to clear file data');
                                                 const { projectsAPI } = await import('../services/api');
@@ -6087,33 +6112,32 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 await projectsAPI.update(projectId, updateData);
                                                 console.log('✅ Database updated successfully');
+
+                                                // Auto-save the project after successful deletion
+                                                console.log('💾 Auto-saving project after deletion');
+                                                await handleSave();
+                                                console.log('✅ Project auto-saved after deletion');
                                             }
-
-                                            // Clear fileUploadState immediately for UI update
-                                            console.log('🔄 Clearing fileUploadState for immediate UI update');
-                                            setFileUploadState(prev => {
-                                                const newState = {
-                                                    ...prev,
-                                                    siteOrganizationPlan: {
-                                                        url: '',
-                                                        thumbnailUrl: '',
-                                                        creationDate: ''
-                                                    }
-                                                };
-                                                console.log('🔄 New fileUploadState after clearing:', newState);
-                                                return newState;
-                                            });
-
-                                            // Update local state (even if project is null, this will be saved when project loads)
-                                            handleNestedFieldChange('siteOrganizationPlan.file', '');
-                                            handleNestedFieldChange('siteOrganizationPlan.thumbnailUrl', '');
-                                            handleNestedFieldChange('siteOrganizationPlan.fileCreationDate', '');
 
                                             console.log('✅ File deletion completed successfully');
 
                                         } catch (error) {
                                             console.error('❌ Error deleting file:', error);
                                             alert('שגיאה במחיקת הקובץ: ' + error.message);
+                                            
+                                            // Revert UI changes if deletion failed
+                                            console.log('🔄 Reverting UI changes due to deletion failure');
+                                            setFileUploadState(prev => {
+                                                const newState = {
+                                                    ...prev,
+                                                    siteOrganizationPlan: {
+                                                        url: currentFileUrl || '',
+                                                        thumbnailUrl: currentThumbnailUrl || '',
+                                                        creationDate: project?.siteOrganizationPlan?.fileCreationDate || ''
+                                                    }
+                                                };
+                                                return newState;
+                                            });
                                         }
                                     }}
                                     disabled={mode === 'view' || !canEdit}
@@ -6149,6 +6173,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 console.log('💾 Update data:', updateData);
                                                 await projectsAPI.update(project._id || project.id, updateData);
                                                 console.log('✅ Creation date saved to database successfully');
+
+                                                // Auto-save the project after successful creation date update
+                                                console.log('💾 Auto-saving project after creation date update');
+                                                await handleSave();
+                                                console.log('✅ Project auto-saved after creation date update');
                                             } catch (error) {
                                                 console.error('❌ Failed to save creation date to database:', error);
                                             }
