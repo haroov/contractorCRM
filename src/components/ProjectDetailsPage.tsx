@@ -2241,7 +2241,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white', width: '100%', maxWidth: '100%' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
