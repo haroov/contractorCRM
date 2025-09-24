@@ -1112,21 +1112,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
-                const keys = fieldPath.split('.');
-                let current: any = newProject;
+            const keys = fieldPath.split('.');
+            let current: any = newProject;
 
-                // Navigate to the parent object
-                for (let i = 0; i < keys.length - 1; i++) {
-                    if (!current[keys[i]]) {
-                        current[keys[i]] = {};
-                    }
-                    current = current[keys[i]];
+            // Navigate to the parent object
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) {
+                    current[keys[i]] = {};
                 }
+                current = current[keys[i]];
+            }
 
-                // Set the final value
-                current[keys[keys.length - 1]] = value;
-                console.log('✅ Updated project field:', fieldPath, 'to:', value);
-                console.log('✅ New project state:', newProject);
+            // Set the final value
+            current[keys[keys.length - 1]] = value;
+            console.log('✅ Updated project field:', fieldPath, 'to:', value);
+            console.log('✅ New project state:', newProject);
                 console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
                 // Also update fileUploadState for immediate UI update
@@ -2241,9 +2241,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%' }}>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
-            <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white' }}>
+            <Paper elevation={2} sx={{ p: { xs: 1, sm: 2 }, mb: 2, bgcolor: 'white', width: '100%', maxWidth: '100%' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {/* Left side - Logo and title */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
@@ -2480,7 +2480,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     </Box>
 
                     {/* Tab Content */}
-                    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, pb: { xs: 3, sm: 4, md: 6 }, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                    <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, pb: { xs: 3, sm: 4, md: 6 }, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto', width: '100%', maxWidth: '100%' }}>
                         {activeTab === 0 && (
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
 
