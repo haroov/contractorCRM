@@ -379,11 +379,20 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                 color: 'grey.600',
                                                 '&:hover': {
                                                     color: 'white',
-                                                    backgroundColor: 'error.main'
+                                                    backgroundColor: 'error.main',
+                                                    '& img': {
+                                                        filter: 'brightness(0) invert(1)'
+                                                    }
                                                 },
                                                 '&:focus': {
                                                     color: 'white',
-                                                    backgroundColor: 'error.main'
+                                                    backgroundColor: 'error.main',
+                                                    '& img': {
+                                                        filter: 'brightness(0) invert(1)'
+                                                    }
+                                                },
+                                                '& img': {
+                                                    filter: 'brightness(0) saturate(0)'
                                                 }
                                             }}
                                             title="מחיקה"
@@ -393,8 +402,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                 alt="מחק"
                                                 style={{
                                                     width: '16px',
-                                                    height: '16px',
-                                                    filter: 'brightness(0) saturate(0)'
+                                                    height: '16px'
                                                 }}
                                             />
                                         </IconButton>
