@@ -2903,19 +2903,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     {/* File Upload Icon */}
                                                     <FileUpload
                                                         label="תוכניות (גרמושקה)"
-                                                        value={fileUploadState.garmoshka?.url || project?.garmoshka?.file}
-                                                        thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.thumbnailUrl}
+                                                        value={fileUploadState.garmoshka?.url || project?.garmoshka?.file || ''}
+                                                        thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.thumbnailUrl || ''}
+                                                        projectId={project?._id || project?.id}
                                                         onChange={async (url, thumbnailUrl) => {
                                                             console.log('🔄 Garmoshka FileUpload onChange called with:', { url, thumbnailUrl });
 
-                                                            // Update fileUploadState for immediate UI feedback
+                                                            // Update fileUploadState immediately for UI display
                                                             setFileUploadState(prev => {
                                                                 const newState = {
                                                                     ...prev,
                                                                     garmoshka: {
-                                                                        url: url || '',
-                                                                        thumbnailUrl: thumbnailUrl || '',
-                                                                        creationDate: prev.garmoshka?.creationDate || ''
+                                                                        ...prev.garmoshka,
+                                                                        url: url,
+                                                                        thumbnailUrl: thumbnailUrl
                                                                     }
                                                                 };
                                                                 console.log('🔄 Updated garmoshka fileUploadState:', newState);
@@ -2931,14 +2932,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.fileCreationDate': newState.garmoshka?.creationDate || '',
-                                                                        // Remove old fields to prevent duplication
-                                                                        'garmoshkaFile': '',
-                                                                        'garmoshkaThumbnail': '',
-                                                                        'garmoshkaFileCreationDate': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaFile': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate': ''
+                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || ''
                                                                     };
 
                                                                     console.log('💾 Garmoshka update data:', updateData);
@@ -2961,18 +2955,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             if (thumbnailUrl) {
                                                                 handleNestedFieldChange('garmoshka.thumbnailUrl', thumbnailUrl);
                                                             }
-                                                            // Update creation date if available
-                                                            if (newState.garmoshka?.creationDate) {
-                                                                handleNestedFieldChange('garmoshka.fileCreationDate', newState.garmoshka.creationDate);
-                                                            }
                                                         }}
                                                         onCreationDateChange={(date) => {
                                                             // Update fileUploadState for immediate UI feedback
                                                             setFileUploadState(prev => ({
                                                                 ...prev,
                                                                 garmoshka: {
-                                                                    url: prev.garmoshka?.url || '',
-                                                                    thumbnailUrl: prev.garmoshka?.thumbnailUrl || '',
+                                                                    ...prev.garmoshka,
                                                                     creationDate: date
                                                                 }
                                                             }));
@@ -3034,14 +3023,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': '',
                                                                         'garmoshka.thumbnailUrl': '',
-                                                                        'garmoshka.fileCreationDate': '',
-                                                                        // Also clear old fields to prevent duplication
-                                                                        'garmoshkaFile': '',
-                                                                        'garmoshkaThumbnail': '',
-                                                                        'garmoshkaFileCreationDate': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaFile': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': '',
-                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate': ''
+                                                                        'garmoshka.fileCreationDate': ''
                                                                     };
 
                                                                     await projectsAPI.update(projectId, updateData);
