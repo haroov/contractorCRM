@@ -50,6 +50,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [optimisticClear, setOptimisticClear] = useState(false);
 
     // Debug logging
     console.log(`📁 FileUpload ${label} - value:`, value);
@@ -59,6 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
         if (file) {
+            if (optimisticClear) setOptimisticClear(false);
             setIsUploading(true);
             try {
                 // Upload to blob storage
@@ -111,6 +113,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
         if (!confirmed) return;
         try {
+            // Optimistic UI - hide immediately
+            setOptimisticClear(true);
             await onDelete();
             if (autoSave && onAutoSave) {
                 console.log('💾 Auto-saving after file deletion...');
@@ -120,6 +124,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
         } catch (error: any) {
             console.error('❌ Delete error:', error);
             alert('שגיאה במחיקת הקובץ: ' + error.message);
+            // Revert UI if failed
+            setOptimisticClear(false);
         }
     };
 
@@ -169,7 +175,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             />
 
             {/* Upload icon or file preview */}
-            {value ? (
+            {value && !optimisticClear ? (
                 <Box
                     sx={{
                         width: 40,
