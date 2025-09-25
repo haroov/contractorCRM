@@ -1013,55 +1013,55 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             return newProject;
         });
 
-        // Auto-calculate GIS values when coordinates change
-        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
-            fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+            // Auto-calculate GIS values when coordinates change
+            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
+                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
             const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
             const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
-            if (x && y && typeof x === 'number' && typeof y === 'number') {
-                console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+                if (x && y && typeof x === 'number' && typeof y === 'number') {
+                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
 
-                gisService.autoCalculateGISValues(
-                    x, y,
-                    (gisValues) => {
-                        console.log('✅ GIS values calculated:', gisValues);
+                    gisService.autoCalculateGISValues(
+                        x, y,
+                        (gisValues) => {
+                            console.log('✅ GIS values calculated:', gisValues);
 
-                        // Update PNG25 value if found
-                        if (gisValues.png25 !== null) {
+                            // Update PNG25 value if found
+                            if (gisValues.png25 !== null) {
                             const updatedProject = { ...project };
-                            if (!updatedProject.engineeringQuestionnaire) {
-                                updatedProject.engineeringQuestionnaire = {};
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                                setProject(updatedProject);
+                                console.log('✅ Updated PNG25 value:', gisValues.png25);
                             }
-                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                updatedProject.engineeringQuestionnaire.soilReport = {};
-                            }
-                            updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
-                            setProject(updatedProject);
-                            console.log('✅ Updated PNG25 value:', gisValues.png25);
-                        }
 
-                        // Update Cresta area if found
-                        if (gisValues.cresta !== null) {
+                            // Update Cresta area if found
+                            if (gisValues.cresta !== null) {
                             const updatedProject = { ...project };
-                            if (!updatedProject.engineeringQuestionnaire) {
-                                updatedProject.engineeringQuestionnaire = {};
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                                setProject(updatedProject);
+                                console.log('✅ Updated Cresta area:', gisValues.cresta);
                             }
-                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                updatedProject.engineeringQuestionnaire.soilReport = {};
-                            }
-                            updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
-                            setProject(updatedProject);
-                            console.log('✅ Updated Cresta area:', gisValues.cresta);
+                        },
+                        (error) => {
+                            console.error('❌ Failed to calculate GIS values:', error);
                         }
-                    },
-                    (error) => {
-                        console.error('❌ Failed to calculate GIS values:', error);
-                    }
-                );
+                    );
+                }
             }
-        }
     }, []);
 
     // Stakeholder management functions
@@ -3262,31 +3262,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                         {/* Address and Coordinates Row */}
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, direction: 'rtl' }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                label="כתובת (טקסט חופשי)"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="כתובת (טקסט חופשי)"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
 
-                                                            <TextField
-                                                                fullWidth
-                                                                label="Latitude (Y)"
-                                                                type="number"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Latitude (Y)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
 
-                                                            <TextField
-                                                                fullWidth
-                                                                label="Longitude (X)"
-                                                                type="number"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Longitude (X)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
                                                         </Box>
 
                                                         {/* Plot Details Table - Full Width */}
@@ -4021,13 +4021,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 const { projectsAPI } = await import('../services/api');
                                                                 console.log('✅ projectsAPI imported successfully');
 
-                                                                // Use the current date for creation date
-                                                                const currentDate = new Date().toISOString().split('T')[0];
+                                                                // Use the creation date from fileUploadState (set by FileUpload component from file.lastModified)
+                                                                const creationDate = fileUploadState.buildingPermit?.creationDate || new Date().toISOString().split('T')[0];
+                                                                console.log('📅 Using creation date:', creationDate, 'from fileUploadState:', fileUploadState.buildingPermit?.creationDate);
 
                                                                 const updateData = {
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.file': url,
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': thumbnailUrl || '',
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': currentDate,
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': creationDate,
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.exists': !!url
                                                                 };
 
@@ -4065,7 +4066,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         console.log('🗑️ BuildingPermit onDelete called');
                                                         console.log('🗑️ Current fileUploadState.buildingPermit:', fileUploadState.buildingPermit);
                                                         console.log('🗑️ Current project.buildingPermit:', project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
-                                                        
+
                                                         // Get current file URLs from state or project
                                                         const currentFileUrl = fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file;
                                                         const currentThumbnailUrl = fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl;
@@ -4114,7 +4115,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 console.log('🗑️ Deleting buildingPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
                                                                 const { authenticatedFetch } = await import('../config/api');
                                                                 console.log('✅ authenticatedFetch imported successfully');
-                                                                
+
                                                                 const response = await authenticatedFetch('/api/delete-project-file', {
                                                                     method: 'DELETE',
                                                                     headers: {
