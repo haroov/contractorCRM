@@ -152,17 +152,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
         if (!onDelete) return;
         const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
         if (!confirmed) return;
+        
+        console.log('🗑️ FileUpload handleDelete called');
+        
         try {
-            // Optimistic UI - hide immediately
-            setOptimisticClear(true);
-            
             // Clear creation date when deleting file
             if (onCreationDateChange) {
                 console.log('🗑️ Clearing creation date on file deletion');
                 onCreationDateChange('');
             }
             
+            // Call onDelete callback first
+            console.log('🗑️ Calling onDelete callback...');
             await onDelete();
+            console.log('✅ onDelete callback completed successfully');
+            
+            // Only hide from UI after successful deletion
+            setOptimisticClear(true);
+            
             if (autoSave && onAutoSave) {
                 console.log('💾 Auto-saving after file deletion...');
                 await onAutoSave();
@@ -171,7 +178,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         } catch (error: any) {
             console.error('❌ Delete error:', error);
             alert('שגיאה במחיקת הקובץ: ' + error.message);
-            // Revert UI if failed
+            // Don't hide from UI on error - keep file visible
             setOptimisticClear(false);
         }
     };
