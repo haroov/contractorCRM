@@ -51,7 +51,7 @@ import {
 } from '@mui/icons-material';
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
-import { Delete as TrashIcon } from '@mui/icons-material';
+// import trashIconUrl from '../assets/icon-trash.svg';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
@@ -388,7 +388,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }}
                                             title="מחק חלקה"
                                         >
-                                            <TrashIcon fontSize="small" />
+                                            <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                         </IconButton>
                                     </TableCell>
                                 )}
@@ -850,158 +850,158 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 };
             }
 
-                // Deep clone the project to ensure React detects the change
-                const newProject = JSON.parse(JSON.stringify(prevProject));
-                const keys = fieldPath.split('.');
-                let current: any = newProject;
+            // Deep clone the project to ensure React detects the change
+            const newProject = JSON.parse(JSON.stringify(prevProject));
+            const keys = fieldPath.split('.');
+            let current: any = newProject;
 
-                // Navigate to the parent object
-                for (let i = 0; i < keys.length - 1; i++) {
-                    if (!current[keys[i]]) {
-                        current[keys[i]] = {};
-                    }
-                    current = current[keys[i]];
+            // Navigate to the parent object
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) {
+                    current[keys[i]] = {};
                 }
+                current = current[keys[i]];
+            }
 
-                // Set the final value
-                current[keys[keys.length - 1]] = value;
-                console.log('✅ Updated project field:', fieldPath, 'to:', value);
-                console.log('✅ New project state:', newProject);
-                console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
+            // Set the final value
+            current[keys[keys.length - 1]] = value;
+            console.log('✅ Updated project field:', fieldPath, 'to:', value);
+            console.log('✅ New project state:', newProject);
+            console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
-                // Also update fileUploadState for immediate UI update
-                if (fieldPath === 'siteOrganizationPlan.file' && value) {
-                    console.log('🔄 Updating fileUploadState with file URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            siteOrganizationPlan: {
-                                ...prev.siteOrganizationPlan,
-                                url: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'siteOrganizationPlan.thumbnailUrl' && value) {
-                    console.log('🔄 Updating fileUploadState with thumbnail URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            siteOrganizationPlan: {
-                                ...prev.siteOrganizationPlan,
-                                thumbnailUrl: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'siteOrganizationPlan.fileCreationDate' && value) {
-                    console.log('🔄 Updating fileUploadState with creation date:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            siteOrganizationPlan: {
-                                ...prev.siteOrganizationPlan,
-                                creationDate: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'garmoshka.file' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                url: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                thumbnailUrl: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                creationDate: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                }
+            // Also update fileUploadState for immediate UI update
+            if (fieldPath === 'siteOrganizationPlan.file' && value) {
+                console.log('🔄 Updating fileUploadState with file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        siteOrganizationPlan: {
+                            ...prev.siteOrganizationPlan,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'siteOrganizationPlan.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        siteOrganizationPlan: {
+                            ...prev.siteOrganizationPlan,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'siteOrganizationPlan.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        siteOrganizationPlan: {
+                            ...prev.siteOrganizationPlan,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'garmoshka.file' && value) {
+                console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        garmoshka: {
+                            ...prev.garmoshka,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        garmoshka: {
+                            ...prev.garmoshka,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        garmoshka: {
+                            ...prev.garmoshka,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            }
 
-                return newProject;
+            return newProject;
         });
 
         // Auto-calculate GIS values when coordinates change
         if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
             fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
-                const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
-                const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+            const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+            const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
-                if (x && y && typeof x === 'number' && typeof y === 'number') {
-                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+            if (x && y && typeof x === 'number' && typeof y === 'number') {
+                console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
 
-                    gisService.autoCalculateGISValues(
-                        x, y,
-                        (gisValues) => {
-                            console.log('✅ GIS values calculated:', gisValues);
+                gisService.autoCalculateGISValues(
+                    x, y,
+                    (gisValues) => {
+                        console.log('✅ GIS values calculated:', gisValues);
 
-                            // Update PNG25 value if found
-                            if (gisValues.png25 !== null) {
-                                const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
-                                setProject(updatedProject);
-                                console.log('✅ Updated PNG25 value:', gisValues.png25);
+                        // Update PNG25 value if found
+                        if (gisValues.png25 !== null) {
+                            const updatedProject = { ...project };
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
                             }
-
-                            // Update Cresta area if found
-                            if (gisValues.cresta !== null) {
-                                const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
-                                setProject(updatedProject);
-                                console.log('✅ Updated Cresta area:', gisValues.cresta);
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
                             }
-                        },
-                        (error) => {
-                            console.error('❌ Failed to calculate GIS values:', error);
+                            updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                            setProject(updatedProject);
+                            console.log('✅ Updated PNG25 value:', gisValues.png25);
                         }
-                    );
-                }
+
+                        // Update Cresta area if found
+                        if (gisValues.cresta !== null) {
+                            const updatedProject = { ...project };
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
+                            }
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
+                            }
+                            updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                            setProject(updatedProject);
+                            console.log('✅ Updated Cresta area:', gisValues.cresta);
+                        }
+                    },
+                    (error) => {
+                        console.error('❌ Failed to calculate GIS values:', error);
+                    }
+                );
             }
+        }
     }, []);
 
     // Stakeholder management functions
@@ -2532,7 +2532,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <TrashIcon fontSize="small" />
+                                                                                <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
@@ -2860,7 +2860,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             }}
                                                                             title="מחק קבלן משנה"
                                                                         >
-                                                                            <TrashIcon fontSize="small" />
+                                                                            <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                         </IconButton>
                                                                     </Box>
                                                                 </TableCell>
