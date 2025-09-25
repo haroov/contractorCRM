@@ -825,7 +825,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     url: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file || '',
                     thumbnailUrl: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl || '',
                     creationDate: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''
-                }
+                },
             }));
         }
     }, [project]);
@@ -969,49 +969,51 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.log('🔄 New fileUploadState:', newState);
                     return newState;
                 });
-            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.file' && value) {
-                console.log('🔄 Updating fileUploadState with buildingPermit file URL:', value);
-                setFileUploadState(prev => {
-                    const newState = {
-                        ...prev,
-                        buildingPermit: {
-                            ...prev.buildingPermit,
-                            url: value
-                        }
-                    };
-                    console.log('🔄 New fileUploadState:', newState);
-                    return newState;
-                });
-            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl' && value) {
-                console.log('🔄 Updating fileUploadState with buildingPermit thumbnail URL:', value);
-                setFileUploadState(prev => {
-                    const newState = {
-                        ...prev,
-                        buildingPermit: {
-                            ...prev.buildingPermit,
-                            thumbnailUrl: value
-                        }
-                    };
-                    console.log('🔄 New fileUploadState:', newState);
-                    return newState;
-                });
-            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate' && value) {
-                console.log('🔄 Updating fileUploadState with buildingPermit creation date:', value);
-                setFileUploadState(prev => {
-                    const newState = {
-                        ...prev,
-                        buildingPermit: {
-                            ...prev.buildingPermit,
-                            creationDate: value
-                        }
-                    };
-                    console.log('🔄 New fileUploadState:', newState);
-                    return newState;
-                });
-            }
 
             return newProject;
         });
+
+        // Update fileUploadState for buildingPermit
+        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.file' && value) {
+            console.log('🔄 Updating fileUploadState with buildingPermit file URL:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    buildingPermit: {
+                        ...prev.buildingPermit,
+                        url: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl' && value) {
+            console.log('🔄 Updating fileUploadState with buildingPermit thumbnail URL:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    buildingPermit: {
+                        ...prev.buildingPermit,
+                        thumbnailUrl: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate' && value) {
+            console.log('🔄 Updating fileUploadState with buildingPermit creation date:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    buildingPermit: {
+                        ...prev.buildingPermit,
+                        creationDate: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        }
 
             // Auto-calculate GIS values when coordinates change
             if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
@@ -3995,218 +3997,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     label="היתר בניה"
                                                     value={fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file || ''}
                                                     thumbnailUrl={fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl || ''}
-                                                    onChange={async (url, thumbnailUrl) => {
+                                                    onChange={(url, thumbnailUrl) => {
                                                         console.log('🔄 BuildingPermit FileUpload onChange called with:', { url, thumbnailUrl });
-
-                                                        // Wait a bit for the creation date to be set by FileUpload component
-                                                        await new Promise(resolve => setTimeout(resolve, 100));
-
-                                                        // Get the current creation date from the existing project data or use current fileUploadState
-                                                        const existingCreationDate = project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || 
-                                                                                      fileUploadState.buildingPermit?.creationDate;
-                                                        
-                                                        console.log('📅 Existing creation date:', existingCreationDate);
-
-                                                        // Update fileUploadState immediately for UI display
-                                                        setFileUploadState(prev => {
-                                                            const newState = {
-                                                                ...prev,
-                                                                buildingPermit: {
-                                                                    ...prev.buildingPermit,
-                                                                    url: url,
-                                                                    thumbnailUrl: thumbnailUrl,
-                                                                    creationDate: existingCreationDate || prev.buildingPermit?.creationDate
-                                                                }
-                                                            };
-                                                            console.log('🔄 Updated buildingPermit fileUploadState:', newState);
-                                                            return newState;
-                                                        });
-
-                                                        // Save to database immediately if we have a project ID
-                                                        console.log('🔍 BuildingPermit onChange - checking project ID:', { projectId: project?._id || project?.id, project });
-                                                        if (project?._id || project?.id) {
-                                                            try {
-                                                                console.log('💾 Saving buildingPermit file data to database immediately...');
-                                                                const { projectsAPI } = await import('../services/api');
-                                                                console.log('✅ projectsAPI imported successfully');
-
-                                                                // Use the existing creation date (preserve original file date)
-                                                                const creationDate = existingCreationDate || fileUploadState.buildingPermit?.creationDate;
-                                                                console.log('📅 Using creation date:', creationDate, 'from existing:', existingCreationDate);
-
-                                                                const updateData = {
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.file': url,
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': thumbnailUrl || '',
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': creationDate,
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.exists': !!url
-                                                                };
-
-                                                                console.log('💾 BuildingPermit update data:', updateData);
-                                                                console.log('💾 About to call projectsAPI.update with project ID:', project._id || project.id);
-                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
-                                                                console.log('✅ BuildingPermit file data saved to database successfully, result:', result);
-
-                                                                // Auto-save the project after successful upload
-                                                                console.log('💾 Auto-saving project after buildingPermit upload');
-                                                                await handleSave();
-                                                                console.log('✅ Project auto-saved after buildingPermit upload');
-                                                            } catch (error) {
-                                                                console.error('❌ Failed to save buildingPermit file data to database:', error);
-                                                                console.error('❌ Error details:', error.message, error.stack);
-                                                            }
-                                                        } else {
-                                                            console.log('⚠️ No project ID available, cannot save buildingPermit to database yet');
-                                                        }
-
-                                                        // Also try to update project state (may fail if project is null)
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
                                                         if (thumbnailUrl) {
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl', thumbnailUrl);
                                                         }
-                                                        // Preserve existing creation date
-                                                        if (existingCreationDate) {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', existingCreationDate);
-                                                        }
-                                                        // Update exists field automatically based on file presence
-                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', !!url);
-                                                    }}
-                                                    onDelete={async () => {
-                                                        console.log('🗑️ BuildingPermit onDelete called');
-                                                        console.log('🗑️ Current fileUploadState.buildingPermit:', fileUploadState.buildingPermit);
-                                                        console.log('🗑️ Current project.buildingPermit:', project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
-                                                        console.log('🗑️ Project ID:', project?._id || project?.id);
-
-                                                        // Get current file URLs from state or project
-                                                        const currentFileUrl = fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file;
-                                                        const currentThumbnailUrl = fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl;
-
-                                                        console.log('🗑️ Extracted URLs for deletion:', { currentFileUrl, currentThumbnailUrl });
-
-                                                        if (!currentFileUrl && !currentThumbnailUrl) {
-                                                            console.log('❌ No buildingPermit file to delete');
-                                                            return;
-                                                        }
-
-                                                        try {
-                                                            // 1. FIRST: Clear from UI immediately for better UX
-                                                            console.log('🗑️ Clearing buildingPermit file from UI');
-                                                            setFileUploadState(prev => ({
-                                                                ...prev,
-                                                                buildingPermit: { url: '', thumbnailUrl: '', creationDate: '' }
-                                                            }));
-
-                                                            // Clear creation date from UI
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', '');
-
-                                                            // Also update project state directly for immediate UI update
-                                                            if (project) {
-                                                                const updatedProject = {
-                                                                    ...project,
-                                                                    engineeringQuestionnaire: {
-                                                                        ...project.engineeringQuestionnaire,
-                                                                        buildingPlan: {
-                                                                            ...project.engineeringQuestionnaire?.buildingPlan,
-                                                                            buildingPermit: {
-                                                                                ...project.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
-                                                                                file: '',
-                                                                                thumbnailUrl: '',
-                                                                                fileCreationDate: '',
-                                                                                exists: false
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                };
-                                                                setProject(updatedProject);
-                                                            }
-
-                                                            // 2. THEN: Delete from blob storage if URLs exist
-                                                            if (currentFileUrl || currentThumbnailUrl) {
-                                                                console.log('🗑️ Deleting buildingPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
-                                                                const { authenticatedFetch } = await import('../config/api');
-                                                                console.log('✅ authenticatedFetch imported successfully');
-
-                                                                const response = await authenticatedFetch('/api/delete-project-file', {
-                                                                    method: 'DELETE',
-                                                                    headers: {
-                                                                        'Content-Type': 'application/json',
-                                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                                                    },
-                                                                    body: JSON.stringify({
-                                                                        fileUrl: currentFileUrl,
-                                                                        thumbnailUrl: currentThumbnailUrl
-                                                                    })
-                                                                });
-
-                                                                console.log('🗑️ Delete response status:', response.status);
-                                                                console.log('🗑️ Delete response ok:', response.ok);
-
-                                                                if (!response.ok) {
-                                                                    const errorText = await response.text();
-                                                                    console.error('❌ Delete buildingPermit file failed:', response.status, errorText);
-                                                                    throw new Error('Failed to delete buildingPermit file from storage');
-                                                                }
-                                                                console.log('✅ BuildingPermit files deleted from blob storage successfully');
-                                                            } else {
-                                                                console.log('⚠️ No URLs to delete from blob storage');
-                                                            }
-
-                                                        // 3. FINALLY: Update database and auto-save
-                                                        console.log('🔍 BuildingPermit onDelete - checking project ID:', { projectId: project?._id || project?.id, project });
-                                                        if (project?._id || project?.id) {
-                                                            console.log('🗑️ Updating database to clear buildingPermit file data');
-                                                            const { projectsAPI } = await import('../services/api');
-                                                            console.log('✅ projectsAPI imported successfully for deletion');
-                                                            const projectId = project._id || project.id;
-
-                                                            const updateData = {
-                                                                'engineeringQuestionnaire.buildingPlan.buildingPermit.file': '',
-                                                                'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': '',
-                                                                'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': '',
-                                                                'engineeringQuestionnaire.buildingPlan.buildingPermit.exists': false
-                                                            };
-
-                                                            console.log('🗑️ BuildingPermit delete update data:', updateData);
-                                                            console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
-                                                            
-                                                            try {
-                                                                const result = await projectsAPI.update(projectId, updateData);
-                                                                console.log('✅ Database updated successfully, result:', result);
-                                                                console.log('✅ BuildingPermit deletion completed successfully');
-                                                            } catch (apiError) {
-                                                                console.error('❌ API update failed:', apiError);
-                                                                throw apiError; // Re-throw to trigger the catch block
-                                                            }
-
-                                                                // Auto-save the project after successful deletion
-                                                                console.log('💾 Auto-saving project after buildingPermit deletion');
-                                                                await handleSave();
-                                                                console.log('✅ Project auto-saved after buildingPermit deletion');
-                                                            } else {
-                                                                console.log('⚠️ No project ID available for buildingPermit deletion');
-                                                            }
-
-                                                            console.log('✅ BuildingPermit file deletion completed successfully');
-
-                                                        } catch (error) {
-                                                            console.error('❌ Error deleting buildingPermit file:', error);
-                                                            alert('שגיאה במחיקת הקובץ: ' + error.message);
-
-                                                            // Revert UI changes if deletion failed
-                                                            console.log('🔄 Reverting UI changes due to buildingPermit deletion failure');
-                                                            setFileUploadState(prev => ({
-                                                                ...prev,
-                                                                buildingPermit: {
-                                                                    url: prev.buildingPermit?.url || '',
-                                                                    thumbnailUrl: prev.buildingPermit?.thumbnailUrl || '',
-                                                                    creationDate: prev.buildingPermit?.creationDate || ''
-                                                                }
-                                                            }));
+                                                        // Update creation date if not already set
+                                                        if (!fileUploadState.buildingPermit?.creationDate) {
+                                                            const currentDate = new Date().toISOString().split('T')[0];
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', currentDate);
                                                         }
                                                     }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                    showCreationDate={true}
-                                                    creationDateValue={fileUploadState.buildingPermit?.creationDate || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''}
                                                     onCreationDateChange={async (date) => {
                                                         console.log('🔄 BuildingPermit onCreationDateChange called with:', date);
 
@@ -4242,6 +4044,114 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         // Also try to update project state (may fail if project is null)
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', date);
                                                     }}
+                                                    onDelete={async () => {
+                                                        // Get current file URLs from state or project
+                                                        const currentFileUrl = fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file;
+                                                        const currentThumbnailUrl = fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl;
+
+                                                        if (!currentFileUrl && !currentThumbnailUrl) {
+                                                            console.log('No buildingPermit file to delete');
+                                                            return;
+                                                        }
+
+                                                        try {
+                                                            // 1. FIRST: Clear from UI immediately for better UX
+                                                            console.log('🗑️ Clearing buildingPermit file from UI');
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                buildingPermit: { url: '', thumbnailUrl: '', creationDate: '' }
+                                                            }));
+
+                                                            // Clear creation date from UI
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', '');
+
+                                                            // Also update project state directly for immediate UI update
+                                                            if (project) {
+                                                                const updatedProject = {
+                                                                    ...project,
+                                                                    engineeringQuestionnaire: {
+                                                                        ...project.engineeringQuestionnaire,
+                                                                        buildingPlan: {
+                                                                            ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                            buildingPermit: {
+                                                                                ...project.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
+                                                                                file: '',
+                                                                                thumbnailUrl: '',
+                                                                                fileCreationDate: ''
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                };
+                                                                setProject(updatedProject);
+                                                            }
+
+                                                            // 2. THEN: Delete from blob storage if URLs exist
+                                                            if (currentFileUrl || currentThumbnailUrl) {
+                                                                console.log('🗑️ Deleting buildingPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
+                                                                const { authenticatedFetch } = await import('../config/api');
+                                                                const response = await authenticatedFetch('/api/delete-project-file', {
+                                                                    method: 'DELETE',
+                                                                    headers: {
+                                                                        'Content-Type': 'application/json',
+                                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                                    },
+                                                                    body: JSON.stringify({
+                                                                        fileUrl: currentFileUrl,
+                                                                        thumbnailUrl: currentThumbnailUrl
+                                                                    })
+                                                                });
+
+                                                                if (!response.ok) {
+                                                                    const errorText = await response.text();
+                                                                    console.error('❌ Delete buildingPermit file failed:', response.status, errorText);
+                                                                    throw new Error('Failed to delete buildingPermit file from storage');
+                                                                }
+                                                                console.log('✅ BuildingPermit files deleted from blob storage successfully');
+                                                            }
+
+                                                            // 3. FINALLY: Update database and auto-save
+                                                            if (project?._id || project?.id) {
+                                                                console.log('🗑️ Updating database to clear buildingPermit file data');
+                                                                const { projectsAPI } = await import('../services/api');
+                                                                const projectId = project._id || project.id;
+
+                                                                const updateData = {
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.file': '',
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': '',
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': ''
+                                                                };
+
+                                                                await projectsAPI.update(projectId, updateData);
+                                                                console.log('✅ Database updated successfully');
+
+                                                                // Auto-save the project after successful deletion
+                                                                console.log('💾 Auto-saving project after buildingPermit deletion');
+                                                                await handleSave();
+                                                                console.log('✅ Project auto-saved after buildingPermit deletion');
+                                                            }
+
+                                                            console.log('✅ BuildingPermit file deletion completed successfully');
+
+                                                        } catch (error) {
+                                                            console.error('❌ Error deleting buildingPermit file:', error);
+                                                            alert('שגיאה במחיקת הקובץ: ' + error.message);
+
+                                                            // Revert UI changes if deletion failed
+                                                            console.log('🔄 Reverting UI changes due to buildingPermit deletion failure');
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                buildingPermit: {
+                                                                    url: prev.buildingPermit?.url || '',
+                                                                    thumbnailUrl: prev.buildingPermit?.thumbnailUrl || '',
+                                                                    creationDate: prev.buildingPermit?.creationDate || ''
+                                                                }
+                                                            }));
+                                                        }
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    showCreationDate={true}
+                                                    creationDateValue={fileUploadState.buildingPermit?.creationDate || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''}
                                                     projectId={project?._id || project?.id}
                                                     autoSave={true}
                                                     onAutoSave={handleSave}
