@@ -3998,6 +3998,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={async (url, thumbnailUrl) => {
                                                         console.log('🔄 BuildingPermit FileUpload onChange called with:', { url, thumbnailUrl });
 
+                                                        // Wait a bit for the creation date to be set by FileUpload component
+                                                        await new Promise(resolve => setTimeout(resolve, 100));
+
+                                                        // Get the current creation date from the existing project data or use current fileUploadState
+                                                        const existingCreationDate = project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || 
+                                                                                      fileUploadState.buildingPermit?.creationDate;
+                                                        
+                                                        console.log('📅 Existing creation date:', existingCreationDate);
+
                                                         // Update fileUploadState immediately for UI display
                                                         setFileUploadState(prev => {
                                                             const newState = {
@@ -4006,7 +4015,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     ...prev.buildingPermit,
                                                                     url: url,
                                                                     thumbnailUrl: thumbnailUrl,
-                                                                    creationDate: prev.buildingPermit?.creationDate || new Date().toISOString().split('T')[0]
+                                                                    creationDate: existingCreationDate || prev.buildingPermit?.creationDate
                                                                 }
                                                             };
                                                             console.log('🔄 Updated buildingPermit fileUploadState:', newState);
@@ -4021,9 +4030,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 const { projectsAPI } = await import('../services/api');
                                                                 console.log('✅ projectsAPI imported successfully');
 
-                                                                // Use the creation date from fileUploadState (set by FileUpload component from file.lastModified)
-                                                                const creationDate = fileUploadState.buildingPermit?.creationDate || new Date().toISOString().split('T')[0];
-                                                                console.log('📅 Using creation date:', creationDate, 'from fileUploadState:', fileUploadState.buildingPermit?.creationDate);
+                                                                // Use the existing creation date (preserve original file date)
+                                                                const creationDate = existingCreationDate || fileUploadState.buildingPermit?.creationDate;
+                                                                console.log('📅 Using creation date:', creationDate, 'from existing:', existingCreationDate);
 
                                                                 const updateData = {
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.file': url,
@@ -4054,10 +4063,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         if (thumbnailUrl) {
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl', thumbnailUrl);
                                                         }
-                                                        // Update creation date if not already set
-                                                        if (!fileUploadState.buildingPermit?.creationDate) {
-                                                            const currentDate = new Date().toISOString().split('T')[0];
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', currentDate);
+                                                        // Preserve existing creation date
+                                                        if (existingCreationDate) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', existingCreationDate);
                                                         }
                                                         // Update exists field automatically based on file presence
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', !!url);
