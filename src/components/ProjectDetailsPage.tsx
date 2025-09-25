@@ -2933,8 +2933,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
                                                                         'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || '',
-                                                                        // Remove duplicate field
-                                                                        'garmoshkaFile': ''
+                                                                        // Remove duplicate fields
+                                                                        'garmoshkaFile': '',
+                                                                        'garmoshkaFileCreationDate': ''
                                                                     };
 
                                                                     console.log('💾 Garmoshka update data:', updateData);
@@ -3048,8 +3049,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         'garmoshka.file': '',
                                                                         'garmoshka.thumbnailUrl': '',
                                                                         'garmoshka.fileCreationDate': '',
-                                                                        // Remove duplicate field
-                                                                        'garmoshkaFile': ''
+                                                                        // Remove duplicate fields
+                                                                        'garmoshkaFile': '',
+                                                                        'garmoshkaFileCreationDate': ''
                                                                     };
 
                                                                     await projectsAPI.update(projectId, updateData);
