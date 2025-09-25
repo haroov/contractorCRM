@@ -4115,13 +4115,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 const projectId = project._id || project.id;
 
                                                                 const updateData = {
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.file': '',
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': '',
-                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': ''
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit': null // מוחק את כל האובייקט המקונן
                                                                 };
 
-                                                                await projectsAPI.update(projectId, updateData);
-                                                                console.log('✅ Database updated successfully');
+                                                                console.log('🗑️ BuildingPermit delete update data (using null for object):', updateData);
+                                                                console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
+                                                                
+                                                                try {
+                                                                    const result = await projectsAPI.update(projectId, updateData);
+                                                                    console.log('✅ Database updated successfully, result:', result);
+                                                                    console.log('✅ BuildingPermit deletion completed successfully');
+                                                                } catch (apiError) {
+                                                                    console.error('❌ API update failed:', apiError);
+                                                                    throw apiError; // Re-throw to trigger the catch block
+                                                                }
 
                                                                 // Auto-save the project after successful deletion
                                                                 console.log('💾 Auto-saving project after buildingPermit deletion');
