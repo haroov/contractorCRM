@@ -5896,9 +5896,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 const newState = {
                                                     ...prev,
                                                     siteOrganizationPlan: {
-                                                        url: currentFileUrl || '',
-                                                        thumbnailUrl: currentThumbnailUrl || '',
-                                                        creationDate: project?.siteOrganizationPlan?.fileCreationDate || ''
+                                                        url: prev.siteOrganizationPlan?.url || '',
+                                                        thumbnailUrl: prev.siteOrganizationPlan?.thumbnailUrl || '',
+                                                        creationDate: prev.siteOrganizationPlan?.creationDate || ''
                                                     }
                                                 };
                                                 return newState;
