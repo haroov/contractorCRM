@@ -403,7 +403,6 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                             <TableRow>
                                 <TableCell colSpan={5} sx={{ padding: 2, textAlign: 'center', borderTop: '1px solid #e0e0e0' }}>
                                     <Button
-                                        startIcon={<AddIcon />}
                                         onClick={addPlot}
                                         disabled={disabled}
                                         variant="outlined"
@@ -830,28 +829,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const handleNestedFieldChange = useCallback((fieldPath: string, value: any) => {
         console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
         console.log('🔄 Current project state:', project);
-        if (project || mode === 'new') {
-            // Use functional update to ensure React detects the change
-            setProject(prevProject => {
-                if (!prevProject && mode !== 'new') return prevProject;
-                
-                // If prevProject is null and we're in new mode, create a basic project structure
-                if (!prevProject && mode === 'new') {
-                    prevProject = {
-                        id: '',
-                        projectName: '',
-                        description: '',
-                        startDate: '',
-                        durationMonths: 0,
-                        valueNis: 0,
-                        city: '',
-                        isClosed: false,
-                        status: 'current',
-                        engineeringQuestionnaire: {
-                            buildingPlan: {}
-                        }
-                    };
-                }
+        // Always try to update, even if project is null
+        setProject(prevProject => {
+            // If prevProject is null, create a basic project structure
+            if (!prevProject) {
+                prevProject = {
+                    id: '',
+                    projectName: '',
+                    description: '',
+                    startDate: '',
+                    durationMonths: 0,
+                    valueNis: 0,
+                    city: '',
+                    isClosed: false,
+                    status: 'current',
+                    mainContractor: '',
+                    engineeringQuestionnaire: {
+                        buildingPlan: {}
+                    }
+                };
+            }
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
@@ -954,11 +951,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 }
 
                 return newProject;
-            });
+        });
 
-            // Auto-calculate GIS values when coordinates change
-            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
-                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+        // Auto-calculate GIS values when coordinates change
+        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
+            fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
                 const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                 const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
@@ -1005,9 +1002,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     );
                 }
             }
-        } else {
-            console.log('❌ No project to update');
-        }
     }, []);
 
     // Stakeholder management functions
