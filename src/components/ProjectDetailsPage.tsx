@@ -2932,10 +2932,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || '',
-                                                                        // Remove duplicate fields
-                                                                        'garmoshkaFile': '',
-                                                                        'garmoshkaFileCreationDate': ''
+                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || ''
                                                                     };
 
                                                                     console.log('💾 Garmoshka update data:', updateData);
@@ -3014,6 +3011,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 // Clear creation date from UI
                                                                 handleNestedFieldChange('garmoshka.fileCreationDate', '');
+                                                                
+                                                                // Also update project state directly for immediate UI update
+                                                                if (project) {
+                                                                    const updatedProject = {
+                                                                        ...project,
+                                                                        garmoshka: {
+                                                                            ...project.garmoshka,
+                                                                            file: '',
+                                                                            thumbnailUrl: '',
+                                                                            fileCreationDate: ''
+                                                                        }
+                                                                    };
+                                                                    setProject(updatedProject);
+                                                                }
 
                                                                 // 2. THEN: Delete from blob storage if URLs exist
                                                                 if (currentFileUrl || currentThumbnailUrl) {
