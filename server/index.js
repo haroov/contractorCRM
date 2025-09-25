@@ -1375,26 +1375,16 @@ app.put('/api/projects/:id', async (req, res) => {
         // This is a nested field like 'garmoshka.0.file'
         updateData[key] = value;
         
-        // Special handling for array fields like 'garmoshka.0.file'
-        if (key.match(/^(\w+)\.\d+\./)) {
-          const arrayField = key.match(/^(\w+)\.\d+\./)[1];
-          const index = parseInt(key.match(/^(\w+)\.(\d+)\./)[2]);
-          
-          // Ensure the array exists and has the right length
-          if (!updateData[arrayField]) {
-            updateData[arrayField] = [];
-          }
-          
-          // Ensure the array has enough elements
-          while (updateData[arrayField].length <= index) {
-            updateData[arrayField].push({});
-          }
-          
-          // Set the specific field in the array element
+        // Special handling for array fields like 'garmoshka.0.file' - but we want to treat garmoshka as object
+        if (key.match(/^(\w+)\.\d+\./) && key.startsWith('garmoshka.0.')) {
+          // For garmoshka, treat it as an object, not an array
           const fieldName = key.split('.').slice(2).join('.');
-          updateData[arrayField][index][fieldName] = value;
+          if (!updateData['garmoshka']) {
+            updateData['garmoshka'] = {};
+          }
+          updateData['garmoshka'][fieldName] = value;
           
-          // Remove the dot notation version since we're handling it as an array
+          // Remove the dot notation version since we're handling it as an object
           delete updateData[key];
         }
       } else {

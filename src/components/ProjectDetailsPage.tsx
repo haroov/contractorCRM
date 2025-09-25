@@ -870,46 +870,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('🔄 New fileUploadState:', newState);
                         return newState;
                     });
-                }         else if (fieldPath === 'garmoshka.file' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        url: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        thumbnailUrl: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        creationDate: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        }
+                } else if (fieldPath === 'garmoshka.file' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                url: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                thumbnailUrl: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                creationDate: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                }
 
                 return newProject;
             });
