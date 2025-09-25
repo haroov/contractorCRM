@@ -813,21 +813,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
-            const keys = fieldPath.split('.');
-            let current: any = newProject;
+                const keys = fieldPath.split('.');
+                let current: any = newProject;
 
-            // Navigate to the parent object
-            for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) {
-                    current[keys[i]] = {};
+                // Navigate to the parent object
+                for (let i = 0; i < keys.length - 1; i++) {
+                    if (!current[keys[i]]) {
+                        current[keys[i]] = {};
+                    }
+                    current = current[keys[i]];
                 }
-                current = current[keys[i]];
-            }
 
-            // Set the final value
-            current[keys[keys.length - 1]] = value;
-            console.log('✅ Updated project field:', fieldPath, 'to:', value);
-            console.log('✅ New project state:', newProject);
+                // Set the final value
+                current[keys[keys.length - 1]] = value;
+                console.log('✅ Updated project field:', fieldPath, 'to:', value);
+                console.log('✅ New project state:', newProject);
                 console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
                 // Also update fileUploadState for immediate UI update
@@ -870,46 +870,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('🔄 New fileUploadState:', newState);
                         return newState;
                     });
-                }         else if (fieldPath === 'garmoshka.0.file' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        url: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'garmoshka.0.thumbnailUrl' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        thumbnailUrl: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'garmoshka.0.fileCreationDate' && value) {
-            console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    garmoshka: {
-                        ...prev.garmoshka,
-                        creationDate: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        }
+                } else if (fieldPath === 'garmoshka.0.file' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                url: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.0.thumbnailUrl' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                thumbnailUrl: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.0.fileCreationDate' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                creationDate: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                }
 
                 return newProject;
             });

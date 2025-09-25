@@ -1372,8 +1372,31 @@ app.put('/api/projects/:id', async (req, res) => {
     // Process each field in the request body
     for (const [key, value] of Object.entries(req.body)) {
       if (key.includes('.')) {
-        // This is a nested field like 'garmoshka.file'
+        // This is a nested field like 'garmoshka.0.file'
         updateData[key] = value;
+        
+        // Special handling for array fields like 'garmoshka.0.file'
+        if (key.match(/^(\w+)\.\d+\./)) {
+          const arrayField = key.match(/^(\w+)\.\d+\./)[1];
+          const index = parseInt(key.match(/^(\w+)\.(\d+)\./)[2]);
+          
+          // Ensure the array exists and has the right length
+          if (!updateData[arrayField]) {
+            updateData[arrayField] = [];
+          }
+          
+          // Ensure the array has enough elements
+          while (updateData[arrayField].length <= index) {
+            updateData[arrayField].push({});
+          }
+          
+          // Set the specific field in the array element
+          const fieldName = key.split('.').slice(2).join('.');
+          updateData[arrayField][index][fieldName] = value;
+          
+          // Remove the dot notation version since we're handling it as an array
+          delete updateData[key];
+        }
       } else {
         // This is a top-level field
         updateData[key] = value;
