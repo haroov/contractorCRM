@@ -388,14 +388,14 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }}
                                             title="מחק חלקה"
                                         >
-                                            <img 
-                                                src="/assets/icon-trash.svg" 
-                                                alt="מחק" 
-                                                style={{ 
-                                                    width: '16px', 
+                                            <img
+                                                src="/assets/icon-trash.svg"
+                                                alt="מחק"
+                                                style={{
+                                                    width: '16px',
                                                     height: '16px',
                                                     filter: 'brightness(0) invert(1)'
-                                                }} 
+                                                }}
                                             />
                                         </IconButton>
                                     </TableCell>
@@ -2540,15 +2540,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <img 
-                                                src="/assets/icon-trash.svg" 
-                                                alt="מחק" 
-                                                style={{ 
-                                                    width: '16px', 
-                                                    height: '16px',
-                                                    filter: 'brightness(0) invert(1)'
-                                                }} 
-                                            />
+                                                                                <img
+                                                                                    src="/assets/icon-trash.svg"
+                                                                                    alt="מחק"
+                                                                                    style={{
+                                                                                        width: '16px',
+                                                                                        height: '16px',
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }}
+                                                                                />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
@@ -2876,15 +2876,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             }}
                                                                             title="מחק קבלן משנה"
                                                                         >
-                                                                            <img 
-                                                src="/assets/icon-trash.svg" 
-                                                alt="מחק" 
-                                                style={{ 
-                                                    width: '16px', 
-                                                    height: '16px',
-                                                    filter: 'brightness(0) invert(1)'
-                                                }} 
-                                            />
+                                                                            <img
+                                                                                src="/assets/icon-trash.svg"
+                                                                                alt="מחק"
+                                                                                style={{
+                                                                                    width: '16px',
+                                                                                    height: '16px',
+                                                                                    filter: 'brightness(0) invert(1)'
+                                                                                }}
+                                                                            />
                                                                         </IconButton>
                                                                     </Box>
                                                                 </TableCell>
@@ -3835,15 +3835,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 {/* שדות מרתף - מוצגים אחרי הטבלה */}
                                                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(250px, 1fr))' }, gap: 3, mt: 3 }}>
-                                                    <TextField
-                                                        fullWidth
-                                                        label="סה״כ מ״ר בנוי מרתף"
-                                                        type="number"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                    />
-
                                                     {/* שדה מרתף משותף - כפתורי כן/לא */}
                                                     <Box sx={{
                                                         border: '1px solid #d1d5db',
@@ -3922,6 +3913,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Button>
                                                         </Box>
                                                     </Box>
+
+                                                    <TextField
+                                                        fullWidth
+                                                        label="סה״כ מ״ר בנוי מרתף"
+                                                        type="number"
+                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.totalBasementArea || ''}
+                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.totalBasementArea', parseFloat(e.target.value) || 0)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                    />
                                                 </Box>
                                             </Box>
                                         )}
