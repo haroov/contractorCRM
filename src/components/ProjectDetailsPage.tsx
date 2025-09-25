@@ -386,7 +386,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     backgroundColor: 'error.main'
                                                 }
                                             }}
-                                            title="מחק חלקה"
+                                            title="מחיקה"
                                         >
                                             <img
                                                 src="/assets/icon-trash.svg"
@@ -394,7 +394,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                 style={{
                                                     width: '16px',
                                                     height: '16px',
-                                                    filter: 'brightness(0) invert(1)'
+                                                    filter: 'brightness(0) saturate(0)'
                                                 }}
                                             />
                                         </IconButton>
