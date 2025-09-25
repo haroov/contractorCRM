@@ -3154,19 +3154,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </IconButton>
                                                         )}
 
-                                                    {/* Creation Date */}
-                                                    <TextField
-                                                        label="תאריך יצירת המסמך"
-                                                        type="date"
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFileCreationDate || ''}
-                                                        onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFileCreationDate', e.target.value)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        size="small"
-                                                        sx={{ minWidth: '180px' }}
-                                                        InputLabelProps={{
-                                                            shrink: true,
-                                                        }}
-                                                    />
                                                 </Box>
 
                                                 {/* תת-סקשן: מיקום וכתובת */}
