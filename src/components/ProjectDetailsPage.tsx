@@ -2843,37 +2843,83 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     {/* File Upload Icon */}
                                                     <FileUpload
-                                                        label=""
-                                                        value={project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
-                                                        onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url, project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                        onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.garmoshkaFile', '', project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        accept=".pdf,.dwg,.dwf"
-                                                        showCreationDate={false}
-                                                        projectId={project?._id || project?.id}
-                                                    />
-
-                                                    {/* File Name */}
-                                                    <Typography
-                                                        variant="body1"
-                                                        sx={{
-                                                            color: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? '#6B46C1' : 'text.secondary',
-                                                            cursor: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'pointer' : 'default',
-                                                            textDecoration: project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? 'underline' : 'none',
-                                                            minWidth: '120px',
-                                                            alignSelf: 'center',
-                                                            '&:hover': project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile ? {
-                                                                color: '#5B21B6',
-                                                            } : {}
-                                                        }}
-                                                        onClick={() => {
-                                                            if (project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) {
-                                                                window.open(project.engineeringQuestionnaire.buildingPlan.garmoshkaFile, '_blank');
+                                                        label="תוכניות (גרמושקה)"
+                                                        value={fileUploadState.garmoshka?.url || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
+                                                        thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaThumbnail}
+                                                        onChange={(url, thumbnailUrl) => {
+                                                            // Update fileUploadState for immediate UI feedback
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                garmoshka: { 
+                                                                    url: url || '', 
+                                                                    thumbnailUrl: thumbnailUrl || '', 
+                                                                    creationDate: prev.garmoshka?.creationDate || ''
+                                                                }
+                                                            }));
+                                                            
+                                                            // Update database
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url);
+                                                            if (thumbnailUrl) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail', thumbnailUrl);
                                                             }
                                                         }}
-                                                    >
-                                                        תוכניות (גרמושקה)
-                                                    </Typography>
+                                                        onCreationDateChange={(date) => {
+                                                            // Update fileUploadState for immediate UI feedback
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                garmoshka: { 
+                                                                    url: prev.garmoshka?.url || '', 
+                                                                    thumbnailUrl: prev.garmoshka?.thumbnailUrl || '', 
+                                                                    creationDate: date
+                                                                }
+                                                            }));
+                                                            
+                                                            // Update database
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate', date);
+                                                        }}
+                                                        onDelete={async () => {
+                                                            // Clear from UI immediately
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                garmoshka: { url: '', thumbnailUrl: '', creationDate: '' }
+                                                            }));
+                                                            
+                                                            // Delete from blob storage
+                                                            if (project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) {
+                                                                try {
+                                                                    const { authenticatedFetch } = await import('../config/api');
+                                                                    await authenticatedFetch('/api/delete-project-file', {
+                                                                        method: 'DELETE',
+                                                                        headers: { 'Content-Type': 'application/json' },
+                                                                        body: JSON.stringify({ 
+                                                                            fileUrl: project.engineeringQuestionnaire.buildingPlan.garmoshkaFile,
+                                                                            thumbnailUrl: project.engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail
+                                                                        })
+                                                                    });
+                                                                } catch (error) {
+                                                                    console.error('Error deleting garmoshka file:', error);
+                                                                }
+                                                            }
+                                                            
+                                                            // Clear from database
+                                                            await projectsAPI.update(project?._id || project?.id, {
+                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaFile': '',
+                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': '',
+                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate': ''
+                                                            });
+                                                            
+                                                            // Auto-save
+                                                            await handleSave();
+                                                        }}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        accept=".pdf,.dwg,.dwf"
+                                                        showCreationDate={true}
+                                                        creationDateValue={fileUploadState.garmoshka?.creationDate || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaCreationDate || ''}
+                                                        projectId={project?._id || project?.id}
+                                                        autoSave={true}
+                                                        onAutoSave={handleSave}
+                                                    />
+
 
                                                     {/* AI Analysis Icon */}
                                                     {(() => {
