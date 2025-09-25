@@ -820,6 +820,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     url: project.garmoshka?.file || '',
                     thumbnailUrl: project.garmoshka?.thumbnailUrl || '',
                     creationDate: project.garmoshka?.fileCreationDate || ''
+                },
+                buildingPermit: {
+                    url: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file || '',
+                    thumbnailUrl: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl || '',
+                    creationDate: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''
                 }
             }));
         }
@@ -951,20 +956,59 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.log('🔄 New fileUploadState:', newState);
                     return newState;
                 });
-            } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
-                console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
-                setFileUploadState(prev => {
-                    const newState = {
-                        ...prev,
-                        garmoshka: {
-                            ...prev.garmoshka,
-                            creationDate: value
-                        }
-                    };
-                    console.log('🔄 New fileUploadState:', newState);
-                    return newState;
-                });
-            }
+             } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
+                 console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+                 setFileUploadState(prev => {
+                     const newState = {
+                         ...prev,
+                         garmoshka: {
+                             ...prev.garmoshka,
+                             creationDate: value
+                         }
+                     };
+                     console.log('🔄 New fileUploadState:', newState);
+                     return newState;
+                 });
+             } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.file' && value) {
+                 console.log('🔄 Updating fileUploadState with buildingPermit file URL:', value);
+                 setFileUploadState(prev => {
+                     const newState = {
+                         ...prev,
+                         buildingPermit: {
+                             ...prev.buildingPermit,
+                             url: value
+                         }
+                     };
+                     console.log('🔄 New fileUploadState:', newState);
+                     return newState;
+                 });
+             } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl' && value) {
+                 console.log('🔄 Updating fileUploadState with buildingPermit thumbnail URL:', value);
+                 setFileUploadState(prev => {
+                     const newState = {
+                         ...prev,
+                         buildingPermit: {
+                             ...prev.buildingPermit,
+                             thumbnailUrl: value
+                         }
+                     };
+                     console.log('🔄 New fileUploadState:', newState);
+                     return newState;
+                 });
+             } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate' && value) {
+                 console.log('🔄 Updating fileUploadState with buildingPermit creation date:', value);
+                 setFileUploadState(prev => {
+                     const newState = {
+                         ...prev,
+                         buildingPermit: {
+                             ...prev.buildingPermit,
+                             creationDate: value
+                         }
+                     };
+                     console.log('🔄 New fileUploadState:', newState);
+                     return newState;
+                 });
+             }
 
             return newProject;
         });
@@ -3949,9 +3993,64 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 <FileUpload
                                                     label="היתר בניה"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file}
-                                                    onChange={(url) => {
+                                                    value={fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file || ''}
+                                                    thumbnailUrl={fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl || ''}
+                                                    onChange={async (url, thumbnailUrl) => {
+                                                        console.log('🔄 BuildingPermit FileUpload onChange called with:', { url, thumbnailUrl });
+
+                                                        // Update fileUploadState immediately for UI display
+                                                        setFileUploadState(prev => {
+                                                            const newState = {
+                                                                ...prev,
+                                                                buildingPermit: {
+                                                                    ...prev.buildingPermit,
+                                                                    url: url,
+                                                                    thumbnailUrl: thumbnailUrl,
+                                                                    creationDate: prev.buildingPermit?.creationDate || new Date().toISOString().split('T')[0]
+                                                                }
+                                                            };
+                                                            console.log('🔄 Updated buildingPermit fileUploadState:', newState);
+                                                            return newState;
+                                                        });
+
+                                                        // Save to database immediately if we have a project ID
+                                                        if (project?._id || project?.id) {
+                                                            try {
+                                                                console.log('💾 Saving buildingPermit file data to database immediately...');
+                                                                const { projectsAPI } = await import('../services/api');
+
+                                                                const updateData = {
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.file': url,
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl': thumbnailUrl || '',
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': fileUploadState.buildingPermit?.creationDate || new Date().toISOString().split('T')[0],
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.exists': !!url
+                                                                };
+
+                                                                console.log('💾 BuildingPermit update data:', updateData);
+                                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                                console.log('✅ BuildingPermit file data saved to database successfully');
+
+                                                                // Auto-save the project after successful upload
+                                                                console.log('💾 Auto-saving project after buildingPermit upload');
+                                                                await handleSave();
+                                                                console.log('✅ Project auto-saved after buildingPermit upload');
+                                                            } catch (error) {
+                                                                console.error('❌ Failed to save buildingPermit file data to database:', error);
+                                                            }
+                                                        } else {
+                                                            console.log('⚠️ No project ID available, cannot save buildingPermit to database yet');
+                                                        }
+
+                                                        // Also try to update project state (may fail if project is null)
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.file', url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl', thumbnailUrl);
+                                                        }
+                                                        // Update creation date if not already set
+                                                        if (!fileUploadState.buildingPermit?.creationDate) {
+                                                            const currentDate = new Date().toISOString().split('T')[0];
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', currentDate);
+                                                        }
                                                         // Update exists field automatically based on file presence
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', !!url);
                                                     }}
@@ -3963,9 +4062,45 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.creationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.creationDate', date)}
+                                                    creationDateValue={fileUploadState.buildingPermit?.creationDate || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''}
+                                                    onCreationDateChange={async (date) => {
+                                                        console.log('🔄 BuildingPermit onCreationDateChange called with:', date);
+
+                                                        // Update fileUploadState immediately for UI display
+                                                        setFileUploadState(prev => ({
+                                                            ...prev,
+                                                            buildingPermit: {
+                                                                ...prev.buildingPermit,
+                                                                creationDate: date
+                                                            }
+                                                        }));
+
+                                                        // Save to database immediately if we have a project ID
+                                                        if (project?._id || project?.id) {
+                                                            try {
+                                                                console.log('💾 Saving buildingPermit creation date to database immediately...');
+                                                                const { projectsAPI } = await import('../services/api');
+
+                                                                const updateData = {
+                                                                    'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate': date
+                                                                };
+
+                                                                console.log('💾 BuildingPermit creation date update data:', updateData);
+                                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                                console.log('✅ BuildingPermit creation date saved to database successfully');
+                                                            } catch (error) {
+                                                                console.error('❌ Failed to save buildingPermit creation date to database:', error);
+                                                            }
+                                                        } else {
+                                                            console.log('⚠️ No project ID available, cannot save buildingPermit creation date to database yet');
+                                                        }
+
+                                                        // Also try to update project state (may fail if project is null)
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate', date);
+                                                    }}
                                                     projectId={project?._id || project?.id}
+                                                    autoSave={true}
+                                                    onAutoSave={handleSave}
                                                 />
 
                                                 <FileUpload
