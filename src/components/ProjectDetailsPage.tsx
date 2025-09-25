@@ -51,7 +51,7 @@ import {
 } from '@mui/icons-material';
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
-import TrashIcon from './TrashIcon';
+import { Delete as TrashIcon } from '@mui/icons-material';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
@@ -830,10 +830,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const handleNestedFieldChange = useCallback((fieldPath: string, value: any) => {
         console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
         console.log('🔄 Current project state:', project);
-        if (project) {
+        if (project || mode === 'new') {
             // Use functional update to ensure React detects the change
             setProject(prevProject => {
-                if (!prevProject) return prevProject;
+                if (!prevProject && mode !== 'new') return prevProject;
+                
+                // If prevProject is null and we're in new mode, create a basic project structure
+                if (!prevProject && mode === 'new') {
+                    prevProject = {
+                        id: '',
+                        projectName: '',
+                        description: '',
+                        startDate: '',
+                        durationMonths: 0,
+                        valueNis: 0,
+                        city: '',
+                        isClosed: false,
+                        status: 'current',
+                        engineeringQuestionnaire: {
+                            buildingPlan: {}
+                        }
+                    };
+                }
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
