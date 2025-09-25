@@ -140,28 +140,62 @@ router.post('/upload-project-file', (req, res, next) => {
 // Delete project file endpoint
 router.delete('/delete-project-file', async (req, res) => {
     try {
-        const { url } = req.body;
+        const { fileUrl, thumbnailUrl } = req.body;
 
-        if (!url) {
+        if (!fileUrl && !thumbnailUrl) {
             return res.status(400).json({
                 success: false,
-                error: 'File URL is required'
+                error: 'At least one file URL is required'
             });
         }
 
-        // Delete from Vercel Blob
-        await del(url);
+        const deletedFiles = [];
+        const errors = [];
+
+        // Delete main file from Vercel Blob
+        if (fileUrl) {
+            try {
+                await del(fileUrl);
+                deletedFiles.push('main file');
+                console.log('✅ Deleted main file:', fileUrl);
+            } catch (error) {
+                console.error('❌ Error deleting main file:', error);
+                errors.push(`Main file: ${error.message}`);
+            }
+        }
+
+        // Delete thumbnail from Vercel Blob
+        if (thumbnailUrl) {
+            try {
+                await del(thumbnailUrl);
+                deletedFiles.push('thumbnail');
+                console.log('✅ Deleted thumbnail:', thumbnailUrl);
+            } catch (error) {
+                console.error('❌ Error deleting thumbnail:', error);
+                errors.push(`Thumbnail: ${error.message}`);
+            }
+        }
+
+        if (errors.length > 0) {
+            return res.status(500).json({
+                success: false,
+                error: 'Some files could not be deleted',
+                details: errors,
+                deletedFiles: deletedFiles
+            });
+        }
 
         res.json({
             success: true,
-            message: 'File deleted successfully'
+            message: `Files deleted successfully: ${deletedFiles.join(', ')}`,
+            deletedFiles: deletedFiles
         });
 
     } catch (error) {
-        console.error('❌ Error deleting project file:', error);
+        console.error('❌ Error deleting project files:', error);
         res.status(500).json({
             success: false,
-            error: 'Failed to delete file',
+            error: 'Failed to delete files',
             details: error.message
         });
     }
