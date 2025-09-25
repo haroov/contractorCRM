@@ -17,7 +17,7 @@ Add these environment variables to your Render service:
 - **Note**: This should match the redirect URI in Google Cloud Console
 
 ### 4. SESSION_SECRET
-- **Value**: `contractor-crm-super-secret-session-key-2024`
+- **Value**: `your-super-secret-session-key-here`
 - **Note**: You can generate a random string for better security
 
 ### 5. OPENAI_API_KEY
@@ -40,4 +40,7 @@ Add these environment variables to your Render service:
 - Keep the Client Secret secure
 - Use strong session secrets in production
 - Regularly rotate your credentials
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_Lro6AvPMANBrbCAL_PDmTD0fTYWtkqG35yEJ0XM9hwbIEOt
+### 6. BLOB_READ_WRITE_TOKEN
+- **Value**: Your Vercel Blob Read/Write Token (from Vercel Dashboard)
+- **Example**: `vercel_blob_rw_...`
+- **Note**: Required for file uploads and blob storage

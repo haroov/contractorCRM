@@ -21,4 +21,4 @@ services:
       - key: GOOGLE_CALLBACK_URL
         value: https://contractor-crm-api.onrender.com/auth/google/callback
       - key: SESSION_SECRET
-        value: contractor-crm-super-secret-session-key-2024
+        value: your-super-secret-session-key-here

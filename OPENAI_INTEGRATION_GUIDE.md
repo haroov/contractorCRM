@@ -42,7 +42,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
 
 # Session Configuration
-SESSION_SECRET=contractor-crm-super-secret-session-key-2024
+SESSION_SECRET=your-super-secret-session-key-here
 
 # MongoDB Configuration
 MONGODB_URI=mongodb://localhost:27017/contractor-crm

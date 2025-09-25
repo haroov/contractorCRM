@@ -49,7 +49,7 @@ Click **Add Environment Variable** for each:
 
 #### SESSION_SECRET
 - **Key**: `SESSION_SECRET`
-- **Value**: `contractor-crm-super-secret-session-key-2024`
+- **Value**: `your-super-secret-session-key-here`
 
 ### 2.3 Save and Deploy
 1. Click **Save Changes**
