@@ -140,26 +140,31 @@ router.post('/upload-project-file', (req, res, next) => {
 // Delete project file endpoint
 router.delete('/delete-project-file', async (req, res) => {
     try {
+        console.log('🗑️ Delete request received:', req.body);
         const { fileUrl, thumbnailUrl } = req.body;
 
         if (!fileUrl && !thumbnailUrl) {
+            console.log('❌ No file URLs provided');
             return res.status(400).json({
                 success: false,
                 error: 'At least one file URL is required'
             });
         }
 
+        console.log('🗑️ File URLs to delete:', { fileUrl, thumbnailUrl });
         const deletedFiles = [];
         const errors = [];
 
         // Delete main file from Vercel Blob
         if (fileUrl) {
             try {
+                console.log('🗑️ Attempting to delete main file:', fileUrl);
                 await del(fileUrl);
                 deletedFiles.push('main file');
-                console.log('✅ Deleted main file:', fileUrl);
+                console.log('✅ Successfully deleted main file:', fileUrl);
             } catch (error) {
                 console.error('❌ Error deleting main file:', error);
+                console.error('❌ Error details:', error.message, error.stack);
                 errors.push(`Main file: ${error.message}`);
             }
         }
@@ -167,16 +172,19 @@ router.delete('/delete-project-file', async (req, res) => {
         // Delete thumbnail from Vercel Blob
         if (thumbnailUrl) {
             try {
+                console.log('🗑️ Attempting to delete thumbnail:', thumbnailUrl);
                 await del(thumbnailUrl);
                 deletedFiles.push('thumbnail');
-                console.log('✅ Deleted thumbnail:', thumbnailUrl);
+                console.log('✅ Successfully deleted thumbnail:', thumbnailUrl);
             } catch (error) {
                 console.error('❌ Error deleting thumbnail:', error);
+                console.error('❌ Error details:', error.message, error.stack);
                 errors.push(`Thumbnail: ${error.message}`);
             }
         }
 
         if (errors.length > 0) {
+            console.log('❌ Some files could not be deleted:', errors);
             return res.status(500).json({
                 success: false,
                 error: 'Some files could not be deleted',
@@ -185,6 +193,7 @@ router.delete('/delete-project-file', async (req, res) => {
             });
         }
 
+        console.log('✅ All files deleted successfully:', deletedFiles);
         res.json({
             success: true,
             message: `Files deleted successfully: ${deletedFiles.join(', ')}`,
@@ -192,7 +201,8 @@ router.delete('/delete-project-file', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error deleting project files:', error);
+        console.error('❌ Unexpected error in delete endpoint:', error);
+        console.error('❌ Error stack:', error.stack);
         res.status(500).json({
             success: false,
             error: 'Failed to delete files',

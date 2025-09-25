@@ -813,21 +813,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
-                const keys = fieldPath.split('.');
-                let current: any = newProject;
+            const keys = fieldPath.split('.');
+            let current: any = newProject;
 
-                // Navigate to the parent object
-                for (let i = 0; i < keys.length - 1; i++) {
-                    if (!current[keys[i]]) {
-                        current[keys[i]] = {};
-                    }
-                    current = current[keys[i]];
+            // Navigate to the parent object
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) {
+                    current[keys[i]] = {};
                 }
+                current = current[keys[i]];
+            }
 
-                // Set the final value
-                current[keys[keys.length - 1]] = value;
-                console.log('✅ Updated project field:', fieldPath, 'to:', value);
-                console.log('✅ New project state:', newProject);
+            // Set the final value
+            current[keys[keys.length - 1]] = value;
+            console.log('✅ Updated project field:', fieldPath, 'to:', value);
+            console.log('✅ New project state:', newProject);
                 console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
                 // Also update fileUploadState for immediate UI update
@@ -5816,17 +5816,24 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (currentFileUrl || currentThumbnailUrl) {
                                                 console.log('🗑️ Deleting files from blob storage:', { currentFileUrl, currentThumbnailUrl });
                                                 const { authenticatedFetch } = await import('../config/api');
+                                                
+                                                const deletePayload = {
+                                                    fileUrl: currentFileUrl,
+                                                    thumbnailUrl: currentThumbnailUrl
+                                                };
+                                                console.log('🗑️ Sending delete request with payload:', deletePayload);
+                                                
                                                 const response = await authenticatedFetch('/api/delete-project-file', {
                                                     method: 'DELETE',
                                                     headers: {
                                                         'Content-Type': 'application/json',
                                                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                                                     },
-                                                    body: JSON.stringify({ 
-                                                        fileUrl: currentFileUrl,
-                                                        thumbnailUrl: currentThumbnailUrl
-                                                    })
+                                                    body: JSON.stringify(deletePayload)
                                                 });
+
+                                                console.log('🗑️ Delete response status:', response.status);
+                                                console.log('🗑️ Delete response ok:', response.ok);
 
                                                 if (!response.ok) {
                                                     const errorText = await response.text();
