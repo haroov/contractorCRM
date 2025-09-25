@@ -118,6 +118,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 if (thumbUrl) setLocalThumbnailUrl(thumbUrl);
                 if (fileUrl) setLocalFileUrl(fileUrl);
 
+                // Set creation date from file if not already set
+                if (onCreationDateChange && !creationDateValue) {
+                    const fileDate = new Date(file.lastModified);
+                    const formattedDate = fileDate.toISOString().split('T')[0];
+                    console.log('📅 Setting creation date from file:', formattedDate);
+                    onCreationDateChange(formattedDate);
+                }
+
                 // Auto-save if enabled
                 if (autoSave && onAutoSave) {
                     console.log('💾 Auto-saving after file upload...');
