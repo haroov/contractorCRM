@@ -1364,40 +1364,58 @@ app.put('/api/projects/:id', async (req, res) => {
     
     const db = client.db('contractor-crm');
     
-    // Handle nested field updates properly
-    const updateData = {
-      updatedAt: new Date()
-    };
+    // Separate fields to set and fields to unset
+    const fieldsToSet = {};
+    const fieldsToUnset = {};
     
     // Process each field in the request body
     for (const [key, value] of Object.entries(req.body)) {
-      if (key.includes('.')) {
+      if (value === null) {
+        // If value is null, we want to unset (delete) the field
+        fieldsToUnset[key] = "";
+        console.log('🗑️ Field to unset (delete):', key);
+      } else if (key.includes('.')) {
         // This is a nested field like 'garmoshka.0.file'
-        updateData[key] = value;
+        fieldsToSet[key] = value;
         
         // Special handling for array fields like 'garmoshka.0.file' - but we want to treat garmoshka as object
         if (key.match(/^(\w+)\.\d+\./) && key.startsWith('garmoshka.0.')) {
           // For garmoshka, treat it as an object, not an array
           const fieldName = key.split('.').slice(2).join('.');
-          if (!updateData['garmoshka']) {
-            updateData['garmoshka'] = {};
+          if (!fieldsToSet['garmoshka']) {
+            fieldsToSet['garmoshka'] = {};
           }
-          updateData['garmoshka'][fieldName] = value;
+          fieldsToSet['garmoshka'][fieldName] = value;
           
           // Remove the dot notation version since we're handling it as an object
-          delete updateData[key];
+          delete fieldsToSet[key];
         }
       } else {
         // This is a top-level field
-        updateData[key] = value;
+        fieldsToSet[key] = value;
       }
     }
     
-    console.log('🔧 Update data to be saved:', JSON.stringify(updateData, null, 2));
+    // Add updatedAt to fields to set
+    fieldsToSet.updatedAt = new Date();
+    
+    console.log('🔧 Fields to set:', JSON.stringify(fieldsToSet, null, 2));
+    console.log('🔧 Fields to unset:', JSON.stringify(fieldsToUnset, null, 2));
+    
+    // Build the update operation
+    const updateOperation = {};
+    if (Object.keys(fieldsToSet).length > 0) {
+      updateOperation.$set = fieldsToSet;
+    }
+    if (Object.keys(fieldsToUnset).length > 0) {
+      updateOperation.$unset = fieldsToUnset;
+    }
+    
+    console.log('🔧 Final update operation:', JSON.stringify(updateOperation, null, 2));
     
     const result = await db.collection('projects').updateOne(
       { _id: new ObjectId(req.params.id) },
-      { $set: updateData }
+      updateOperation
     );
     
     console.log('✅ Updated project:', req.params.id, 'Modified count:', result.modifiedCount);
@@ -3946,3 +3964,4 @@ app.get('/restart', (req, res) => {
 // Removed duplicate debug endpoint
 
 // Server is already started in connectDB().then() above
+

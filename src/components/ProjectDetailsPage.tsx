@@ -1014,55 +1014,55 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         });
 
 
-            // Auto-calculate GIS values when coordinates change
-            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
-                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+        // Auto-calculate GIS values when coordinates change
+        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
+            fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
             const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
             const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
-                if (x && y && typeof x === 'number' && typeof y === 'number') {
-                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+            if (x && y && typeof x === 'number' && typeof y === 'number') {
+                console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
 
-                    gisService.autoCalculateGISValues(
-                        x, y,
-                        (gisValues) => {
-                            console.log('✅ GIS values calculated:', gisValues);
+                gisService.autoCalculateGISValues(
+                    x, y,
+                    (gisValues) => {
+                        console.log('✅ GIS values calculated:', gisValues);
 
-                            // Update PNG25 value if found
-                            if (gisValues.png25 !== null) {
+                        // Update PNG25 value if found
+                        if (gisValues.png25 !== null) {
                             const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
-                                setProject(updatedProject);
-                                console.log('✅ Updated PNG25 value:', gisValues.png25);
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
                             }
-
-                            // Update Cresta area if found
-                            if (gisValues.cresta !== null) {
-                            const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
-                                setProject(updatedProject);
-                                console.log('✅ Updated Cresta area:', gisValues.cresta);
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
                             }
-                        },
-                        (error) => {
-                            console.error('❌ Failed to calculate GIS values:', error);
+                            updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                            setProject(updatedProject);
+                            console.log('✅ Updated PNG25 value:', gisValues.png25);
                         }
-                    );
-                }
+
+                        // Update Cresta area if found
+                        if (gisValues.cresta !== null) {
+                            const updatedProject = { ...project };
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
+                            }
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
+                            }
+                            updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                            setProject(updatedProject);
+                            console.log('✅ Updated Cresta area:', gisValues.cresta);
+                        }
+                    },
+                    (error) => {
+                        console.error('❌ Failed to calculate GIS values:', error);
+                    }
+                );
             }
+        }
     }, []);
 
     // Stakeholder management functions
@@ -3263,31 +3263,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                         {/* Address and Coordinates Row */}
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, direction: 'rtl' }}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="כתובת (טקסט חופשי)"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="כתובת (טקסט חופשי)"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
 
-                                                        <TextField
-                                                            fullWidth
-                                                            label="Latitude (Y)"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="Latitude (Y)"
+                                                                type="number"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
 
-                                                        <TextField
-                                                            fullWidth
-                                                            label="Longitude (X)"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="Longitude (X)"
+                                                                type="number"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
                                                         </Box>
 
                                                         {/* Plot Details Table - Full Width */}
@@ -4120,7 +4120,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('🗑️ BuildingPermit delete update data (using null for object):', updateData);
                                                                 console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
-                                                                
+
                                                                 try {
                                                                     const result = await projectsAPI.update(projectId, updateData);
                                                                     console.log('✅ Database updated successfully, result:', result);
