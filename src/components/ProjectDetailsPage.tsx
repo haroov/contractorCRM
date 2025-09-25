@@ -969,51 +969,50 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.log('🔄 New fileUploadState:', newState);
                     return newState;
                 });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.file' && value) {
+                console.log('🔄 Updating fileUploadState with buildingPermit file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        buildingPermit: {
+                            ...prev.buildingPermit,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with buildingPermit thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        buildingPermit: {
+                            ...prev.buildingPermit,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with buildingPermit creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        buildingPermit: {
+                            ...prev.buildingPermit,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            }
 
             return newProject;
         });
 
-        // Update fileUploadState for buildingPermit
-        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.file' && value) {
-            console.log('🔄 Updating fileUploadState with buildingPermit file URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    buildingPermit: {
-                        ...prev.buildingPermit,
-                        url: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.thumbnailUrl' && value) {
-            console.log('🔄 Updating fileUploadState with buildingPermit thumbnail URL:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    buildingPermit: {
-                        ...prev.buildingPermit,
-                        thumbnailUrl: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.buildingPermit.fileCreationDate' && value) {
-            console.log('🔄 Updating fileUploadState with buildingPermit creation date:', value);
-            setFileUploadState(prev => {
-                const newState = {
-                    ...prev,
-                    buildingPermit: {
-                        ...prev.buildingPermit,
-                        creationDate: value
-                    }
-                };
-                console.log('🔄 New fileUploadState:', newState);
-                return newState;
-            });
-        }
 
             // Auto-calculate GIS values when coordinates change
             if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
