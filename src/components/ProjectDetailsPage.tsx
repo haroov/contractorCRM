@@ -870,6 +870,45 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('🔄 New fileUploadState:', newState);
                         return newState;
                     });
+                } else if (fieldPath === 'garmoshka.file' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                url: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                thumbnailUrl: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
+                } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
+                    console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+                    setFileUploadState(prev => {
+                        const newState = {
+                            ...prev,
+                            garmoshka: {
+                                ...prev.garmoshka,
+                                creationDate: value
+                            }
+                        };
+                        console.log('🔄 New fileUploadState:', newState);
+                        return newState;
+                    });
                 }
 
                 return newProject;
@@ -2872,7 +2911,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.fileCreationDate': prev.garmoshka?.creationDate || '',
+                                                                        'garmoshka.fileCreationDate': newState.garmoshka?.creationDate || '',
                                                                         // Remove old fields to prevent duplication
                                                                         'garmoshkaFile': '',
                                                                         'garmoshkaThumbnail': '',
@@ -2903,8 +2942,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 handleNestedFieldChange('garmoshka.thumbnailUrl', thumbnailUrl);
                                                             }
                                                             // Update creation date if available
-                                                            if (prev.garmoshka?.creationDate) {
-                                                                handleNestedFieldChange('garmoshka.fileCreationDate', prev.garmoshka.creationDate);
+                                                            if (newState.garmoshka?.creationDate) {
+                                                                handleNestedFieldChange('garmoshka.fileCreationDate', newState.garmoshka.creationDate);
                                                             }
                                                         }}
                                                         onCreationDateChange={(date) => {
