@@ -2,19 +2,17 @@ import React, { useState, useRef } from 'react';
 import {
     Box,
     Typography,
-    Button,
     TextField,
     CircularProgress,
     IconButton,
     Tooltip
 } from '@mui/material';
 import {
-    CloudUpload as UploadIcon,
-    Delete as DeleteIcon,
     PictureAsPdf as PdfIcon,
     Image as ImageIcon,
     Description as FileIcon
 } from '@mui/icons-material';
+import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 
 interface FileUploadProps {
     label: string;
@@ -109,20 +107,19 @@ const FileUpload: React.FC<FileUploadProps> = ({
     };
 
     const handleDelete = async () => {
-        if (onDelete) {
-            try {
-                await onDelete();
-                
-                // Auto-save if enabled
-                if (autoSave && onAutoSave) {
-                    console.log('💾 Auto-saving after file deletion...');
-                    await onAutoSave();
-                    console.log('✅ Auto-save completed');
-                }
-            } catch (error) {
-                console.error('❌ Delete error:', error);
-                alert('שגיאה במחיקת הקובץ: ' + error.message);
+        if (!onDelete) return;
+        const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
+        if (!confirmed) return;
+        try {
+            await onDelete();
+            if (autoSave && onAutoSave) {
+                console.log('💾 Auto-saving after file deletion...');
+                await onAutoSave();
+                console.log('✅ Auto-save completed');
             }
+        } catch (error: any) {
+            console.error('❌ Delete error:', error);
+            alert('שגיאה במחיקת הקובץ: ' + error.message);
         }
     };
 
@@ -171,47 +168,77 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 style={{ display: 'none' }}
             />
 
-            {/* Upload button */}
-            <Button
-                variant="outlined"
-                startIcon={isUploading ? <CircularProgress size={20} /> : <UploadIcon />}
-                onClick={() => fileInputRef.current?.click()}
-                disabled={disabled || isUploading}
-                sx={{
-                    borderColor: '#6B46C1',
-                    color: '#6B46C1',
-                    '&:hover': {
-                        borderColor: '#5B21B6',
-                        backgroundColor: '#F3F0FF'
-                    }
-                }}
-            >
-                {isUploading ? 'מעלה...' : 'העלה קובץ'}
-            </Button>
+            {/* Upload icon or file preview */}
+            {value ? (
+                <Box
+                    sx={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: '#6B46C1',
+                        borderRadius: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        border: '1px solid #d0d0d0'
+                    }}
+                    onClick={() => value && window.open(value, '_blank')}
+                    title={label}
+                >
+                    {thumbnailUrl ? (
+                        <img
+                            src={thumbnailUrl}
+                            alt="תצוגה מקדימה"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 4 }}
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                            }}
+                        />
+                    ) : (
+                        <PdfIcon sx={{ fontSize: 24, color: 'white' }} />
+                    )}
 
-            {/* File display */}
-            {value && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {/* File icon/thumbnail */}
-                    {getFileIcon()}
-
-                    {/* Delete button */}
-                    <Tooltip title="מחק קובץ">
+                    {/* Delete X in top-right */}
+                    {!disabled && (
                         <IconButton
-                            size="small"
-                            onClick={handleDelete}
-                            disabled={disabled}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
                             sx={{
-                                color: '#d32f2f',
-                                '&:hover': {
-                                    backgroundColor: '#ffebee'
-                                }
+                                position: 'absolute',
+                                top: -8,
+                                right: -8,
+                                width: 20,
+                                height: 20,
+                                backgroundColor: 'white',
+                                border: '1px solid #d0d0d0',
+                                color: '#f44336',
+                                '&:hover': { backgroundColor: '#ffebee', borderColor: '#f44336' }
                             }}
                         >
-                            <DeleteIcon fontSize="small" />
+                            <Typography sx={{ fontSize: '12px', lineHeight: 1 }}>×</Typography>
                         </IconButton>
-                    </Tooltip>
+                    )}
                 </Box>
+            ) : (
+                <IconButton
+                    disabled={disabled || isUploading}
+                    title={label}
+                    onClick={() => fileInputRef.current?.click()}
+                    sx={{
+                        border: '1px solid #d0d0d0',
+                        borderRadius: 1,
+                        height: 40,
+                        width: 40,
+                        color: '#6B46C1',
+                        '&:hover': { backgroundColor: 'rgba(156, 39, 176, 0.04)', borderColor: '#6B46C1' }
+                    }}
+                >
+                    {isUploading ? <CircularProgress size={20} /> : <GentleCloudUploadIcon fontSize="xlarge" />}
+                </IconButton>
             )}
 
             {/* Label text - clickable if file exists */}
