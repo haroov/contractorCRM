@@ -2846,25 +2846,54 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         label="תוכניות (גרמושקה)"
                                                         value={fileUploadState.garmoshka?.url || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile}
                                                         thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaThumbnail}
-                                                        onChange={(url, thumbnailUrl) => {
+                                                        onChange={async (url, thumbnailUrl) => {
+                                                            console.log('🔄 Garmoshka FileUpload onChange called with:', { url, thumbnailUrl });
+                                                            
                                                             // Update fileUploadState for immediate UI feedback
-                                                            setFileUploadState(prev => ({
-                                                                ...prev,
-                                                                garmoshka: {
-                                                                    url: url || '',
-                                                                    thumbnailUrl: thumbnailUrl || '',
-                                                                    creationDate: prev.garmoshka?.creationDate || ''
-                                                                }
-                                                            }));
+                                                            setFileUploadState(prev => {
+                                                                const newState = {
+                                                                    ...prev,
+                                                                    garmoshka: {
+                                                                        url: url || '',
+                                                                        thumbnailUrl: thumbnailUrl || '',
+                                                                        creationDate: prev.garmoshka?.creationDate || ''
+                                                                    }
+                                                                };
+                                                                console.log('🔄 Updated garmoshka fileUploadState:', newState);
+                                                                return newState;
+                                                            });
 
-                                                            // Update database
+                                                            // Save to database immediately if we have a project ID
+                                                            if (project?._id || project?.id) {
+                                                                try {
+                                                                    console.log('💾 Saving garmoshka file data to database immediately...');
+                                                                    const { projectsAPI } = await import('../services/api');
+
+                                                                    const updateData = {
+                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaFile': url,
+                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': thumbnailUrl || ''
+                                                                    };
+
+                                                                    console.log('💾 Garmoshka update data:', updateData);
+                                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                                    console.log('✅ Garmoshka file data saved to database successfully');
+
+                                                                    // Auto-save the project after successful upload
+                                                                    console.log('💾 Auto-saving project after garmoshka upload');
+                                                                    await handleSave();
+                                                                    console.log('✅ Project auto-saved after garmoshka upload');
+                                                                } catch (error) {
+                                                                    console.error('❌ Failed to save garmoshka file data to database:', error);
+                                                                }
+                                                            } else {
+                                                                console.log('⚠️ No project ID available, cannot save garmoshka to database yet');
+                                                            }
+
+                                                            // Also try to update project state (may fail if project is null)
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaFile', url);
                                                             if (thumbnailUrl) {
                                                                 handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail', thumbnailUrl);
                                                             }
-
-                                                            // Auto-save after file upload
-                                                            handleSave();
                                                         }}
                                                         onCreationDateChange={(date) => {
                                                             // Update fileUploadState for immediate UI feedback
