@@ -2862,20 +2862,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             if (thumbnailUrl) {
                                                                 handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail', thumbnailUrl);
                                                             }
+                                                            
+                                                            // Auto-save after file upload
+                                                            handleSave();
                                                         }}
                                                         onCreationDateChange={(date) => {
                                                             // Update fileUploadState for immediate UI feedback
                                                             setFileUploadState(prev => ({
                                                                 ...prev,
-                                                                garmoshka: {
-                                                                    url: prev.garmoshka?.url || '',
-                                                                    thumbnailUrl: prev.garmoshka?.thumbnailUrl || '',
+                                                                garmoshka: { 
+                                                                    url: prev.garmoshka?.url || '', 
+                                                                    thumbnailUrl: prev.garmoshka?.thumbnailUrl || '', 
                                                                     creationDate: date
                                                                 }
                                                             }));
-
-                                                            // Update database
+                                                            
+                                                            // Update database immediately
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate', date);
+                                                            
+                                                            // Auto-save after date change
+                                                            handleSave();
                                                         }}
                                                         onDelete={async () => {
                                                             // Clear from UI immediately

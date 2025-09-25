@@ -62,7 +62,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         setLocalFileUrl(value);
     }, [value]);
 
-    const previewUrl = thumbnailUrl || localThumbnailUrl || localFileUrl || value;
+    const previewUrl = thumbnailUrl || localThumbnailUrl;
     const fileUrlForOpen = localFileUrl || value;
     // If we have a thumbnail, we should show the file as uploaded even if fileUrl is missing
     const hasFile = (!!fileUrlForOpen || !!previewUrl) && !optimisticClear;
@@ -112,19 +112,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 console.log('🔍 Extracted fileUrl:', fileUrl);
                 console.log('🔍 Extracted thumbUrl:', thumbUrl);
 
-                // Call onChange with both file URL and thumbnail URL
-                onChange(fileUrl, thumbUrl);
-                // Keep thumbnail locally even if parent doesn't persist it
-                if (thumbUrl) setLocalThumbnailUrl(thumbUrl);
-                if (fileUrl) setLocalFileUrl(fileUrl);
-
-                // Set creation date from file if not already set
+                // Set creation date from file if not already set - do this FIRST
                 if (onCreationDateChange && !creationDateValue) {
                     const fileDate = new Date(file.lastModified);
                     const formattedDate = fileDate.toISOString().split('T')[0];
                     console.log('📅 Setting creation date from file:', formattedDate);
                     onCreationDateChange(formattedDate);
                 }
+
+                // Keep thumbnail and file URLs locally for immediate UI update
+                if (thumbUrl) setLocalThumbnailUrl(thumbUrl);
+                if (fileUrl) setLocalFileUrl(fileUrl);
+
+                // Call onChange with both file URL and thumbnail URL
+                onChange(fileUrl, thumbUrl);
 
                 // Auto-save if enabled
                 if (autoSave && onAutoSave) {
