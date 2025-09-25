@@ -228,7 +228,10 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
     };
 
     const addPlot = () => {
-        onPlotDetailsChange([...plotDetails, { block: '', plot: '', subPlot: '', area: '' }]);
+        console.log('🔄 addPlot called, current plotDetails:', plotDetails);
+        const newPlotDetails = [...plotDetails, { block: '', plot: '', subPlot: '', area: '' }];
+        console.log('🔄 new plotDetails:', newPlotDetails);
+        onPlotDetailsChange(newPlotDetails);
     };
 
     const removePlot = (index: number) => {
@@ -402,6 +405,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                     <Button
                                         startIcon={<AddIcon />}
                                         onClick={addPlot}
+                                        disabled={disabled}
                                         variant="outlined"
                                         sx={{
                                             borderColor: '#6B46C1',
@@ -412,7 +416,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }
                                         }}
                                     >
-                                        הוספה
+                                        + הוספה
                                     </Button>
                                 </TableCell>
                             </TableRow>
