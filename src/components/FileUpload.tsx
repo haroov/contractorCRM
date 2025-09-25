@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -51,11 +51,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [optimisticClear, setOptimisticClear] = useState(false);
+    const [localThumbnailUrl, setLocalThumbnailUrl] = useState<string | undefined>(thumbnailUrl);
+    const [localFileUrl, setLocalFileUrl] = useState<string | undefined>(value);
+
+    useEffect(() => {
+        setLocalThumbnailUrl(thumbnailUrl);
+    }, [thumbnailUrl]);
+
+    useEffect(() => {
+        setLocalFileUrl(value);
+    }, [value]);
 
     // Debug logging
     console.log(`📁 FileUpload ${label} - value:`, value);
     console.log(`📁 FileUpload ${label} - thumbnailUrl:`, thumbnailUrl);
+    console.log(`📁 FileUpload ${label} - localFileUrl:`, localFileUrl);
+    console.log(`📁 FileUpload ${label} - localThumbnailUrl:`, localThumbnailUrl);
     console.log(`📁 FileUpload ${label} - isUploading:`, isUploading);
+    console.log(`📁 FileUpload ${label} - hasFile:`, hasFile);
+    console.log(`📁 FileUpload ${label} - hasPreview:`, hasPreview);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
@@ -85,8 +99,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 const result = await response.json();
                 console.log('✅ Upload successful:', result);
 
+                // Normalize response keys
+                const fileUrl = result?.data?.url || result?.data?.fileUrl || result?.url;
+                const thumbUrl = result?.data?.thumbnailUrl || result?.thumbnailUrl;
+
+                console.log('🔍 Extracted fileUrl:', fileUrl);
+                console.log('🔍 Extracted thumbUrl:', thumbUrl);
+
                 // Call onChange with both file URL and thumbnail URL
-                onChange(result.data.fileUrl, result.data.thumbnailUrl);
+                onChange(fileUrl, thumbUrl);
+                // Keep thumbnail locally even if parent doesn't persist it
+                if (thumbUrl) setLocalThumbnailUrl(thumbUrl);
+                if (fileUrl) setLocalFileUrl(fileUrl);
 
                 // Auto-save if enabled
                 if (autoSave && onAutoSave) {
@@ -95,9 +119,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     console.log('✅ Auto-save completed');
                 }
 
-            } catch (error) {
+            } catch (error: any) {
                 console.error('❌ Upload error:', error);
-                alert('שגיאה בהעלאת הקובץ: ' + error.message);
+                const message = error?.message || 'שגיאה לא ידועה';
+                alert('שגיאה בהעלאת הקובץ: ' + message);
             } finally {
                 setIsUploading(false);
                 // Reset file input
@@ -130,10 +155,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
     };
 
     const getFileIcon = () => {
-        if (thumbnailUrl) {
+        const thumb = localThumbnailUrl || thumbnailUrl;
+        if (thumb) {
             return (
                 <img
-                    src={thumbnailUrl}
+                    src={thumb}
                     alt="Thumbnail"
                     style={{
                         width: 40,
@@ -145,22 +171,28 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 />
             );
         }
-        
+
         if (value) {
             // Check file type from URL or value
             const isPdf = value.toLowerCase().includes('.pdf') || value.includes('application/pdf');
-            const isImage = value.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) || 
-                           value.includes('image/');
-            
+            const isImage = value.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ||
+                value.includes('image/');
+
             if (isPdf) {
                 return <PdfIcon sx={{ fontSize: 40, color: '#d32f2f' }} />;
             } else if (isImage) {
                 return <ImageIcon sx={{ fontSize: 40, color: '#1976d2' }} />;
             }
         }
-        
+
         return <FileIcon sx={{ fontSize: 40, color: '#666' }} />;
     };
+
+    const previewUrl = thumbnailUrl || localThumbnailUrl || localFileUrl || value;
+    const fileUrlForOpen = localFileUrl || value;
+    // If we have a thumbnail, we should show the file as uploaded even if fileUrl is missing
+    const hasFile = (!!fileUrlForOpen || !!previewUrl) && !optimisticClear;
+    const hasPreview = !!previewUrl && !optimisticClear;
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
@@ -175,7 +207,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             />
 
             {/* Upload icon or file preview */}
-            {value && !optimisticClear ? (
+            {hasPreview ? (
                 <Box
                     sx={{
                         width: 40,
@@ -189,12 +221,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         cursor: 'pointer',
                         border: '1px solid #d0d0d0'
                     }}
-                    onClick={() => value && window.open(value, '_blank')}
+                    onClick={() => hasFile && window.open(fileUrlForOpen!, '_blank')}
                     title={label}
                 >
-                    {thumbnailUrl ? (
+                    {previewUrl ? (
                         <img
-                            src={thumbnailUrl}
+                            src={previewUrl}
                             alt="תצוגה מקדימה"
                             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 4 }}
                             onError={(e) => {
@@ -251,17 +283,17 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <Typography
                 variant="body2"
                 sx={{
-                    color: value ? '#6B46C1' : 'text.secondary',
+                    color: hasFile ? '#6B46C1' : 'text.secondary',
                     fontSize: '1rem',
                     minWidth: 'fit-content',
-                    cursor: value ? 'pointer' : 'default',
-                    textDecoration: value ? 'underline' : 'none',
-                    '&:hover': value ? {
+                    cursor: hasFile ? 'pointer' : 'default',
+                    textDecoration: hasFile ? 'underline' : 'none',
+                    '&:hover': hasFile ? {
                         color: '#5B21B6',
                         textDecoration: 'underline'
                     } : {}
                 }}
-                onClick={value ? () => window.open(value, '_blank') : undefined}
+                onClick={hasFile ? () => window.open(fileUrlForOpen!, '_blank') : undefined}
             >
                 {label}
             </Typography>
