@@ -3012,7 +3012,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     garmoshka: { url: '', thumbnailUrl: '', creationDate: '' }
                                                                 }));
 
-                                                                // Clear creation date
+                                                                // Clear creation date from UI
                                                                 handleNestedFieldChange('garmoshka.fileCreationDate', '');
 
                                                                 // 2. THEN: Delete from blob storage if URLs exist
