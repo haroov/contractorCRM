@@ -826,6 +826,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     thumbnailUrl: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl || '',
                     creationDate: project.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.fileCreationDate || ''
                 },
+                excavationPermit: {
+                    url: project.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file || '',
+                    thumbnailUrl: project.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl || '',
+                    creationDate: project.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.fileCreationDate || ''
+                },
             }));
         }
     }, [project]);
@@ -1008,61 +1013,100 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     console.log('🔄 New fileUploadState:', newState);
                     return newState;
                 });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.excavationPermit.file' && value) {
+                console.log('🔄 Updating fileUploadState with excavationPermit file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        excavationPermit: {
+                            ...prev.excavationPermit,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with excavationPermit thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        excavationPermit: {
+                            ...prev.excavationPermit,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with excavationPermit creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        excavationPermit: {
+                            ...prev.excavationPermit,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
             }
 
             return newProject;
         });
 
 
-        // Auto-calculate GIS values when coordinates change
-        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
-            fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+            // Auto-calculate GIS values when coordinates change
+            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
+                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
             const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
             const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
-            if (x && y && typeof x === 'number' && typeof y === 'number') {
-                console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+                if (x && y && typeof x === 'number' && typeof y === 'number') {
+                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
 
-                gisService.autoCalculateGISValues(
-                    x, y,
-                    (gisValues) => {
-                        console.log('✅ GIS values calculated:', gisValues);
+                    gisService.autoCalculateGISValues(
+                        x, y,
+                        (gisValues) => {
+                            console.log('✅ GIS values calculated:', gisValues);
 
-                        // Update PNG25 value if found
-                        if (gisValues.png25 !== null) {
+                            // Update PNG25 value if found
+                            if (gisValues.png25 !== null) {
                             const updatedProject = { ...project };
-                            if (!updatedProject.engineeringQuestionnaire) {
-                                updatedProject.engineeringQuestionnaire = {};
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                                setProject(updatedProject);
+                                console.log('✅ Updated PNG25 value:', gisValues.png25);
                             }
-                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                updatedProject.engineeringQuestionnaire.soilReport = {};
-                            }
-                            updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
-                            setProject(updatedProject);
-                            console.log('✅ Updated PNG25 value:', gisValues.png25);
-                        }
 
-                        // Update Cresta area if found
-                        if (gisValues.cresta !== null) {
+                            // Update Cresta area if found
+                            if (gisValues.cresta !== null) {
                             const updatedProject = { ...project };
-                            if (!updatedProject.engineeringQuestionnaire) {
-                                updatedProject.engineeringQuestionnaire = {};
+                                if (!updatedProject.engineeringQuestionnaire) {
+                                    updatedProject.engineeringQuestionnaire = {};
+                                }
+                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                    updatedProject.engineeringQuestionnaire.soilReport = {};
+                                }
+                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                                setProject(updatedProject);
+                                console.log('✅ Updated Cresta area:', gisValues.cresta);
                             }
-                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                updatedProject.engineeringQuestionnaire.soilReport = {};
-                            }
-                            updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
-                            setProject(updatedProject);
-                            console.log('✅ Updated Cresta area:', gisValues.cresta);
+                        },
+                        (error) => {
+                            console.error('❌ Failed to calculate GIS values:', error);
                         }
-                    },
-                    (error) => {
-                        console.error('❌ Failed to calculate GIS values:', error);
-                    }
-                );
+                    );
+                }
             }
-        }
     }, []);
 
     // Stakeholder management functions
@@ -3263,31 +3307,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                         {/* Address and Coordinates Row */}
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, direction: 'rtl' }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                label="כתובת (טקסט חופשי)"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="כתובת (טקסט חופשי)"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
 
-                                                            <TextField
-                                                                fullWidth
-                                                                label="Latitude (Y)"
-                                                                type="number"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Latitude (Y)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
 
-                                                            <TextField
-                                                                fullWidth
-                                                                label="Longitude (X)"
-                                                                type="number"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                            />
+                                                        <TextField
+                                                            fullWidth
+                                                            label="Longitude (X)"
+                                                            type="number"
+                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                        />
                                                         </Box>
 
                                                         {/* Plot Details Table - Full Width */}
@@ -4186,24 +4230,176 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 />
 
                                                 <FileUpload
-                                                    label="היתר חפירה ודיפון"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file}
-                                                    onChange={(url) => {
+                                                    label="היתר חפירה"
+                                                    value={fileUploadState.excavationPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file || ''}
+                                                    thumbnailUrl={fileUploadState.excavationPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl || ''}
+                                                    onChange={(url, thumbnailUrl) => {
+                                                        console.log('🔄 ExcavationPermit FileUpload onChange called with:', { url, thumbnailUrl });
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
-                                                        // Update exists field automatically based on file presence
-                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', !!url);
+                                                        if (thumbnailUrl) {
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
+                                                        }
+                                                        // Update creation date if not already set
+                                                        if (!fileUploadState.excavationPermit?.creationDate) {
+                                                            const currentDate = new Date().toISOString().split('T')[0];
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                        }
                                                     }}
-                                                    onDelete={() => {
-                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', '');
-                                                        // Update exists field automatically when file is deleted
-                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.exists', false);
+                                                    onDelete={async () => {
+                                                        // Get current file URLs from state or project
+                                                        const currentFileUrl = fileUploadState.excavationPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file;
+                                                        const currentThumbnailUrl = fileUploadState.excavationPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl;
+
+                                                        if (!currentFileUrl && !currentThumbnailUrl) {
+                                                            console.log('No excavationPermit file to delete');
+                                                            return;
+                                                        }
+
+                                                        try {
+                                                            // 1. FIRST: Clear from UI immediately for better UX
+                                                            console.log('🗑️ Clearing excavationPermit file from UI');
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                excavationPermit: { url: '', thumbnailUrl: '', creationDate: '' }
+                                                            }));
+
+                                                            // Clear creation date from UI
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', '');
+
+                                                            // Also update project state directly for immediate UI update
+                                                            if (project) {
+                                                                const updatedProject = {
+                                                                    ...project,
+                                                                    engineeringQuestionnaire: {
+                                                                        ...project.engineeringQuestionnaire,
+                                                                        buildingPlan: {
+                                                                            ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                            excavationPermit: {
+                                                                                ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                                                file: '',
+                                                                                thumbnailUrl: '',
+                                                                                fileCreationDate: ''
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                };
+                                                                setProject(updatedProject);
+                                                            }
+
+                                                            // 2. THEN: Delete from blob storage if URLs exist
+                                                            if (currentFileUrl || currentThumbnailUrl) {
+                                                                console.log('🗑️ Deleting excavationPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
+                                                                const { authenticatedFetch } = await import('../config/api');
+                                                                const response = await authenticatedFetch('/api/delete-project-file', {
+                                                                    method: 'DELETE',
+                                                                    headers: {
+                                                                        'Content-Type': 'application/json',
+                                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                                    },
+                                                                    body: JSON.stringify({
+                                                                        fileUrl: currentFileUrl,
+                                                                        thumbnailUrl: currentThumbnailUrl
+                                                                    })
+                                                                });
+
+                                                                if (!response.ok) {
+                                                                    const errorText = await response.text();
+                                                                    console.error('❌ Delete excavationPermit file failed:', response.status, errorText);
+                                                                    throw new Error('Failed to delete excavationPermit file from storage');
+                                                                }
+                                                                console.log('✅ ExcavationPermit files deleted from blob storage successfully');
+                                                            }
+
+                                                            // 3. FINALLY: Update database and auto-save
+                                                            if (project?._id || project?.id) {
+                                                                console.log('🗑️ Updating database to clear excavationPermit file data');
+                                                                const { projectsAPI } = await import('../services/api');
+                                                                const projectId = project._id || project.id;
+
+                                                                const updateData = {
+                                                                    'engineeringQuestionnaire.buildingPlan.excavationPermit': null // מוחק את כל האובייקט המקונן
+                                                                };
+
+                                                                console.log('🗑️ ExcavationPermit delete update data (using null for object):', updateData);
+                                                                console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
+
+                                                                try {
+                                                                    const result = await projectsAPI.update(projectId, updateData);
+                                                                    console.log('✅ Database updated successfully, result:', result);
+                                                                    console.log('✅ ExcavationPermit deletion completed successfully');
+                                                                } catch (apiError) {
+                                                                    console.error('❌ API update failed:', apiError);
+                                                                    throw apiError; // Re-throw to trigger the catch block
+                                                                }
+
+                                                                // Auto-save the project after successful deletion
+                                                                console.log('💾 Auto-saving project after excavationPermit deletion');
+                                                                await handleSave();
+                                                                console.log('✅ Project auto-saved after excavationPermit deletion');
+                                                            } else {
+                                                                console.log('⚠️ No project ID available for excavationPermit deletion');
+                                                            }
+
+                                                            console.log('✅ ExcavationPermit file deletion completed successfully');
+
+                                                        } catch (error: any) {
+                                                            console.error('❌ Error deleting excavationPermit file:', error);
+                                                            alert('שגיאה במחיקת הקובץ: ' + error.message);
+
+                                                            // Revert UI changes if deletion failed
+                                                            console.log('🔄 Reverting UI changes due to excavationPermit deletion failure');
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                excavationPermit: {
+                                                                    url: prev.excavationPermit?.url || '',
+                                                                    thumbnailUrl: prev.excavationPermit?.thumbnailUrl || '',
+                                                                    creationDate: prev.excavationPermit?.creationDate || ''
+                                                                }
+                                                            }));
+                                                        }
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     accept=".pdf,.jpg,.jpeg,.png"
                                                     showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.creationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.creationDate', date)}
+                                                    creationDateValue={fileUploadState.excavationPermit?.creationDate || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.fileCreationDate || ''}
+                                                    onCreationDateChange={async (date) => {
+                                                        console.log('🔄 ExcavationPermit onCreationDateChange called with:', date);
+
+                                                        // Update fileUploadState immediately for UI display
+                                                        setFileUploadState(prev => ({
+                                                            ...prev,
+                                                            excavationPermit: {
+                                                                ...prev.excavationPermit,
+                                                                creationDate: date
+                                                            }
+                                                        }));
+
+                                                        // Save to database immediately if we have a project ID
+                                                        if (project?._id || project?.id) {
+                                                            try {
+                                                                console.log('💾 Saving excavationPermit creation date to database immediately...');
+                                                                const { projectsAPI } = await import('../services/api');
+
+                                                                const updateData = {
+                                                                    'engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate': date
+                                                                };
+
+                                                                console.log('💾 ExcavationPermit creation date update data:', updateData);
+                                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                                console.log('✅ ExcavationPermit creation date saved to database successfully');
+                                                            } catch (error) {
+                                                                console.error('❌ Failed to save excavationPermit creation date to database:', error);
+                                                            }
+                                                        } else {
+                                                            console.log('⚠️ No project ID available, cannot save excavationPermit creation date to database yet');
+                                                        }
+
+                                                        // Also try to update project state (may fail if project is null)
+                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', date);
+                                                    }}
                                                     projectId={project?._id || project?.id}
+                                                    autoSave={true}
+                                                    onAutoSave={handleSave}
                                                 />
 
                                                 <FileUpload
