@@ -2916,7 +2916,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     garmoshka: {
                                                                         ...prev.garmoshka,
                                                                         url: url,
-                                                                        thumbnailUrl: thumbnailUrl
+                                                                        thumbnailUrl: thumbnailUrl,
+                                                                        creationDate: prev.garmoshka?.creationDate || new Date().toISOString().split('T')[0]
                                                                     }
                                                                 };
                                                                 console.log('🔄 Updated garmoshka fileUploadState:', newState);
@@ -2932,7 +2933,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || ''
+                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || new Date().toISOString().split('T')[0]
                                                                     };
 
                                                                     console.log('💾 Garmoshka update data:', updateData);
@@ -2954,6 +2955,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             handleNestedFieldChange('garmoshka.file', url);
                                                             if (thumbnailUrl) {
                                                                 handleNestedFieldChange('garmoshka.thumbnailUrl', thumbnailUrl);
+                                                            }
+                                                            // Update creation date if not already set
+                                                            if (!fileUploadState.garmoshka?.creationDate) {
+                                                                const currentDate = new Date().toISOString().split('T')[0];
+                                                                handleNestedFieldChange('garmoshka.fileCreationDate', currentDate);
                                                             }
                                                         }}
                                                         onCreationDateChange={async (date) => {
@@ -3011,7 +3017,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 // Clear creation date from UI
                                                                 handleNestedFieldChange('garmoshka.fileCreationDate', '');
-                                                                
+
                                                                 // Also update project state directly for immediate UI update
                                                                 if (project) {
                                                                     const updatedProject = {
