@@ -62,6 +62,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
         setLocalFileUrl(value);
     }, [value]);
 
+    const previewUrl = thumbnailUrl || localThumbnailUrl || localFileUrl || value;
+    const fileUrlForOpen = localFileUrl || value;
+    // If we have a thumbnail, we should show the file as uploaded even if fileUrl is missing
+    const hasFile = (!!fileUrlForOpen || !!previewUrl) && !optimisticClear;
+    const hasPreview = !!previewUrl && !optimisticClear;
+
     // Debug logging
     console.log(`📁 FileUpload ${label} - value:`, value);
     console.log(`📁 FileUpload ${label} - thumbnailUrl:`, thumbnailUrl);
@@ -187,12 +193,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
         return <FileIcon sx={{ fontSize: 40, color: '#666' }} />;
     };
-
-    const previewUrl = thumbnailUrl || localThumbnailUrl || localFileUrl || value;
-    const fileUrlForOpen = localFileUrl || value;
-    // If we have a thumbnail, we should show the file as uploaded even if fileUrl is missing
-    const hasFile = (!!fileUrlForOpen || !!previewUrl) && !optimisticClear;
-    const hasPreview = !!previewUrl && !optimisticClear;
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
