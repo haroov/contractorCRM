@@ -2106,7 +2106,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             </Paper>
 
             {/* Project Card - Same style as contractor card */}
-            <Box sx={{ p: 2, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Project Header and Tabs - Combined Sticky */}
                     <Box sx={{
