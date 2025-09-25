@@ -154,6 +154,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
         try {
             // Optimistic UI - hide immediately
             setOptimisticClear(true);
+            
+            // Clear creation date when deleting file
+            if (onCreationDateChange) {
+                console.log('🗑️ Clearing creation date on file deletion');
+                onCreationDateChange('');
+            }
+            
             await onDelete();
             if (autoSave && onAutoSave) {
                 console.log('💾 Auto-saving after file deletion...');
