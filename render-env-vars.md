@@ -40,3 +40,4 @@ Add these environment variables to your Render service:
 - Keep the Client Secret secure
 - Use strong session secrets in production
 - Regularly rotate your credentials
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_Lro6AvPMANBrbCAL_PDmTD0fTYWtkqG35yEJ0XM9hwbIEOt
