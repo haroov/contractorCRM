@@ -2881,39 +2881,88 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate', date);
                                                         }}
                                                         onDelete={async () => {
-                                                            // Clear from UI immediately
-                                                            setFileUploadState(prev => ({
-                                                                ...prev,
-                                                                garmoshka: { url: '', thumbnailUrl: '', creationDate: '' }
-                                                            }));
+                                                            // Get current file URLs from state or project
+                                                            const currentFileUrl = fileUploadState.garmoshka?.url || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile;
+                                                            const currentThumbnailUrl = fileUploadState.garmoshka?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaThumbnail;
 
-                                                            // Delete from blob storage
-                                                            if (project?.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile) {
-                                                                try {
-                                                                    const { authenticatedFetch } = await import('../config/api');
-                                                                    await authenticatedFetch('/api/delete-project-file', {
-                                                                        method: 'DELETE',
-                                                                        headers: { 'Content-Type': 'application/json' },
-                                                                        body: JSON.stringify({
-                                                                            fileUrl: project.engineeringQuestionnaire.buildingPlan.garmoshkaFile,
-                                                                            thumbnailUrl: project.engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail
-                                                                        })
-                                                                    });
-                                                                } catch (error) {
-                                                                    console.error('Error deleting garmoshka file:', error);
-                                                                }
+                                                            if (!currentFileUrl && !currentThumbnailUrl) {
+                                                                console.log('No garmoshka file to delete');
+                                                                return;
                                                             }
 
-                                                            // Clear from database
-                                                            const { projectsAPI } = await import('../services/api');
-                                                            await projectsAPI.update(project?._id || project?.id, {
-                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaFile': '',
-                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': '',
-                                                                'engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate': ''
-                                                            });
+                                                            try {
+                                                                // 1. FIRST: Clear from UI immediately for better UX
+                                                                console.log('🗑️ Clearing garmoshka file from UI');
+                                                                setFileUploadState(prev => ({
+                                                                    ...prev,
+                                                                    garmoshka: { url: '', thumbnailUrl: '', creationDate: '' }
+                                                                }));
 
-                                                            // Auto-save
-                                                            await handleSave();
+                                                                // Clear creation date
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate', '');
+
+                                                                // 2. THEN: Delete from blob storage if URLs exist
+                                                                if (currentFileUrl || currentThumbnailUrl) {
+                                                                    console.log('🗑️ Deleting garmoshka files from blob storage:', { currentFileUrl, currentThumbnailUrl });
+                                                                    const { authenticatedFetch } = await import('../config/api');
+                                                                    const response = await authenticatedFetch('/api/delete-project-file', {
+                                                                        method: 'DELETE',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json',
+                                                                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            fileUrl: currentFileUrl,
+                                                                            thumbnailUrl: currentThumbnailUrl
+                                                                        })
+                                                                    });
+
+                                                                    if (!response.ok) {
+                                                                        const errorText = await response.text();
+                                                                        console.error('❌ Delete garmoshka file failed:', response.status, errorText);
+                                                                        throw new Error('Failed to delete garmoshka file from storage');
+                                                                    }
+                                                                    console.log('✅ Garmoshka files deleted from blob storage successfully');
+                                                                }
+
+                                                                // 3. FINALLY: Update database and auto-save
+                                                                if (project?._id || project?.id) {
+                                                                    console.log('🗑️ Updating database to clear garmoshka file data');
+                                                                    const { projectsAPI } = await import('../services/api');
+                                                                    const projectId = project._id || project.id;
+
+                                                                    const updateData = {
+                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaFile': '',
+                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaThumbnail': '',
+                                                                        'engineeringQuestionnaire.buildingPlan.garmoshkaCreationDate': ''
+                                                                    };
+
+                                                                    await projectsAPI.update(projectId, updateData);
+                                                                    console.log('✅ Database updated successfully');
+
+                                                                    // Auto-save the project after successful deletion
+                                                                    console.log('💾 Auto-saving project after garmoshka deletion');
+                                                                    await handleSave();
+                                                                    console.log('✅ Project auto-saved after garmoshka deletion');
+                                                                }
+
+                                                                console.log('✅ Garmoshka file deletion completed successfully');
+
+                                                            } catch (error) {
+                                                                console.error('❌ Error deleting garmoshka file:', error);
+                                                                alert('שגיאה במחיקת הקובץ: ' + error.message);
+
+                                                                // Revert UI changes if deletion failed
+                                                                console.log('🔄 Reverting UI changes due to garmoshka deletion failure');
+                                                                setFileUploadState(prev => ({
+                                                                    ...prev,
+                                                                    garmoshka: {
+                                                                        url: prev.garmoshka?.url || '',
+                                                                        thumbnailUrl: prev.garmoshka?.thumbnailUrl || '',
+                                                                        creationDate: prev.garmoshka?.creationDate || ''
+                                                                    }
+                                                                }));
+                                                            }
                                                         }}
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.dwg,.dwf"
