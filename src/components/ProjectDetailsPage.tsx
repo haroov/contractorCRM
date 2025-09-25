@@ -4245,8 +4245,38 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
                                                         }
                                                         
+                                                        // Save to database immediately if we have a project ID
+                                                        if (url && (project?._id || project?.id)) {
+                                                            try {
+                                                                console.log('💾 Saving excavationPermit file data to database immediately...');
+                                                                const { projectsAPI } = await import('../services/api');
+
+                                                                const updateData: any = {
+                                                                    'engineeringQuestionnaire.buildingPlan.excavationPermit.file': url
+                                                                };
+
+                                                                if (thumbnailUrl) {
+                                                                    updateData['engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl'] = thumbnailUrl;
+                                                                }
+
+                                                                // Add creation date if not already set
+                                                                if (!fileUploadState.excavationPermit?.creationDate) {
+                                                                    const currentDate = new Date().toISOString().split('T')[0];
+                                                                    updateData['engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate'] = currentDate;
+                                                                }
+
+                                                                console.log('💾 ExcavationPermit file update data:', updateData);
+                                                                await projectsAPI.update(project._id || project.id, updateData);
+                                                                console.log('✅ ExcavationPermit file data saved to database successfully');
+                                                            } catch (error) {
+                                                                console.error('❌ Failed to save excavationPermit file data to database:', error);
+                                                            }
+                                                        } else {
+                                                            console.log('⚠️ No project ID available, cannot save excavationPermit file data to database yet');
+                                                        }
+                                                        
                                                         // Auto-save after successful file upload
-                                                        if (url && project?._id || project?.id) {
+                                                        if (url && (project?._id || project?.id)) {
                                                             try {
                                                                 console.log('💾 Auto-saving project after excavationPermit file upload');
                                                                 await handleSave();
