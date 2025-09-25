@@ -2932,7 +2932,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': url,
                                                                         'garmoshka.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || ''
+                                                                        'garmoshka.fileCreationDate': fileUploadState.garmoshka?.creationDate || '',
+                                                                        // Remove duplicate field
+                                                                        'garmoshkaFile': ''
                                                                     };
 
                                                                     console.log('💾 Garmoshka update data:', updateData);
@@ -2956,8 +2958,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 handleNestedFieldChange('garmoshka.thumbnailUrl', thumbnailUrl);
                                                             }
                                                         }}
-                                                        onCreationDateChange={(date) => {
-                                                            // Update fileUploadState for immediate UI feedback
+                                                        onCreationDateChange={async (date) => {
+                                                            console.log('🔄 Garmoshka onCreationDateChange called with:', date);
+
+                                                            // Update fileUploadState immediately for UI display
                                                             setFileUploadState(prev => ({
                                                                 ...prev,
                                                                 garmoshka: {
@@ -2966,7 +2970,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }
                                                             }));
 
-                                                            // Update database immediately
+                                                            // Save to database immediately if we have a project ID
+                                                            if (project?._id || project?.id) {
+                                                                try {
+                                                                    console.log('💾 Saving garmoshka creation date to database immediately...');
+                                                                    const { projectsAPI } = await import('../services/api');
+
+                                                                    const updateData = {
+                                                                        'garmoshka.fileCreationDate': date
+                                                                    };
+
+                                                                    console.log('💾 Garmoshka creation date update data:', updateData);
+                                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                                    console.log('✅ Garmoshka creation date saved to database successfully');
+                                                                } catch (error) {
+                                                                    console.error('❌ Failed to save garmoshka creation date to database:', error);
+                                                                }
+                                                            } else {
+                                                                console.log('⚠️ No project ID available, cannot save garmoshka creation date to database yet');
+                                                            }
+
+                                                            // Also try to update project state (may fail if project is null)
                                                             handleNestedFieldChange('garmoshka.fileCreationDate', date);
                                                         }}
                                                         onDelete={async () => {
@@ -3023,7 +3047,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const updateData = {
                                                                         'garmoshka.file': '',
                                                                         'garmoshka.thumbnailUrl': '',
-                                                                        'garmoshka.fileCreationDate': ''
+                                                                        'garmoshka.fileCreationDate': '',
+                                                                        // Remove duplicate field
+                                                                        'garmoshkaFile': ''
                                                                     };
 
                                                                     await projectsAPI.update(projectId, updateData);
