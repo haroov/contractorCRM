@@ -813,21 +813,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
-                const keys = fieldPath.split('.');
-                let current: any = newProject;
+            const keys = fieldPath.split('.');
+            let current: any = newProject;
 
-                // Navigate to the parent object
-                for (let i = 0; i < keys.length - 1; i++) {
-                    if (!current[keys[i]]) {
-                        current[keys[i]] = {};
-                    }
-                    current = current[keys[i]];
+            // Navigate to the parent object
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (!current[keys[i]]) {
+                    current[keys[i]] = {};
                 }
+                current = current[keys[i]];
+            }
 
-                // Set the final value
-                current[keys[keys.length - 1]] = value;
-                console.log('✅ Updated project field:', fieldPath, 'to:', value);
-                console.log('✅ New project state:', newProject);
+            // Set the final value
+            current[keys[keys.length - 1]] = value;
+            console.log('✅ Updated project field:', fieldPath, 'to:', value);
+            console.log('✅ New project state:', newProject);
                 console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
                 // Also update fileUploadState for immediate UI update
@@ -5840,27 +5840,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     console.error('❌ Delete file failed:', response.status, errorText);
                                                     throw new Error('Failed to delete file from storage');
                                                 }
-                                                console.log('✅ File deleted from blob storage successfully');
-                                            }
-
-                                            if (currentThumbnailUrl) {
-                                                console.log('🗑️ Deleting thumbnail from blob storage:', currentThumbnailUrl);
-                                                const { authenticatedFetch } = await import('../config/api');
-                                                const response = await authenticatedFetch('/api/delete-project-file', {
-                                                    method: 'DELETE',
-                                                    headers: {
-                                                        'Content-Type': 'application/json',
-                                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                                    },
-                                                    body: JSON.stringify({ url: currentThumbnailUrl })
-                                                });
-
-                                                if (!response.ok) {
-                                                    const errorText = await response.text();
-                                                    console.error('❌ Delete thumbnail failed:', response.status, errorText);
-                                                    throw new Error('Failed to delete thumbnail from storage');
-                                                }
-                                                console.log('✅ Thumbnail deleted from blob storage successfully');
+                                                console.log('✅ Files deleted from blob storage successfully');
                                             }
 
                                             // 3. FINALLY: Update database and auto-save
