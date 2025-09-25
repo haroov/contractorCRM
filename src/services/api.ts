@@ -115,6 +115,11 @@ export const projectsAPI = {
 
   // Update project
   update: async (id: string, project: any) => {
+    console.log('🔍 projectsAPI.update called with:');
+    console.log('🔍 ID:', id);
+    console.log('🔍 Project data:', JSON.stringify(project, null, 2));
+    console.log('🔍 Full URL:', `/api/projects/${id}`);
+    
     const response = await authenticatedFetch(`/api/projects/${id}`, {
       method: 'PUT',
       headers: {
@@ -123,6 +128,9 @@ export const projectsAPI = {
       body: JSON.stringify(project),
     });
     
+    console.log('🔍 Response status:', response.status);
+    console.log('🔍 Response ok:', response.ok);
+    
     if (!response.ok) {
       console.error('❌ API Error:', response.status, response.statusText);
       const errorText = await response.text();
@@ -130,7 +138,9 @@ export const projectsAPI = {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
     
-    return response.json();
+    const result = await response.json();
+    console.log('🔍 API Response result:', JSON.stringify(result, null, 2));
+    return result;
   },
 
   // Delete project

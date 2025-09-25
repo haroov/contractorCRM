@@ -4120,11 +4120,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('🗑️ BuildingPermit delete update data (using null for object):', updateData);
                                                                 console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
+                                                                
+                                                                // Add detailed logging for debugging
+                                                                console.log('🔍 DEBUG: Full API call details:');
+                                                                console.log('🔍 DEBUG: URL will be: /api/projects/' + projectId);
+                                                                console.log('🔍 DEBUG: Method: PUT');
+                                                                console.log('🔍 DEBUG: Headers: Content-Type: application/json');
+                                                                console.log('🔍 DEBUG: Body (stringified):', JSON.stringify(updateData));
 
                                                                 try {
                                                                     const result = await projectsAPI.update(projectId, updateData);
                                                                     console.log('✅ Database updated successfully, result:', result);
                                                                     console.log('✅ BuildingPermit deletion completed successfully');
+                                                                    
+                                                                    // Verify the deletion worked by fetching the updated project
+                                                                    console.log('🔍 Verifying deletion by fetching updated project...');
+                                                                    try {
+                                                                        const updatedProject = await projectsAPI.getById(projectId);
+                                                                        console.log('🔍 Updated project buildingPermit field:', updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
+                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit === null || 
+                                                                            updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit === undefined) {
+                                                                            console.log('✅ Verification: buildingPermit successfully deleted from MongoDB');
+                                                                        } else {
+                                                                            console.log('❌ Verification: buildingPermit still exists in MongoDB:', updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
+                                                                        }
+                                                                    } catch (verificationError) {
+                                                                        console.error('❌ Verification failed:', verificationError);
+                                                                    }
                                                                 } catch (apiError) {
                                                                     console.error('❌ API update failed:', apiError);
                                                                     throw apiError; // Re-throw to trigger the catch block
