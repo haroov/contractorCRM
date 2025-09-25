@@ -2033,7 +2033,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto' }}>
             {/* Main Header with System Name and Profile - Same as contractor card */}
             <Paper elevation={2} sx={{
                 p: { xs: 1, sm: 2 },
