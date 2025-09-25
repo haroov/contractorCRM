@@ -786,6 +786,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     }, [project, contractorName]);
 
+    // Update fileUploadState when project data is loaded
+    useEffect(() => {
+        if (project) {
+            console.log('🔄 Updating fileUploadState with project data:', project);
+            setFileUploadState(prev => ({
+                ...prev,
+                siteOrganizationPlan: {
+                    url: project.siteOrganizationPlan?.file || '',
+                    thumbnailUrl: project.siteOrganizationPlan?.thumbnailUrl || '',
+                    creationDate: project.siteOrganizationPlan?.fileCreationDate || ''
+                },
+                garmoshka: {
+                    url: project.garmoshka?.file || '',
+                    thumbnailUrl: project.garmoshka?.thumbnailUrl || '',
+                    creationDate: project.garmoshka?.fileCreationDate || ''
+                }
+            }));
+        }
+    }, [project]);
+
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
         // Save active tab to URL parameters
