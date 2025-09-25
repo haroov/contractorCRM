@@ -388,7 +388,15 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }}
                                             title="מחק חלקה"
                                         >
-                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                            <img 
+                                                src="/assets/icon-trash.svg" 
+                                                alt="מחק" 
+                                                style={{ 
+                                                    width: '16px', 
+                                                    height: '16px',
+                                                    filter: 'brightness(0) invert(1)'
+                                                }} 
+                                            />
                                         </IconButton>
                                     </TableCell>
                                 )}
@@ -2532,7 +2540,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                <img 
+                                                src="/assets/icon-trash.svg" 
+                                                alt="מחק" 
+                                                style={{ 
+                                                    width: '16px', 
+                                                    height: '16px',
+                                                    filter: 'brightness(0) invert(1)'
+                                                }} 
+                                            />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
@@ -2860,7 +2876,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             }}
                                                                             title="מחק קבלן משנה"
                                                                         >
-                                                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                            <img 
+                                                src="/assets/icon-trash.svg" 
+                                                alt="מחק" 
+                                                style={{ 
+                                                    width: '16px', 
+                                                    height: '16px',
+                                                    filter: 'brightness(0) invert(1)'
+                                                }} 
+                                            />
                                                                         </IconButton>
                                                                     </Box>
                                                                 </TableCell>
