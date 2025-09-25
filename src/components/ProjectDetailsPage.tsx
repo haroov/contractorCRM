@@ -228,7 +228,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
     };
 
     const addPlot = () => {
-        onPlotDetailsChange([...plotDetails, { block: '', plot: '', subPlot: '' }]);
+        onPlotDetailsChange([...plotDetails, { block: '', plot: '', subPlot: '', area: '' }]);
     };
 
     const removePlot = (index: number) => {
@@ -244,7 +244,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
     };
 
     // Always show at least one empty row for input
-    const displayPlotDetails = plotDetails.length > 0 ? plotDetails : [{ block: '', plot: '', subPlot: '' }];
+    const displayPlotDetails = plotDetails.length > 0 ? plotDetails : [{ block: '', plot: '', subPlot: '', area: '' }];
 
     return (
         <Box>
@@ -412,7 +412,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }
                                         }}
                                     >
-                                        הוספת חלקה
+                                        הוספה
                                     </Button>
                                 </TableCell>
                             </TableRow>
