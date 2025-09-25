@@ -388,7 +388,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                             }}
                                             title="מחק חלקה"
                                         >
-                                            <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                         </IconButton>
                                     </TableCell>
                                 )}
@@ -2532,7 +2532,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 title="מחק בעל עניין"
                                                                             >
-                                                                                <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                             </IconButton>
                                                                         )}
                                                                     </Box>
@@ -2860,7 +2860,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             }}
                                                                             title="מחק קבלן משנה"
                                                                         >
-                                                                            <img src="/src/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                         </IconButton>
                                                                     </Box>
                                                                 </TableCell>
