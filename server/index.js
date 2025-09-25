@@ -3919,3 +3919,5 @@ app.get('/restart', (req, res) => {
 });
 
 // Removed duplicate debug endpoint
+
+// Server is already started in connectDB().then() above
