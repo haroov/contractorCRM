@@ -4246,7 +4246,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                         
                                                         // Save to database immediately if we have a project ID
+                                                        console.log('🔍 DEBUG: Checking conditions for database save...');
+                                                        console.log('🔍 DEBUG: url =', url);
+                                                        console.log('🔍 DEBUG: project?._id =', project?._id);
+                                                        console.log('🔍 DEBUG: project?.id =', project?.id);
+                                                        console.log('🔍 DEBUG: project =', project);
+                                                        
                                                         if (url && (project?._id || project?.id)) {
+                                                            console.log('🔍 DEBUG: Conditions met, proceeding with database save...');
                                                             try {
                                                                 console.log('💾 Saving excavationPermit file data to database immediately...');
                                                                 const { projectsAPI } = await import('../services/api');
@@ -4266,13 +4273,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }
 
                                                                 console.log('💾 ExcavationPermit file update data:', updateData);
-                                                                await projectsAPI.update(project._id || project.id, updateData);
-                                                                console.log('✅ ExcavationPermit file data saved to database successfully');
+                                                                console.log('🔍 DEBUG: About to call projectsAPI.update with project ID:', project._id || project.id);
+                                                                
+                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                console.log('✅ ExcavationPermit file data saved to database successfully, result:', result);
                                                             } catch (error) {
                                                                 console.error('❌ Failed to save excavationPermit file data to database:', error);
+                                                                console.error('❌ Error details:', error);
                                                             }
                                                         } else {
                                                             console.log('⚠️ No project ID available, cannot save excavationPermit file data to database yet');
+                                                            console.log('⚠️ DEBUG: url =', url, 'project?._id =', project?._id, 'project?.id =', project?.id);
                                                         }
                                                         
                                                         // Auto-save after successful file upload
@@ -4363,11 +4374,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('🗑️ ExcavationPermit delete update data (using null for object):', updateData);
                                                                 console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
+                                                                
+                                                                // Add detailed logging for debugging
+                                                                console.log('🔍 DEBUG: Full API call details for deletion:');
+                                                                console.log('🔍 DEBUG: URL will be: /api/projects/' + projectId);
+                                                                console.log('🔍 DEBUG: Method: PUT');
+                                                                console.log('🔍 DEBUG: Headers: Content-Type: application/json');
+                                                                console.log('🔍 DEBUG: Body (stringified):', JSON.stringify(updateData));
 
                                                                 try {
                                                                     const result = await projectsAPI.update(projectId, updateData);
                                                                     console.log('✅ Database updated successfully, result:', result);
                                                                     console.log('✅ ExcavationPermit deletion completed successfully');
+                                                                    
+                                                                    // Verify the deletion worked by fetching the updated project
+                                                                    console.log('🔍 Verifying deletion by fetching updated project...');
+                                                                    try {
+                                                                        const updatedProject = await projectsAPI.getById(projectId);
+                                                                        console.log('🔍 Updated project excavationPermit field:', updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit);
+                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit === null || 
+                                                                            updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit === undefined) {
+                                                                            console.log('✅ Verification: excavationPermit successfully deleted from MongoDB');
+                                                                        } else {
+                                                                            console.log('❌ Verification: excavationPermit still exists in MongoDB:', updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit);
+                                                                        }
+                                                                    } catch (verificationError) {
+                                                                        console.error('❌ Verification failed:', verificationError);
+                                                                    }
                                                                 } catch (apiError) {
                                                                     console.error('❌ API update failed:', apiError);
                                                                     throw apiError; // Re-throw to trigger the catch block
