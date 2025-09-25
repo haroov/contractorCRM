@@ -1363,10 +1363,22 @@ app.put('/api/projects/:id', async (req, res) => {
     console.log('🔧 Full request body:', JSON.stringify(req.body, null, 2));
     
     const db = client.db('contractor-crm');
+    
+    // Handle nested field updates properly
     const updateData = {
-      ...req.body,
       updatedAt: new Date()
     };
+    
+    // Process each field in the request body
+    for (const [key, value] of Object.entries(req.body)) {
+      if (key.includes('.')) {
+        // This is a nested field like 'garmoshka.file'
+        updateData[key] = value;
+      } else {
+        // This is a top-level field
+        updateData[key] = value;
+      }
+    }
     
     console.log('🔧 Update data to be saved:', JSON.stringify(updateData, null, 2));
     

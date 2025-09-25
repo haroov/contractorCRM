@@ -813,21 +813,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 // Deep clone the project to ensure React detects the change
                 const newProject = JSON.parse(JSON.stringify(prevProject));
-            const keys = fieldPath.split('.');
-            let current: any = newProject;
+                const keys = fieldPath.split('.');
+                let current: any = newProject;
 
-            // Navigate to the parent object
-            for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) {
-                    current[keys[i]] = {};
+                // Navigate to the parent object
+                for (let i = 0; i < keys.length - 1; i++) {
+                    if (!current[keys[i]]) {
+                        current[keys[i]] = {};
+                    }
+                    current = current[keys[i]];
                 }
-                current = current[keys[i]];
-            }
 
-            // Set the final value
-            current[keys[keys.length - 1]] = value;
-            console.log('✅ Updated project field:', fieldPath, 'to:', value);
-            console.log('✅ New project state:', newProject);
+                // Set the final value
+                current[keys[keys.length - 1]] = value;
+                console.log('✅ Updated project field:', fieldPath, 'to:', value);
+                console.log('✅ New project state:', newProject);
                 console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
 
                 // Also update fileUploadState for immediate UI update
