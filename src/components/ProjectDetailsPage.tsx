@@ -4233,7 +4233,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     label="היתר חפירה"
                                                     value={fileUploadState.excavationPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file || ''}
                                                     thumbnailUrl={fileUploadState.excavationPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl || ''}
-                                                    onChange={(url, thumbnailUrl) => {
+                                                    onChange={async (url, thumbnailUrl) => {
                                                         console.log('🔄 ExcavationPermit FileUpload onChange called with:', { url, thumbnailUrl });
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
                                                         if (thumbnailUrl) {
@@ -4243,6 +4243,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         if (!fileUploadState.excavationPermit?.creationDate) {
                                                             const currentDate = new Date().toISOString().split('T')[0];
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                        }
+                                                        
+                                                        // Auto-save after successful file upload
+                                                        if (url && project?._id || project?.id) {
+                                                            try {
+                                                                console.log('💾 Auto-saving project after excavationPermit file upload');
+                                                                await handleSave();
+                                                                console.log('✅ Project auto-saved after excavationPermit file upload');
+                                                            } catch (error) {
+                                                                console.error('❌ Auto-save failed after excavationPermit file upload:', error);
+                                                            }
                                                         }
                                                     }}
                                                     onDelete={async () => {
