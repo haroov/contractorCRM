@@ -870,46 +870,46 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('🔄 New fileUploadState:', newState);
                         return newState;
                     });
-                } else if (fieldPath === 'garmoshka.0.file' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                url: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'garmoshka.0.thumbnailUrl' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                thumbnailUrl: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                } else if (fieldPath === 'garmoshka.0.fileCreationDate' && value) {
-                    console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
-                    setFileUploadState(prev => {
-                        const newState = {
-                            ...prev,
-                            garmoshka: {
-                                ...prev.garmoshka,
-                                creationDate: value
-                            }
-                        };
-                        console.log('🔄 New fileUploadState:', newState);
-                        return newState;
-                    });
-                }
+                }         else if (fieldPath === 'garmoshka.file' && value) {
+            console.log('🔄 Updating fileUploadState with garmoshka file URL:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    garmoshka: {
+                        ...prev.garmoshka,
+                        url: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        } else if (fieldPath === 'garmoshka.thumbnailUrl' && value) {
+            console.log('🔄 Updating fileUploadState with garmoshka thumbnail URL:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    garmoshka: {
+                        ...prev.garmoshka,
+                        thumbnailUrl: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        } else if (fieldPath === 'garmoshka.fileCreationDate' && value) {
+            console.log('🔄 Updating fileUploadState with garmoshka creation date:', value);
+            setFileUploadState(prev => {
+                const newState = {
+                    ...prev,
+                    garmoshka: {
+                        ...prev.garmoshka,
+                        creationDate: value
+                    }
+                };
+                console.log('🔄 New fileUploadState:', newState);
+                return newState;
+            });
+        }
 
                 return newProject;
             });
@@ -2883,8 +2883,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     {/* File Upload Icon */}
                                                     <FileUpload
                                                         label="תוכניות (גרמושקה)"
-                                                        value={fileUploadState.garmoshka?.url || project?.garmoshka?.[0]?.file}
-                                                        thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.[0]?.thumbnailUrl}
+                                                        value={fileUploadState.garmoshka?.url || project?.garmoshka?.file}
+                                                        thumbnailUrl={fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.thumbnailUrl}
                                                         onChange={async (url, thumbnailUrl) => {
                                                             console.log('🔄 Garmoshka FileUpload onChange called with:', { url, thumbnailUrl });
 
@@ -2909,9 +2909,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const { projectsAPI } = await import('../services/api');
 
                                                                     const updateData = {
-                                                                        'garmoshka.0.file': url,
-                                                                        'garmoshka.0.thumbnailUrl': thumbnailUrl || '',
-                                                                        'garmoshka.0.fileCreationDate': newState.garmoshka?.creationDate || '',
+                                                                        'garmoshka.file': url,
+                                                                        'garmoshka.thumbnailUrl': thumbnailUrl || '',
+                                                                        'garmoshka.fileCreationDate': newState.garmoshka?.creationDate || '',
                                                                         // Remove old fields to prevent duplication
                                                                         'garmoshkaFile': '',
                                                                         'garmoshkaThumbnail': '',
@@ -2937,13 +2937,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             }
 
                                                             // Also try to update project state (may fail if project is null)
-                                                            handleNestedFieldChange('garmoshka.0.file', url);
+                                                            handleNestedFieldChange('garmoshka.file', url);
                                                             if (thumbnailUrl) {
-                                                                handleNestedFieldChange('garmoshka.0.thumbnailUrl', thumbnailUrl);
+                                                                handleNestedFieldChange('garmoshka.thumbnailUrl', thumbnailUrl);
                                                             }
                                                             // Update creation date if available
                                                             if (newState.garmoshka?.creationDate) {
-                                                                handleNestedFieldChange('garmoshka.0.fileCreationDate', newState.garmoshka.creationDate);
+                                                                handleNestedFieldChange('garmoshka.fileCreationDate', newState.garmoshka.creationDate);
                                                             }
                                                         }}
                                                         onCreationDateChange={(date) => {
@@ -2958,12 +2958,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             }));
 
                                                             // Update database immediately
-                                                            handleNestedFieldChange('garmoshka.0.fileCreationDate', date);
+                                                            handleNestedFieldChange('garmoshka.fileCreationDate', date);
                                                         }}
                                                         onDelete={async () => {
                                                             // Get current file URLs from state or project
-                                                            const currentFileUrl = fileUploadState.garmoshka?.url || project?.garmoshka?.[0]?.file;
-                                                            const currentThumbnailUrl = fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.[0]?.thumbnailUrl;
+                                                            const currentFileUrl = fileUploadState.garmoshka?.url || project?.garmoshka?.file;
+                                                            const currentThumbnailUrl = fileUploadState.garmoshka?.thumbnailUrl || project?.garmoshka?.thumbnailUrl;
 
                                                             if (!currentFileUrl && !currentThumbnailUrl) {
                                                                 console.log('No garmoshka file to delete');
@@ -2979,7 +2979,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }));
 
                                                                 // Clear creation date
-                                                                handleNestedFieldChange('garmoshka.0.fileCreationDate', '');
+                                                                handleNestedFieldChange('garmoshka.fileCreationDate', '');
 
                                                                 // 2. THEN: Delete from blob storage if URLs exist
                                                                 if (currentFileUrl || currentThumbnailUrl) {
@@ -3012,9 +3012,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const projectId = project._id || project.id;
 
                                                                     const updateData = {
-                                                                        'garmoshka.0.file': '',
-                                                                        'garmoshka.0.thumbnailUrl': '',
-                                                                        'garmoshka.0.fileCreationDate': '',
+                                                                        'garmoshka.file': '',
+                                                                        'garmoshka.thumbnailUrl': '',
+                                                                        'garmoshka.fileCreationDate': '',
                                                                         // Also clear old fields to prevent duplication
                                                                         'garmoshkaFile': '',
                                                                         'garmoshkaThumbnail': '',
@@ -3054,7 +3054,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         disabled={mode === 'view' || !canEdit}
                                                         accept=".pdf,.dwg,.dwf"
                                                         showCreationDate={true}
-                                                        creationDateValue={fileUploadState.garmoshka?.creationDate || project?.garmoshka?.[0]?.fileCreationDate || ''}
+                                                        creationDateValue={fileUploadState.garmoshka?.creationDate || project?.garmoshka?.fileCreationDate || ''}
                                                         projectId={project?._id || project?.id}
                                                         autoSave={true}
                                                         onAutoSave={handleSave}
