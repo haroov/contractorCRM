@@ -4062,12 +4062,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.buildingPermit.exists', !!url);
                                                     }}
                                                     onDelete={async () => {
+                                                        console.log('🗑️ BuildingPermit onDelete called');
+                                                        console.log('🗑️ Current fileUploadState.buildingPermit:', fileUploadState.buildingPermit);
+                                                        console.log('🗑️ Current project.buildingPermit:', project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
+                                                        
                                                         // Get current file URLs from state or project
                                                         const currentFileUrl = fileUploadState.buildingPermit?.url || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file;
                                                         const currentThumbnailUrl = fileUploadState.buildingPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.thumbnailUrl;
 
+                                                        console.log('🗑️ Extracted URLs for deletion:', { currentFileUrl, currentThumbnailUrl });
+
                                                         if (!currentFileUrl && !currentThumbnailUrl) {
-                                                            console.log('No buildingPermit file to delete');
+                                                            console.log('❌ No buildingPermit file to delete');
                                                             return;
                                                         }
 
@@ -4107,6 +4113,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             if (currentFileUrl || currentThumbnailUrl) {
                                                                 console.log('🗑️ Deleting buildingPermit files from blob storage:', { currentFileUrl, currentThumbnailUrl });
                                                                 const { authenticatedFetch } = await import('../config/api');
+                                                                console.log('✅ authenticatedFetch imported successfully');
+                                                                
                                                                 const response = await authenticatedFetch('/api/delete-project-file', {
                                                                     method: 'DELETE',
                                                                     headers: {
@@ -4119,18 +4127,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     })
                                                                 });
 
+                                                                console.log('🗑️ Delete response status:', response.status);
+                                                                console.log('🗑️ Delete response ok:', response.ok);
+
                                                                 if (!response.ok) {
                                                                     const errorText = await response.text();
                                                                     console.error('❌ Delete buildingPermit file failed:', response.status, errorText);
                                                                     throw new Error('Failed to delete buildingPermit file from storage');
                                                                 }
                                                                 console.log('✅ BuildingPermit files deleted from blob storage successfully');
+                                                            } else {
+                                                                console.log('⚠️ No URLs to delete from blob storage');
                                                             }
 
                                                             // 3. FINALLY: Update database and auto-save
+                                                            console.log('🔍 BuildingPermit onDelete - checking project ID:', { projectId: project?._id || project?.id, project });
                                                             if (project?._id || project?.id) {
                                                                 console.log('🗑️ Updating database to clear buildingPermit file data');
                                                                 const { projectsAPI } = await import('../services/api');
+                                                                console.log('✅ projectsAPI imported successfully for deletion');
                                                                 const projectId = project._id || project.id;
 
                                                                 const updateData = {
@@ -4140,13 +4155,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     'engineeringQuestionnaire.buildingPlan.buildingPermit.exists': false
                                                                 };
 
-                                                                await projectsAPI.update(projectId, updateData);
-                                                                console.log('✅ Database updated successfully');
+                                                                console.log('🗑️ BuildingPermit delete update data:', updateData);
+                                                                console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
+                                                                const result = await projectsAPI.update(projectId, updateData);
+                                                                console.log('✅ Database updated successfully, result:', result);
 
                                                                 // Auto-save the project after successful deletion
                                                                 console.log('💾 Auto-saving project after buildingPermit deletion');
                                                                 await handleSave();
                                                                 console.log('✅ Project auto-saved after buildingPermit deletion');
+                                                            } else {
+                                                                console.log('⚠️ No project ID available for buildingPermit deletion');
                                                             }
 
                                                             console.log('✅ BuildingPermit file deletion completed successfully');
