@@ -1370,13 +1370,17 @@ app.put('/api/projects/:id', async (req, res) => {
     
     // Process each field in the request body
     for (const [key, value] of Object.entries(req.body)) {
+      console.log('🔍 Processing field:', key, 'with value:', value);
+      
       if (value === null) {
         // If value is null, we want to unset (delete) the field
         fieldsToUnset[key] = "";
         console.log('🗑️ Field to unset (delete):', key);
       } else if (key.includes('.')) {
-        // This is a nested field like 'garmoshka.0.file'
+        // This is a nested field like 'garmoshka.0.file' or 'engineeringQuestionnaire.buildingPlan.excavationPermit.file'
+        console.log('🔍 Nested field detected:', key);
         fieldsToSet[key] = value;
+        console.log('🔍 Added to fieldsToSet:', key, '=', value);
         
         // Special handling for array fields like 'garmoshka.0.file' - but we want to treat garmoshka as object
         if (key.match(/^(\w+)\.\d+\./) && key.startsWith('garmoshka.0.')) {
@@ -1389,9 +1393,11 @@ app.put('/api/projects/:id', async (req, res) => {
           
           // Remove the dot notation version since we're handling it as an object
           delete fieldsToSet[key];
+          console.log('🔍 Converted garmoshka field to object structure');
         }
       } else {
         // This is a top-level field
+        console.log('🔍 Top-level field:', key);
         fieldsToSet[key] = value;
       }
     }
@@ -1413,12 +1419,17 @@ app.put('/api/projects/:id', async (req, res) => {
     
     console.log('🔧 Final update operation:', JSON.stringify(updateOperation, null, 2));
     
+    console.log('🔍 About to execute updateOne with:');
+    console.log('🔍 - Filter: { _id: new ObjectId("' + req.params.id + '") }');
+    console.log('🔍 - Update operation:', JSON.stringify(updateOperation, null, 2));
+    
     const result = await db.collection('projects').updateOne(
       { _id: new ObjectId(req.params.id) },
       updateOperation
     );
     
     console.log('✅ Updated project:', req.params.id, 'Modified count:', result.modifiedCount);
+    console.log('🔍 Full result object:', JSON.stringify(result, null, 2));
 
     // Update contractor statistics automatically
     if (req.body.mainContractor) {
