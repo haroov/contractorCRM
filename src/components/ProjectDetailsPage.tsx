@@ -1058,55 +1058,55 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         });
 
 
-            // Auto-calculate GIS values when coordinates change
-            if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
-                fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
+        // Auto-calculate GIS values when coordinates change
+        if (fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.x' ||
+            fieldPath === 'engineeringQuestionnaire.buildingPlan.coordinates.y') {
 
             const x = fieldPath.includes('.x') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
             const y = fieldPath.includes('.y') ? value : project.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
 
-                if (x && y && typeof x === 'number' && typeof y === 'number') {
-                    console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
+            if (x && y && typeof x === 'number' && typeof y === 'number') {
+                console.log(`🔍 Auto-calculating GIS values for coordinates (${x}, ${y})`);
 
-                    gisService.autoCalculateGISValues(
-                        x, y,
-                        (gisValues) => {
-                            console.log('✅ GIS values calculated:', gisValues);
+                gisService.autoCalculateGISValues(
+                    x, y,
+                    (gisValues) => {
+                        console.log('✅ GIS values calculated:', gisValues);
 
-                            // Update PNG25 value if found
-                            if (gisValues.png25 !== null) {
+                        // Update PNG25 value if found
+                        if (gisValues.png25 !== null) {
                             const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
-                                setProject(updatedProject);
-                                console.log('✅ Updated PNG25 value:', gisValues.png25);
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
                             }
-
-                            // Update Cresta area if found
-                            if (gisValues.cresta !== null) {
-                            const updatedProject = { ...project };
-                                if (!updatedProject.engineeringQuestionnaire) {
-                                    updatedProject.engineeringQuestionnaire = {};
-                                }
-                                if (!updatedProject.engineeringQuestionnaire.soilReport) {
-                                    updatedProject.engineeringQuestionnaire.soilReport = {};
-                                }
-                                updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
-                                setProject(updatedProject);
-                                console.log('✅ Updated Cresta area:', gisValues.cresta);
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
                             }
-                        },
-                        (error) => {
-                            console.error('❌ Failed to calculate GIS values:', error);
+                            updatedProject.engineeringQuestionnaire.soilReport.png25EarthquakeRating = gisValues.png25;
+                            setProject(updatedProject);
+                            console.log('✅ Updated PNG25 value:', gisValues.png25);
                         }
-                    );
-                }
+
+                        // Update Cresta area if found
+                        if (gisValues.cresta !== null) {
+                            const updatedProject = { ...project };
+                            if (!updatedProject.engineeringQuestionnaire) {
+                                updatedProject.engineeringQuestionnaire = {};
+                            }
+                            if (!updatedProject.engineeringQuestionnaire.soilReport) {
+                                updatedProject.engineeringQuestionnaire.soilReport = {};
+                            }
+                            updatedProject.engineeringQuestionnaire.soilReport.crestaArea = gisValues.cresta;
+                            setProject(updatedProject);
+                            console.log('✅ Updated Cresta area:', gisValues.cresta);
+                        }
+                    },
+                    (error) => {
+                        console.error('❌ Failed to calculate GIS values:', error);
+                    }
+                );
             }
+        }
     }, []);
 
     // Stakeholder management functions
@@ -3307,31 +3307,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                         {/* Address and Coordinates Row */}
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, direction: 'rtl' }}>
-                                                        <TextField
-                                                            fullWidth
-                                                            label="כתובת (טקסט חופשי)"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="כתובת (טקסט חופשי)"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
 
-                                                        <TextField
-                                                            fullWidth
-                                                            label="Latitude (Y)"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="Latitude (Y)"
+                                                                type="number"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
 
-                                                        <TextField
-                                                            fullWidth
-                                                            label="Longitude (X)"
-                                                            type="number"
-                                                            value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
-                                                            onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                        />
+                                                            <TextField
+                                                                fullWidth
+                                                                label="Longitude (X)"
+                                                                type="number"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                            />
                                                         </Box>
 
                                                         {/* Plot Details Table - Full Width */}
@@ -4164,7 +4164,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('🗑️ BuildingPermit delete update data (using null for object):', updateData);
                                                                 console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
-                                                                
+
                                                                 // Add detailed logging for debugging
                                                                 console.log('🔍 DEBUG: Full API call details:');
                                                                 console.log('🔍 DEBUG: URL will be: /api/projects/' + projectId);
@@ -4176,13 +4176,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const result = await projectsAPI.update(projectId, updateData);
                                                                     console.log('✅ Database updated successfully, result:', result);
                                                                     console.log('✅ BuildingPermit deletion completed successfully');
-                                                                    
+
                                                                     // Verify the deletion worked by fetching the updated project
                                                                     console.log('🔍 Verifying deletion by fetching updated project...');
                                                                     try {
                                                                         const updatedProject = await projectsAPI.getById(projectId);
                                                                         console.log('🔍 Updated project buildingPermit field:', updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit);
-                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit === null || 
+                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit === null ||
                                                                             updatedProject.engineeringQuestionnaire?.buildingPlan?.buildingPermit === undefined) {
                                                                             console.log('✅ Verification: buildingPermit successfully deleted from MongoDB');
                                                                         } else {
@@ -4239,7 +4239,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         console.log('🔍 DEBUG: Current project:', project);
                                                         console.log('🔍 DEBUG: Current fileUploadState:', fileUploadState);
                                                         console.log('🔍 DEBUG: onChange callback is executing!');
-                                                        
+
                                                         try {
                                                             // Update fileUploadState first
                                                             console.log('🔍 DEBUG: Updating fileUploadState...');
@@ -4252,17 +4252,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }
                                                             }));
                                                             console.log('🔍 DEBUG: fileUploadState updated successfully');
-                                                            
+
                                                             console.log('🔍 DEBUG: Calling handleNestedFieldChange for file...');
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
                                                             console.log('🔍 DEBUG: handleNestedFieldChange for file completed');
-                                                            
+
                                                             if (thumbnailUrl) {
                                                                 console.log('🔍 DEBUG: Calling handleNestedFieldChange for thumbnail...');
                                                                 handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
                                                                 console.log('🔍 DEBUG: handleNestedFieldChange for thumbnail completed');
                                                             }
-                                                            
+
                                                             // Update creation date if not already set
                                                             if (!fileUploadState.excavationPermit?.creationDate) {
                                                                 const currentDate = new Date().toISOString().split('T')[0];
@@ -4275,19 +4275,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             console.error('❌ Error in onChange setup:', error);
                                                         }
                                                         
+                                                        console.log('🔍 DEBUG: Finished try-catch block, proceeding to database save...');
+                                                        
                                                         // Save to database immediately if we have a project ID
                                                         console.log('🔍 DEBUG: About to check conditions for database save...');
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
                                                         console.log('🔍 DEBUG: url =', url);
                                                         console.log('🔍 DEBUG: project?._id =', project?._id);
                                                         console.log('🔍 DEBUG: project?.id =', project?.id);
-                                                        
+
                                                         if (url && (project?._id || project?.id)) {
                                                             console.log('🔍 DEBUG: Conditions met, proceeding with database save...');
                                                             console.log('🔍 DEBUG: Project ID:', project._id || project.id);
                                                             console.log('🔍 DEBUG: URL:', url);
                                                             console.log('🔍 DEBUG: Thumbnail URL:', thumbnailUrl);
-                                                            
+
                                                             try {
                                                                 console.log('💾 Saving excavationPermit file data to database immediately...');
                                                                 const { projectsAPI } = await import('../services/api');
@@ -4313,10 +4315,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 console.log('🔍 DEBUG: - URL: /api/projects/' + (project._id || project.id));
                                                                 console.log('🔍 DEBUG: - Method: PUT');
                                                                 console.log('🔍 DEBUG: - Body:', JSON.stringify(updateData));
-                                                                
+
                                                                 const result = await projectsAPI.update(project._id || project.id, updateData);
                                                                 console.log('✅ ExcavationPermit file data saved to database successfully, result:', result);
-                                                                
+
                                                                 // Update project state AFTER successful database save
                                                                 console.log('🔍 DEBUG: Updating project state with new file data after successful save...');
                                                                 if (project) {
@@ -4346,7 +4348,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             console.log('⚠️ No project ID available, cannot save excavationPermit file data to database yet');
                                                             console.log('⚠️ DEBUG: url =', url, 'project?._id =', project?._id, 'project?.id =', project?.id);
                                                         }
-                                                        
+
                                                         console.log('✅ ExcavationPermit file upload process completed');
                                                     }}
                                                     onDelete={async () => {
@@ -4370,27 +4372,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // Clear creation date from UI
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', '');
 
-                                                        // Also update project state directly for immediate UI update
-                                                        console.log('🔍 DEBUG: Updating project state to clear excavationPermit data...');
-                                                        if (project) {
-                                                            const updatedProject = {
-                                                                ...project,
-                                                                engineeringQuestionnaire: {
-                                                                    ...project.engineeringQuestionnaire,
-                                                                    buildingPlan: {
-                                                                        ...project.engineeringQuestionnaire?.buildingPlan,
-                                                                        excavationPermit: {
-                                                                            ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
-                                                                            file: '',
-                                                                            thumbnailUrl: '',
-                                                                            fileCreationDate: ''
+                                                            // Also update project state directly for immediate UI update
+                                                            console.log('🔍 DEBUG: Updating project state to clear excavationPermit data...');
+                                                            if (project) {
+                                                                const updatedProject = {
+                                                                    ...project,
+                                                                    engineeringQuestionnaire: {
+                                                                        ...project.engineeringQuestionnaire,
+                                                                        buildingPlan: {
+                                                                            ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                            excavationPermit: {
+                                                                                ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                                                file: '',
+                                                                                thumbnailUrl: '',
+                                                                                fileCreationDate: ''
+                                                                            }
                                                                         }
                                                                     }
-                                                                }
-                                                            };
-                                                            setProject(updatedProject);
-                                                            console.log('🔍 DEBUG: Project state updated to clear excavationPermit data');
-                                                        }
+                                                                };
+                                                                setProject(updatedProject);
+                                                                console.log('🔍 DEBUG: Project state updated to clear excavationPermit data');
+                                                            }
 
                                                             // 2. THEN: Delete from blob storage if URLs exist
                                                             if (currentFileUrl || currentThumbnailUrl) {
@@ -4428,7 +4430,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('🗑️ ExcavationPermit delete update data (using null for object):', updateData);
                                                                 console.log('🗑️ About to call projectsAPI.update with project ID:', projectId);
-                                                                
+
                                                                 // Add detailed logging for debugging
                                                                 console.log('🔍 DEBUG: Full API call details for deletion:');
                                                                 console.log('🔍 DEBUG: URL will be: /api/projects/' + projectId);
@@ -4440,13 +4442,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     const result = await projectsAPI.update(projectId, updateData);
                                                                     console.log('✅ Database updated successfully, result:', result);
                                                                     console.log('✅ ExcavationPermit deletion completed successfully');
-                                                                    
+
                                                                     // Verify the deletion worked by fetching the updated project
                                                                     console.log('🔍 Verifying deletion by fetching updated project...');
                                                                     try {
                                                                         const updatedProject = await projectsAPI.getById(projectId);
                                                                         console.log('🔍 Updated project excavationPermit field:', updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit);
-                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit === null || 
+                                                                        if (updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit === null ||
                                                                             updatedProject.engineeringQuestionnaire?.buildingPlan?.excavationPermit === undefined) {
                                                                             console.log('✅ Verification: excavationPermit successfully deleted from MongoDB');
                                                                         } else {
