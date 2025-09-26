@@ -4259,28 +4259,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
                                                         }
                                                         
-                                                        // Update project state to include the new file data
-                                                        console.log('🔍 DEBUG: Updating project state with new file data...');
-                                                        if (project) {
-                                                            const updatedProject = {
-                                                                ...project,
-                                                                engineeringQuestionnaire: {
-                                                                    ...project.engineeringQuestionnaire,
-                                                                    buildingPlan: {
-                                                                        ...project.engineeringQuestionnaire?.buildingPlan,
-                                                                        excavationPermit: {
-                                                                            ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
-                                                                            file: url,
-                                                                            thumbnailUrl: thumbnailUrl || '',
-                                                                            fileCreationDate: fileUploadState.excavationPermit?.creationDate || new Date().toISOString().split('T')[0]
-                                                                        }
-                                                                    }
-                                                                }
-                                                            };
-                                                            setProject(updatedProject);
-                                                            console.log('🔍 DEBUG: Project state updated with excavationPermit data');
-                                                        }
-                                                        
                                                         // Save to database immediately if we have a project ID
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
                                                         console.log('🔍 DEBUG: url =', url);
@@ -4312,6 +4290,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 
                                                                 const result = await projectsAPI.update(project._id || project.id, updateData);
                                                                 console.log('✅ ExcavationPermit file data saved to database successfully, result:', result);
+                                                                
+                                                                // Update project state AFTER successful database save
+                                                                console.log('🔍 DEBUG: Updating project state with new file data after successful save...');
+                                                                if (project) {
+                                                                    const updatedProject = {
+                                                                        ...project,
+                                                                        engineeringQuestionnaire: {
+                                                                            ...project.engineeringQuestionnaire,
+                                                                            buildingPlan: {
+                                                                                ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                                excavationPermit: {
+                                                                                    ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                                                    file: url,
+                                                                                    thumbnailUrl: thumbnailUrl || '',
+                                                                                    fileCreationDate: fileUploadState.excavationPermit?.creationDate || new Date().toISOString().split('T')[0]
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    };
+                                                                    setProject(updatedProject);
+                                                                    console.log('🔍 DEBUG: Project state updated with excavationPermit data after successful save');
+                                                                }
                                                             } catch (error) {
                                                                 console.error('❌ Failed to save excavationPermit file data to database:', error);
                                                                 console.error('❌ Error details:', error);
@@ -4321,25 +4321,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             console.log('⚠️ DEBUG: url =', url, 'project?._id =', project?._id, 'project?.id =', project?.id);
                                                         }
                                                         
-                                                        // Auto-save after successful file upload
-                                                        if (url && (project?._id || project?.id)) {
-                                                            try {
-                                                                console.log('💾 Auto-saving project after excavationPermit file upload');
-                                                                console.log('🔍 DEBUG: About to call handleSave()...');
-                                                                await handleSave();
-                                                                console.log('✅ Project auto-saved after excavationPermit file upload');
-                                                                
-                                                                // Verify the save worked by checking the project state
-                                                                console.log('🔍 DEBUG: Verifying save by checking project state...');
-                                                                console.log('🔍 DEBUG: Current project excavationPermit:', project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit);
-                                                            } catch (error) {
-                                                                console.error('❌ Auto-save failed after excavationPermit file upload:', error);
-                                                                console.error('❌ Auto-save error details:', error);
-                                                            }
-                                                        } else {
-                                                            console.log('⚠️ Skipping auto-save - no URL or project ID');
-                                                            console.log('⚠️ DEBUG: url =', url, 'project?._id =', project?._id, 'project?.id =', project?.id);
-                                                        }
+                                                        console.log('✅ ExcavationPermit file upload process completed');
                                                     }}
                                                     onDelete={async () => {
                                                         // Get current file URLs from state or project
@@ -4452,10 +4434,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     throw apiError; // Re-throw to trigger the catch block
                                                                 }
 
-                                                                // Auto-save the project after successful deletion
-                                                                console.log('💾 Auto-saving project after excavationPermit deletion');
-                                                                await handleSave();
-                                                                console.log('✅ Project auto-saved after excavationPermit deletion');
+                                                                console.log('✅ ExcavationPermit deletion process completed');
                                                             } else {
                                                                 console.log('⚠️ No project ID available for excavationPermit deletion');
                                                             }
