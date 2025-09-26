@@ -4274,15 +4274,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         } catch (error) {
                                                             console.error('❌ Error in onChange setup:', error);
                                                         }
-                                                        
+
                                                         console.log('🔍 DEBUG: Finished try-catch block, proceeding to database save...');
-                                                        
+
                                                         // Save to database immediately if we have a project ID
                                                         console.log('🔍 DEBUG: About to check conditions for database save...');
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
                                                         console.log('🔍 DEBUG: url =', url);
                                                         console.log('🔍 DEBUG: project?._id =', project?._id);
                                                         console.log('🔍 DEBUG: project?.id =', project?.id);
+                                                        console.log('🔍 DEBUG: project =', project);
 
                                                         if (url && (project?._id || project?.id)) {
                                                             console.log('🔍 DEBUG: Conditions met, proceeding with database save...');
