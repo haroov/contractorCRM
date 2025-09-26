@@ -4238,6 +4238,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         console.log('🔍 DEBUG: Starting excavationPermit onChange process...');
                                                         console.log('🔍 DEBUG: Current project:', project);
                                                         console.log('🔍 DEBUG: Current fileUploadState:', fileUploadState);
+                                                        console.log('🔍 DEBUG: onChange callback is executing!');
                                                         
                                                         try {
                                                             // Update fileUploadState first
