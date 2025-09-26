@@ -4236,27 +4236,33 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={async (url, thumbnailUrl) => {
                                                         console.log('🔄 ExcavationPermit FileUpload onChange called with:', { url, thumbnailUrl });
                                                         console.log('🔍 DEBUG: Starting excavationPermit onChange process...');
+                                                        console.log('🔍 DEBUG: Current project:', project);
+                                                        console.log('🔍 DEBUG: Current fileUploadState:', fileUploadState);
                                                         
-                                                        // Update fileUploadState first
-                                                        console.log('🔍 DEBUG: Updating fileUploadState...');
-                                                        setFileUploadState(prev => ({
-                                                            ...prev,
-                                                            excavationPermit: {
-                                                                ...prev.excavationPermit,
-                                                                url: url,
-                                                                thumbnailUrl: thumbnailUrl || ''
-                                                            }
-                                                        }));
-                                                        
+                                                        try {
+                                                            // Update fileUploadState first
+                                                            console.log('🔍 DEBUG: Updating fileUploadState...');
+                                                            setFileUploadState(prev => ({
+                                                                ...prev,
+                                                                excavationPermit: {
+                                                                    ...prev.excavationPermit,
+                                                                    url: url,
+                                                                    thumbnailUrl: thumbnailUrl || ''
+                                                                }
+                                                            }));
+                                                            
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
-                                                        if (thumbnailUrl) {
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
-                                                        }
-                                                        // Update creation date if not already set
-                                                        if (!fileUploadState.excavationPermit?.creationDate) {
-                                                            const currentDate = new Date().toISOString().split('T')[0];
-                                                            console.log('🔍 DEBUG: Setting creation date to:', currentDate);
-                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                            if (thumbnailUrl) {
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
+                                                            }
+                                                            // Update creation date if not already set
+                                                            if (!fileUploadState.excavationPermit?.creationDate) {
+                                                                const currentDate = new Date().toISOString().split('T')[0];
+                                                                console.log('🔍 DEBUG: Setting creation date to:', currentDate);
+                                                                handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                            }
+                                                        } catch (error) {
+                                                            console.error('❌ Error in onChange setup:', error);
                                                         }
                                                         
                                                         // Save to database immediately if we have a project ID
@@ -4267,9 +4273,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         
                                                         if (url && (project?._id || project?.id)) {
                                                             console.log('🔍 DEBUG: Conditions met, proceeding with database save...');
+                                                            console.log('🔍 DEBUG: Project ID:', project._id || project.id);
+                                                            console.log('🔍 DEBUG: URL:', url);
+                                                            console.log('🔍 DEBUG: Thumbnail URL:', thumbnailUrl);
+                                                            
                                                             try {
                                                                 console.log('💾 Saving excavationPermit file data to database immediately...');
                                                                 const { projectsAPI } = await import('../services/api');
+                                                                console.log('🔍 DEBUG: projectsAPI imported successfully');
 
                                                                 const updateData: any = {
                                                                     'engineeringQuestionnaire.buildingPlan.excavationPermit.file': url
@@ -4287,6 +4298,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 console.log('💾 ExcavationPermit file update data:', updateData);
                                                                 console.log('🔍 DEBUG: About to call projectsAPI.update with project ID:', project._id || project.id);
+                                                                console.log('🔍 DEBUG: Full API call details:');
+                                                                console.log('🔍 DEBUG: - URL: /api/projects/' + (project._id || project.id));
+                                                                console.log('🔍 DEBUG: - Method: PUT');
+                                                                console.log('🔍 DEBUG: - Body:', JSON.stringify(updateData));
                                                                 
                                                                 const result = await projectsAPI.update(project._id || project.id, updateData);
                                                                 console.log('✅ ExcavationPermit file data saved to database successfully, result:', result);
