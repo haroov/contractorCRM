@@ -4276,6 +4276,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                         
                                                         // Save to database immediately if we have a project ID
+                                                        console.log('🔍 DEBUG: About to check conditions for database save...');
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
                                                         console.log('🔍 DEBUG: url =', url);
                                                         console.log('🔍 DEBUG: project?._id =', project?._id);
