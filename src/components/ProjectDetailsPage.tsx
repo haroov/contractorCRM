@@ -4276,7 +4276,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
 
                                                         console.log('🔍 DEBUG: Finished try-catch block, proceeding to database save...');
-
+                                                        console.log('🔍 DEBUG: About to start database save logic...');
+                                                        
                                                         // Save to database immediately if we have a project ID
                                                         console.log('🔍 DEBUG: About to check conditions for database save...');
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
