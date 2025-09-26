@@ -4235,6 +4235,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     thumbnailUrl={fileUploadState.excavationPermit?.thumbnailUrl || project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl || ''}
                                                     onChange={async (url, thumbnailUrl) => {
                                                         console.log('🔄 ExcavationPermit FileUpload onChange called with:', { url, thumbnailUrl });
+                                                        console.log('🔍 DEBUG: Starting excavationPermit onChange process...');
+                                                        
+                                                        // Update fileUploadState first
+                                                        console.log('🔍 DEBUG: Updating fileUploadState...');
+                                                        setFileUploadState(prev => ({
+                                                            ...prev,
+                                                            excavationPermit: {
+                                                                ...prev.excavationPermit,
+                                                                url: url,
+                                                                thumbnailUrl: thumbnailUrl || ''
+                                                            }
+                                                        }));
+                                                        
                                                         handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
                                                         if (thumbnailUrl) {
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
@@ -4242,7 +4255,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         // Update creation date if not already set
                                                         if (!fileUploadState.excavationPermit?.creationDate) {
                                                             const currentDate = new Date().toISOString().split('T')[0];
+                                                            console.log('🔍 DEBUG: Setting creation date to:', currentDate);
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                        }
+                                                        
+                                                        // Update project state to include the new file data
+                                                        console.log('🔍 DEBUG: Updating project state with new file data...');
+                                                        if (project) {
+                                                            const updatedProject = {
+                                                                ...project,
+                                                                engineeringQuestionnaire: {
+                                                                    ...project.engineeringQuestionnaire,
+                                                                    buildingPlan: {
+                                                                        ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                        excavationPermit: {
+                                                                            ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                                            file: url,
+                                                                            thumbnailUrl: thumbnailUrl || '',
+                                                                            fileCreationDate: fileUploadState.excavationPermit?.creationDate || new Date().toISOString().split('T')[0]
+                                                                        }
+                                                                    }
+                                                                }
+                                                            };
+                                                            setProject(updatedProject);
+                                                            console.log('🔍 DEBUG: Project state updated with excavationPermit data');
                                                         }
                                                         
                                                         // Save to database immediately if we have a project ID
@@ -4250,7 +4286,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         console.log('🔍 DEBUG: url =', url);
                                                         console.log('🔍 DEBUG: project?._id =', project?._id);
                                                         console.log('🔍 DEBUG: project?.id =', project?.id);
-                                                        console.log('🔍 DEBUG: project =', project);
                                                         
                                                         if (url && (project?._id || project?.id)) {
                                                             console.log('🔍 DEBUG: Conditions met, proceeding with database save...');
@@ -4290,11 +4325,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         if (url && (project?._id || project?.id)) {
                                                             try {
                                                                 console.log('💾 Auto-saving project after excavationPermit file upload');
+                                                                console.log('🔍 DEBUG: About to call handleSave()...');
                                                                 await handleSave();
                                                                 console.log('✅ Project auto-saved after excavationPermit file upload');
+                                                                
+                                                                // Verify the save worked by checking the project state
+                                                                console.log('🔍 DEBUG: Verifying save by checking project state...');
+                                                                console.log('🔍 DEBUG: Current project excavationPermit:', project?.engineeringQuestionnaire?.buildingPlan?.excavationPermit);
                                                             } catch (error) {
                                                                 console.error('❌ Auto-save failed after excavationPermit file upload:', error);
+                                                                console.error('❌ Auto-save error details:', error);
                                                             }
+                                                        } else {
+                                                            console.log('⚠️ Skipping auto-save - no URL or project ID');
+                                                            console.log('⚠️ DEBUG: url =', url, 'project?._id =', project?._id, 'project?.id =', project?.id);
                                                         }
                                                     }}
                                                     onDelete={async () => {
@@ -4318,25 +4362,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             // Clear creation date from UI
                                                             handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', '');
 
-                                                            // Also update project state directly for immediate UI update
-                                                            if (project) {
-                                                                const updatedProject = {
-                                                                    ...project,
-                                                                    engineeringQuestionnaire: {
-                                                                        ...project.engineeringQuestionnaire,
-                                                                        buildingPlan: {
-                                                                            ...project.engineeringQuestionnaire?.buildingPlan,
-                                                                            excavationPermit: {
-                                                                                ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
-                                                                                file: '',
-                                                                                thumbnailUrl: '',
-                                                                                fileCreationDate: ''
-                                                                            }
+                                                        // Also update project state directly for immediate UI update
+                                                        console.log('🔍 DEBUG: Updating project state to clear excavationPermit data...');
+                                                        if (project) {
+                                                            const updatedProject = {
+                                                                ...project,
+                                                                engineeringQuestionnaire: {
+                                                                    ...project.engineeringQuestionnaire,
+                                                                    buildingPlan: {
+                                                                        ...project.engineeringQuestionnaire?.buildingPlan,
+                                                                        excavationPermit: {
+                                                                            ...project.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                                            file: '',
+                                                                            thumbnailUrl: '',
+                                                                            fileCreationDate: ''
                                                                         }
                                                                     }
-                                                                };
-                                                                setProject(updatedProject);
-                                                            }
+                                                                }
+                                                            };
+                                                            setProject(updatedProject);
+                                                            console.log('🔍 DEBUG: Project state updated to clear excavationPermit data');
+                                                        }
 
                                                             // 2. THEN: Delete from blob storage if URLs exist
                                                             if (currentFileUrl || currentThumbnailUrl) {
