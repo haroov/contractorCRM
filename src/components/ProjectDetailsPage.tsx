@@ -4251,17 +4251,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     thumbnailUrl: thumbnailUrl || ''
                                                                 }
                                                             }));
+                                                            console.log('🔍 DEBUG: fileUploadState updated successfully');
                                                             
-                                                        handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
+                                                            console.log('🔍 DEBUG: Calling handleNestedFieldChange for file...');
+                                                            handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.file', url);
+                                                            console.log('🔍 DEBUG: handleNestedFieldChange for file completed');
+                                                            
                                                             if (thumbnailUrl) {
+                                                                console.log('🔍 DEBUG: Calling handleNestedFieldChange for thumbnail...');
                                                                 handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.thumbnailUrl', thumbnailUrl);
+                                                                console.log('🔍 DEBUG: handleNestedFieldChange for thumbnail completed');
                                                             }
+                                                            
                                                             // Update creation date if not already set
                                                             if (!fileUploadState.excavationPermit?.creationDate) {
                                                                 const currentDate = new Date().toISOString().split('T')[0];
                                                                 console.log('🔍 DEBUG: Setting creation date to:', currentDate);
                                                                 handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.excavationPermit.fileCreationDate', currentDate);
+                                                                console.log('🔍 DEBUG: handleNestedFieldChange for creation date completed');
                                                             }
+                                                            console.log('🔍 DEBUG: All handleNestedFieldChange calls completed');
                                                         } catch (error) {
                                                             console.error('❌ Error in onChange setup:', error);
                                                         }
