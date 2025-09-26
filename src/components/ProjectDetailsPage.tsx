@@ -4277,7 +4277,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                         console.log('🔍 DEBUG: Finished try-catch block, proceeding to database save...');
                                                         console.log('🔍 DEBUG: About to start database save logic...');
-                                                        
+
                                                         // Save to database immediately if we have a project ID
                                                         console.log('🔍 DEBUG: About to check conditions for database save...');
                                                         console.log('🔍 DEBUG: Checking conditions for database save...');
@@ -4320,6 +4320,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                                 const result = await projectsAPI.update(project._id || project.id, updateData);
                                                                 console.log('✅ ExcavationPermit file data saved to database successfully, result:', result);
+                                                                console.log('🔍 DEBUG: API call completed, checking result...');
+                                                                console.log('🔍 DEBUG: Result type:', typeof result);
+                                                                console.log('🔍 DEBUG: Result keys:', Object.keys(result || {}));
 
                                                                 // Update project state AFTER successful database save
                                                                 console.log('🔍 DEBUG: Updating project state with new file data after successful save...');
