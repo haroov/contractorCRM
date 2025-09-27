@@ -7127,10 +7127,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="number"
-                                                                    value={area.areaSize || ''}
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={area.areaSize ? parseInt(area.areaSize.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, e.target.value);
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
                                                                     }}
                                                                     placeholder="גודל השטח"
                                                                     variant="outlined"
@@ -7147,10 +7149,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="number"
-                                                                    value={area.costPerSquareMeter || ''}
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={area.costPerSquareMeter ? '₪ ' + parseInt(area.costPerSquareMeter.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, e.target.value);
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
                                                                     }}
                                                                     placeholder="עלות למ״ר"
                                                                     variant="outlined"
@@ -7282,10 +7286,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="number"
-                                                                    value={phase.phaseCost || ''}
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
-                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, e.target.value);
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
                                                                     }}
                                                                     placeholder="עלות השלב"
                                                                     variant="outlined"
