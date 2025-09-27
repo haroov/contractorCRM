@@ -6354,18 +6354,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         לוחות זמנים
                                     </Typography>
 
-                                    {/* שורה ראשונה - העלאת קובץ ותאריך */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3, mb: 3 }}>
-                                        <TextField
-                                            fullWidth
-                                            label="תאריך יצירת המסמך"
-                                            type="date"
-                                            value={project?.schedule?.fileCreationDate || ''}
-                                            onChange={(e) => handleNestedFieldChange('schedule.fileCreationDate', e.target.value)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            InputLabelProps={{ shrink: true }}
-                                        />
-                                        
+                                    {/* שורה ראשונה - העלאת קובץ, שם קובץ, תאריך */}
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' }, gap: 3, mb: 3 }}>
                                         <FileUpload
                                             label="לוח זמנים לפרוייקט (גאנט)"
                                             value={project?.schedule?.file}
@@ -6375,16 +6365,43 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png"
                                             projectId={project?._id || project?.id}
                                         />
+                                        
+                                        <TextField
+                                            fullWidth
+                                            label="שם הקובץ"
+                                            value={project?.schedule?.fileName || ''}
+                                            onChange={(e) => handleNestedFieldChange('schedule.fileName', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                        />
+                                        
+                                        <TextField
+                                            fullWidth
+                                            label="תאריך יצירת המסמך"
+                                            type="date"
+                                            value={project?.schedule?.fileCreationDate || ''}
+                                            onChange={(e) => handleNestedFieldChange('schedule.fileCreationDate', e.target.value)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            InputLabelProps={{ shrink: true }}
+                                        />
                                     </Box>
 
                                     {/* שורה שנייה - שאר השדות */}
                                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
-                                            <InputLabel>רמת הפירוט</InputLabel>
+                                            <InputLabel sx={{ 
+                                                '&.Mui-focused': {
+                                                    color: '#8B5CF6'
+                                                }
+                                            }}>רמת הפירוט</InputLabel>
                                             <Select
                                                 value={project?.schedule?.detailLevel || ''}
                                                 onChange={(e) => handleNestedFieldChange('schedule.detailLevel', e.target.value)}
                                                 disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#8B5CF6'
+                                                    }
+                                                }}
                                             >
                                                 <MenuItem value="רבעוני">רבעוני</MenuItem>
                                                 <MenuItem value="חודשי">חודשי</MenuItem>
