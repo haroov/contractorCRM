@@ -7295,7 +7295,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    disabled={false}
                                                                     placeholder="עלות השלב"
                                                                     variant="outlined"
                                                                     sx={{
