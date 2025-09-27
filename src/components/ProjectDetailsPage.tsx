@@ -881,16 +881,54 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             const keys = fieldPath.split('.');
             let current: any = newProject;
 
-            // Navigate to the parent object
+            // Navigate to the parent object, creating arrays when encountering numeric indices
             for (let i = 0; i < keys.length - 1; i++) {
-                if (!current[keys[i]]) {
-                    current[keys[i]] = {};
+                const key = keys[i];
+                const nextKey = keys[i + 1];
+                const keyIsIndex = /^\d+$/.test(key);
+                const nextIsIndex = /^\d+$/.test(nextKey);
+
+                if (!keyIsIndex) {
+                    if (current[key] === undefined) {
+                        // If the next key is a numeric index, initialize as an array; otherwise initialize as an object
+                        current[key] = nextIsIndex ? [] : {};
+                    } else if (nextIsIndex && !Array.isArray(current[key])) {
+                        // Ensure correct container type if it already exists
+                        current[key] = [];
+                    }
+                    current = current[key];
+                } else {
+                    // key refers to an array index on the current container
+                    const idx = Number(key);
+                    if (!Array.isArray(current)) {
+                        // If somehow current isn't an array, convert the container shape for this branch
+                        // Note: this only affects this path and preserves other keys
+                        const tmp: any[] = [];
+                        Object.assign(tmp, current);
+                        current = tmp as any;
+                    }
+                    if (current[idx] === undefined) {
+                        current[idx] = nextIsIndex ? [] : {};
+                    } else if (nextIsIndex && !Array.isArray(current[idx])) {
+                        current[idx] = [];
+                    }
+                    current = current[idx];
                 }
-                current = current[keys[i]];
             }
 
-            // Set the final value
-            current[keys[keys.length - 1]] = value;
+            // Set the final value (supporting numeric indices at the leaf as well)
+            const lastKey = keys[keys.length - 1];
+            if (/^\d+$/.test(lastKey)) {
+                const idx = Number(lastKey);
+                if (!Array.isArray(current)) {
+                    const tmp: any[] = [];
+                    Object.assign(tmp, current);
+                    current = tmp as any;
+                }
+                current[idx] = value;
+            } else {
+                current[lastKey] = value;
+            }
             console.log('✅ Updated project field:', fieldPath, 'to:', value);
             console.log('✅ New project state:', newProject);
             console.log('✅ siteOrganizationPlan after update:', newProject.siteOrganizationPlan);
