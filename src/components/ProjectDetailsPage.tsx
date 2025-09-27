@@ -7548,19 +7548,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* שורה 4 - טבלת מסמכי הפוליסה */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        מסמכי הפוליסה
-                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <AutoAwesomeIcon 
+                                            sx={{ 
+                                                color: '#8B5CF6', 
+                                                mr: 1,
+                                                filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
+                                            }} 
+                                        />
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                            מסמכי הפוליסה
+                                        </Typography>
+                                    </Box>
                                     <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סוג המסמך</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מספר פוליסה</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מבטח</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>קובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '12%' }}>תאריך תוקף</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '28%' }}>מספר פוליסה</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>מבטח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -7612,7 +7621,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     showCreationDate={false}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '15%' }}>
+                                                            <TableCell sx={{ padding: 1, width: '12%' }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
@@ -7627,7 +7636,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '25%' }}>
+                                                            <TableCell sx={{ padding: 1, width: '28%' }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
