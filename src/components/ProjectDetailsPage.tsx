@@ -5196,7 +5196,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* סקר סביבתי */}
                                 <Box sx={{ mb: 4 }}>
 
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3, mb: 3 }}>
                                         <TextField
                                             fullWidth
                                             label="תיאור המצב הקיים"
