@@ -5863,28 +5863,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 mb: 2 
                                             }}>
                                                 {/* שורה 1 - עבודות פיצוץ */}
-                                                <Box sx={{ 
-                                                    display: 'flex', 
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-end'
-                                                }}>
-                                                    {project?.environmentalSurvey?.blastingWork === true && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="שם הקבלן המבצע"
-                                                            value={project?.environmentalSurvey?.blastingContractor || ''}
-                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
-                                                            disabled={mode === 'view' || !canEdit}
-                                                            size="small"
-                                                            sx={{ 
-                                                                direction: 'rtl',
-                                                                '& .MuiInputBase-root': {
-                                                                    minHeight: '56px'
-                                                                }
-                                                            }}
-                                                        />
-                                                    )}
-                                                </Box>
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
@@ -5954,19 +5932,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-
-                                                {/* שורה 2 - עבודות חציבה */}
                                                 <Box sx={{ 
                                                     display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
-                                                    {project?.environmentalSurvey?.quarryingWork === true && (
+                                                    {project?.environmentalSurvey?.blastingWork === true && (
                                                         <TextField
                                                             fullWidth
                                                             label="שם הקבלן המבצע"
-                                                            value={project?.environmentalSurvey?.quarryingContractor || ''}
-                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
+                                                            value={project?.environmentalSurvey?.blastingContractor || ''}
+                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{ 
@@ -5978,6 +5954,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         />
                                                     )}
                                                 </Box>
+
+                                                {/* שורה 2 - עבודות חציבה */}
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
@@ -6047,19 +6025,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-
-                                                {/* שורה 3 - עבודות הריסה */}
                                                 <Box sx={{ 
                                                     display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
-                                                    {project?.environmentalSurvey?.demolitionWork === true && (
+                                                    {project?.environmentalSurvey?.quarryingWork === true && (
                                                         <TextField
                                                             fullWidth
                                                             label="שם הקבלן המבצע"
-                                                            value={project?.environmentalSurvey?.demolitionContractor || ''}
-                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
+                                                            value={project?.environmentalSurvey?.quarryingContractor || ''}
+                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{ 
@@ -6071,6 +6047,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         />
                                                     )}
                                                 </Box>
+
+                                                {/* שורה 3 - עבודות הריסה */}
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
@@ -6140,19 +6118,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-
-                                                {/* שורה 4 - קירות תמך */}
                                                 <Box sx={{ 
                                                     display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
-                                                    {project?.environmentalSurvey?.retainingWalls === true && (
+                                                    {project?.environmentalSurvey?.demolitionWork === true && (
                                                         <TextField
                                                             fullWidth
                                                             label="שם הקבלן המבצע"
-                                                            value={project?.environmentalSurvey?.retainingWallsContractor || ''}
-                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
+                                                            value={project?.environmentalSurvey?.demolitionContractor || ''}
+                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{ 
@@ -6164,6 +6140,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         />
                                                     )}
                                                 </Box>
+
+                                                {/* שורה 4 - קירות תמך */}
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
@@ -6232,6 +6210,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             כן
                                                         </Button>
                                                     </Box>
+                                                </Box>
+                                                <Box sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    {project?.environmentalSurvey?.retainingWalls === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="שם הקבלן המבצע"
+                                                            value={project?.environmentalSurvey?.retainingWallsContractor || ''}
+                                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            sx={{ 
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': {
+                                                                    minHeight: '56px'
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
                                                 </Box>
                                             </Box>
                                         </Box>
