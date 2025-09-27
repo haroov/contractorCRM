@@ -8331,7 +8331,36 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             />
                                         </Box>
 
-                                        {/* שורה שנייה - כיסוי להקמת מכונות וציוד */}
+
+                                        {/* עמודה ימנית - ההערה */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                            padding: '16px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '120px'
+                                        }}>
+                                            <Typography variant="body2" sx={{ 
+                                                lineHeight: 1.6,
+                                                color: 'text.secondary',
+                                                direction: 'rtl',
+                                                textAlign: 'right'
+                                            }}>
+                                                מלוא העלות של עבודות הפרויקט המושלמות במועד המסירה או במועד תחילת השימוש בו, כולל חומרים ו/או ציוד ו/או מערכות בבעלות המבוטח או שהוא אחראי עבורם או שסופקו על ידי מזמין העבודות, המהווים חלק בלתי נפרד מהעבודות
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* שורה נפרדת - כיסוי להקמת מכונות וציוד */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
                                         <Box sx={{ 
                                             display: 'flex', 
                                             alignItems: 'flex-start',
@@ -8434,27 +8463,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-
-                                        {/* עמודה ימנית - ההערה */}
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                            padding: '16px',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '120px'
-                                        }}>
-                                            <Typography variant="body2" sx={{ 
-                                                lineHeight: 1.6,
-                                                color: 'text.secondary',
-                                                direction: 'rtl',
-                                                textAlign: 'right'
-                                            }}>
-                                                מלוא העלות של עבודות הפרויקט המושלמות במועד המסירה או במועד תחילת השימוש בו, כולל חומרים ו/או ציוד ו/או מערכות בבעלות המבוטח או שהוא אחראי עבורם או שסופקו על ידי מזמין העבודות, המהווים חלק בלתי נפרד מהעבודות
-                                            </Typography>
                                         </Box>
                                     </Box>
                                 </Box>
