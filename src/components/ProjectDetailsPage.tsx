@@ -8563,7 +8563,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         `${parseInt(project.insuranceSpecification.theftCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.theftCoverageAmount', numericValue);
+                                                        handleNestedFieldChange('insuranceSpecification.theftCoverageAmount', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -8679,7 +8679,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         `${parseInt(project.insuranceSpecification.workPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverageAmount', numericValue);
+                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverageAmount', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -8795,7 +8795,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         `${parseInt(project.insuranceSpecification.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageAmount', numericValue);
+                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageAmount', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -8911,7 +8911,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         `${parseInt(project.insuranceSpecification.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageAmount', numericValue);
+                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageAmount', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -9028,7 +9028,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         `${parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageAmount', numericValue);
+                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageAmount', numericValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
