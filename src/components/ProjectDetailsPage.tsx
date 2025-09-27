@@ -6863,7 +6863,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             <Box>
                                 {/* סקשן 1 - דוח אפס */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         דוח אפס
                                     </Typography>
                                     <FileUpload
@@ -7002,7 +7002,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         עלות בניית כל מבנה
                                     </Typography>
                                     {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
@@ -7026,8 +7026,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         value={buildingName}
                                                                         disabled={true}
                                                                         variant="outlined"
-                                                                        sx={{ 
-                                                                            '& .MuiInputBase-input': { 
+                                                                        sx={{
+                                                                            '& .MuiInputBase-input': {
                                                                                 color: 'text.secondary',
                                                                                 backgroundColor: '#f5f5f5'
                                                                             }
@@ -7061,7 +7061,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 3 - עלות כוללת של הפרויקט */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         עלות כוללת של הפרויקט
                                     </Typography>
                                     <TextField
@@ -7078,7 +7078,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 4 - אומדן התקציבי של הביצוע לפי שטחים */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         אומדן התקציבי של הביצוע לפי שטחים ועלות למטר
                                     </Typography>
                                     <TableContainer component={Paper} sx={{ mb: 2 }}>
@@ -7170,7 +7170,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 5 - חלוקה תקציבית לפי שלבי בניה */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         חלוקה תקציבית לפי שלבי בניה
                                     </Typography>
                                     <TableContainer component={Paper} sx={{ mb: 2 }}>
