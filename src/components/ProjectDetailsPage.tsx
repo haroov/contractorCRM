@@ -7092,7 +7092,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '0', costPerSquareMeter: '0' }]).map((area, index) => {
+                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '', costPerSquareMeter: '' }]).map((area, index) => {
                                                     const areaSize = parseInt(area.areaSize || '0');
                                                     const costPerSqm = parseInt(area.costPerSquareMeter || '0');
                                                     const totalCost = areaSize * costPerSqm;
@@ -7111,7 +7111,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     onInputChange={(event, newInputValue) => {
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.areaName`, newInputValue);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
                                                                     renderInput={(params) => (
                                                                         <TextField
                                                                             {...params}
@@ -7127,14 +7126,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="text"
-                                                                    inputMode="numeric"
-                                                                    value={area.areaSize && area.areaSize !== '0' ? parseInt(area.areaSize.toString()).toLocaleString('he-IL') : ''}
+                                                                    type="number"
+                                                                    value={area.areaSize || ''}
                                                                     onChange={(e) => {
-                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, e.target.value);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="גודל השטח"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7150,14 +7146,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="text"
-                                                                    inputMode="numeric"
-                                                                    value={area.costPerSquareMeter && area.costPerSquareMeter !== '0' ? '₪ ' + parseInt(area.costPerSquareMeter.toString()).toLocaleString('he-IL') : ''}
+                                                                    type="number"
+                                                                    value={area.costPerSquareMeter || ''}
                                                                     onChange={(e) => {
-                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, e.target.value);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="עלות למ״ר"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7174,7 +7167,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     value={totalCost > 0 ? '₪ ' + totalCost.toLocaleString('he-IL') : ''}
-                                                                    disabled={false}
+                                                                    disabled={true}
                                                                     variant="outlined"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
@@ -7197,7 +7190,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 handleNestedFieldChange('budgetEstimate', newAreas);
                                                                             }
                                                                         }}
-                                                                        disabled={mode === 'view' || !canEdit}
                                                                         title="מחיקה"
                                                                         sx={{
                                                                             '& img': {
@@ -7226,11 +7218,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newArea = { areaName: '', areaSize: '0', costPerSquareMeter: '0' };
+                                                                const newArea = { areaName: '', areaSize: '', costPerSquareMeter: '' };
                                                                 const currentAreas = project?.budgetEstimate || [];
                                                                 handleNestedFieldChange('budgetEstimate', [...currentAreas, newArea]);
                                                             }}
-                                                            disabled={mode === 'view' || !canEdit}
                                                             sx={{ mr: 1 }}
                                                         >
                                                             + הוספה
@@ -7257,7 +7248,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '0' }]).map((phase, index) => {
+                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '' }]).map((phase, index) => {
                                                     const isFirstRow = index === 0;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -7272,7 +7263,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     onInputChange={(event, newInputValue) => {
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newInputValue);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
                                                                     renderInput={(params) => (
                                                                         <TextField
                                                                             {...params}
@@ -7288,14 +7278,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="text"
-                                                                    inputMode="numeric"
-                                                                    value={phase.phaseCost && phase.phaseCost !== '0' ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
+                                                                    type="number"
+                                                                    value={phase.phaseCost || ''}
                                                                     onChange={(e) => {
-                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
+                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, e.target.value);
                                                                     }}
-                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="עלות השלב"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7317,7 +7304,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 handleNestedFieldChange('budgetAllocation', newPhases);
                                                                             }
                                                                         }}
-                                                                        disabled={mode === 'view' || !canEdit}
                                                                         title="מחיקה"
                                                                         sx={{
                                                                             '& img': {
@@ -7346,11 +7332,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newPhase = { phaseName: '', phaseCost: '0' };
+                                                                const newPhase = { phaseName: '', phaseCost: '' };
                                                                 const currentPhases = project?.budgetAllocation || [];
                                                                 handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
                                                             }}
-                                                            disabled={mode === 'view' || !canEdit}
                                                             sx={{ mr: 1 }}
                                                         >
                                                             + הוספה
