@@ -7003,7 +7003,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        עלות בנייה לפי מבנים
+                                        עלויות לפי מבנים
                                     </Typography>
                                     {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
                                         <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
@@ -7242,22 +7242,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* סקשן 4 - חלוקה תקציבית לפי שלבי בניה */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        חלוקה תקציבית לפי שלבי בניה
+                                        עלויות לפי שלבי בניה
                                     </Typography>
-                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                        <Table>
+                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                        <Table size="small">
                                             <TableHead>
-                                                <TableRow>
-                                                    <TableCell>שם השלב</TableCell>
-                                                    <TableCell>עלות השלב (₪)</TableCell>
-                                                    <TableCell>בניה ואיכלוס במקביל או מדורג</TableCell>
-                                                    <TableCell>פעולות</TableCell>
+                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם השלב</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות השלב (₪)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>בניה ואיכלוס במקביל או מדורג</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 {project?.budgetAllocation?.map((phase, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>
+                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                        <TableCell sx={{ padding: 1 }}>
                                                             <Autocomplete
                                                                 freeSolo
                                                                 options={['חפירה', 'שלד', 'גמר']}
@@ -7272,33 +7272,52 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 renderInput={(params) => (
                                                                     <TextField
                                                                         {...params}
+                                                                        size="small"
                                                                         placeholder="שם השלב"
+                                                                        variant="outlined"
+                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                     />
                                                                 )}
                                                             />
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell sx={{ padding: 1 }}>
                                                             <TextField
                                                                 fullWidth
-                                                                type="number"
-                                                                value={phase.phaseCost || ''}
-                                                                onChange={(e) => handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, e.target.value)}
+                                                                size="small"
+                                                                type="text"
+                                                                inputMode="numeric"
+                                                                value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
+                                                                onChange={(e) => {
+                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
+                                                                }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="עלות השלב"
+                                                                variant="outlined"
+                                                                sx={{ 
+                                                                    '& .MuiOutlinedInput-root': { height: 40 },
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'ltr'
+                                                                    }
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell sx={{ padding: 1 }}>
                                                             <TextField
                                                                 fullWidth
+                                                                size="small"
                                                                 multiline
                                                                 rows={2}
                                                                 value={phase.constructionType || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`budgetAllocation.${index}.constructionType`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="בניה ואיכלוס במקביל או מדורג, נא לפרט"
+                                                                variant="outlined"
+                                                                sx={{ '& .MuiOutlinedInput-root': { minHeight: 40 } }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell sx={{ padding: 1 }}>
                                                             <IconButton
                                                                 onClick={() => {
                                                                     const currentPhases = project?.budgetAllocation || [];
