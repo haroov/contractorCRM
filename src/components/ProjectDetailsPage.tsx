@@ -8302,12 +8302,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         {/* עמודה שמאלית - שדה סכום ביטוח הרכוש */}
                                         <Box sx={{ 
                                             display: 'flex', 
-                                            alignItems: 'center',
+                                            alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
                                             <TextField
                                                 fullWidth
-                                                label="סכום ביטוח הרכוש (ש״ח)"
+                                                label="סכום ביטוח הרכוש (₪)"
                                                 value={project?.insuranceSpecification?.propertyInsuranceAmount ? 
                                                     parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL') : ''}
                                                 onChange={(e) => {
@@ -8353,14 +8353,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             backgroundColor: 'white',
                                             minHeight: '120px'
                                         }}>
-                                            <Typography variant="body2" sx={{ 
-                                                fontWeight: 'bold',
-                                                color: 'text.primary',
-                                                mb: 1,
-                                                direction: 'rtl'
-                                            }}>
-                                                הערה
-                                            </Typography>
                                             <Typography variant="body2" sx={{ 
                                                 lineHeight: 1.6,
                                                 color: 'text.secondary',
