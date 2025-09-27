@@ -350,7 +350,28 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {showCreationDate && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {/* AI Icon */}
-                    {aiIcon}
+                    {aiIcon && (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                backgroundColor: 'transparent',
+                                transition: 'background-color 0.2s ease',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                                },
+                                '&:focus-within': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.08)'
+                                }
+                            }}
+                        >
+                            {aiIcon}
+                        </Box>
+                    )}
                     <TextField
                         label="תאריך יצירת המסמך"
                         type="date"
