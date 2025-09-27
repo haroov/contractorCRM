@@ -7002,9 +7002,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        עלות בניית כל מבנה
-                                    </Typography>
+                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                    עלות בנייה לפי מבנים
+                                </Typography>
                                     {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
                                         <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                             <Table size="small">
@@ -7097,7 +7097,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     const costPerSqm = parseInt(area.costPerSquareMeter || '0');
                                                     const totalCost = areaSize * costPerSqm;
                                                     const isFirstRow = index === 0;
-                                                    
+
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                             <TableCell sx={{ padding: 1 }}>
@@ -7137,7 +7137,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="גודל השטח"
                                                                     variant="outlined"
-                                                                    sx={{ 
+                                                                    sx={{
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
                                                                         '& .MuiInputBase-input': {
                                                                             textAlign: 'right',
@@ -7160,7 +7160,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="עלות למ״ר"
                                                                     variant="outlined"
-                                                                    sx={{ 
+                                                                    sx={{
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
                                                                         '& .MuiInputBase-input': {
                                                                             textAlign: 'right',
@@ -7176,7 +7176,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     value={totalCost > 0 ? '₪ ' + totalCost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
                                                                     disabled={true}
                                                                     variant="outlined"
-                                                                    sx={{ 
+                                                                    sx={{
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
                                                                         '& .MuiInputBase-input': {
                                                                             textAlign: 'right',
