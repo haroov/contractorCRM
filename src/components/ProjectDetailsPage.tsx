@@ -7132,7 +7132,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     onChange={(e) => {
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, e.target.value);
                                                                     }}
-                                                                    disabled={false}
                                                                     placeholder="גודל השטח"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7153,7 +7152,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     onChange={(e) => {
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, e.target.value);
                                                                     }}
-                                                                    disabled={false}
                                                                     placeholder="עלות למ״ר"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7289,7 +7287,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     onChange={(e) => {
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, e.target.value);
                                                                     }}
-                                                                    disabled={false}
                                                                     placeholder="עלות השלב"
                                                                     variant="outlined"
                                                                     sx={{
