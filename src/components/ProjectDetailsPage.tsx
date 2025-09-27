@@ -5853,186 +5853,346 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 עבודות בניה מיוחדות
                                             </Typography>
-                                            
+
                                             {/* עבודות פיצוץ */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                mb: 2
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
                                                     עבודות פיצוץ:
                                                 </Typography>
-                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
                                                     <Button
-                                                        variant={project?.environmentalSurvey?.blastingWork === true ? 'contained' : 'outlined'}
-                                                        size="small"
-                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', true)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
-                                                    >
-                                                        כן
-                                                    </Button>
-                                                    <Button
-                                                        variant={project?.environmentalSurvey?.blastingWork === false ? 'contained' : 'outlined'}
-                                                        size="small"
+                                                        variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', false)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.blastingWork === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
                                                     >
                                                         לא
                                                     </Button>
-                                                </Box>
-                                                {project?.environmentalSurvey?.blastingWork === true && (
-                                                    <Autocomplete
-                                                        freeSolo
-                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
-                                                        value={project?.environmentalSurvey?.blastingContractor || ''}
-                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.blastingContractor', newValue || '')}
-                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.blastingContractor', newInputValue)}
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', true)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                placeholder="שם הקבלן המבצע"
-                                                                size="small"
-                                                                sx={{ minWidth: 200 }}
-                                                            />
-                                                        )}
-                                                    />
-                                                )}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.blastingWork === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
                                             </Box>
+                                            {project?.environmentalSurvey?.blastingWork === true && (
+                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="שם הקבלן המבצע"
+                                                        value={project?.environmentalSurvey?.blastingContractor || ''}
+                                                        onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        size="small"
+                                                        sx={{ maxWidth: 300 }}
+                                                    />
+                                                </Box>
+                                            )}
 
                                             {/* עבודות חציבה */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                mb: 2
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
                                                     עבודות חציבה:
                                                 </Typography>
-                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
                                                     <Button
-                                                        variant={project?.environmentalSurvey?.quarryingWork === true ? 'contained' : 'outlined'}
-                                                        size="small"
-                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', true)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
-                                                    >
-                                                        כן
-                                                    </Button>
-                                                    <Button
-                                                        variant={project?.environmentalSurvey?.quarryingWork === false ? 'contained' : 'outlined'}
-                                                        size="small"
+                                                        variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', false)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.quarryingWork === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
                                                     >
                                                         לא
                                                     </Button>
-                                                </Box>
-                                                {project?.environmentalSurvey?.quarryingWork === true && (
-                                                    <Autocomplete
-                                                        freeSolo
-                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
-                                                        value={project?.environmentalSurvey?.quarryingContractor || ''}
-                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', newValue || '')}
-                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', newInputValue)}
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', true)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                placeholder="שם הקבלן המבצע"
-                                                                size="small"
-                                                                sx={{ minWidth: 200 }}
-                                                            />
-                                                        )}
-                                                    />
-                                                )}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.quarryingWork === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
                                             </Box>
+                                            {project?.environmentalSurvey?.quarryingWork === true && (
+                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="שם הקבלן המבצע"
+                                                        value={project?.environmentalSurvey?.quarryingContractor || ''}
+                                                        onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        size="small"
+                                                        sx={{ maxWidth: 300 }}
+                                                    />
+                                                </Box>
+                                            )}
 
                                             {/* עבודות הריסה */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                mb: 2
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
                                                     עבודות הריסה:
                                                 </Typography>
-                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
                                                     <Button
-                                                        variant={project?.environmentalSurvey?.demolitionWork === true ? 'contained' : 'outlined'}
-                                                        size="small"
-                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', true)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
-                                                    >
-                                                        כן
-                                                    </Button>
-                                                    <Button
-                                                        variant={project?.environmentalSurvey?.demolitionWork === false ? 'contained' : 'outlined'}
-                                                        size="small"
+                                                        variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', false)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.demolitionWork === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
                                                     >
                                                         לא
                                                     </Button>
-                                                </Box>
-                                                {project?.environmentalSurvey?.demolitionWork === true && (
-                                                    <Autocomplete
-                                                        freeSolo
-                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
-                                                        value={project?.environmentalSurvey?.demolitionContractor || ''}
-                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', newValue || '')}
-                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', newInputValue)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                placeholder="שם הקבלן המבצע"
-                                                                size="small"
-                                                                sx={{ minWidth: 200 }}
-                                                            />
-                                                        )}
-                                                    />
-                                                )}
-                                            </Box>
-
-                                            {/* קירות תמך */}
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
-                                                    קירות תמך:
-                                                </Typography>
-                                                <Box sx={{ display: 'flex', gap: 1 }}>
                                                     <Button
-                                                        variant={project?.environmentalSurvey?.retainingWalls === true ? 'contained' : 'outlined'}
-                                                        size="small"
-                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', true)}
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', true)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.demolitionWork === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
                                                     >
                                                         כן
                                                     </Button>
-                                                    <Button
-                                                        variant={project?.environmentalSurvey?.retainingWalls === false ? 'contained' : 'outlined'}
+                                                </Box>
+                                            </Box>
+                                            {project?.environmentalSurvey?.demolitionWork === true && (
+                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="שם הקבלן המבצע"
+                                                        value={project?.environmentalSurvey?.demolitionContractor || ''}
+                                                        onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
                                                         size="small"
+                                                        sx={{ maxWidth: 300 }}
+                                                    />
+                                                </Box>
+                                            )}
+
+                                            {/* קירות תמך */}
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                mb: 2
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    קירות תמך:
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', false)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        sx={{ minWidth: 60 }}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.retainingWalls === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
                                                     >
                                                         לא
                                                     </Button>
-                                                </Box>
-                                                {project?.environmentalSurvey?.retainingWalls === true && (
-                                                    <Autocomplete
-                                                        freeSolo
-                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
-                                                        value={project?.environmentalSurvey?.retainingWallsContractor || ''}
-                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', newValue || '')}
-                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', newInputValue)}
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', true)}
                                                         disabled={mode === 'view' || !canEdit}
-                                                        renderInput={(params) => (
-                                                            <TextField
-                                                                {...params}
-                                                                placeholder="שם הקבלן המבצע"
-                                                                size="small"
-                                                                sx={{ minWidth: 200 }}
-                                                            />
-                                                        )}
-                                                    />
-                                                )}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.environmentalSurvey?.retainingWalls === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
                                             </Box>
+                                            {project?.environmentalSurvey?.retainingWalls === true && (
+                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="שם הקבלן המבצע"
+                                                        value={project?.environmentalSurvey?.retainingWallsContractor || ''}
+                                                        onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        size="small"
+                                                        sx={{ maxWidth: 300 }}
+                                                    />
+                                                </Box>
+                                            )}
                                         </Box>
 
                                         {/* טבלת מרחקים לשירותי חירום */}
