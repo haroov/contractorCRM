@@ -760,7 +760,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       contact.role?.toLowerCase().includes(searchLower)
     );
 
-    return basicMatch || contactMatch;
+    // Search in projects
+    const projectMatch = contractor.projects?.some(project =>
+      project.projectName?.toLowerCase().includes(searchLower) ||
+      project.description?.toLowerCase().includes(searchLower)
+    );
+
+    return basicMatch || contactMatch || projectMatch;
   });
 
   return (
@@ -819,7 +825,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <TextField
               size="small"
-              placeholder="חיפוש קבלנים, אנשי קשר, עיר..."
+              placeholder="חיפוש קבלנים, אנשי קשר, עיר, שם פרויקט..."
               value={searchTerm}
               onChange={handleSearchChange}
               InputProps={{
