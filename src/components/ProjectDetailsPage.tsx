@@ -7207,7 +7207,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             },
                                                                             '&:hover, &:focus': {
                                                                                 backgroundColor: '#f44336',
-                                                                                borderRadius: '4px'
+                                                                                borderRadius: '50%'
                                                                             },
                                                                             '&:hover img, &:focus img': {
                                                                                 filter: 'brightness(0) invert(1)'
@@ -7258,7 +7258,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {project?.budgetAllocation?.map((phase, index) => (
+                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '', constructionType: '' }]).map((phase, index) => {
+                                                    const isFirstRow = index === 0;
+                                                    return (
                                                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                         <TableCell sx={{ padding: 1 }}>
                                                             <Autocomplete
@@ -7321,48 +7323,58 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             />
                                                         </TableCell>
                                                         <TableCell sx={{ padding: 1 }}>
-                                                            <IconButton
-                                                                onClick={() => {
-                                                                    const currentPhases = project?.budgetAllocation || [];
-                                                                    const newPhases = currentPhases.filter((_, i) => i !== index);
-                                                                    handleNestedFieldChange('budgetAllocation', newPhases);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                title="מחיקה"
-                                                                sx={{
-                                                                    '& img': {
-                                                                        filter: 'brightness(0) saturate(0)',
-                                                                        width: '16px',
-                                                                        height: '16px'
-                                                                    },
-                                                                    '&:hover img, &:focus img': {
-                                                                        filter: 'brightness(0) invert(1)',
-                                                                        backgroundColor: '#f44336',
-                                                                        borderRadius: '4px',
-                                                                        padding: '2px'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <img src="/assets/icon-trash.svg" alt="מחיקה" />
-                                                            </IconButton>
+                                                            {!isFirstRow && (
+                                                                <IconButton
+                                                                    onClick={() => {
+                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את השלב?')) {
+                                                                            const currentPhases = project?.budgetAllocation || [];
+                                                                            const newPhases = currentPhases.filter((_, i) => i !== index);
+                                                                            handleNestedFieldChange('budgetAllocation', newPhases);
+                                                                        }
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    title="מחיקה"
+                                                                    sx={{
+                                                                        '& img': {
+                                                                            filter: 'brightness(0) saturate(0)',
+                                                                            width: '16px',
+                                                                            height: '16px'
+                                                                        },
+                                                                        '&:hover, &:focus': {
+                                                                            backgroundColor: '#f44336',
+                                                                            borderRadius: '50%'
+                                                                        },
+                                                                        '&:hover img, &:focus img': {
+                                                                            filter: 'brightness(0) invert(1)'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                </IconButton>
+                                                            )}
                                                         </TableCell>
                                                     </TableRow>
-                                                )) || []}
+                                                );
+                                                })}
+                                                <TableRow>
+                                                    <TableCell colSpan={4} sx={{ padding: 1, textAlign: 'center' }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                const newPhase = { phaseName: '', phaseCost: '', constructionType: '' };
+                                                                const currentPhases = project?.budgetAllocation || [];
+                                                                handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
+                                                            }}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            + הוספה
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => {
-                                            const newPhase = { phaseName: '', phaseCost: '', constructionType: '' };
-                                            const currentPhases = project?.budgetAllocation || [];
-                                            handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
-                                        }}
-                                        disabled={mode === 'view' || !canEdit}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        + הוספת שלב
-                                    </Button>
                                 </Box>
                             </Box>
                         )}
