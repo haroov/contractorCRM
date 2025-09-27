@@ -6861,12 +6861,411 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    פיננסים
-                                </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    ניהול פיננסי יוצג כאן בעתיד...
-                                </Typography>
+                                {/* סקשן 1 - דוח אפס */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                        דוח אפס
+                                    </Typography>
+                                    <FileUpload
+                                        label="דוח אפס"
+                                        value={fileUploadState.zeroReport?.url || project?.zeroReport?.file || ''}
+                                        thumbnailUrl={fileUploadState.zeroReport?.thumbnailUrl || project?.zeroReport?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔄 Zero Report FileUpload onChange called with:', { url, thumbnailUrl });
+
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                zeroReport: {
+                                                    ...prev.zeroReport,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            }));
+
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'zeroReport.file': url,
+                                                        'zeroReport.thumbnailUrl': thumbnailUrl || ''
+                                                    };
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    await handleSave();
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save zero report file:', error);
+                                                }
+                                            }
+
+                                            handleNestedFieldChange('zeroReport.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('zeroReport.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Deleting zero report file');
+                                            try {
+                                                if (!project) {
+                                                    console.error('❌ Project is null, cannot delete file');
+                                                    alert('שגיאה: לא ניתן למחוק קובץ - פרויקט לא נטען');
+                                                    return;
+                                                }
+
+                                                const currentFileUrl = fileUploadState.zeroReport?.url || project?.zeroReport?.file;
+                                                const currentThumbnailUrl = fileUploadState.zeroReport?.thumbnailUrl || project?.zeroReport?.thumbnailUrl;
+
+                                                setFileUploadState(prev => ({
+                                                    ...prev,
+                                                    zeroReport: {
+                                                        url: '',
+                                                        thumbnailUrl: '',
+                                                        creationDate: ''
+                                                    }
+                                                }));
+
+                                                handleNestedFieldChange('zeroReport.file', '');
+                                                handleNestedFieldChange('zeroReport.thumbnailUrl', '');
+                                                handleNestedFieldChange('zeroReport.fileCreationDate', '');
+
+                                                if (currentFileUrl || currentThumbnailUrl) {
+                                                    const { authenticatedFetch } = await import('../config/api');
+                                                    const response = await authenticatedFetch('/api/delete-project-file', {
+                                                        method: 'DELETE',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                        },
+                                                        body: JSON.stringify({
+                                                            fileUrl: currentFileUrl,
+                                                            thumbnailUrl: currentThumbnailUrl
+                                                        })
+                                                    });
+
+                                                    if (!response.ok) {
+                                                        throw new Error('Failed to delete file from storage');
+                                                    }
+                                                }
+
+                                                if (project?._id || project?.id) {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const projectId = project._id || project.id;
+                                                    const updateData = {
+                                                        'zeroReport.file': '',
+                                                        'zeroReport.thumbnailUrl': '',
+                                                        'zeroReport.fileCreationDate': ''
+                                                    };
+                                                    await projectsAPI.update(projectId, updateData);
+                                                    await handleSave();
+                                                }
+
+                                                console.log('✅ Zero report file deletion completed successfully');
+                                            } catch (error) {
+                                                console.error('❌ Error deleting zero report file:', error);
+                                                alert('שגיאה במחיקת הקובץ: ' + error.message);
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.zeroReport?.creationDate || project?.zeroReport?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            console.log('🔄 Zero Report onCreationDateChange called with:', date);
+
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                zeroReport: {
+                                                    ...prev.zeroReport,
+                                                    creationDate: date
+                                                }
+                                            }));
+
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'zeroReport.fileCreationDate': date
+                                                    };
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    await handleSave();
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save zero report creation date:', error);
+                                                }
+                                            }
+
+                                            handleNestedFieldChange('zeroReport.fileCreationDate', date);
+                                        }}
+                                        projectId={project?._id || project?.id}
+                                        autoSave={true}
+                                        onAutoSave={handleSave}
+                                    />
+                                </Box>
+
+                                {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                        עלות בניית כל מבנה
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>שם המבנה</TableCell>
+                                                    <TableCell>עלות בנייה (₪)</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {project?.buildingCosts?.map((building, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                value={building.name || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`buildingCosts.${index}.name`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="שם המבנה"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                type="number"
+                                                                value={building.cost || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`buildingCosts.${index}.cost`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="עלות בנייה"
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )) || []}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => {
+                                            const newBuilding = { name: '', cost: '' };
+                                            const currentBuildings = project?.buildingCosts || [];
+                                            handleNestedFieldChange('buildingCosts', [...currentBuildings, newBuilding]);
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        + הוספת מבנה
+                                    </Button>
+                                </Box>
+
+                                {/* סקשן 3 - עלות כוללת של הפרויקט */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                        עלות כוללת של הפרויקט
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        label="עלות כוללת (₪)"
+                                        type="number"
+                                        value={project?.totalProjectCost || ''}
+                                        onChange={(e) => handleFieldChange('totalProjectCost', e.target.value)}
+                                        disabled={mode === 'view' || !canEdit}
+                                        placeholder="הזן עלות כוללת של הפרויקט"
+                                        sx={{ maxWidth: 400 }}
+                                    />
+                                </Box>
+
+                                {/* סקשן 4 - אומדן התקציבי של הביצוע לפי שטחים */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                        אומדן התקציבי של הביצוע לפי שטחים ועלות למטר
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>שם השטח</TableCell>
+                                                    <TableCell>גודל השטח (מ״ר)</TableCell>
+                                                    <TableCell>עלות בניה למ״ר (₪)</TableCell>
+                                                    <TableCell>פעולות</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {project?.budgetEstimate?.map((area, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                value={area.areaName || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`budgetEstimate.${index}.areaName`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="שם השטח"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                type="number"
+                                                                value={area.areaSize || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="גודל השטח"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                type="number"
+                                                                value={area.costPerSquareMeter || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="עלות למ״ר"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <IconButton
+                                                                onClick={() => {
+                                                                    const currentAreas = project?.budgetEstimate || [];
+                                                                    const newAreas = currentAreas.filter((_, i) => i !== index);
+                                                                    handleNestedFieldChange('budgetEstimate', newAreas);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                title="מחיקה"
+                                                                sx={{
+                                                                    '& img': {
+                                                                        filter: 'brightness(0) saturate(0)',
+                                                                        width: '16px',
+                                                                        height: '16px'
+                                                                    },
+                                                                    '&:hover img, &:focus img': {
+                                                                        filter: 'brightness(0) invert(1)',
+                                                                        backgroundColor: '#f44336',
+                                                                        borderRadius: '4px',
+                                                                        padding: '2px'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )) || []}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => {
+                                            const newArea = { areaName: '', areaSize: '', costPerSquareMeter: '' };
+                                            const currentAreas = project?.budgetEstimate || [];
+                                            handleNestedFieldChange('budgetEstimate', [...currentAreas, newArea]);
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        + הוספת שטח
+                                    </Button>
+                                </Box>
+
+                                {/* סקשן 5 - חלוקה תקציבית לפי שלבי בניה */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
+                                        חלוקה תקציבית לפי שלבי בניה
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>שם השלב</TableCell>
+                                                    <TableCell>עלות השלב (₪)</TableCell>
+                                                    <TableCell>בניה ואיכלוס במקביל או מדורג</TableCell>
+                                                    <TableCell>פעולות</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {project?.budgetAllocation?.map((phase, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>
+                                                            <Autocomplete
+                                                                freeSolo
+                                                                options={['חפירה', 'שלד', 'גמר']}
+                                                                value={phase.phaseName || ''}
+                                                                onChange={(event, newValue) => {
+                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newValue || '');
+                                                                }}
+                                                                onInputChange={(event, newInputValue) => {
+                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newInputValue);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                renderInput={(params) => (
+                                                                    <TextField
+                                                                        {...params}
+                                                                        placeholder="שם השלב"
+                                                                    />
+                                                                )}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                type="number"
+                                                                value={phase.phaseCost || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="עלות השלב"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                fullWidth
+                                                                multiline
+                                                                rows={2}
+                                                                value={phase.constructionType || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`budgetAllocation.${index}.constructionType`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="בניה ואיכלוס במקביל או מדורג, נא לפרט"
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <IconButton
+                                                                onClick={() => {
+                                                                    const currentPhases = project?.budgetAllocation || [];
+                                                                    const newPhases = currentPhases.filter((_, i) => i !== index);
+                                                                    handleNestedFieldChange('budgetAllocation', newPhases);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                title="מחיקה"
+                                                                sx={{
+                                                                    '& img': {
+                                                                        filter: 'brightness(0) saturate(0)',
+                                                                        width: '16px',
+                                                                        height: '16px'
+                                                                    },
+                                                                    '&:hover img, &:focus img': {
+                                                                        filter: 'brightness(0) invert(1)',
+                                                                        backgroundColor: '#f44336',
+                                                                        borderRadius: '4px',
+                                                                        padding: '2px'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )) || []}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Button
+                                        variant="outlined"
+                                        onClick={() => {
+                                            const newPhase = { phaseName: '', phaseCost: '', constructionType: '' };
+                                            const currentPhases = project?.budgetAllocation || [];
+                                            handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        sx={{ mr: 1 }}
+                                    >
+                                        + הוספת שלב
+                                    </Button>
+                                </Box>
                             </Box>
                         )}
 
