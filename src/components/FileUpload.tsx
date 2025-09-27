@@ -107,10 +107,35 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
                 // Normalize response keys
                 const fileUrl = result?.data?.url || result?.data?.fileUrl || result?.url;
-                const thumbUrl = result?.data?.thumbnailUrl || result?.thumbnailUrl;
+                let thumbUrl = result?.data?.thumbnailUrl || result?.thumbnailUrl;
 
                 console.log('🔍 Extracted fileUrl:', fileUrl);
                 console.log('🔍 Extracted thumbUrl:', thumbUrl);
+
+                // Check if this is an Excel or CSV file and generate thumbnail if needed
+                const isExcelOrCsv = file.name.toLowerCase().match(/\.(xlsx|xls|csv)$/);
+                if (isExcelOrCsv && !thumbUrl) {
+                    console.log('📊 Excel/CSV file detected, generating thumbnail...');
+                    try {
+                        const thumbnailFormData = new FormData();
+                        thumbnailFormData.append('file', file);
+                        
+                        const thumbnailResponse = await authenticatedFetch('/api/sheet-thumb', {
+                            method: 'POST',
+                            body: thumbnailFormData
+                        });
+
+                        if (thumbnailResponse.ok) {
+                            const thumbnailResult = await thumbnailResponse.json();
+                            thumbUrl = thumbnailResult.url;
+                            console.log('✅ Thumbnail generated:', thumbUrl);
+                        } else {
+                            console.warn('⚠️ Failed to generate thumbnail, continuing without it');
+                        }
+                    } catch (thumbnailError) {
+                        console.warn('⚠️ Thumbnail generation failed:', thumbnailError);
+                    }
+                }
 
                 // Set creation date from file if not already set - do this FIRST
                 if (onCreationDateChange && !creationDateValue) {
