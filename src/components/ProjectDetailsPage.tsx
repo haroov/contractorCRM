@@ -7005,53 +7005,58 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', mb: 2 }}>
                                         עלות בניית כל מבנה
                                     </Typography>
-                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>שם המבנה</TableCell>
-                                                    <TableCell>עלות בנייה (₪)</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {project?.buildingCosts?.map((building, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell>
-                                                            <TextField
-                                                                fullWidth
-                                                                value={building.name || ''}
-                                                                onChange={(e) => handleNestedFieldChange(`buildingCosts.${index}.name`, e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="שם המבנה"
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <TextField
-                                                                fullWidth
-                                                                type="number"
-                                                                value={building.cost || ''}
-                                                                onChange={(e) => handleNestedFieldChange(`buildingCosts.${index}.cost`, e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="עלות בנייה"
-                                                            />
-                                                        </TableCell>
+                                    {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
+                                        <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                            <Table>
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>שם המבנה</TableCell>
+                                                        <TableCell>עלות בנייה (₪)</TableCell>
                                                     </TableRow>
-                                                )) || []}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => {
-                                            const newBuilding = { name: '', cost: '' };
-                                            const currentBuildings = project?.buildingCosts || [];
-                                            handleNestedFieldChange('buildingCosts', [...currentBuildings, newBuilding]);
-                                        }}
-                                        disabled={mode === 'view' || !canEdit}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        + הוספת מבנה
-                                    </Button>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {Array.from({ length: project.engineeringQuestionnaire.buildingPlan.numberOfBuildings }, (_, index) => {
+                                                        const building = project.engineeringQuestionnaire.buildingPlan.buildings?.[index];
+                                                        const buildingName = building?.buildingName || `בניין ${index + 1}`;
+                                                        return (
+                                                            <TableRow key={index}>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={buildingName}
+                                                                        disabled={true}
+                                                                        variant="outlined"
+                                                                        sx={{ 
+                                                                            '& .MuiInputBase-input': { 
+                                                                                color: 'text.secondary',
+                                                                                backgroundColor: '#f5f5f5'
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="number"
+                                                                        value={building?.constructionCost || ''}
+                                                                        onChange={(e) => handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, e.target.value)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        placeholder="עלות בנייה"
+                                                                    />
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })}
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+                                    ) : (
+                                        <Box sx={{ p: 3, textAlign: 'center', backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                                            <Typography variant="body2" color="text.secondary">
+                                                אין מבנים מוגדרים. אנא הגדר מספר בניינים בטאב "תוכניות" כדי לראות את הטבלה.
+                                            </Typography>
+                                        </Box>
+                                    )}
                                 </Box>
 
                                 {/* סקשן 3 - עלות כוללת של הפרויקט */}
