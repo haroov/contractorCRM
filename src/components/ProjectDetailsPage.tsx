@@ -8465,6 +8465,587 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             )}
                                         </Box>
                                     </Box>
+
+                                    {/* שורות נוספות - כיסויים נוספים */}
+                                    {/* שורה 1 - גניבה ו/או פריצה */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    גניבה ו/או פריצה
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.insuranceSpecification?.theftCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="סכום הביטוח (₪)"
+                                                    value={project?.insuranceSpecification?.theftCoverageAmount ? 
+                                                        `${parseInt(project.insuranceSpecification.theftCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.theftCoverageAmount', numericValue);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '0px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+
+                                    {/* שורה 2 - רכוש עליו עובדים */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    רכוש עליו עובדים
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.workPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.workPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.insuranceSpecification?.workPropertyCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="סכום הביטוח (₪)"
+                                                    value={project?.insuranceSpecification?.workPropertyCoverageAmount ? 
+                                                        `${parseInt(project.insuranceSpecification.workPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverageAmount', numericValue);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '0px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+
+                                    {/* שורה 3 - רכוש סמוך */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    רכוש סמוך
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.insuranceSpecification?.adjacentPropertyCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="סכום הביטוח (₪)"
+                                                    value={project?.insuranceSpecification?.adjacentPropertyCoverageAmount ? 
+                                                        `${parseInt(project.insuranceSpecification.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageAmount', numericValue);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '0px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+
+                                    {/* שורה 4 - רכוש בהעברה */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    רכוש בהעברה
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.insuranceSpecification?.transitPropertyCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="סכום הביטוח (₪)"
+                                                    value={project?.insuranceSpecification?.transitPropertyCoverageAmount ? 
+                                                        `${parseInt(project.insuranceSpecification.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageAmount', numericValue);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '0px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+
+                                    {/* שורה 5 - מבני עזר וציוד קל */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <Box sx={{
+                                                border: '1px solid #d1d5db',
+                                                borderRadius: '4px',
+                                                backgroundColor: 'white',
+                                                minHeight: '56px',
+                                                padding: '0 14px',
+                                                direction: 'rtl',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}>
+                                                <Typography sx={{
+                                                    fontSize: '1rem',
+                                                    color: 'text.secondary',
+                                                    marginRight: '10px'
+                                                }}>
+                                                    מבני עזר וציוד קל (ערך ממשי של פריט בודד לא יעלה על 40,000 ₪)
+                                                </Typography>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    gap: 0,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'flex-start',
+                                                    marginLeft: '10px'
+                                                }}>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '0 4px 4px 0',
+                                                            border: '1px solid #d1d5db',
+                                                            borderLeft: 'none',
+                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem',
+                                                            marginRight: '0px'
+                                                        }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{
+                                                            borderRadius: '4px 0 0 4px',
+                                                            border: '1px solid #d1d5db',
+                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#6B46C1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? 'white' : '#6B46C1',
+                                                            '&:hover': {
+                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            },
+                                                            minWidth: '50px',
+                                                            height: '32px',
+                                                            textTransform: 'none',
+                                                            fontSize: '0.875rem'
+                                                        }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="סכום הביטוח (₪)"
+                                                    value={project?.insuranceSpecification?.auxiliaryBuildingsCoverageAmount ? 
+                                                        `${parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageAmount', numericValue);
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '0px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
                                 </Box>
                             </Box>
                         )}
