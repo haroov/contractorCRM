@@ -7372,6 +7372,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '-8px'
                                                         }
                                                     }}
                                                 />
@@ -7421,6 +7424,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            top: '-8px'
                                                         }
                                                     }}
                                                 />
