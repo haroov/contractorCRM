@@ -5856,15 +5856,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
 
                                             {/* גריד של 2 עמודות */}
-                                            <Box sx={{ 
-                                                display: 'grid', 
-                                                gridTemplateColumns: '1fr 1fr', 
-                                                gap: 2, 
-                                                mb: 2 
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 2,
+                                                mb: 2
                                             }}>
                                                 {/* שורה 1 - עבודות פיצוץ */}
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -5951,8 +5951,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 2 - עבודות חציבה */}
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6039,8 +6039,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 3 - עבודות הריסה */}
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6127,8 +6127,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 4 - קירות תמך */}
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -7268,12 +7268,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         תחזוקת מכונות וציוד
                                     </Typography>
 
-                                    <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
-                                        נא ציין על ידי מי נעשית תחזוקת המכונות/הציוד:
-                                    </Typography>
-
                                     {/* אפשרות 1 - איש/צוות תחזוקה מיומן */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        mb: 2,
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        padding: '12px',
+                                        backgroundColor: 'white'
+                                    }}>
                                         <Checkbox
                                             checked={project?.machineMaintenance?.skilledMaintenance === true}
                                             onChange={(e) => handleNestedFieldChange('machineMaintenance.skilledMaintenance', e.target.checked)}
@@ -7286,12 +7290,20 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}
                                         />
                                         <Typography variant="body2" sx={{ mr: 1 }}>
-                                            איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח.
+                                            איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח
                                         </Typography>
                                     </Box>
 
                                     {/* אפשרות 2 - חברה חיצונית */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        mb: 2,
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        padding: '12px',
+                                        backgroundColor: 'white'
+                                    }}>
                                         <Checkbox
                                             checked={project?.machineMaintenance?.externalCompany === true}
                                             onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompany', e.target.checked)}
@@ -7304,10 +7316,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}
                                         />
                                         <Typography variant="body2" sx={{ mr: 1 }}>
-                                            חברה חיצונית המספקת שרותי תחזוקה - ציין את שם החברה:
+                                            חברה חיצונית המספקת שרותי תחזוקה
                                         </Typography>
                                     </Box>
-
+                                    
                                     {project?.machineMaintenance?.externalCompany === true && (
                                         <Box sx={{ mb: 2, ml: 4 }}>
                                             <TextField
@@ -7323,7 +7335,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     )}
 
                                     {/* אפשרות 3 - גורם מקצועי אחר */}
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        mb: 2,
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        padding: '12px',
+                                        backgroundColor: 'white'
+                                    }}>
                                         <Checkbox
                                             checked={project?.machineMaintenance?.otherProfessional === true}
                                             onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessional', e.target.checked)}
@@ -7336,10 +7356,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}
                                         />
                                         <Typography variant="body2" sx={{ mr: 1 }}>
-                                            גורם מקצועי אחר המספק שרותי תחזוקה – פרט:
+                                            גורם מקצועי אחר המספק שרותי תחזוקה
                                         </Typography>
                                     </Box>
-
+                                    
                                     {project?.machineMaintenance?.otherProfessional === true && (
                                         <Box sx={{ mb: 2, ml: 4 }}>
                                             <TextField
