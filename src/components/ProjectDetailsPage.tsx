@@ -6861,23 +6861,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
-                                {/* סקשן 1 - דוח אפס */}
+                                {/* סקשן 1 - דוח FS (אפ.אס) */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        דוח אפס
+                                        דוח FS (אפ.אס)
                                     </Typography>
                                     <FileUpload
-                                        label="דוח אפס"
-                                        value={fileUploadState.zeroReport?.url || project?.zeroReport?.file || ''}
-                                        thumbnailUrl={fileUploadState.zeroReport?.thumbnailUrl || project?.zeroReport?.thumbnailUrl || ''}
+                                        label="דוח FS (אפ.אס)"
+                                        value={fileUploadState.reportFS?.url || project?.reportFS?.file || ''}
+                                        thumbnailUrl={fileUploadState.reportFS?.thumbnailUrl || project?.reportFS?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
                                         onChange={async (url, thumbnailUrl) => {
                                             console.log('🔄 Zero Report FileUpload onChange called with:', { url, thumbnailUrl });
 
                                             setFileUploadState(prev => ({
                                                 ...prev,
-                                                zeroReport: {
-                                                    ...prev.zeroReport,
+                                                reportFS: {
+                                                    ...prev.reportFS,
                                                     url: url,
                                                     thumbnailUrl: thumbnailUrl
                                                 }
@@ -6887,8 +6887,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 try {
                                                     const { projectsAPI } = await import('../services/api');
                                                     const updateData = {
-                                                        'zeroReport.file': url,
-                                                        'zeroReport.thumbnailUrl': thumbnailUrl || ''
+                                                        'reportFS.file': url,
+                                                        'reportFS.thumbnailUrl': thumbnailUrl || ''
                                                     };
                                                     await projectsAPI.update(project._id || project.id, updateData);
                                                     await handleSave();
@@ -6897,9 +6897,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }
 
-                                            handleNestedFieldChange('zeroReport.file', url);
+                                            handleNestedFieldChange('reportFS.file', url);
                                             if (thumbnailUrl) {
-                                                handleNestedFieldChange('zeroReport.thumbnailUrl', thumbnailUrl);
+                                                handleNestedFieldChange('reportFS.thumbnailUrl', thumbnailUrl);
                                             }
                                         }}
                                         onDelete={async () => {
@@ -6911,21 +6911,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     return;
                                                 }
 
-                                                const currentFileUrl = fileUploadState.zeroReport?.url || project?.zeroReport?.file;
-                                                const currentThumbnailUrl = fileUploadState.zeroReport?.thumbnailUrl || project?.zeroReport?.thumbnailUrl;
+                                                const currentFileUrl = fileUploadState.reportFS?.url || project?.reportFS?.file;
+                                                const currentThumbnailUrl = fileUploadState.reportFS?.thumbnailUrl || project?.reportFS?.thumbnailUrl;
 
                                                 setFileUploadState(prev => ({
                                                     ...prev,
-                                                    zeroReport: {
+                                                    reportFS: {
                                                         url: '',
                                                         thumbnailUrl: '',
                                                         creationDate: ''
                                                     }
                                                 }));
 
-                                                handleNestedFieldChange('zeroReport.file', '');
-                                                handleNestedFieldChange('zeroReport.thumbnailUrl', '');
-                                                handleNestedFieldChange('zeroReport.fileCreationDate', '');
+                                                handleNestedFieldChange('reportFS.file', '');
+                                                handleNestedFieldChange('reportFS.thumbnailUrl', '');
+                                                handleNestedFieldChange('reportFS.fileCreationDate', '');
 
                                                 if (currentFileUrl || currentThumbnailUrl) {
                                                     const { authenticatedFetch } = await import('../config/api');
@@ -6950,9 +6950,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     const { projectsAPI } = await import('../services/api');
                                                     const projectId = project._id || project.id;
                                                     const updateData = {
-                                                        'zeroReport.file': '',
-                                                        'zeroReport.thumbnailUrl': '',
-                                                        'zeroReport.fileCreationDate': ''
+                                                        'reportFS.file': '',
+                                                        'reportFS.thumbnailUrl': '',
+                                                        'reportFS.fileCreationDate': ''
                                                     };
                                                     await projectsAPI.update(projectId, updateData);
                                                     await handleSave();
@@ -6967,14 +6967,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         disabled={mode === 'view' || !canEdit}
                                         accept=".xlsx,.xls,.csv"
                                         showCreationDate={true}
-                                        creationDateValue={fileUploadState.zeroReport?.creationDate || project?.zeroReport?.fileCreationDate || ''}
+                                        creationDateValue={fileUploadState.reportFS?.creationDate || project?.reportFS?.fileCreationDate || ''}
                                         onCreationDateChange={async (date) => {
                                             console.log('🔄 Zero Report onCreationDateChange called with:', date);
 
                                             setFileUploadState(prev => ({
                                                 ...prev,
-                                                zeroReport: {
-                                                    ...prev.zeroReport,
+                                                reportFS: {
+                                                    ...prev.reportFS,
                                                     creationDate: date
                                                 }
                                             }));
@@ -6983,7 +6983,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 try {
                                                     const { projectsAPI } = await import('../services/api');
                                                     const updateData = {
-                                                        'zeroReport.fileCreationDate': date
+                                                        'reportFS.fileCreationDate': date
                                                     };
                                                     await projectsAPI.update(project._id || project.id, updateData);
                                                     await handleSave();
@@ -6992,7 +6992,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }
                                             }
 
-                                            handleNestedFieldChange('zeroReport.fileCreationDate', date);
+                                            handleNestedFieldChange('reportFS.fileCreationDate', date);
                                         }}
                                         projectId={project?._id || project?.id}
                                         autoSave={true}
@@ -7294,7 +7294,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="עלות השלב"
                                                                 variant="outlined"
-                                                                sx={{ 
+                                                                sx={{
                                                                     '& .MuiOutlinedInput-root': { height: 40 },
                                                                     '& .MuiInputBase-input': {
                                                                         textAlign: 'right',
