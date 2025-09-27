@@ -6092,7 +6092,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 3, mb: 3 }}>
                                         <FileUpload
-                                            label="העלאת קובץ חוות דעת הידרולוג"
+                                            label="חוות דעת הידרולוג"
                                             value={project?.hydrologicalPlan?.file}
                                             onChange={(url) => handleNestedFieldChange('hydrologicalPlan.file', url)}
                                             onDelete={() => handleNestedFieldChange('hydrologicalPlan.file', '')}
