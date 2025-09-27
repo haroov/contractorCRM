@@ -216,8 +216,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     src={thumb}
                     alt="Thumbnail"
                     style={{
-                        width: 40,
-                        height: 40,
+                        width: 56,
+                        height: 56,
                         objectFit: 'cover',
                         borderRadius: 4,
                         border: '1px solid #e0e0e0'
@@ -233,13 +233,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 value.includes('image/');
 
             if (isPdf) {
-                return <PdfIcon sx={{ fontSize: 40, color: '#d32f2f' }} />;
+                return <PdfIcon sx={{ fontSize: 56, color: '#d32f2f' }} />;
             } else if (isImage) {
-                return <ImageIcon sx={{ fontSize: 40, color: '#1976d2' }} />;
+                return <ImageIcon sx={{ fontSize: 56, color: '#1976d2' }} />;
             }
         }
 
-        return <FileIcon sx={{ fontSize: 40, color: '#666' }} />;
+        return <FileIcon sx={{ fontSize: 56, color: '#666' }} />;
     };
 
     return (
@@ -258,8 +258,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {hasPreview ? (
                 <Box
                     sx={{
-                        width: 40,
-                        height: 40,
+                        width: 56,
+                        height: 56,
                         backgroundColor: '#6B46C1',
                         borderRadius: 1,
                         display: 'flex',
@@ -283,7 +283,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             }}
                         />
                     ) : (
-                        <PdfIcon sx={{ fontSize: 24, color: 'white' }} />
+                        <PdfIcon sx={{ fontSize: 32, color: 'white' }} />
                     )}
 
                     {/* Delete X in top-right */}

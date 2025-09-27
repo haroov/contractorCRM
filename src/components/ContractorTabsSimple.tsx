@@ -2390,11 +2390,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         }
                                     }}
                                     disabled={!canEdit}
-                                    showCreationDate={true}
-                                    creationDateValue={localSafetyCertificateCreationDate || ''}
-                                    onCreationDateChange={(date) => {
-                                        setLocalSafetyCertificateCreationDate(date);
-                                    }}
+                                    showCreationDate={false}
                                 />
                             </Grid>
 
@@ -2532,11 +2528,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         }
                                     }}
                                     disabled={!canEdit}
-                                    showCreationDate={true}
-                                    creationDateValue={localIsoCertificateCreationDate || ''}
-                                    onCreationDateChange={(date) => {
-                                        setLocalIsoCertificateCreationDate(date);
-                                    }}
+                                    showCreationDate={false}
                                 />
                             </Grid>
 
