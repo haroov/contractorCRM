@@ -2355,10 +2355,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             >
                                 <Tab label="כללי" />
                                 <Tab label="תוכניות" />
-                                <Tab label="נהלים" />
+                                <Tab label="פיננסים" />
                                 <Tab label="ביטוח" />
-                                <Tab label="הרשאות" />
-                                <Tab label="הערות" />
+                                <Tab label="תביעות" />
                                 {(project?.status === 'current' || project?.status === 'completed') && (
                                     <Tab label="דשבורד" />
                                 )}
@@ -6862,7 +6861,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
-                                {/* הטאב נהלים ריק כעת - תוכנית התארגנות אתר הועברה לסקשן בטיחות */}
+                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+                                    פיננסים
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary">
+                                    ניהול פיננסי יוצג כאן בעתיד...
+                                </Typography>
                             </Box>
                         )}
 
@@ -6880,33 +6884,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {activeTab === 4 && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    הרשאות
+                                    תביעות
                                 </Typography>
                                 <Typography variant="body1" color="text.secondary">
-                                    ניהול הרשאות יוצג כאן בעתיד...
+                                    ניהול תביעות יוצג כאן בעתיד...
                                 </Typography>
                             </Box>
                         )}
 
-                        {activeTab === 5 && (
-                            <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    הערות
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    label="הערות כלליות"
-                                    value={project?.notes || ''}
-                                    onChange={(e) => handleFieldChange('notes', e.target.value)}
-                                    disabled={mode === 'view'}
-                                    multiline
-                                    rows={6}
-                                    placeholder="הוסף הערות על הפרויקט..."
-                                />
-                            </Box>
-                        )}
 
-                        {activeTab === 6 && (project?.status === 'current' || project?.status === 'completed') && (
+                        {activeTab === 5 && (project?.status === 'current' || project?.status === 'completed') && (
                             <Box>
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     דשבורד ניהול סיכונים
