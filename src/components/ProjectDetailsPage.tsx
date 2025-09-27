@@ -6910,22 +6910,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         thumbnailUrl={fileUploadState.reportFS?.thumbnailUrl || project?.reportFS?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
                                         aiIcon={
-                                            <Box
+                                            <AutoAwesomeIcon
                                                 sx={{
-                                                    width: 24,
-                                                    height: 24,
-                                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                                    borderRadius: '50%',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    color: 'white',
-                                                    fontSize: '12px',
-                                                    fontWeight: 'bold'
+                                                    color: '#6B46C1',
+                                                    fontSize: '24px',
+                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
                                                 }}
-                                            >
-                                                AI
-                                            </Box>
+                                            />
                                         }
                                         onChange={async (url, thumbnailUrl) => {
                                             console.log('🔄 Zero Report FileUpload onChange called with:', { url, thumbnailUrl });
