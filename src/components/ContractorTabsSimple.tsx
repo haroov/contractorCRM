@@ -34,12 +34,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 }: ContractorTabsSimpleProps, ref) => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(() => {
-        // Check if there's a stored tab from URL navigation
+        // Check if there's a stored tab from URL navigation or previous session
         const storedTab = sessionStorage.getItem('contractor_active_tab');
         if (storedTab) {
-            sessionStorage.removeItem('contractor_active_tab'); // Clean up
             const tabIndex = parseInt(storedTab);
-            return tabIndex;
+            if (!isNaN(tabIndex) && tabIndex >= 0 && tabIndex <= 4) {
+                return tabIndex;
+            }
         }
         return 0;
     });
@@ -59,6 +60,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     const [contactEmailError, setContactEmailError] = useState<string>('');
     const [contactPhoneError, setContactPhoneError] = useState<string>('');
     const [companyIdError, setCompanyIdError] = useState<string>('');
+
+    // Save active tab to sessionStorage whenever it changes
+    useEffect(() => {
+        sessionStorage.setItem('contractor_active_tab', activeTab.toString());
+    }, [activeTab]);
     const [emailError, setEmailError] = useState<string>('');
     const [localCompanyId, setLocalCompanyId] = useState<string>(contractor?.companyId || contractor?.company_id || '');
     const [localCompanyType, setLocalCompanyType] = useState<string>(contractor?.companyType || 'private_company');
