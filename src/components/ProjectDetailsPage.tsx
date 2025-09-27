@@ -7129,7 +7129,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={area.areaSize ? parseInt(area.areaSize.toString()).toLocaleString('he-IL') : ''}
+                                                                    value={area.areaSize && area.areaSize !== '0' ? parseInt(area.areaSize.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
@@ -7152,7 +7152,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={area.costPerSquareMeter ? '₪ ' + parseInt(area.costPerSquareMeter.toString()).toLocaleString('he-IL') : ''}
+                                                                    value={area.costPerSquareMeter && area.costPerSquareMeter !== '0' ? '₪ ' + parseInt(area.costPerSquareMeter.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
@@ -7290,7 +7290,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
+                                                                    value={phase.phaseCost && phase.phaseCost !== '0' ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
