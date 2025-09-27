@@ -373,7 +373,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         console.log('🔍 Archiving contractor:', contractor);
         console.log('🔍 Contractor ID:', contractor._id);
         console.log('🔍 Contractor ID type:', typeof contractor._id);
-        
+
         const { default: ContractorService } = await import('../services/contractorService');
         // Archive contractor by setting isActive to false (CRM status)
         // Note: This is different from company status from Companies Registry
@@ -462,7 +462,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     setShowContractorDetails(false);
     setSelectedContractor(null);
     setContractorMode('view');
-    
+
     // Reset URL to main contractors list
     window.history.pushState({}, '', '/');
   };
@@ -482,7 +482,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     console.log('🔍 company_id value:', updatedContractor.company_id);
     console.log('🔍 companyId type:', typeof updatedContractor.companyId);
     console.log('🔍 company_id type:', typeof updatedContractor.company_id);
-    
+
     // SIMPLE FIX: Check if this is a PointerEvent (button click) instead of contractor data
     if (updatedContractor && updatedContractor.type === 'click') {
       console.log('🚨 ERROR: Received PointerEvent instead of contractor data!');
@@ -518,7 +518,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       console.log('🔍 Validation check - companyId type:', typeof companyId);
       console.log('🔍 Validation check - companyId length:', companyId?.length);
       console.log('🔍 Validation check - companyId trim:', companyId?.trim());
-      
+
       // Check if companyId is valid
       if (companyId && companyId.trim() !== '') {
         console.log('🔍 Validation check - companyId is NOT empty or undefined. Proceeding with save.');
@@ -587,15 +587,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const newContractor = await ContractorService.create(updatedContractor);
         console.log('✅ New contractor created successfully:', newContractor);
         setContractors([...contractors, newContractor]);
-        
+
         // After successful creation, switch to edit mode and update URL
         setSelectedContractor(newContractor);
         setContractorMode('edit');
-        
+
         // Update URL with the new contractor's _id
         const newUrl = `/?id=${newContractor._id}&mode=edit`;
         window.history.pushState({}, '', newUrl);
-        
+
         setSnackbarMessage('הקבלן נוצר בהצלחה');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
@@ -617,7 +617,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           contractorId: contractorToUpdate.contractorId,
           contractor_id: contractorToUpdate.contractor_id
         });
-        
+
         if (!updateId) {
           console.error('❌ No valid ID found for contractor update');
           setSnackbarMessage('שגיאה: לא נמצא מזהה קבלן לעדכון');
@@ -626,18 +626,18 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           setIsSaving(false);
           return;
         }
-        
+
         const updated = await ContractorService.update(updateId, contractorToUpdate);
         if (updated) {
           console.log('✅ Contractor updated successfully:', updated);
 
           // Update contractors list - add if not exists, update if exists
-          const existingIndex = contractors.findIndex(c => 
+          const existingIndex = contractors.findIndex(c =>
             c._id === updateId || c.contractorId === updateId || c.contractor_id === updateId
           );
           if (existingIndex >= 0) {
             // Update existing contractor in list
-            setContractors(contractors.map(c => 
+            setContractors(contractors.map(c =>
               (c._id === updateId || c.contractorId === updateId || c.contractor_id === updateId) ? updated : c
             ));
           } else {
@@ -1206,57 +1206,57 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             <Box sx={{ flex: 1, overflow: 'auto' }}>
               {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabsSimple:', contractorMode)}
               <ContractorTabsSimple
-                  ref={contractorTabsRef}
-                  contractor={selectedContractor!}
-                  onSave={(contractorData) => {
-                    console.log('🔧 onSave called with:', contractorData);
-                    handleSaveContractor(contractorData);
-                  }}
-                  onClose={handleCloseContractorDetails}
-                  isContactUser={isContactUser}
-                  contractorMode={contractorMode}
-                  contactUserPermissions={(() => {
-                    const contactUserData = localStorage.getItem('contactUser');
-                    console.log('🔧 contactUserPermissions debug - localStorage data:', contactUserData);
-                    if (contactUserData) {
-                      try {
-                        const contactUser = JSON.parse(contactUserData);
-                        console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
-                        console.log('🔧 contactUserPermissions debug - user keys:', Object.keys(contactUser));
-                        console.log('🔧 contactUserPermissions debug - userType:', contactUser.userType);
-                        console.log('🔧 contactUserPermissions debug - permissions:', contactUser.permissions);
-                        // Check userType first to determine if this is a contact user
-                        if (contactUser.userType === 'contact' || contactUser.userType === 'contractor') {
-                          console.log('🔧 contactUserPermissions debug - this is a contact user, checking permissions');
-                          // For contact users, use permissions field
-                          if (contactUser.permissions) {
-                            console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
-                            return contactUser.permissions; // 'contactAdmin' or 'contactUser'
-                          }
-                          // If no permissions field, default to contactUser
-                          console.log('🔧 contactUserPermissions debug - no permissions field, defaulting to contactUser');
-                          return 'contactUser';
+                ref={contractorTabsRef}
+                contractor={selectedContractor!}
+                onSave={(contractorData) => {
+                  console.log('🔧 onSave called with:', contractorData);
+                  handleSaveContractor(contractorData);
+                }}
+                onClose={handleCloseContractorDetails}
+                isContactUser={isContactUser}
+                contractorMode={contractorMode}
+                contactUserPermissions={(() => {
+                  const contactUserData = localStorage.getItem('contactUser');
+                  console.log('🔧 contactUserPermissions debug - localStorage data:', contactUserData);
+                  if (contactUserData) {
+                    try {
+                      const contactUser = JSON.parse(contactUserData);
+                      console.log('🔧 contactUserPermissions debug - parsed user:', contactUser);
+                      console.log('🔧 contactUserPermissions debug - user keys:', Object.keys(contactUser));
+                      console.log('🔧 contactUserPermissions debug - userType:', contactUser.userType);
+                      console.log('🔧 contactUserPermissions debug - permissions:', contactUser.permissions);
+                      // Check userType first to determine if this is a contact user
+                      if (contactUser.userType === 'contact' || contactUser.userType === 'contractor') {
+                        console.log('🔧 contactUserPermissions debug - this is a contact user, checking permissions');
+                        // For contact users, use permissions field
+                        if (contactUser.permissions) {
+                          console.log('🔧 contactUserPermissions debug - using permissions:', contactUser.permissions);
+                          return contactUser.permissions; // 'contactAdmin' or 'contactUser'
                         }
-                        // For system users (admin/regular), use role instead of permissions
-                        if (contactUser.role) {
-                          console.log('🔧 contactUserPermissions debug - this is a system user, using role:', contactUser.role);
-                          return contactUser.role; // 'admin' or 'user'
-                        }
-                        console.log('🔧 contactUserPermissions debug - defaulting to contactUser');
-                        return 'contactUser';
-                      } catch (error) {
-                        console.error('Error parsing contact user data:', error);
+                        // If no permissions field, default to contactUser
+                        console.log('🔧 contactUserPermissions debug - no permissions field, defaulting to contactUser');
                         return 'contactUser';
                       }
+                      // For system users (admin/regular), use role instead of permissions
+                      if (contactUser.role) {
+                        console.log('🔧 contactUserPermissions debug - this is a system user, using role:', contactUser.role);
+                        return contactUser.role; // 'admin' or 'user'
+                      }
+                      console.log('🔧 contactUserPermissions debug - defaulting to contactUser');
+                      return 'contactUser';
+                    } catch (error) {
+                      console.error('Error parsing contact user data:', error);
+                      return 'contactUser';
                     }
-                    console.log('🔧 contactUserPermissions debug - no localStorage data, defaulting to contactUser');
-                    return 'contactUser';
-                  })()}
-                  currentUser={currentUser}
-                  isSaving={isSaving}
-                  onUpdateContractor={setSelectedContractor}
-                  onShowNotification={setSnackbar}
-                />
+                  }
+                  console.log('🔧 contactUserPermissions debug - no localStorage data, defaulting to contactUser');
+                  return 'contactUser';
+                })()}
+                currentUser={currentUser}
+                isSaving={isSaving}
+                onUpdateContractor={setSelectedContractor}
+                onShowNotification={setSnackbar}
+              />
             </Box>
           </Paper>
         </Box>

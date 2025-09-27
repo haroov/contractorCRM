@@ -7570,11 +7570,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             }}
                                             tabIndex={0}
                                         >
-                                            <AutoAwesomeIcon 
-                                                sx={{ 
-                                                    color: '#8B5CF6', 
+                                            <AutoAwesomeIcon
+                                                sx={{
+                                                    color: '#8B5CF6',
                                                     filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
-                                                }} 
+                                                }}
                                             />
                                         </Box>
                                         <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>

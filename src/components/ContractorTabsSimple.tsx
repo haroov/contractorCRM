@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete, InputAdornment, Chip } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
+import FileUpload from './FileUpload';
 import { useNavigate } from 'react-router-dom';
 import ContractorService from '../services/contractorService';
 import { authenticatedFetch } from '../config/api';
@@ -309,10 +310,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     const [localSafetyExpiry, setLocalSafetyExpiry] = useState<string>(contractor?.safetyExpiry || '');
     const [localSafetyCertificate, setLocalSafetyCertificate] = useState<string>(contractor?.safetyCertificate || '');
     const [localSafetyCertificateType, setLocalSafetyCertificateType] = useState<string>('');
+    const [localSafetyCertificateThumbnail, setLocalSafetyCertificateThumbnail] = useState<string>(contractor?.safetyCertificateThumbnail || '');
+    const [localSafetyCertificateCreationDate, setLocalSafetyCertificateCreationDate] = useState<string>(contractor?.safetyCertificateCreationDate || '');
     const [localIso45001, setLocalIso45001] = useState<boolean>(contractor?.iso45001 || false);
     const [localIsoExpiry, setLocalIsoExpiry] = useState<string>(contractor?.isoExpiry || '');
     const [localIsoCertificate, setLocalIsoCertificate] = useState<string>(contractor?.isoCertificate || '');
     const [localIsoCertificateType, setLocalIsoCertificateType] = useState<string>('');
+    const [localIsoCertificateThumbnail, setLocalIsoCertificateThumbnail] = useState<string>(contractor?.isoCertificateThumbnail || '');
+    const [localIsoCertificateCreationDate, setLocalIsoCertificateCreationDate] = useState<string>(contractor?.isoCertificateCreationDate || '');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
     const [localIsActive, setLocalIsActive] = useState<boolean>(contractor?.isActive ?? true);
 
@@ -2304,170 +2309,93 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
-                                    {localSafetyCertificate ? (
-                                        <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localSafetyCertificateType === 'application/pdf' || localSafetyCertificate.toLowerCase().includes('.pdf') ? (
-                                                <Box
-                                                    sx={{
-                                                        width: '56px',
-                                                        height: '56px',
-                                                        borderRadius: 4,
-                                                        cursor: 'pointer',
-                                                        border: '1px solid #d0d0d0',
-                                                        backgroundColor: '#d32f2f',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        position: 'relative',
-                                                        '&:hover': {
-                                                            backgroundColor: '#b71c1c'
-                                                        }
-                                                    }}
-                                                    onClick={() => window.open(localSafetyCertificate, '_blank')}
-                                                >
-                                                    {/* PDF Text - fills the entire button */}
-                                                    <Typography sx={{
-                                                        fontSize: '12px',
-                                                        color: 'white',
-                                                        fontWeight: 'bold',
-                                                        lineHeight: 1,
-                                                        textAlign: 'center'
-                                                    }}>
-                                                        PDF
-                                                    </Typography>
-
-                                                    {/* Delete button */}
-                                                    {canEdit && (
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDeleteFile('safety', localSafetyCertificate);
-                                                            }}
-                                                            sx={{
-                                                                position: 'absolute',
-                                                                top: -8,
-                                                                right: -8,
-                                                                width: '20px',
-                                                                height: '20px',
-                                                                backgroundColor: 'white',
-                                                                border: '1px solid #d32f2f',
-                                                                color: '#d32f2f',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#d32f2f',
-                                                                    color: 'white'
-                                                                }
-                                                            }}
-                                                        >
-                                                            <CloseIcon sx={{ fontSize: '12px' }} />
-                                                        </IconButton>
-                                                    )}
-                                                </Box>
-                                            ) : (
-                                                <img
-                                                    src={localSafetyCertificate}
-                                                    alt="תעודת בטיחות"
-                                                    style={{
-                                                        width: '56px',
-                                                        height: '56px',
-                                                        objectFit: 'cover',
-                                                        borderRadius: 4,
-                                                        cursor: 'pointer',
-                                                        border: '1px solid #d0d0d0'
-                                                    }}
-                                                    onClick={() => window.open(localSafetyCertificate, '_blank')}
-                                                    onError={(e) => {
-                                                        // Fallback to PDF icon if image fails to load
-                                                        const target = e.target as HTMLImageElement;
-                                                        target.style.display = 'none';
-                                                        const parent = target.parentElement;
-                                                        if (parent) {
-                                                            parent.innerHTML = `
-                                                                <div style="
-                                                                    width: 56px; 
-                                                                    height: 56px; 
-                                                                    border-radius: 8px; 
-                                                                    background-color: #d32f2f; 
-                                                                    border: 1px solid #d0d0d0; 
-                                                                    display: flex; 
-                                                                    align-items: center; 
-                                                                    justify-content: center; 
-                                                                    cursor: pointer;
-                                                                    position: relative;
-                                                                ">
-                                                                    <span style="font-size: 12px; color: white; font-weight: bold; text-align: center;">PDF</span>
-                                                                </div>
-                                                            `;
-                                                        }
-                                                    }}
-                                                />
-                                            )}
-                                            {canEdit && (
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleDeleteFile('safety', localSafetyCertificate)}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: -8,
-                                                        right: -8,
-                                                        backgroundColor: 'white',
-                                                        border: '1px solid #d0d0d0',
-                                                        width: 20,
-                                                        height: 20,
-                                                        '&:hover': {
-                                                            backgroundColor: '#ffebee',
-                                                            borderColor: '#f44336'
-                                                        }
-                                                    }}
-                                                >
-                                                    <Typography sx={{ fontSize: '12px', color: '#f44336', lineHeight: 1 }}>×</Typography>
-                                                </IconButton>
-                                            )}
-                                        </Box>
-                                    ) : (
-                                        <IconButton
-                                            disabled={!canEdit || isUploading}
-                                            title="העלאת תעודת הסמכת כוכבי בטיחות"
-                                            onClick={() => handleUploadClick('safety')}
-                                            sx={{
-                                                border: '1px solid #d0d0d0',
-                                                borderRadius: 1,
-                                                height: '56px',
-                                                width: '56px',
-                                                color: '#882fd7',
-                                                '&:hover': {
-                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                    borderColor: '#882fd7'
+                                <FileUpload
+                                    label="תעודת כוכבי בטיחות"
+                                    value={localSafetyCertificate || ''}
+                                    thumbnailUrl={localSafetyCertificateThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Safety certificate onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            // Update local state
+                                            setLocalSafetyCertificate(url);
+                                            if (thumbnailUrl) {
+                                                setLocalSafetyCertificateThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            // Save to database immediately
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        safetyCertificate: url,
+                                                        safetyCertificateThumbnail: thumbnailUrl || '',
+                                                        safetyCertificateCreationDate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    console.log('🔍 Saving safety certificate to database:', updateData);
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Safety certificate saved successfully:', result);
+                                                    
+                                                    // Update contractor state
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({
+                                                            ...contractor,
+                                                            ...updateData
+                                                        });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving safety certificate:', error);
                                                 }
-                                            }}
-                                        >
-                                            {isUploading && uploadType === 'safety' ? <CircularProgress size={20} /> : <GentleCloudUploadIcon fontSize="xlarge" />}
-                                        </IconButton>
-                                    )}
-                                    {uploadedFiles.safety && (
-                                        <Box sx={{
-                                            width: 40,
-                                            height: 40,
-                                            border: '1px solid #d0d0d0',
-                                            borderRadius: 1,
-                                            overflow: 'hidden',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            <img
-                                                src={uploadedFiles.safety}
-                                                alt="תצוגה מקדימה"
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'cover'
-                                                }}
-                                            />
-                                        </Box>
-                                    )}
-                                </Box>
+                                            }
+                                        } else {
+                                            // Handle deletion
+                                            setLocalSafetyCertificate('');
+                                            setLocalSafetyCertificateThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Safety certificate onDelete called');
+                                        
+                                        // Clear local state
+                                        setLocalSafetyCertificate('');
+                                        setLocalSafetyCertificateThumbnail('');
+                                        
+                                        // Delete from database
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    safetyCertificate: null,
+                                                    safetyCertificateThumbnail: null,
+                                                    safetyCertificateCreationDate: null
+                                                };
+                                                
+                                                console.log('🗑️ Deleting safety certificate from database:', updateData);
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Safety certificate deleted successfully:', result);
+                                                
+                                                // Update contractor state
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        safetyCertificate: null,
+                                                        safetyCertificateThumbnail: null,
+                                                        safetyCertificateCreationDate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting safety certificate:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={true}
+                                    creationDateValue={localSafetyCertificateCreationDate || ''}
+                                    onCreationDateChange={(date) => {
+                                        setLocalSafetyCertificateCreationDate(date);
+                                    }}
+                                />
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
@@ -2523,170 +2451,93 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', gap: 1 }}>
-                                    {localIsoCertificate ? (
-                                        <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                                            {localIsoCertificateType === 'application/pdf' || localIsoCertificate.toLowerCase().includes('.pdf') ? (
-                                                <Box
-                                                    sx={{
-                                                        width: '56px',
-                                                        height: '56px',
-                                                        borderRadius: 4,
-                                                        cursor: 'pointer',
-                                                        border: '1px solid #d0d0d0',
-                                                        backgroundColor: '#d32f2f',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        position: 'relative',
-                                                        '&:hover': {
-                                                            backgroundColor: '#b71c1c'
-                                                        }
-                                                    }}
-                                                    onClick={() => window.open(localIsoCertificate, '_blank')}
-                                                >
-                                                    {/* PDF Text - fills the entire button */}
-                                                    <Typography sx={{
-                                                        fontSize: '12px',
-                                                        color: 'white',
-                                                        fontWeight: 'bold',
-                                                        lineHeight: 1,
-                                                        textAlign: 'center'
-                                                    }}>
-                                                        PDF
-                                                    </Typography>
-
-                                                    {/* Delete button */}
-                                                    {canEdit && (
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDeleteFile('iso', localIsoCertificate);
-                                                            }}
-                                                            sx={{
-                                                                position: 'absolute',
-                                                                top: -8,
-                                                                right: -8,
-                                                                width: '20px',
-                                                                height: '20px',
-                                                                backgroundColor: 'white',
-                                                                border: '1px solid #d32f2f',
-                                                                color: '#d32f2f',
-                                                                '&:hover': {
-                                                                    backgroundColor: '#d32f2f',
-                                                                    color: 'white'
-                                                                }
-                                                            }}
-                                                        >
-                                                            <CloseIcon sx={{ fontSize: '12px' }} />
-                                                        </IconButton>
-                                                    )}
-                                                </Box>
-                                            ) : (
-                                                <img
-                                                    src={localIsoCertificate}
-                                                    alt="תעודת ISO45001"
-                                                    style={{
-                                                        width: '56px',
-                                                        height: '56px',
-                                                        objectFit: 'cover',
-                                                        borderRadius: 4,
-                                                        cursor: 'pointer',
-                                                        border: '1px solid #d0d0d0'
-                                                    }}
-                                                    onClick={() => window.open(localIsoCertificate, '_blank')}
-                                                    onError={(e) => {
-                                                        // Fallback to PDF icon if image fails to load
-                                                        const target = e.target as HTMLImageElement;
-                                                        target.style.display = 'none';
-                                                        const parent = target.parentElement;
-                                                        if (parent) {
-                                                            parent.innerHTML = `
-                                                                <div style="
-                                                                    width: 56px; 
-                                                                    height: 56px; 
-                                                                    border-radius: 8px; 
-                                                                    background-color: #d32f2f; 
-                                                                    border: 1px solid #d0d0d0; 
-                                                                    display: flex; 
-                                                                    align-items: center; 
-                                                                    justify-content: center; 
-                                                                    cursor: pointer;
-                                                                    position: relative;
-                                                                ">
-                                                                    <span style="font-size: 12px; color: white; font-weight: bold; text-align: center;">PDF</span>
-                                                                </div>
-                                                            `;
-                                                        }
-                                                    }}
-                                                />
-                                            )}
-                                            {canEdit && (
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleDeleteFile('iso', localIsoCertificate)}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: -8,
-                                                        right: -8,
-                                                        backgroundColor: 'white',
-                                                        border: '1px solid #d0d0d0',
-                                                        width: 20,
-                                                        height: 20,
-                                                        '&:hover': {
-                                                            backgroundColor: '#ffebee',
-                                                            borderColor: '#f44336'
-                                                        }
-                                                    }}
-                                                >
-                                                    <Typography sx={{ fontSize: '12px', color: '#f44336', lineHeight: 1 }}>×</Typography>
-                                                </IconButton>
-                                            )}
-                                        </Box>
-                                    ) : (
-                                        <IconButton
-                                            disabled={!canEdit || isUploading}
-                                            title="העלאת תעודת ISO45001"
-                                            onClick={() => handleUploadClick('iso')}
-                                            sx={{
-                                                border: '1px solid #d0d0d0',
-                                                borderRadius: 1,
-                                                height: '56px',
-                                                width: '56px',
-                                                color: '#882fd7',
-                                                '&:hover': {
-                                                    backgroundColor: 'rgba(156, 39, 176, 0.04)',
-                                                    borderColor: '#882fd7'
+                                <FileUpload
+                                    label="תעודת ISO45001"
+                                    value={localIsoCertificate || ''}
+                                    thumbnailUrl={localIsoCertificateThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 ISO certificate onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            // Update local state
+                                            setLocalIsoCertificate(url);
+                                            if (thumbnailUrl) {
+                                                setLocalIsoCertificateThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            // Save to database immediately
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        isoCertificate: url,
+                                                        isoCertificateThumbnail: thumbnailUrl || '',
+                                                        isoCertificateCreationDate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    console.log('🔍 Saving ISO certificate to database:', updateData);
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ ISO certificate saved successfully:', result);
+                                                    
+                                                    // Update contractor state
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({
+                                                            ...contractor,
+                                                            ...updateData
+                                                        });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving ISO certificate:', error);
                                                 }
-                                            }}
-                                        >
-                                            {isUploading && uploadType === 'iso' ? <CircularProgress size={20} /> : <GentleCloudUploadIcon fontSize="xlarge" />}
-                                        </IconButton>
-                                    )}
-                                    {uploadedFiles.iso && (
-                                        <Box sx={{
-                                            width: 40,
-                                            height: 40,
-                                            border: '1px solid #d0d0d0',
-                                            borderRadius: 1,
-                                            overflow: 'hidden',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            <img
-                                                src={uploadedFiles.iso}
-                                                alt="תצוגה מקדימה"
-                                                style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'cover'
-                                                }}
-                                            />
-                                        </Box>
-                                    )}
-                                </Box>
+                                            }
+                                        } else {
+                                            // Handle deletion
+                                            setLocalIsoCertificate('');
+                                            setLocalIsoCertificateThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ ISO certificate onDelete called');
+                                        
+                                        // Clear local state
+                                        setLocalIsoCertificate('');
+                                        setLocalIsoCertificateThumbnail('');
+                                        
+                                        // Delete from database
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    isoCertificate: null,
+                                                    isoCertificateThumbnail: null,
+                                                    isoCertificateCreationDate: null
+                                                };
+                                                
+                                                console.log('🗑️ Deleting ISO certificate from database:', updateData);
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ ISO certificate deleted successfully:', result);
+                                                
+                                                // Update contractor state
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        isoCertificate: null,
+                                                        isoCertificateThumbnail: null,
+                                                        isoCertificateCreationDate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting ISO certificate:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={true}
+                                    creationDateValue={localIsoCertificateCreationDate || ''}
+                                    onCreationDateChange={(date) => {
+                                        setLocalIsoCertificateCreationDate(date);
+                                    }}
+                                />
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={3}>
