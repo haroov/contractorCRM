@@ -4534,18 +4534,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onAutoSave={handleSave}
                                                 />
 
-                                                <FileUpload
-                                                    label="אישור מהנדס קונסטרקטור"
-                                                    value={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file}
-                                                    onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', url, project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
-                                                    onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.file', '', project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.file)}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                    showCreationDate={true}
-                                                    creationDateValue={project?.engineeringQuestionnaire?.buildingPlan?.structuralEngineerApproval?.creationDate || ''}
-                                                    onCreationDateChange={(date) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.structuralEngineerApproval.creationDate', date)}
-                                                    projectId={project?._id || project?.id}
-                                                />
 
                                                 <FileUpload
                                                     label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה"
