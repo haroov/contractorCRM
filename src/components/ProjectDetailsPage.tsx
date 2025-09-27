@@ -7549,14 +7549,35 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* שורה 4 - טבלת מסמכי הפוליסה */}
                                 <Box sx={{ mb: 4 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <AutoAwesomeIcon 
-                                            sx={{ 
-                                                color: '#8B5CF6', 
-                                                mr: 1,
-                                                filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
-                                            }} 
-                                        />
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 32,
+                                                height: 32,
+                                                borderRadius: '50%',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                },
+                                                '&:focus-within': {
+                                                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                                                    outline: '2px solid rgba(139, 92, 246, 0.3)',
+                                                    outlineOffset: '2px',
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                        >
+                                            <AutoAwesomeIcon 
+                                                sx={{ 
+                                                    color: '#8B5CF6', 
+                                                    filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
+                                                }} 
+                                            />
+                                        </Box>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>
                                             מסמכי הפוליסה
                                         </Typography>
                                     </Box>
