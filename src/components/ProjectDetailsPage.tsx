@@ -7429,9 +7429,275 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     ביטוח
                                 </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    ניהול מסמכים יוצג כאן בעתיד...
-                                </Typography>
+
+                                {/* שורה 1 - מפרט הביטוח */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        מפרט הביטוח
+                                    </Typography>
+                                    <FileUpload
+                                        label="מפרט הביטוח"
+                                        value={fileUploadState.insuranceSpecification?.url || project?.insuranceSpecification?.file || ''}
+                                        thumbnailUrl={fileUploadState.insuranceSpecification?.thumbnailUrl || project?.insuranceSpecification?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        aiIcon={
+                                            <AutoAwesomeIcon
+                                                sx={{
+                                                    color: '#6B46C1',
+                                                    fontSize: '24px',
+                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
+                                                }}
+                                            />
+                                        }
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.insuranceSpecification?.creationDate || project?.insuranceSpecification?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceSpecification: {
+                                                    ...prev.insuranceSpecification,
+                                                    creationDate: date
+                                                }
+                                            }));
+                                            handleNestedFieldChange('insuranceSpecification.fileCreationDate', date);
+                                        }}
+                                        onChange={async (url, thumbnailUrl) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceSpecification: {
+                                                    ...prev.insuranceSpecification,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            }));
+                                            handleNestedFieldChange('insuranceSpecification.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('insuranceSpecification.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                    />
+                                </Box>
+
+                                {/* שורה 2 - סעיף הביטוח בחוזה / מכרז */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        סעיף הביטוח בחוזה / מכרז
+                                    </Typography>
+                                    <FileUpload
+                                        label="סעיף הביטוח בחוזה / מכרז"
+                                        value={fileUploadState.insuranceContractClause?.url || project?.insuranceContractClause?.file || ''}
+                                        thumbnailUrl={fileUploadState.insuranceContractClause?.thumbnailUrl || project?.insuranceContractClause?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.insuranceContractClause?.creationDate || project?.insuranceContractClause?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceContractClause: {
+                                                    ...prev.insuranceContractClause,
+                                                    creationDate: date
+                                                }
+                                            }));
+                                            handleNestedFieldChange('insuranceContractClause.fileCreationDate', date);
+                                        }}
+                                        onChange={async (url, thumbnailUrl) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceContractClause: {
+                                                    ...prev.insuranceContractClause,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            }));
+                                            handleNestedFieldChange('insuranceContractClause.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('insuranceContractClause.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                    />
+                                </Box>
+
+                                {/* שורה 3 - טופס הצעה */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        טופס הצעה
+                                    </Typography>
+                                    <FileUpload
+                                        label="טופס הצעה"
+                                        value={fileUploadState.proposalForm?.url || project?.proposalForm?.file || ''}
+                                        thumbnailUrl={fileUploadState.proposalForm?.thumbnailUrl || project?.proposalForm?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.proposalForm?.creationDate || project?.proposalForm?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                proposalForm: {
+                                                    ...prev.proposalForm,
+                                                    creationDate: date
+                                                }
+                                            }));
+                                            handleNestedFieldChange('proposalForm.fileCreationDate', date);
+                                        }}
+                                        onChange={async (url, thumbnailUrl) => {
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                proposalForm: {
+                                                    ...prev.proposalForm,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            }));
+                                            handleNestedFieldChange('proposalForm.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('proposalForm.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                    />
+                                </Box>
+
+                                {/* שורה 4 - טבלת מסמכי הפוליסה */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        מסמכי הפוליסה
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>סוג המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>קובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>תאריך תוקף</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר פוליסה</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {(project?.policyDocuments && project.policyDocuments.length > 0 ? project.policyDocuments : [{ documentType: 'פוליסה', file: '', validUntil: '', policyNumber: '' }]).map((document, index) => {
+                                                    const isFirstRow = index === 0;
+                                                    return (
+                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['פוליסה', 'תוספת', 'כתב כיסוי']}
+                                                                    value={document.documentType || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newInputValue);
+                                                                    }}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="סוג המסמך"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <FileUpload
+                                                                    label=""
+                                                                    value={document.file || ''}
+                                                                    thumbnailUrl={document.thumbnailUrl || ''}
+                                                                    projectId={project?._id || project?.id}
+                                                                    onChange={async (url, thumbnailUrl) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.file`, url);
+                                                                        if (thumbnailUrl) {
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, thumbnailUrl);
+                                                                        }
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    showCreationDate={false}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="date"
+                                                                    value={document.validUntil || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.validUntil`, e.target.value);
+                                                                    }}
+                                                                    placeholder="תאריך תוקף"
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={document.policyNumber || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.policyNumber`, e.target.value);
+                                                                    }}
+                                                                    placeholder="מספר פוליסה"
+                                                                    variant="outlined"
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                {!isFirstRow && (
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את המסמך?')) {
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const newDocuments = currentDocuments.filter((_, i) => i !== index);
+                                                                                handleNestedFieldChange('policyDocuments', newDocuments);
+                                                                            }
+                                                                        }}
+                                                                        title="מחיקה"
+                                                                        sx={{
+                                                                            '& img': {
+                                                                                filter: 'brightness(0) saturate(0)',
+                                                                                width: '16px',
+                                                                                height: '16px'
+                                                                            },
+                                                                            '&:hover, &:focus': {
+                                                                                backgroundColor: '#f44336',
+                                                                                borderRadius: '50%'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                    </IconButton>
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                                <TableRow>
+                                                    <TableCell colSpan={5} sx={{ padding: 1, textAlign: 'center' }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                const newDocument = { documentType: '', file: '', validUntil: '', policyNumber: '' };
+                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                handleNestedFieldChange('policyDocuments', [...currentDocuments, newDocument]);
+                                                            }}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            + הוספה
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
                             </Box>
                         )}
 
