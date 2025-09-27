@@ -7134,6 +7134,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
                                                                     }}
+                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="גודל השטח"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7156,6 +7157,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
                                                                     }}
+                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="עלות למ״ר"
                                                                     variant="outlined"
                                                                     sx={{
@@ -7293,6 +7295,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
                                                                     }}
+                                                                    disabled={mode === 'view' || !canEdit}
                                                                     placeholder="עלות השלב"
                                                                     variant="outlined"
                                                                     sx={{
