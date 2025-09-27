@@ -7253,115 +7253,100 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם השלב</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות השלב (₪)</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>בניה ואיכלוס במקביל או מדורג</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '', constructionType: '' }]).map((phase, index) => {
+                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '' }]).map((phase, index) => {
                                                     const isFirstRow = index === 0;
                                                     return (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <Autocomplete
-                                                                freeSolo
-                                                                options={['חפירה', 'שלד', 'גמר']}
-                                                                value={phase.phaseName || ''}
-                                                                onChange={(event, newValue) => {
-                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newValue || '');
-                                                                }}
-                                                                onInputChange={(event, newInputValue) => {
-                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newInputValue);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                renderInput={(params) => (
-                                                                    <TextField
-                                                                        {...params}
-                                                                        size="small"
-                                                                        placeholder="שם השלב"
-                                                                        variant="outlined"
-                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                    />
-                                                                )}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                size="small"
-                                                                type="text"
-                                                                inputMode="numeric"
-                                                                value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
-                                                                onChange={(e) => {
-                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                    handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="עלות השלב"
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiOutlinedInput-root': { height: 40 },
-                                                                    '& .MuiInputBase-input': {
-                                                                        textAlign: 'right',
-                                                                        direction: 'ltr'
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                size="small"
-                                                                multiline
-                                                                rows={2}
-                                                                value={phase.constructionType || ''}
-                                                                onChange={(e) => handleNestedFieldChange(`budgetAllocation.${index}.constructionType`, e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="בניה ואיכלוס במקביל או מדורג, נא לפרט"
-                                                                variant="outlined"
-                                                                sx={{ '& .MuiOutlinedInput-root': { minHeight: 40 } }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            {!isFirstRow && (
-                                                                <IconButton
-                                                                    onClick={() => {
-                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את השלב?')) {
-                                                                            const currentPhases = project?.budgetAllocation || [];
-                                                                            const newPhases = currentPhases.filter((_, i) => i !== index);
-                                                                            handleNestedFieldChange('budgetAllocation', newPhases);
-                                                                        }
+                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['חפירה', 'שלד', 'גמר']}
+                                                                    value={phase.phaseName || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseName`, newInputValue);
                                                                     }}
                                                                     disabled={mode === 'view' || !canEdit}
-                                                                    title="מחיקה"
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="שם השלב"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
+                                                                    onChange={(e) => {
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="עלות השלב"
+                                                                    variant="outlined"
                                                                     sx={{
-                                                                        '& img': {
-                                                                            filter: 'brightness(0) saturate(0)',
-                                                                            width: '16px',
-                                                                            height: '16px'
-                                                                        },
-                                                                        '&:hover, &:focus': {
-                                                                            backgroundColor: '#f44336',
-                                                                            borderRadius: '50%'
-                                                                        },
-                                                                        '&:hover img, &:focus img': {
-                                                                            filter: 'brightness(0) invert(1)'
+                                                                        '& .MuiOutlinedInput-root': { height: 40 },
+                                                                        '& .MuiInputBase-input': {
+                                                                            textAlign: 'right',
+                                                                            direction: 'ltr'
                                                                         }
                                                                     }}
-                                                                >
-                                                                    <img src="/assets/icon-trash.svg" alt="מחיקה" />
-                                                                </IconButton>
-                                                            )}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                {!isFirstRow && (
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את השלב?')) {
+                                                                                const currentPhases = project?.budgetAllocation || [];
+                                                                                const newPhases = currentPhases.filter((_, i) => i !== index);
+                                                                                handleNestedFieldChange('budgetAllocation', newPhases);
+                                                                            }
+                                                                        }}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        title="מחיקה"
+                                                                        sx={{
+                                                                            '& img': {
+                                                                                filter: 'brightness(0) saturate(0)',
+                                                                                width: '16px',
+                                                                                height: '16px'
+                                                                            },
+                                                                            '&:hover, &:focus': {
+                                                                                backgroundColor: '#f44336',
+                                                                                borderRadius: '50%'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                    </IconButton>
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
                                                 })}
                                                 <TableRow>
-                                                    <TableCell colSpan={4} sx={{ padding: 1, textAlign: 'center' }}>
+                                                    <TableCell colSpan={3} sx={{ padding: 1, textAlign: 'center' }}>
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newPhase = { phaseName: '', phaseCost: '', constructionType: '' };
+                                                                const newPhase = { phaseName: '', phaseCost: '' };
                                                                 const currentPhases = project?.budgetAllocation || [];
                                                                 handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
                                                             }}
@@ -7375,6 +7360,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
+                                </Box>
+
+                                {/* סקשן בניה ואיכלוס במקביל או מדורג */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        בניה ואיכלוס במקביל או מדורג
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        rows={4}
+                                        value={project?.constructionAndOccupancyType || ''}
+                                        onChange={(e) => handleNestedFieldChange('constructionAndOccupancyType', e.target.value)}
+                                        disabled={mode === 'view' || !canEdit}
+                                        placeholder="בניה ואיכלוס במקביל או מדורג, נא לפרט"
+                                        variant="outlined"
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                minHeight: '100px'
+                                            }
+                                        }}
+                                    />
                                 </Box>
                             </Box>
                         )}
