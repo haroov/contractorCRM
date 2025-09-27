@@ -7092,7 +7092,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '', costPerSquareMeter: '' }]).map((area, index) => {
+                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '0', costPerSquareMeter: '0' }]).map((area, index) => {
                                                     const areaSize = parseInt(area.areaSize || '0');
                                                     const costPerSqm = parseInt(area.costPerSquareMeter || '0');
                                                     const totalCost = areaSize * costPerSqm;
@@ -7226,7 +7226,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newArea = { areaName: '', areaSize: '', costPerSquareMeter: '' };
+                                                                const newArea = { areaName: '', areaSize: '0', costPerSquareMeter: '0' };
                                                                 const currentAreas = project?.budgetEstimate || [];
                                                                 handleNestedFieldChange('budgetEstimate', [...currentAreas, newArea]);
                                                             }}
@@ -7257,7 +7257,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '' }]).map((phase, index) => {
+                                                {(project?.budgetAllocation && project.budgetAllocation.length > 0 ? project.budgetAllocation : [{ phaseName: '', phaseCost: '0' }]).map((phase, index) => {
                                                     const isFirstRow = index === 0;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -7346,7 +7346,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newPhase = { phaseName: '', phaseCost: '' };
+                                                                const newPhase = { phaseName: '', phaseCost: '0' };
                                                                 const currentPhases = project?.budgetAllocation || [];
                                                                 handleNestedFieldChange('budgetAllocation', [...currentPhases, newPhase]);
                                                             }}
