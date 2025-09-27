@@ -5856,11 +5856,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
 
                                             {/* גריד של 2 עמודות */}
-                                            <Box sx={{ 
-                                                display: 'grid', 
-                                                gridTemplateColumns: '1fr 1fr', 
-                                                gap: 2, 
-                                                mb: 2 
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 2,
+                                                mb: 2
                                             }}>
                                                 {/* שורה 1 - עבודות פיצוץ */}
                                                 <Box sx={{
@@ -5932,8 +5932,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -5945,7 +5945,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ 
+                                                            sx={{
                                                                 direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
@@ -6025,8 +6025,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6038,7 +6038,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ 
+                                                            sx={{
                                                                 direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
@@ -6118,8 +6118,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6131,7 +6131,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ 
+                                                            sx={{
                                                                 direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
@@ -6211,8 +6211,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </Button>
                                                     </Box>
                                                 </Box>
-                                                <Box sx={{ 
-                                                    display: 'flex', 
+                                                <Box sx={{
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6224,7 +6224,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ 
+                                                            sx={{
                                                                 direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
@@ -7288,111 +7288,142 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         תחזוקת מכונות וציוד
                                     </Typography>
 
-                                    {/* אפשרות 1 - איש/צוות תחזוקה מיומן */}
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        mb: 2,
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        padding: '12px',
-                                        backgroundColor: 'white'
+                                    {/* גריד של 2 עמודות */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
                                     }}>
-                                        <Checkbox
-                                            checked={project?.machineMaintenance?.skilledMaintenance === true}
-                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.skilledMaintenance', e.target.checked)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            sx={{
-                                                color: '#8B5CF6',
-                                                '&.Mui-checked': {
-                                                    color: '#8B5CF6',
-                                                },
-                                            }}
-                                        />
-                                        <Typography variant="body2" sx={{ mr: 1 }}>
-                                            איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח
-                                        </Typography>
-                                    </Box>
-
-                                    {/* אפשרות 2 - חברה חיצונית */}
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        mb: 2,
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        padding: '12px',
-                                        backgroundColor: 'white'
-                                    }}>
-                                        <Checkbox
-                                            checked={project?.machineMaintenance?.externalCompany === true}
-                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompany', e.target.checked)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            sx={{
-                                                color: '#8B5CF6',
-                                                '&.Mui-checked': {
-                                                    color: '#8B5CF6',
-                                                },
-                                            }}
-                                        />
-                                        <Typography variant="body2" sx={{ mr: 1 }}>
-                                            חברה חיצונית המספקת שרותי תחזוקה
-                                        </Typography>
-                                    </Box>
-
-                                    {project?.machineMaintenance?.externalCompany === true && (
-                                        <Box sx={{ mb: 2, ml: 4 }}>
-                                            <TextField
-                                                fullWidth
-                                                label="שם החברה"
-                                                value={project?.machineMaintenance?.externalCompanyName || ''}
-                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompanyName', e.target.value)}
+                                        {/* שורה 1 - איש/צוות תחזוקה מיומן */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            mb: 2,
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            padding: '12px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <Checkbox
+                                                checked={project?.machineMaintenance?.skilledMaintenance === true}
+                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.skilledMaintenance', e.target.checked)}
                                                 disabled={mode === 'view' || !canEdit}
-                                                size="small"
-                                                sx={{ direction: 'rtl' }}
-                                            />
-                                        </Box>
-                                    )}
-
-                                    {/* אפשרות 3 - גורם מקצועי אחר */}
-                                    <Box sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        mb: 2,
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        padding: '12px',
-                                        backgroundColor: 'white'
-                                    }}>
-                                        <Checkbox
-                                            checked={project?.machineMaintenance?.otherProfessional === true}
-                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessional', e.target.checked)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            sx={{
-                                                color: '#8B5CF6',
-                                                '&.Mui-checked': {
+                                                sx={{
                                                     color: '#8B5CF6',
-                                                },
-                                            }}
-                                        />
-                                        <Typography variant="body2" sx={{ mr: 1 }}>
-                                            גורם מקצועי אחר המספק שרותי תחזוקה
-                                        </Typography>
-                                    </Box>
-
-                                    {project?.machineMaintenance?.otherProfessional === true && (
-                                        <Box sx={{ mb: 2, ml: 4 }}>
-                                            <TextField
-                                                fullWidth
-                                                label="פירוט הגורם המקצועי"
-                                                value={project?.machineMaintenance?.otherProfessionalDetails || ''}
-                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessionalDetails', e.target.value)}
-                                                disabled={mode === 'view' || !canEdit}
-                                                size="small"
-                                                sx={{ direction: 'rtl' }}
+                                                    '&.Mui-checked': {
+                                                        color: '#8B5CF6',
+                                                    },
+                                                }}
                                             />
+                                            <Typography variant="body2" sx={{ mr: 1 }}>
+                                                איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח
+                                            </Typography>
                                         </Box>
-                                    )}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {/* אין שדה נוסף לאפשרות זו */}
+                                        </Box>
+
+                                        {/* שורה 2 - חברה חיצונית */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            mb: 2,
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            padding: '12px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <Checkbox
+                                                checked={project?.machineMaintenance?.externalCompany === true}
+                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompany', e.target.checked)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    color: '#8B5CF6',
+                                                    '&.Mui-checked': {
+                                                        color: '#8B5CF6',
+                                                    },
+                                                }}
+                                            />
+                                            <Typography variant="body2" sx={{ mr: 1 }}>
+                                                חברה חיצונית המספקת שרותי תחזוקה
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.machineMaintenance?.externalCompany === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="שם החברה"
+                                                    value={project?.machineMaintenance?.externalCompanyName || ''}
+                                                    onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompanyName', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+
+                                        {/* שורה 3 - גורם מקצועי אחר */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            mb: 2,
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            padding: '12px',
+                                            backgroundColor: 'white'
+                                        }}>
+                                            <Checkbox
+                                                checked={project?.machineMaintenance?.otherProfessional === true}
+                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessional', e.target.checked)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    color: '#8B5CF6',
+                                                    '&.Mui-checked': {
+                                                        color: '#8B5CF6',
+                                                    },
+                                                }}
+                                            />
+                                            <Typography variant="body2" sx={{ mr: 1 }}>
+                                                גורם מקצועי אחר המספק שרותי תחזוקה
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            {project?.machineMaintenance?.otherProfessional === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="פירוט הגורם המקצועי"
+                                                    value={project?.machineMaintenance?.otherProfessionalDetails || ''}
+                                                    onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessionalDetails', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': {
+                                                            minHeight: '56px'
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
                                 </Box>
                             </Box>
                         )}
