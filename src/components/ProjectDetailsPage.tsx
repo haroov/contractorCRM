@@ -534,7 +534,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }, []);
 
     // Check if user can edit based on contact user permissions
-    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin';
+    const canEdit = !isContactUser || contactUserPermissions === 'contactAdmin' || contactUserPermissions === 'systemAdmin';
 
     // Function to load contractor name
     const loadContractorName = async (contractorId: string) => {
