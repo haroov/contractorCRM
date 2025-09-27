@@ -451,10 +451,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // Format currency with commas and shekel symbol
+    // Format currency with commas and shekel symbol on the left
     const formatCurrency = (value: number): string => {
         if (!value || value === 0) return '';
-        return value.toLocaleString('he-IL') + ' ₪';
+        return '₪ ' + value.toLocaleString('he-IL');
     };
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
@@ -7130,7 +7130,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="גודל השטח"
                                                                 variant="outlined"
-                                                                sx={{ 
+                                                                sx={{
                                                                     '& .MuiOutlinedInput-root': { height: 40 },
                                                                     '& .MuiInputBase-input': {
                                                                         textAlign: 'right',
@@ -7153,7 +7153,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="עלות למ״ר"
                                                                 variant="outlined"
-                                                                sx={{ 
+                                                                sx={{
                                                                     '& .MuiOutlinedInput-root': { height: 40 },
                                                                     '& .MuiInputBase-input': {
                                                                         textAlign: 'right',
