@@ -8960,7 +8960,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     color: 'text.secondary',
                                                     marginRight: '10px'
                                                 }}>
-                                                    מבני עזר וציוד קל (ערך ממשי של פריט בודד לא יעלה על 40,000 ₪)
+                                                    מבני עזר וציוד קל<br />
+                                                    (ערך פריט בודד עד 40,000 ₪)
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
