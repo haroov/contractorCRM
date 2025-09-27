@@ -6388,11 +6388,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה שנייה - שאר השדות */}
                                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
                                         <FormControl fullWidth>
-                                            <InputLabel sx={{
-                                                '&.Mui-focused': {
-                                                    color: '#8B5CF6'
-                                                }
-                                            }}>רמת הפירוט</InputLabel>
+                                            <InputLabel 
+                                                shrink={true}
+                                                sx={{
+                                                    '&.Mui-focused': {
+                                                        color: '#8B5CF6'
+                                                    }
+                                                }}
+                                            >רמת הפירוט</InputLabel>
                                             <Select
                                                 value={project?.schedule?.detailLevel || ''}
                                                 onChange={(e) => handleNestedFieldChange('schedule.detailLevel', e.target.value)}
@@ -6641,6 +6644,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     <FileUpload
                                         label="תוכנית אבטחת אתר"
+                                        sx={{ mt: 3 }}
                                         value={fileUploadState.siteSecurityPlan?.url || project?.siteSecurityPlan?.file || ''}
                                         thumbnailUrl={fileUploadState.siteSecurityPlan?.thumbnailUrl || project?.siteSecurityPlan?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
