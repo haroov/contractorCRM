@@ -8309,11 +8309,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 fullWidth
                                                 label="סכום ביטוח הרכוש (₪)"
                                                 value={project?.insuranceSpecification?.propertyInsuranceAmount ? 
-                                                    `${parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL')} ₪` : 
-                                                    (project?.valueNis ? `${parseInt(project.valueNis.toString()).toLocaleString('he-IL')} ₪` : '')}
+                                                    parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL') : 
+                                                    (project?.valueNis ? parseInt(project.valueNis.toString()).toLocaleString('he-IL') : '')}
                                                 onChange={(e) => {
                                                     const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                    handleNestedFieldChange('insuranceSpecification.propertyInsuranceAmount', numericValue);
+                                                    handleNestedFieldChange('insuranceSpecification.propertyInsuranceAmount', numericValue || '');
                                                 }}
                                                 disabled={mode === 'view' || !canEdit}
                                                 size="small"
@@ -8327,6 +8327,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     '& .MuiInputLabel-root': {
                                                         top: '0px'
                                                     }
+                                                }}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <Typography sx={{ 
+                                                            color: 'text.secondary', 
+                                                            ml: 1,
+                                                            fontSize: '1rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                            ₪
+                                                        </Typography>
+                                                    )
                                                 }}
                                             />
                                         </Box>
@@ -8560,7 +8572,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
                                                     value={project?.insuranceSpecification?.theftCoverageAmount ? 
-                                                        `${parseInt(project.insuranceSpecification.theftCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                        parseInt(project.insuranceSpecification.theftCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.theftCoverageAmount', numericValue || '');
@@ -8577,6 +8589,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
+                                                        )
                                                     }}
                                                 />
                                             )}
@@ -8676,7 +8693,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
                                                     value={project?.insuranceSpecification?.workPropertyCoverageAmount ? 
-                                                        `${parseInt(project.insuranceSpecification.workPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                        parseInt(project.insuranceSpecification.workPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.workPropertyCoverageAmount', numericValue || '');
@@ -8693,6 +8710,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
+                                                        )
                                                     }}
                                                 />
                                             )}
@@ -8792,7 +8814,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
                                                     value={project?.insuranceSpecification?.adjacentPropertyCoverageAmount ? 
-                                                        `${parseInt(project.insuranceSpecification.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                        parseInt(project.insuranceSpecification.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageAmount', numericValue || '');
@@ -8809,6 +8831,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
+                                                        )
                                                     }}
                                                 />
                                             )}
@@ -8908,7 +8935,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
                                                     value={project?.insuranceSpecification?.transitPropertyCoverageAmount ? 
-                                                        `${parseInt(project.insuranceSpecification.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                        parseInt(project.insuranceSpecification.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageAmount', numericValue || '');
@@ -8925,6 +8952,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
+                                                        )
                                                     }}
                                                 />
                                             )}
@@ -9025,7 +9057,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
                                                     value={project?.insuranceSpecification?.auxiliaryBuildingsCoverageAmount ? 
-                                                        `${parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL')} ₪` : ''}
+                                                        parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                         handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageAmount', numericValue || '');
@@ -9042,6 +9074,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
+                                                        )
                                                     }}
                                                 />
                                             )}
