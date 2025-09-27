@@ -7303,7 +7303,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
                                             padding: '12px',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
+                                            minHeight: '56px'
                                         }}>
                                             <Checkbox
                                                 checked={project?.machineMaintenance?.skilledMaintenance === true}
@@ -7317,7 +7318,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}
                                             />
                                             <Typography variant="body2" sx={{ mr: 1 }}>
-                                                איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח
+                                                איש/צוות תחזוקה מיומן
                                             </Typography>
                                         </Box>
                                         <Box sx={{ 
@@ -7336,7 +7337,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
                                             padding: '12px',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
+                                            minHeight: '56px'
                                         }}>
                                             <Checkbox
                                                 checked={project?.machineMaintenance?.externalCompany === true}
@@ -7384,7 +7386,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
                                             padding: '12px',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
+                                            minHeight: '56px'
                                         }}>
                                             <Checkbox
                                                 checked={project?.machineMaintenance?.otherProfessional === true}
