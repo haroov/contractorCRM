@@ -2162,6 +2162,84 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                             מידע עסקי
                         </Typography>
 
+                        {/* סוגי רישיונות מפנקס הקבלנים */}
+                        <Box sx={{ mb: 4 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                <Typography variant="subtitle2" gutterBottom sx={{ mb: 0 }}>
+                                    סוגי רישיונות מפנקס הקבלנים:
+                                </Typography>
+                                {isLoadingLicenses && (
+                                    <CircularProgress size={16} sx={{ color: '#882fd7' }} />
+                                )}
+                                {!isLoadingLicenses && localClassifications && localClassifications.length > 0 && (
+                                    <Chip
+                                        label={`עודכן: ${new Date(contractor.licensesLastUpdated || contractor.updatedAt).toLocaleDateString('he-IL')}`}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: '#e8f5e8',
+                                            color: '#2e7d32',
+                                            fontSize: '0.75rem'
+                                        }}
+                                    />
+                                )}
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        if (contractor?.company_id) {
+                                            console.log('🔄 Manual refresh of licenses for company (force refresh):', contractor.company_id);
+                                            // Force refresh by passing true as second parameter
+                                            loadLicensesForContractor(contractor.company_id, true);
+                                        }
+                                    }}
+                                    disabled={isLoadingLicenses}
+                                    title="רענן רישיונות מפנקס הקבלנים"
+                                    sx={{
+                                        color: '#882fd7',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    <RefreshIcon />
+                                </IconButton>
+                            </Box>
+
+                            {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 ? (
+                                <Box sx={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: 1,
+                                    p: 2,
+                                    backgroundColor: '#fafafa',
+                                    maxHeight: '300px',
+                                    overflow: 'auto'
+                                }}>
+                                    {localClassifications.map((license: any, index: number) => (
+                                        <Box key={index} sx={{
+                                            mb: 0.5,
+                                            pb: 0.5,
+                                            borderBottom: index < localClassifications.length - 1 ? '1px solid #e0e0e0' : 'none'
+                                        }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
+                                                {license.description || `${license.classification_type} - ${license.classification}`}
+                                            </Typography>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Box sx={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: 1,
+                                    p: 2,
+                                    backgroundColor: '#fafafa',
+                                    textAlign: 'center'
+                                }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {isLoadingLicenses ? 'טוען סוגי רישיונות...' : 'לא נמצאו סוגי רישיונות'}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+
                         <Grid container spacing={2}>
                             {/* שורה ראשונה - כוכבי בטיחות */}
                             <Grid item xs={12} sm={6} md={3}>
@@ -2620,88 +2698,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                             </Grid>
                         </Grid>
 
-                        {/* רווח בין ISO לסוגי רישיונות */}
-                        <Box sx={{ mt: 4, mb: 2 }} />
-
-
-
-                        {/* סוגי רישיונות מפנקס הקבלנים */}
-                        <Box sx={{ mb: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                <Typography variant="subtitle2" gutterBottom sx={{ mb: 0 }}>
-                                    סוגי רישיונות מפנקס הקבלנים:
-                                </Typography>
-                                {isLoadingLicenses && (
-                                    <CircularProgress size={16} sx={{ color: '#882fd7' }} />
-                                )}
-                                {!isLoadingLicenses && localClassifications && localClassifications.length > 0 && (
-                                    <Chip
-                                        label={`עודכן: ${new Date(contractor.licensesLastUpdated || contractor.updatedAt).toLocaleDateString('he-IL')}`}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: '#e8f5e8',
-                                            color: '#2e7d32',
-                                            fontSize: '0.75rem'
-                                        }}
-                                    />
-                                )}
-                                <IconButton
-                                    size="small"
-                                    onClick={() => {
-                                        if (contractor?.company_id) {
-                                            console.log('🔄 Manual refresh of licenses for company (force refresh):', contractor.company_id);
-                                            // Force refresh by passing true as second parameter
-                                            loadLicensesForContractor(contractor.company_id, true);
-                                        }
-                                    }}
-                                    disabled={isLoadingLicenses}
-                                    title="רענן רישיונות מפנקס הקבלנים"
-                                    sx={{
-                                        color: '#882fd7',
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(156, 39, 176, 0.04)'
-                                        }
-                                    }}
-                                >
-                                    <RefreshIcon />
-                                </IconButton>
-                            </Box>
-
-                            {localClassifications && Array.isArray(localClassifications) && localClassifications.length > 0 ? (
-                                <Box sx={{
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: 1,
-                                    p: 2,
-                                    backgroundColor: '#fafafa',
-                                    maxHeight: '300px',
-                                    overflow: 'auto'
-                                }}>
-                                    {localClassifications.map((license: any, index: number) => (
-                                        <Box key={index} sx={{
-                                            mb: 0.5,
-                                            pb: 0.5,
-                                            borderBottom: index < localClassifications.length - 1 ? '1px solid #e0e0e0' : 'none'
-                                        }}>
-                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0 }}>
-                                                {license.description || `${license.classification_type} - ${license.classification}`}
-                                            </Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            ) : (
-                                <Box sx={{
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: 1,
-                                    p: 2,
-                                    backgroundColor: '#fafafa',
-                                    textAlign: 'center'
-                                }}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {isLoadingLicenses ? 'טוען סוגי רישיונות...' : 'לא נמצאו סוגי רישיונות'}
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Box>
                     </Box>
                 )}
 
