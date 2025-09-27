@@ -7572,11 +7572,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>קובץ</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>תאריך תוקף</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר פוליסה</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מבטח</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.policyDocuments && project.policyDocuments.length > 0 ? project.policyDocuments : [{ documentType: 'פוליסה', file: '', validUntil: '', policyNumber: '' }]).map((document, index) => {
+                                                {(project?.policyDocuments && project.policyDocuments.length > 0 ? project.policyDocuments : [{ documentType: 'פוליסה', file: '', validUntil: '', policyNumber: '', insurer: '' }]).map((document, index) => {
                                                     const isFirstRow = index === 0;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -7614,6 +7615,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, thumbnailUrl);
                                                                         }
                                                                     }}
+                                                                    onDelete={async () => {
+                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.file`, '');
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
+                                                                        }
+                                                                    }}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     showCreationDate={false}
                                                                 />
@@ -7644,6 +7651,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     placeholder="מספר פוליסה"
                                                                     variant="outlined"
                                                                     sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['הראל', 'כלל', 'הפניקס', 'מנורה', 'מגדל', 'איילון', 'הכשרה', 'AIG', 'ליברה', 'שירביט', 'שומרה', 'ווישור', 'אנקור', 'סקוריטס']}
+                                                                    value={document.insurer || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newInputValue);
+                                                                    }}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="מבטח"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
                                                                 />
                                                             </TableCell>
                                                             <TableCell sx={{ padding: 1 }}>
@@ -7680,11 +7709,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     );
                                                 })}
                                                 <TableRow>
-                                                    <TableCell colSpan={5} sx={{ padding: 1, textAlign: 'center' }}>
+                                                    <TableCell colSpan={6} sx={{ padding: 1, textAlign: 'center' }}>
                                                         <Button
                                                             variant="outlined"
                                                             onClick={() => {
-                                                                const newDocument = { documentType: '', file: '', validUntil: '', policyNumber: '' };
+                                                                const newDocument = { documentType: '', file: '', validUntil: '', policyNumber: '', insurer: '' };
                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                 handleNestedFieldChange('policyDocuments', [...currentDocuments, newDocument]);
                                                             }}
