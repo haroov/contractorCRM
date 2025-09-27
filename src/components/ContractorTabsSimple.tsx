@@ -2158,10 +2158,6 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
                 {activeTab === 1 && (
                     <Box>
-                        <Typography variant="h6" gutterBottom>
-                            מידע עסקי
-                        </Typography>
-
                         {/* סוגי רישיונות מפנקס הקבלנים */}
                         <Box sx={{ mb: 4 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
