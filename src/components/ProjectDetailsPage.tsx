@@ -7075,10 +7075,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 </Box>
 
 
-                                {/* סקשן 3 - אומדן התקציבי של הביצוע לפי שטחים */}
+                                {/* סקשן 3 - עלויות לפי שטחים */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        אומדן התקציבי של הביצוע לפי שטחים ועלות למטר
+                                        עלויות לפי שטחים
                                     </Typography>
                                     <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                         <Table size="small">
@@ -7087,131 +7087,156 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם השטח</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>גודל השטח (מ״ר)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות בניה למ״ר (₪)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות הבניה (₪)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '', costPerSquareMeter: '' }]).map((area, index) => (
-                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <Autocomplete
-                                                                freeSolo
-                                                                options={['מרתף', 'מסחרי', 'מגורים', 'ציבורי', 'משרדים', 'חניה', 'מחסן', 'מטבח', 'סלון', 'חדרי שירות']}
-                                                                value={area.areaName || ''}
-                                                                onChange={(event, newValue) => {
-                                                                    handleNestedFieldChange(`budgetEstimate.${index}.areaName`, newValue || '');
-                                                                }}
-                                                                onInputChange={(event, newInputValue) => {
-                                                                    handleNestedFieldChange(`budgetEstimate.${index}.areaName`, newInputValue);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                renderInput={(params) => (
-                                                                    <TextField
-                                                                        {...params}
-                                                                        size="small"
-                                                                        placeholder="שם השטח"
-                                                                        variant="outlined"
-                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                    />
+                                                {(project?.budgetEstimate && project.budgetEstimate.length > 0 ? project.budgetEstimate : [{ areaName: '', areaSize: '', costPerSquareMeter: '' }]).map((area, index) => {
+                                                    const areaSize = parseInt(area.areaSize || '0');
+                                                    const costPerSqm = parseInt(area.costPerSquareMeter || '0');
+                                                    const totalCost = areaSize * costPerSqm;
+                                                    const isFirstRow = index === 0;
+                                                    
+                                                    return (
+                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['מרתף', 'מסחרי', 'מגורים', 'ציבורי', 'משרדים', 'חניה', 'מחסן', 'מטבח', 'סלון', 'חדרי שירות']}
+                                                                    value={area.areaName || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaName`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaName`, newInputValue);
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="שם השטח"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={area.areaSize ? area.areaSize.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
+                                                                    onChange={(e) => {
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="גודל השטח"
+                                                                    variant="outlined"
+                                                                    sx={{ 
+                                                                        '& .MuiOutlinedInput-root': { height: 40 },
+                                                                        '& .MuiInputBase-input': {
+                                                                            textAlign: 'right',
+                                                                            direction: 'ltr'
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="text"
+                                                                    inputMode="numeric"
+                                                                    value={area.costPerSquareMeter ? '₪ ' + area.costPerSquareMeter.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
+                                                                    onChange={(e) => {
+                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="עלות למ״ר"
+                                                                    variant="outlined"
+                                                                    sx={{ 
+                                                                        '& .MuiOutlinedInput-root': { height: 40 },
+                                                                        '& .MuiInputBase-input': {
+                                                                            textAlign: 'right',
+                                                                            direction: 'ltr'
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={totalCost > 0 ? '₪ ' + totalCost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
+                                                                    disabled={true}
+                                                                    variant="outlined"
+                                                                    sx={{ 
+                                                                        '& .MuiOutlinedInput-root': { height: 40 },
+                                                                        '& .MuiInputBase-input': {
+                                                                            textAlign: 'right',
+                                                                            direction: 'ltr',
+                                                                            color: 'text.secondary',
+                                                                            backgroundColor: '#f5f5f5'
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                {!isFirstRow && (
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            const currentAreas = project?.budgetEstimate || [];
+                                                                            const newAreas = currentAreas.filter((_, i) => i !== index);
+                                                                            handleNestedFieldChange('budgetEstimate', newAreas);
+                                                                        }}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        title="מחיקה"
+                                                                        sx={{
+                                                                            '& img': {
+                                                                                filter: 'brightness(0) saturate(0)',
+                                                                                width: '16px',
+                                                                                height: '16px'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)',
+                                                                                backgroundColor: '#f44336',
+                                                                                borderRadius: '4px',
+                                                                                padding: '2px'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                    </IconButton>
                                                                 )}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                size="small"
-                                                                type="text"
-                                                                inputMode="numeric"
-                                                                value={area.areaSize ? formatCurrency(parseInt(area.areaSize)) : ''}
-                                                                onChange={(e) => {
-                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                    handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="גודל השטח"
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiOutlinedInput-root': { height: 40 },
-                                                                    '& .MuiInputBase-input': {
-                                                                        textAlign: 'right',
-                                                                        direction: 'ltr'
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <TextField
-                                                                fullWidth
-                                                                size="small"
-                                                                type="text"
-                                                                inputMode="numeric"
-                                                                value={area.costPerSquareMeter ? formatCurrency(parseInt(area.costPerSquareMeter)) : ''}
-                                                                onChange={(e) => {
-                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                    handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                placeholder="עלות למ״ר"
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiOutlinedInput-root': { height: 40 },
-                                                                    '& .MuiInputBase-input': {
-                                                                        textAlign: 'right',
-                                                                        direction: 'ltr'
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell sx={{ padding: 1 }}>
-                                                            <IconButton
-                                                                onClick={() => {
-                                                                    const currentAreas = project?.budgetEstimate || [];
-                                                                    if (currentAreas.length > 1) {
-                                                                        const newAreas = currentAreas.filter((_, i) => i !== index);
-                                                                        handleNestedFieldChange('budgetEstimate', newAreas);
-                                                                    } else {
-                                                                        // If only one row, clear it instead of removing
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaName`, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, '');
-                                                                    }
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                title="מחיקה"
-                                                                sx={{
-                                                                    '& img': {
-                                                                        filter: 'brightness(0) saturate(0)',
-                                                                        width: '16px',
-                                                                        height: '16px'
-                                                                    },
-                                                                    '&:hover img, &:focus img': {
-                                                                        filter: 'brightness(0) invert(1)',
-                                                                        backgroundColor: '#f44336',
-                                                                        borderRadius: '4px',
-                                                                        padding: '2px'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <img src="/assets/icon-trash.svg" alt="מחיקה" />
-                                                            </IconButton>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                                <TableRow>
+                                                    <TableCell colSpan={5} sx={{ padding: 1, textAlign: 'center' }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                const newArea = { areaName: '', areaSize: '', costPerSquareMeter: '' };
+                                                                const currentAreas = project?.budgetEstimate || [];
+                                                                handleNestedFieldChange('budgetEstimate', [...currentAreas, newArea]);
+                                                            }}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            + הוספת שטח
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => {
-                                            const newArea = { areaName: '', areaSize: '', costPerSquareMeter: '' };
-                                            const currentAreas = project?.budgetEstimate || [];
-                                            handleNestedFieldChange('budgetEstimate', [...currentAreas, newArea]);
-                                        }}
-                                        disabled={mode === 'view' || !canEdit}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        + הוספת שטח
-                                    </Button>
                                 </Box>
 
                                 {/* סקשן 4 - חלוקה תקציבית לפי שלבי בניה */}
