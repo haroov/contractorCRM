@@ -6355,83 +6355,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Typography>
 
                                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(auto-fit, minmax(300px, 1fr))' }, gap: 3, mb: 3 }}>
-                                        <Box sx={{
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '56px',
-                                            padding: '0 14px',
-                                            direction: 'rtl',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between'
-                                        }}>
-                                            <Typography sx={{
-                                                fontSize: '1rem',
-                                                color: 'text.secondary',
-                                                marginRight: '10px'
-                                            }}>
-                                                קיים לוח זמנים לפרויקט
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                gap: 0,
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                marginLeft: '10px'
-                                            }}>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('schedule.exists', false);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '0 4px 4px 0',
-                                                        border: '1px solid #d1d5db',
-                                                        borderLeft: 'none',
-                                                        backgroundColor: project?.schedule?.exists === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.schedule?.exists === false ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.schedule?.exists === false ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem',
-                                                        marginRight: '0px'
-                                                    }}
-                                                >
-                                                    לא
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={() => {
-                                                        handleNestedFieldChange('schedule.exists', true);
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        borderRadius: '4px 0 0 4px',
-                                                        border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.schedule?.exists === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.schedule?.exists === true ? 'white' : '#6B46C1',
-                                                        '&:hover': {
-                                                            backgroundColor: project?.schedule?.exists === true ? '#5B21B6' : '#f3f4f6',
-                                                        },
-                                                        minWidth: '50px',
-                                                        height: '32px',
-                                                        textTransform: 'none',
-                                                        fontSize: '0.875rem'
-                                                    }}
-                                                >
-                                                    כן
-                                                </Button>
-                                            </Box>
-                                        </Box>
 
-                                        {project?.schedule?.exists && (
-                                            <>
-                                                <FileUpload
+                                        <FileUpload
                                                     label="העלה קובץ לוח זמנים"
                                                     value={project?.schedule?.file}
                                                     onChange={(url) => handleNestedFieldChange('schedule.file', url)}
@@ -6467,8 +6392,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     onChange={(e) => handleNestedFieldChange('schedule.adherenceLevel', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
                                                 />
-                                            </>
-                                        )}
                                     </Box>
                                 </Box>
                             </Box>
