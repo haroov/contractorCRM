@@ -7188,7 +7188,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={area.costPerSquareMeter && area.costPerSquareMeter !== '0' ? parseInt(String(area.costPerSquareMeter)).toLocaleString('he-IL') : ''}
+                                                                    value={area.costPerSquareMeter && area.costPerSquareMeter !== '0' ? '₪ ' + parseInt(String(area.costPerSquareMeter)).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
@@ -7322,7 +7322,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={phase.phaseCost && phase.phaseCost !== '0' ? parseInt(String(phase.phaseCost)).toLocaleString('he-IL') : ''}
+                                                                    value={phase.phaseCost && phase.phaseCost !== '0' ? '₪ ' + parseInt(String(phase.phaseCost)).toLocaleString('he-IL') : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
