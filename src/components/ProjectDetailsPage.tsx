@@ -5865,8 +5865,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'space-between',
-                                                mb: 2,
-                                                maxWidth: '50%'
+                                                mb: 2
                                             }}>
                                                 <Typography sx={{
                                                     fontSize: '1rem',
@@ -5927,7 +5926,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.blastingWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2, maxWidth: '50%' }}>
+                                                <Box sx={{ mb: 2, ml: 2 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="שם הקבלן המבצע"
@@ -5950,8 +5949,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'space-between',
-                                                mb: 2,
-                                                maxWidth: '50%'
+                                                mb: 2
                                             }}>
                                                 <Typography sx={{
                                                     fontSize: '1rem',
@@ -6012,7 +6010,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.quarryingWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2, maxWidth: '50%' }}>
+                                                <Box sx={{ mb: 2, ml: 2 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="שם הקבלן המבצע"
@@ -6035,8 +6033,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'space-between',
-                                                mb: 2,
-                                                maxWidth: '50%'
+                                                mb: 2
                                             }}>
                                                 <Typography sx={{
                                                     fontSize: '1rem',
@@ -6097,7 +6094,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.demolitionWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2, maxWidth: '50%' }}>
+                                                <Box sx={{ mb: 2, ml: 2 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="שם הקבלן המבצע"
@@ -6120,8 +6117,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'space-between',
-                                                mb: 2,
-                                                maxWidth: '50%'
+                                                mb: 2
                                             }}>
                                                 <Typography sx={{
                                                     fontSize: '1rem',
@@ -6182,7 +6178,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.retainingWalls === true && (
-                                                <Box sx={{ mb: 2, ml: 2, maxWidth: '50%' }}>
+                                                <Box sx={{ mb: 2, ml: 2 }}>
                                                     <TextField
                                                         fullWidth
                                                         label="שם הקבלן המבצע"
