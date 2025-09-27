@@ -8309,8 +8309,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 fullWidth
                                                 label="סכום ביטוח הרכוש (₪)"
                                                 value={project?.insuranceSpecification?.propertyInsuranceAmount ? 
-                                                    `₪ ${parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL')}` : 
-                                                    (project?.valueNis ? `₪ ${parseInt(project.valueNis.toString()).toLocaleString('he-IL')}` : '')}
+                                                    `${parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL')} ₪` : 
+                                                    (project?.valueNis ? `${parseInt(project.valueNis.toString()).toLocaleString('he-IL')} ₪` : '')}
                                                 onChange={(e) => {
                                                     const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                     handleNestedFieldChange('insuranceSpecification.propertyInsuranceAmount', numericValue);
