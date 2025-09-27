@@ -318,6 +318,39 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     const [localIsoCertificateType, setLocalIsoCertificateType] = useState<string>('');
     const [localIsoCertificateThumbnail, setLocalIsoCertificateThumbnail] = useState<string>(contractor?.isoCertificateThumbnail || '');
     const [localIsoCertificateCreationDate, setLocalIsoCertificateCreationDate] = useState<string>(contractor?.isoCertificateCreationDate || '');
+    
+    // New safety procedures fields
+    const [localSafetyProceduresFile, setLocalSafetyProceduresFile] = useState<string>(contractor?.safetyProceduresFile || '');
+    const [localSafetyProceduresThumbnail, setLocalSafetyProceduresThumbnail] = useState<string>(contractor?.safetyProceduresThumbnail || '');
+    const [localSafetyProceduresLastUpdate, setLocalSafetyProceduresLastUpdate] = useState<string>(contractor?.safetyProceduresLastUpdate || '');
+    
+    const [localSecurityProceduresFile, setLocalSecurityProceduresFile] = useState<string>(contractor?.securityProceduresFile || '');
+    const [localSecurityProceduresThumbnail, setLocalSecurityProceduresThumbnail] = useState<string>(contractor?.securityProceduresThumbnail || '');
+    const [localSecurityProceduresLastUpdate, setLocalSecurityProceduresLastUpdate] = useState<string>(contractor?.securityProceduresLastUpdate || '');
+    
+    const [localEnvironmentalProtectionFile, setLocalEnvironmentalProtectionFile] = useState<string>(contractor?.environmentalProtectionFile || '');
+    const [localEnvironmentalProtectionThumbnail, setLocalEnvironmentalProtectionThumbnail] = useState<string>(contractor?.environmentalProtectionThumbnail || '');
+    const [localEnvironmentalProtectionLastUpdate, setLocalEnvironmentalProtectionLastUpdate] = useState<string>(contractor?.environmentalProtectionLastUpdate || '');
+    
+    const [localContractorSafetyGuideFile, setLocalContractorSafetyGuideFile] = useState<string>(contractor?.contractorSafetyGuideFile || '');
+    const [localContractorSafetyGuideThumbnail, setLocalContractorSafetyGuideThumbnail] = useState<string>(contractor?.contractorSafetyGuideThumbnail || '');
+    const [localContractorSafetyGuideLastUpdate, setLocalContractorSafetyGuideLastUpdate] = useState<string>(contractor?.contractorSafetyGuideLastUpdate || '');
+    
+    const [localHotWorkProcedureFile, setLocalHotWorkProcedureFile] = useState<string>(contractor?.hotWorkProcedureFile || '');
+    const [localHotWorkProcedureThumbnail, setLocalHotWorkProcedureThumbnail] = useState<string>(contractor?.hotWorkProcedureThumbnail || '');
+    const [localHotWorkProcedureLastUpdate, setLocalHotWorkProcedureLastUpdate] = useState<string>(contractor?.hotWorkProcedureLastUpdate || '');
+    
+    const [localIllegalResidentsFile, setLocalIllegalResidentsFile] = useState<string>(contractor?.illegalResidentsFile || '');
+    const [localIllegalResidentsThumbnail, setLocalIllegalResidentsThumbnail] = useState<string>(contractor?.illegalResidentsThumbnail || '');
+    const [localIllegalResidentsLastUpdate, setLocalIllegalResidentsLastUpdate] = useState<string>(contractor?.illegalResidentsLastUpdate || '');
+    
+    const [localQualityControlPlanFile, setLocalQualityControlPlanFile] = useState<string>(contractor?.qualityControlPlanFile || '');
+    const [localQualityControlPlanThumbnail, setLocalQualityControlPlanThumbnail] = useState<string>(contractor?.qualityControlPlanThumbnail || '');
+    const [localQualityControlPlanLastUpdate, setLocalQualityControlPlanLastUpdate] = useState<string>(contractor?.qualityControlPlanLastUpdate || '');
+    
+    const [localEmergencyProceduresFile, setLocalEmergencyProceduresFile] = useState<string>(contractor?.emergencyProceduresFile || '');
+    const [localEmergencyProceduresThumbnail, setLocalEmergencyProceduresThumbnail] = useState<string>(contractor?.emergencyProceduresThumbnail || '');
+    const [localEmergencyProceduresLastUpdate, setLocalEmergencyProceduresLastUpdate] = useState<string>(contractor?.emergencyProceduresLastUpdate || '');
     const [localClassifications, setLocalClassifications] = useState<any[]>(contractor?.classifications || []);
     const [localIsActive, setLocalIsActive] = useState<boolean>(contractor?.isActive ?? true);
 
@@ -2534,6 +2567,766 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
                             <Grid item xs={12} sm={6} md={3}>
                                 {/* מקום ריק לשורה השנייה */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 3 - נהלי הביטחון והשמירה באתרי בניה */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נהלי הביטחון והשמירה באתרי בניה"
+                                    value={localSafetyProceduresFile || ''}
+                                    thumbnailUrl={localSafetyProceduresThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Safety procedures onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalSafetyProceduresFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalSafetyProceduresThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        safetyProceduresFile: url,
+                                                        safetyProceduresThumbnail: thumbnailUrl || '',
+                                                        safetyProceduresLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Safety procedures saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving safety procedures:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalSafetyProceduresFile('');
+                                            setLocalSafetyProceduresThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Safety procedures onDelete called');
+                                        
+                                        setLocalSafetyProceduresFile('');
+                                        setLocalSafetyProceduresThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    safetyProceduresFile: null,
+                                                    safetyProceduresThumbnail: null,
+                                                    safetyProceduresLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Safety procedures deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        safetyProceduresFile: null,
+                                                        safetyProceduresThumbnail: null,
+                                                        safetyProceduresLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting safety procedures:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localSafetyProceduresLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalSafetyProceduresLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 4 - נהלי השמירה והביטחון באתרי בניה */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נהלי השמירה והביטחון באתרי בניה"
+                                    value={localSecurityProceduresFile || ''}
+                                    thumbnailUrl={localSecurityProceduresThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Security procedures onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalSecurityProceduresFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalSecurityProceduresThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        securityProceduresFile: url,
+                                                        securityProceduresThumbnail: thumbnailUrl || '',
+                                                        securityProceduresLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Security procedures saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving security procedures:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalSecurityProceduresFile('');
+                                            setLocalSecurityProceduresThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Security procedures onDelete called');
+                                        
+                                        setLocalSecurityProceduresFile('');
+                                        setLocalSecurityProceduresThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    securityProceduresFile: null,
+                                                    securityProceduresThumbnail: null,
+                                                    securityProceduresLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Security procedures deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        securityProceduresFile: null,
+                                                        securityProceduresThumbnail: null,
+                                                        securityProceduresLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting security procedures:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localSecurityProceduresLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalSecurityProceduresLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 5 - נספח הגנת הסביבה */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נספח הגנת הסביבה"
+                                    value={localEnvironmentalProtectionFile || ''}
+                                    thumbnailUrl={localEnvironmentalProtectionThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Environmental protection onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalEnvironmentalProtectionFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalEnvironmentalProtectionThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        environmentalProtectionFile: url,
+                                                        environmentalProtectionThumbnail: thumbnailUrl || '',
+                                                        environmentalProtectionLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Environmental protection saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving environmental protection:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalEnvironmentalProtectionFile('');
+                                            setLocalEnvironmentalProtectionThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Environmental protection onDelete called');
+                                        
+                                        setLocalEnvironmentalProtectionFile('');
+                                        setLocalEnvironmentalProtectionThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    environmentalProtectionFile: null,
+                                                    environmentalProtectionThumbnail: null,
+                                                    environmentalProtectionLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Environmental protection deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        environmentalProtectionFile: null,
+                                                        environmentalProtectionThumbnail: null,
+                                                        environmentalProtectionLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting environmental protection:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localEnvironmentalProtectionLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalEnvironmentalProtectionLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 6 - מדריך בטיחות לקבלנים */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="מדריך בטיחות לקבלנים"
+                                    value={localContractorSafetyGuideFile || ''}
+                                    thumbnailUrl={localContractorSafetyGuideThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Contractor safety guide onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalContractorSafetyGuideFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalContractorSafetyGuideThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        contractorSafetyGuideFile: url,
+                                                        contractorSafetyGuideThumbnail: thumbnailUrl || '',
+                                                        contractorSafetyGuideLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Contractor safety guide saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving contractor safety guide:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalContractorSafetyGuideFile('');
+                                            setLocalContractorSafetyGuideThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Contractor safety guide onDelete called');
+                                        
+                                        setLocalContractorSafetyGuideFile('');
+                                        setLocalContractorSafetyGuideThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    contractorSafetyGuideFile: null,
+                                                    contractorSafetyGuideThumbnail: null,
+                                                    contractorSafetyGuideLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Contractor safety guide deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        contractorSafetyGuideFile: null,
+                                                        contractorSafetyGuideThumbnail: null,
+                                                        contractorSafetyGuideLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting contractor safety guide:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localContractorSafetyGuideLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalContractorSafetyGuideLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 7 - נוהל עבודה חמה */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נוהל עבודה חמה"
+                                    value={localHotWorkProcedureFile || ''}
+                                    thumbnailUrl={localHotWorkProcedureThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Hot work procedure onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalHotWorkProcedureFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalHotWorkProcedureThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        hotWorkProcedureFile: url,
+                                                        hotWorkProcedureThumbnail: thumbnailUrl || '',
+                                                        hotWorkProcedureLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Hot work procedure saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving hot work procedure:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalHotWorkProcedureFile('');
+                                            setLocalHotWorkProcedureThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Hot work procedure onDelete called');
+                                        
+                                        setLocalHotWorkProcedureFile('');
+                                        setLocalHotWorkProcedureThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    hotWorkProcedureFile: null,
+                                                    hotWorkProcedureThumbnail: null,
+                                                    hotWorkProcedureLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Hot work procedure deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        hotWorkProcedureFile: null,
+                                                        hotWorkProcedureThumbnail: null,
+                                                        hotWorkProcedureLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting hot work procedure:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localHotWorkProcedureLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalHotWorkProcedureLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 8 - נספח שוהים בלתי חוקיים */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נספח שוהים בלתי חוקיים"
+                                    value={localIllegalResidentsFile || ''}
+                                    thumbnailUrl={localIllegalResidentsThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Illegal residents onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalIllegalResidentsFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalIllegalResidentsThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        illegalResidentsFile: url,
+                                                        illegalResidentsThumbnail: thumbnailUrl || '',
+                                                        illegalResidentsLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Illegal residents saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving illegal residents:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalIllegalResidentsFile('');
+                                            setLocalIllegalResidentsThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Illegal residents onDelete called');
+                                        
+                                        setLocalIllegalResidentsFile('');
+                                        setLocalIllegalResidentsThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    illegalResidentsFile: null,
+                                                    illegalResidentsThumbnail: null,
+                                                    illegalResidentsLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Illegal residents deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        illegalResidentsFile: null,
+                                                        illegalResidentsThumbnail: null,
+                                                        illegalResidentsLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting illegal residents:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localIllegalResidentsLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalIllegalResidentsLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 9 - תוכנית בקרת איכות */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="תוכנית בקרת איכות"
+                                    value={localQualityControlPlanFile || ''}
+                                    thumbnailUrl={localQualityControlPlanThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Quality control plan onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalQualityControlPlanFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalQualityControlPlanThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        qualityControlPlanFile: url,
+                                                        qualityControlPlanThumbnail: thumbnailUrl || '',
+                                                        qualityControlPlanLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Quality control plan saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving quality control plan:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalQualityControlPlanFile('');
+                                            setLocalQualityControlPlanThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Quality control plan onDelete called');
+                                        
+                                        setLocalQualityControlPlanFile('');
+                                        setLocalQualityControlPlanThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    qualityControlPlanFile: null,
+                                                    qualityControlPlanThumbnail: null,
+                                                    qualityControlPlanLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Quality control plan deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        qualityControlPlanFile: null,
+                                                        qualityControlPlanThumbnail: null,
+                                                        qualityControlPlanLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting quality control plan:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localQualityControlPlanLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalQualityControlPlanLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
+                            </Grid>
+                        </Grid>
+
+                        {/* שורה 10 - נוהל מצבי חירום */}
+                        <Grid container spacing={2} sx={{ mt: 3 }}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <FileUpload
+                                    label="נוהל מצבי חירום (שריפה, פציעה, הצפה וכו׳)"
+                                    value={localEmergencyProceduresFile || ''}
+                                    thumbnailUrl={localEmergencyProceduresThumbnail || ''}
+                                    onChange={async (url, thumbnailUrl) => {
+                                        console.log('🔍 Emergency procedures onChange called with:', { url, thumbnailUrl });
+                                        
+                                        if (url) {
+                                            setLocalEmergencyProceduresFile(url);
+                                            if (thumbnailUrl) {
+                                                setLocalEmergencyProceduresThumbnail(thumbnailUrl);
+                                            }
+                                            
+                                            if (contractor?._id) {
+                                                try {
+                                                    const { contractorsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        emergencyProceduresFile: url,
+                                                        emergencyProceduresThumbnail: thumbnailUrl || '',
+                                                        emergencyProceduresLastUpdate: new Date().toISOString().split('T')[0]
+                                                    };
+                                                    
+                                                    const result = await contractorsAPI.update(contractor._id, updateData);
+                                                    console.log('✅ Emergency procedures saved successfully:', result);
+                                                    
+                                                    if (onUpdateContractor) {
+                                                        onUpdateContractor({ ...contractor, ...updateData });
+                                                    }
+                                                } catch (error) {
+                                                    console.error('❌ Error saving emergency procedures:', error);
+                                                }
+                                            }
+                                        } else {
+                                            setLocalEmergencyProceduresFile('');
+                                            setLocalEmergencyProceduresThumbnail('');
+                                        }
+                                    }}
+                                    onDelete={async () => {
+                                        console.log('🗑️ Emergency procedures onDelete called');
+                                        
+                                        setLocalEmergencyProceduresFile('');
+                                        setLocalEmergencyProceduresThumbnail('');
+                                        
+                                        if (contractor?._id) {
+                                            try {
+                                                const { contractorsAPI } = await import('../services/api');
+                                                const updateData = {
+                                                    emergencyProceduresFile: null,
+                                                    emergencyProceduresThumbnail: null,
+                                                    emergencyProceduresLastUpdate: null
+                                                };
+                                                
+                                                const result = await contractorsAPI.update(contractor._id, updateData);
+                                                console.log('✅ Emergency procedures deleted successfully:', result);
+                                                
+                                                if (onUpdateContractor) {
+                                                    onUpdateContractor({
+                                                        ...contractor,
+                                                        emergencyProceduresFile: null,
+                                                        emergencyProceduresThumbnail: null,
+                                                        emergencyProceduresLastUpdate: null
+                                                    });
+                                                }
+                                            } catch (error) {
+                                                console.error('❌ Error deleting emergency procedures:', error);
+                                            }
+                                        }
+                                    }}
+                                    disabled={!canEdit}
+                                    showCreationDate={false}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <TextField
+                                    fullWidth
+                                    label="תאריך עדכון אחרון"
+                                    type="date"
+                                    value={localEmergencyProceduresLastUpdate}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setLocalEmergencyProceduresLastUpdate(validateDate(e.target.value))}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                        sx: { backgroundColor: 'white', px: 1 }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                {/* מקום ריק */}
                             </Grid>
                         </Grid>
 
