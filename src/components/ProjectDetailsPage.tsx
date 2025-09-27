@@ -7174,7 +7174,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     value={totalCost > 0 ? '₪ ' + totalCost.toLocaleString('he-IL') : ''}
-                                                                    disabled={true}
+                                                                    disabled={false}
                                                                     variant="outlined"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
