@@ -7006,12 +7006,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         עלות בניית כל מבנה
                                     </Typography>
                                     {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
-                                        <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                            <Table>
+                                        <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                            <Table size="small">
                                                 <TableHead>
-                                                    <TableRow>
-                                                        <TableCell>שם המבנה</TableCell>
-                                                        <TableCell>עלות בנייה (₪)</TableCell>
+                                                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם המבנה</TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות בנייה (₪)</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -7019,29 +7019,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         const building = project.engineeringQuestionnaire.buildingPlan.buildings?.[index];
                                                         const buildingName = building?.buildingName || `בניין ${index + 1}`;
                                                         return (
-                                                            <TableRow key={index}>
-                                                                <TableCell>
+                                                            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                                <TableCell sx={{ padding: 1 }}>
                                                                     <TextField
                                                                         fullWidth
+                                                                        size="small"
                                                                         value={buildingName}
                                                                         disabled={true}
                                                                         variant="outlined"
-                                                                        sx={{
-                                                                            '& .MuiInputBase-input': {
+                                                                        sx={{ 
+                                                                            '& .MuiOutlinedInput-root': { height: 40 },
+                                                                            '& .MuiInputBase-input': { 
                                                                                 color: 'text.secondary',
                                                                                 backgroundColor: '#f5f5f5'
                                                                             }
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>
+                                                                <TableCell sx={{ padding: 1 }}>
                                                                     <TextField
                                                                         fullWidth
+                                                                        size="small"
                                                                         type="number"
                                                                         value={building?.constructionCost || ''}
                                                                         onChange={(e) => handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         placeholder="עלות בנייה"
+                                                                        variant="outlined"
+                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                     />
                                                                 </TableCell>
                                                             </TableRow>
