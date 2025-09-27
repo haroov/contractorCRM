@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
@@ -6,8 +6,7 @@ import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
 import SkeletonLoader from './SkeletonLoader';
-
-const ContractorTabs = lazy(() => import('./ContractorTabsSimple'));
+import ContractorTabsSimple from './ContractorTabsSimple';
 
 interface UnifiedContractorViewProps {
   currentUser?: any;
@@ -1205,9 +1204,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Box>
 
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <Suspense fallback={<SkeletonLoader />}>
-                {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabs:', contractorMode)}
-                <ContractorTabs
+              {console.log('🔧 UnifiedContractorView - Passing contractorMode to ContractorTabsSimple:', contractorMode)}
+              <ContractorTabsSimple
                   ref={contractorTabsRef}
                   contractor={selectedContractor!}
                   onSave={(contractorData) => {
@@ -1259,7 +1257,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   onUpdateContractor={setSelectedContractor}
                   onShowNotification={setSnackbar}
                 />
-              </Suspense>
             </Box>
           </Paper>
         </Box>
