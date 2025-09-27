@@ -5856,15 +5856,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
 
                                             {/* גריד של 2 עמודות */}
-                                            <Box sx={{
-                                                display: 'grid',
-                                                gridTemplateColumns: '1fr 1fr',
-                                                gap: 2,
-                                                mb: 2
+                                            <Box sx={{ 
+                                                display: 'grid', 
+                                                gridTemplateColumns: '1fr 1fr', 
+                                                gap: 2, 
+                                                mb: 2 
                                             }}>
                                                 {/* שורה 1 - עבודות פיצוץ */}
-                                                <Box sx={{
-                                                    display: 'flex',
+                                                <Box sx={{ 
+                                                    display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -5876,7 +5876,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ direction: 'rtl' }}
+                                                            sx={{ 
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': {
+                                                                    minHeight: '56px'
+                                                                }
+                                                            }}
                                                         />
                                                     )}
                                                 </Box>
@@ -5896,7 +5901,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        עבודות פיצוץ:
+                                                        עבודות פיצוץ
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -5951,8 +5956,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 2 - עבודות חציבה */}
-                                                <Box sx={{
-                                                    display: 'flex',
+                                                <Box sx={{ 
+                                                    display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -5964,7 +5969,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ direction: 'rtl' }}
+                                                            sx={{ 
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': {
+                                                                    minHeight: '56px'
+                                                                }
+                                                            }}
                                                         />
                                                     )}
                                                 </Box>
@@ -5984,7 +5994,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        עבודות חציבה:
+                                                        עבודות חציבה
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -6039,8 +6049,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 3 - עבודות הריסה */}
-                                                <Box sx={{
-                                                    display: 'flex',
+                                                <Box sx={{ 
+                                                    display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6052,7 +6062,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ direction: 'rtl' }}
+                                                            sx={{ 
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': {
+                                                                    minHeight: '56px'
+                                                                }
+                                                            }}
                                                         />
                                                     )}
                                                 </Box>
@@ -6072,7 +6087,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        עבודות הריסה:
+                                                        עבודות הריסה
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -6127,8 +6142,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
 
                                                 {/* שורה 4 - קירות תמך */}
-                                                <Box sx={{
-                                                    display: 'flex',
+                                                <Box sx={{ 
+                                                    display: 'flex', 
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-end'
                                                 }}>
@@ -6140,7 +6155,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
-                                                            sx={{ direction: 'rtl' }}
+                                                            sx={{ 
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': {
+                                                                    minHeight: '56px'
+                                                                }
+                                                            }}
                                                         />
                                                     )}
                                                 </Box>
@@ -6160,7 +6180,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        קירות תמך:
+                                                        קירות תמך
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -7269,9 +7289,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Typography>
 
                                     {/* אפשרות 1 - איש/צוות תחזוקה מיומן */}
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
                                         mb: 2,
                                         border: '1px solid #d1d5db',
                                         borderRadius: '4px',
@@ -7295,9 +7315,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* אפשרות 2 - חברה חיצונית */}
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
                                         mb: 2,
                                         border: '1px solid #d1d5db',
                                         borderRadius: '4px',
@@ -7319,7 +7339,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             חברה חיצונית המספקת שרותי תחזוקה
                                         </Typography>
                                     </Box>
-                                    
+
                                     {project?.machineMaintenance?.externalCompany === true && (
                                         <Box sx={{ mb: 2, ml: 4 }}>
                                             <TextField
@@ -7335,9 +7355,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     )}
 
                                     {/* אפשרות 3 - גורם מקצועי אחר */}
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
                                         mb: 2,
                                         border: '1px solid #d1d5db',
                                         borderRadius: '4px',
@@ -7359,7 +7379,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             גורם מקצועי אחר המספק שרותי תחזוקה
                                         </Typography>
                                     </Box>
-                                    
+
                                     {project?.machineMaintenance?.otherProfessional === true && (
                                         <Box sx={{ mb: 2, ml: 4 }}>
                                             <TextField
