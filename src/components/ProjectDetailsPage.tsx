@@ -7084,7 +7084,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם השטח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', minWidth: '200px' }}>סוג השטח</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>גודל השטח (מ״ר)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות בניה למ״ר (₪)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות הבניה (₪)</TableCell>
@@ -7116,7 +7116,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         <TextField
                                                                             {...params}
                                                                             size="small"
-                                                                            placeholder="שם השטח"
+                                                                            placeholder="סוג השטח"
                                                                             variant="outlined"
                                                                             sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                         />
@@ -7191,9 +7191,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 {!isFirstRow && (
                                                                     <IconButton
                                                                         onClick={() => {
-                                                                            const currentAreas = project?.budgetEstimate || [];
-                                                                            const newAreas = currentAreas.filter((_, i) => i !== index);
-                                                                            handleNestedFieldChange('budgetEstimate', newAreas);
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את השטח?')) {
+                                                                                const currentAreas = project?.budgetEstimate || [];
+                                                                                const newAreas = currentAreas.filter((_, i) => i !== index);
+                                                                                handleNestedFieldChange('budgetEstimate', newAreas);
+                                                                            }
                                                                         }}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         title="מחיקה"
@@ -7203,11 +7205,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 width: '16px',
                                                                                 height: '16px'
                                                                             },
-                                                                            '&:hover img, &:focus img': {
-                                                                                filter: 'brightness(0) invert(1)',
+                                                                            '&:hover, &:focus': {
                                                                                 backgroundColor: '#f44336',
-                                                                                borderRadius: '4px',
-                                                                                padding: '2px'
+                                                                                borderRadius: '4px'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)'
                                                                             }
                                                                         }}
                                                                     >
@@ -7230,7 +7233,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             sx={{ mr: 1 }}
                                                         >
-                                                            + הוספת שטח
+                                                            + הוספה
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>
