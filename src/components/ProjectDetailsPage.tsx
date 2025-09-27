@@ -7568,12 +7568,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>סוג המסמך</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>קובץ</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>תאריך תוקף</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר פוליסה</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מבטח</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סוג המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מספר פוליסה</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מבטח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
@@ -7581,7 +7581,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     const isFirstRow = index === 0;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
                                                                 <Autocomplete
                                                                     freeSolo
                                                                     options={['פוליסה', 'תוספת', 'כתב כיסוי']}
@@ -7603,7 +7603,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     )}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '15%' }}>
                                                                 <FileUpload
                                                                     label=""
                                                                     value={document.file || ''}
@@ -7625,7 +7625,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     showCreationDate={false}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '15%' }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
@@ -7640,7 +7640,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '25%' }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
@@ -7653,7 +7653,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
                                                                 <Autocomplete
                                                                     freeSolo
                                                                     options={['הראל', 'כלל', 'הפניקס', 'מנורה', 'מגדל', 'איילון', 'הכשרה', 'AIG', 'ליברה', 'שירביט', 'שומרה', 'ווישור', 'אנקור', 'סקוריטס']}
@@ -7675,7 +7675,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     )}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TableCell sx={{ padding: 1, width: '5%' }}>
                                                                 {!isFirstRow && (
                                                                     <IconButton
                                                                         onClick={() => {
