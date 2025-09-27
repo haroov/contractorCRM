@@ -6638,6 +6638,217 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         autoSave={true}
                                         onAutoSave={handleSave}
                                     />
+
+                                    <FileUpload
+                                        label="תוכנית אבטחת אתר"
+                                        value={fileUploadState.siteSecurityPlan?.url || project?.siteSecurityPlan?.file || ''}
+                                        thumbnailUrl={fileUploadState.siteSecurityPlan?.thumbnailUrl || project?.siteSecurityPlan?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔄 FileUpload onChange called with:', { url, thumbnailUrl });
+
+                                            // Update fileUploadState immediately for UI display
+                                            setFileUploadState(prev => {
+                                                const newState = {
+                                                    ...prev,
+                                                    siteSecurityPlan: {
+                                                        ...prev.siteSecurityPlan,
+                                                        url: url,
+                                                        thumbnailUrl: thumbnailUrl
+                                                    }
+                                                };
+                                                console.log('🔄 Updated fileUploadState:', newState);
+                                                return newState;
+                                            });
+
+                                            // Save to database immediately if we have a project ID
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    console.log('💾 Saving file data to database immediately...');
+                                                    const { projectsAPI } = await import('../services/api');
+
+                                                    const updateData = {
+                                                        'siteSecurityPlan.file': url,
+                                                        'siteSecurityPlan.thumbnailUrl': thumbnailUrl || ''
+                                                    };
+
+                                                    console.log('💾 Update data:', updateData);
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ File data saved to database successfully');
+
+                                                    // Auto-save the project after successful upload
+                                                    console.log('💾 Auto-saving project after upload');
+                                                    await handleSave();
+                                                    console.log('✅ Project auto-saved after upload');
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save file data to database:', error);
+                                                }
+                                            } else {
+                                                console.log('⚠️ No project ID available, cannot save to database yet');
+                                            }
+
+                                            // Also try to update project state (may fail if project is null)
+                                            handleNestedFieldChange('siteSecurityPlan.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('siteSecurityPlan.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Deleting site security plan file');
+
+                                            try {
+                                                // Check if project exists
+                                                if (!project) {
+                                                    console.error('❌ Project is null, cannot delete file');
+                                                    alert('שגיאה: לא ניתן למחוק קובץ - פרויקט לא נטען');
+                                                    return;
+                                                }
+
+                                                // Get current values before deletion
+                                                const currentFileUrl = fileUploadState.siteSecurityPlan?.url || project?.siteSecurityPlan?.file;
+                                                const currentThumbnailUrl = fileUploadState.siteSecurityPlan?.thumbnailUrl || project?.siteSecurityPlan?.thumbnailUrl;
+
+                                                console.log('🗑️ Current file URL:', currentFileUrl);
+                                                console.log('🗑️ Current thumbnail URL:', currentThumbnailUrl);
+
+                                                // 1. FIRST: Clear UI immediately for better UX
+                                                console.log('🔄 Clearing fileUploadState for immediate UI update');
+                                                setFileUploadState(prev => {
+                                                    const newState = {
+                                                        ...prev,
+                                                        siteSecurityPlan: {
+                                                            url: '',
+                                                            thumbnailUrl: '',
+                                                            creationDate: ''
+                                                        }
+                                                    };
+                                                    console.log('🔄 New fileUploadState after clearing:', newState);
+                                                    return newState;
+                                                });
+
+                                                // Update local state immediately
+                                                handleNestedFieldChange('siteSecurityPlan.file', '');
+                                                handleNestedFieldChange('siteSecurityPlan.thumbnailUrl', '');
+                                                handleNestedFieldChange('siteSecurityPlan.fileCreationDate', '');
+
+                                                // 2. THEN: Delete from blob storage if URLs exist
+                                                if (currentFileUrl || currentThumbnailUrl) {
+                                                    console.log('🗑️ Deleting files from blob storage:', { currentFileUrl, currentThumbnailUrl });
+                                                    const { authenticatedFetch } = await import('../config/api');
+                                                    const response = await authenticatedFetch('/api/delete-project-file', {
+                                                        method: 'DELETE',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                        },
+                                                        body: JSON.stringify({
+                                                            fileUrl: currentFileUrl,
+                                                            thumbnailUrl: currentThumbnailUrl
+                                                        })
+                                                    });
+
+                                                    if (!response.ok) {
+                                                        const errorText = await response.text();
+                                                        console.error('❌ Delete file failed:', response.status, errorText);
+                                                        throw new Error('Failed to delete file from storage');
+                                                    }
+                                                    console.log('✅ Files deleted from blob storage successfully');
+                                                }
+
+                                                // 3. FINALLY: Update database and auto-save
+                                                if (project?._id || project?.id) {
+                                                    console.log('🗑️ Updating database to clear file data');
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const projectId = project._id || project.id;
+
+                                                    const updateData = {
+                                                        'siteSecurityPlan.file': '',
+                                                        'siteSecurityPlan.thumbnailUrl': '',
+                                                        'siteSecurityPlan.fileCreationDate': ''
+                                                    };
+
+                                                    await projectsAPI.update(projectId, updateData);
+                                                    console.log('✅ Database updated successfully');
+
+                                                    // Auto-save the project after successful deletion
+                                                    console.log('💾 Auto-saving project after deletion');
+                                                    await handleSave();
+                                                    console.log('✅ Project auto-saved after deletion');
+                                                }
+
+                                                console.log('✅ File deletion completed successfully');
+
+                                            } catch (error) {
+                                                console.error('❌ Error deleting file:', error);
+                                                alert('שגיאה במחיקת הקובץ: ' + error.message);
+
+                                                // Revert UI changes if deletion failed
+                                                console.log('🔄 Reverting UI changes due to deletion failure');
+                                                setFileUploadState(prev => {
+                                                    const newState = {
+                                                        ...prev,
+                                                        siteSecurityPlan: {
+                                                            url: prev.siteSecurityPlan?.url || '',
+                                                            thumbnailUrl: prev.siteSecurityPlan?.thumbnailUrl || '',
+                                                            creationDate: prev.siteSecurityPlan?.creationDate || ''
+                                                        }
+                                                    };
+                                                    return newState;
+                                                });
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.siteSecurityPlan?.creationDate || project?.siteSecurityPlan?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            console.log('🔄 FileUpload onCreationDateChange called with:', date);
+
+                                            // Update fileUploadState immediately for UI display
+                                            setFileUploadState(prev => {
+                                                const newState = {
+                                                    ...prev,
+                                                    siteSecurityPlan: {
+                                                        ...prev.siteSecurityPlan,
+                                                        creationDate: date
+                                                    }
+                                                };
+                                                console.log('🔄 Updated fileUploadState with creation date:', newState);
+                                                return newState;
+                                            });
+
+                                            // Save to database immediately if we have a project ID
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    console.log('💾 Saving creation date to database immediately...');
+                                                    const { projectsAPI } = await import('../services/api');
+
+                                                    const updateData = {
+                                                        'siteSecurityPlan.fileCreationDate': date
+                                                    };
+
+                                                    console.log('💾 Update data:', updateData);
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Creation date saved to database successfully');
+
+                                                    // Auto-save the project after successful creation date update
+                                                    console.log('💾 Auto-saving project after creation date update');
+                                                    await handleSave();
+                                                    console.log('✅ Project auto-saved after creation date update');
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save creation date to database:', error);
+                                                }
+                                            } else {
+                                                console.log('⚠️ No project ID available, cannot save to database yet');
+                                            }
+
+                                            // Also try to update project state (may fail if project is null)
+                                            handleNestedFieldChange('siteSecurityPlan.fileCreationDate', date);
+                                        }}
+                                        projectId={project?._id || project?.id}
+                                        autoSave={true}
+                                        onAutoSave={handleSave}
+                                    />
                                 </Box>
                             </Box>
                         )}
