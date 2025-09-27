@@ -7290,7 +7290,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="text"
                                                                     inputMode="numeric"
-                                                                    value={phase.phaseCost ? '₪ ' + parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') : ''}
+                                                                    value={phase.phaseCost ? parseInt(phase.phaseCost.toString()).toLocaleString('he-IL') + ' ₪' : ''}
                                                                     onChange={(e) => {
                                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
                                                                         handleNestedFieldChange(`budgetAllocation.${index}.phaseCost`, numericValue);
