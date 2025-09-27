@@ -8285,6 +8285,84 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Table>
                                     </TableContainer>
                                 </Box>
+
+                                {/* סקשן מפרט הביטוח */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        מפרט הביטוח
+                                    </Typography>
+
+                                    {/* גריד של 2 עמודות */}
+                                    <Box sx={{ 
+                                        display: 'grid', 
+                                        gridTemplateColumns: '1fr 1fr', 
+                                        gap: 2, 
+                                        mb: 2 
+                                    }}>
+                                        {/* עמודה שמאלית - ההערה */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'flex-start',
+                                            padding: '16px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '120px'
+                                        }}>
+                                            <Typography variant="body2" sx={{ 
+                                                lineHeight: 1.6,
+                                                color: 'text.secondary',
+                                                direction: 'rtl',
+                                                textAlign: 'right'
+                                            }}>
+                                                מלוא העלות של עבודות הפרויקט המושלמות במועד המסירה או במועד תחילת השימוש בו, כולל חומרים ו/או ציוד ו/או מערכות בבעלות המבוטח או שהוא אחראי עבורם או שסופקו על ידי מזמין העבודות, המהווים חלק בלתי נפרד מהעבודות:
+                                            </Typography>
+                                        </Box>
+
+                                        {/* עמודה ימנית - שדה סכום ביטוח הרכוש */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center',
+                                            justifyContent: 'flex-end'
+                                        }}>
+                                            <TextField
+                                                fullWidth
+                                                label="סכום ביטוח הרכוש (ש״ח)"
+                                                value={project?.insuranceSpecification?.propertyInsuranceAmount ? 
+                                                    parseInt(project.insuranceSpecification.propertyInsuranceAmount.toString()).toLocaleString('he-IL') : ''}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                    handleNestedFieldChange('insuranceSpecification.propertyInsuranceAmount', numericValue);
+                                                }}
+                                                disabled={mode === 'view' || !canEdit}
+                                                size="small"
+                                                type="text"
+                                                inputMode="numeric"
+                                                sx={{ 
+                                                    direction: 'rtl',
+                                                    '& .MuiInputBase-root': {
+                                                        minHeight: '56px'
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        top: '-8px'
+                                                    }
+                                                }}
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <Typography sx={{ 
+                                                            color: 'text.secondary', 
+                                                            mr: 1,
+                                                            fontSize: '1rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                            ₪
+                                                        </Typography>
+                                                    )
+                                                }}
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
                             </Box>
                         )}
 
