@@ -348,7 +348,17 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
             {/* Date field */}
             {showCreationDate && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexDirection: 'row-reverse' }}>
+                    <TextField
+                        label="תאריך יצירת המסמך"
+                        type="date"
+                        value={creationDateValue}
+                        onChange={(e) => onCreationDateChange?.(e.target.value)}
+                        disabled={disabled}
+                        size="small"
+                        InputLabelProps={{ shrink: true }}
+                        sx={{ minWidth: 200 }}
+                    />
                     {/* AI Icon */}
                     {aiIcon && (
                         <Box
@@ -372,16 +382,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
                             {aiIcon}
                         </Box>
                     )}
-                    <TextField
-                        label="תאריך יצירת המסמך"
-                        type="date"
-                        value={creationDateValue}
-                        onChange={(e) => onCreationDateChange?.(e.target.value)}
-                        disabled={disabled}
-                        size="small"
-                        InputLabelProps={{ shrink: true }}
-                        sx={{ minWidth: 200 }}
-                    />
                 </Box>
             )}
         </Box>
