@@ -7318,7 +7318,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}
                                             />
                                             <Typography variant="body2" sx={{ mr: 1 }}>
-                                                איש/צוות תחזוקה מיומן
+                                                איש/צוות תחזוקה מיומן המועסק במישרין
                                             </Typography>
                                         </Box>
                                         <Box sx={{ 
