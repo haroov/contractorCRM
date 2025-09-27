@@ -8299,27 +8299,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         gap: 2, 
                                         mb: 2 
                                     }}>
-                                        {/* עמודה שמאלית - ההערה */}
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'flex-start',
-                                            padding: '16px',
-                                            border: '1px solid #d1d5db',
-                                            borderRadius: '4px',
-                                            backgroundColor: 'white',
-                                            minHeight: '120px'
-                                        }}>
-                                            <Typography variant="body2" sx={{ 
-                                                lineHeight: 1.6,
-                                                color: 'text.secondary',
-                                                direction: 'rtl',
-                                                textAlign: 'right'
-                                            }}>
-                                                מלוא העלות של עבודות הפרויקט המושלמות במועד המסירה או במועד תחילת השימוש בו, כולל חומרים ו/או ציוד ו/או מערכות בבעלות המבוטח או שהוא אחראי עבורם או שסופקו על ידי מזמין העבודות, המהווים חלק בלתי נפרד מהעבודות:
-                                            </Typography>
-                                        </Box>
-
-                                        {/* עמודה ימנית - שדה סכום ביטוח הרכוש */}
+                                        {/* עמודה שמאלית - שדה סכום ביטוח הרכוש */}
                                         <Box sx={{ 
                                             display: 'flex', 
                                             alignItems: 'center',
@@ -8360,6 +8340,35 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     )
                                                 }}
                                             />
+                                        </Box>
+
+                                        {/* עמודה ימנית - ההערה */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                            padding: '16px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '120px'
+                                        }}>
+                                            <Typography variant="body2" sx={{ 
+                                                fontWeight: 'bold',
+                                                color: 'text.primary',
+                                                mb: 1,
+                                                direction: 'rtl'
+                                            }}>
+                                                הערה
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ 
+                                                lineHeight: 1.6,
+                                                color: 'text.secondary',
+                                                direction: 'rtl',
+                                                textAlign: 'right'
+                                            }}>
+                                                מלוא העלות של עבודות הפרויקט המושלמות במועד המסירה או במועד תחילת השימוש בו, כולל חומרים ו/או ציוד ו/או מערכות בבעלות המבוטח או שהוא אחראי עבורם או שסופקו על ידי מזמין העבודות, המהווים חלק בלתי נפרד מהעבודות
+                                            </Typography>
                                         </Box>
                                     </Box>
                                 </Box>
