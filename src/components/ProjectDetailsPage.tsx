@@ -4536,7 +4536,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
 
                                                 <FileUpload
-                                                    label="הצהרת מהנדס לתכנון לפי תקן 413 רעידות אדמה"
+                                                    label="הצהרת תכנון לפי תקן 413 (רעידות אדמה)"
                                                     value={project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file}
                                                     onChange={(url) => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', url, project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
                                                     onDelete={() => handleFileUploadWithAnalysisReset('engineeringQuestionnaire.buildingPlan.earthquakeStandard413.file', '', project?.engineeringQuestionnaire?.buildingPlan?.earthquakeStandard413?.file)}
