@@ -5855,32 +5855,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
 
                                             {/* עבודות פיצוץ */}
-                                            <Box sx={{
-                                                border: '1px solid #d1d5db',
-                                                borderRadius: '4px',
-                                                backgroundColor: 'white',
-                                                minHeight: '56px',
-                                                padding: '0 14px',
-                                                direction: 'rtl',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                mb: 2
-                                            }}>
-                                                <Typography sx={{
-                                                    fontSize: '1rem',
-                                                    color: 'text.secondary',
-                                                    marginRight: '10px'
-                                                }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
                                                     עבודות פיצוץ:
                                                 </Typography>
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    gap: 0,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-start',
-                                                    marginLeft: '10px'
-                                                }}>
+                                                <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', false)}
@@ -5897,8 +5876,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             minWidth: '50px',
                                                             height: '32px',
                                                             textTransform: 'none',
-                                                            fontSize: '0.875rem',
-                                                            marginRight: '0px'
+                                                            fontSize: '0.875rem'
                                                         }}
                                                     >
                                                         לא
@@ -5926,46 +5904,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.blastingWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                    <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
+                                                        שם הקבלן המבצע:
+                                                    </Typography>
                                                     <TextField
                                                         fullWidth
-                                                        label="שם הקבלן המבצע"
                                                         value={project?.environmentalSurvey?.blastingContractor || ''}
                                                         onChange={(e) => handleNestedFieldChange('environmentalSurvey.blastingContractor', e.target.value)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         size="small"
-                                                        sx={{ maxWidth: 300 }}
                                                     />
                                                 </Box>
                                             )}
 
                                             {/* עבודות חציבה */}
-                                            <Box sx={{
-                                                border: '1px solid #d1d5db',
-                                                borderRadius: '4px',
-                                                backgroundColor: 'white',
-                                                minHeight: '56px',
-                                                padding: '0 14px',
-                                                direction: 'rtl',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                mb: 2
-                                            }}>
-                                                <Typography sx={{
-                                                    fontSize: '1rem',
-                                                    color: 'text.secondary',
-                                                    marginRight: '10px'
-                                                }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
                                                     עבודות חציבה:
                                                 </Typography>
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    gap: 0,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-start',
-                                                    marginLeft: '10px'
-                                                }}>
+                                                <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', false)}
@@ -5982,8 +5940,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             minWidth: '50px',
                                                             height: '32px',
                                                             textTransform: 'none',
-                                                            fontSize: '0.875rem',
-                                                            marginRight: '0px'
+                                                            fontSize: '0.875rem'
                                                         }}
                                                     >
                                                         לא
@@ -6011,46 +5968,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.quarryingWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                    <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
+                                                        שם הקבלן המבצע:
+                                                    </Typography>
                                                     <TextField
                                                         fullWidth
-                                                        label="שם הקבלן המבצע"
                                                         value={project?.environmentalSurvey?.quarryingContractor || ''}
                                                         onChange={(e) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', e.target.value)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         size="small"
-                                                        sx={{ maxWidth: 300 }}
                                                     />
                                                 </Box>
                                             )}
 
                                             {/* עבודות הריסה */}
-                                            <Box sx={{
-                                                border: '1px solid #d1d5db',
-                                                borderRadius: '4px',
-                                                backgroundColor: 'white',
-                                                minHeight: '56px',
-                                                padding: '0 14px',
-                                                direction: 'rtl',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                mb: 2
-                                            }}>
-                                                <Typography sx={{
-                                                    fontSize: '1rem',
-                                                    color: 'text.secondary',
-                                                    marginRight: '10px'
-                                                }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
                                                     עבודות הריסה:
                                                 </Typography>
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    gap: 0,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-start',
-                                                    marginLeft: '10px'
-                                                }}>
+                                                <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', false)}
@@ -6067,8 +6004,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             minWidth: '50px',
                                                             height: '32px',
                                                             textTransform: 'none',
-                                                            fontSize: '0.875rem',
-                                                            marginRight: '0px'
+                                                            fontSize: '0.875rem'
                                                         }}
                                                     >
                                                         לא
@@ -6096,46 +6032,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.demolitionWork === true && (
-                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                    <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
+                                                        שם הקבלן המבצע:
+                                                    </Typography>
                                                     <TextField
                                                         fullWidth
-                                                        label="שם הקבלן המבצע"
                                                         value={project?.environmentalSurvey?.demolitionContractor || ''}
                                                         onChange={(e) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', e.target.value)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         size="small"
-                                                        sx={{ maxWidth: 300 }}
                                                     />
                                                 </Box>
                                             )}
 
                                             {/* קירות תמך */}
-                                            <Box sx={{
-                                                border: '1px solid #d1d5db',
-                                                borderRadius: '4px',
-                                                backgroundColor: 'white',
-                                                minHeight: '56px',
-                                                padding: '0 14px',
-                                                direction: 'rtl',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                mb: 2
-                                            }}>
-                                                <Typography sx={{
-                                                    fontSize: '1rem',
-                                                    color: 'text.secondary',
-                                                    marginRight: '10px'
-                                                }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
                                                     קירות תמך:
                                                 </Typography>
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    gap: 0,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-start',
-                                                    marginLeft: '10px'
-                                                }}>
+                                                <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', false)}
@@ -6152,8 +6068,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             minWidth: '50px',
                                                             height: '32px',
                                                             textTransform: 'none',
-                                                            fontSize: '0.875rem',
-                                                            marginRight: '0px'
+                                                            fontSize: '0.875rem'
                                                         }}
                                                     >
                                                         לא
@@ -6181,15 +6096,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                             {project?.environmentalSurvey?.retainingWalls === true && (
-                                                <Box sx={{ mb: 2, ml: 2 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                    <Typography variant="body2" sx={{ minWidth: 200, textAlign: 'right' }}>
+                                                        שם הקבלן המבצע:
+                                                    </Typography>
                                                     <TextField
                                                         fullWidth
-                                                        label="שם הקבלן המבצע"
                                                         value={project?.environmentalSurvey?.retainingWallsContractor || ''}
                                                         onChange={(e) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', e.target.value)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         size="small"
-                                                        sx={{ maxWidth: 300 }}
                                                     />
                                                 </Box>
                                             )}
