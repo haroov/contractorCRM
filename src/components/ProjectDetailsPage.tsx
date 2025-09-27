@@ -31,7 +31,8 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Autocomplete
+    Autocomplete,
+    Checkbox
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -7235,6 +7236,99 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             onAutoSave={handleSave}
                                         />
                                     </Box>
+                                </Box>
+
+                                {/* סקשן תחזוקת מכונות וציוד */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        תחזוקת מכונות וציוד
+                                    </Typography>
+                                    
+                                    <Typography variant="body2" sx={{ mb: 3, color: 'text.secondary' }}>
+                                        נא ציין על ידי מי נעשית תחזוקת המכונות/הציוד:
+                                    </Typography>
+
+                                    {/* אפשרות 1 - איש/צוות תחזוקה מיומן */}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Checkbox
+                                            checked={project?.machineMaintenance?.skilledMaintenance === true}
+                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.skilledMaintenance', e.target.checked)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            sx={{
+                                                color: '#8B5CF6',
+                                                '&.Mui-checked': {
+                                                    color: '#8B5CF6',
+                                                },
+                                            }}
+                                        />
+                                        <Typography variant="body2" sx={{ mr: 1 }}>
+                                            איש/צוות תחזוקה מיומן המועסק במישרין על ידי המבוטח.
+                                        </Typography>
+                                    </Box>
+
+                                    {/* אפשרות 2 - חברה חיצונית */}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Checkbox
+                                            checked={project?.machineMaintenance?.externalCompany === true}
+                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompany', e.target.checked)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            sx={{
+                                                color: '#8B5CF6',
+                                                '&.Mui-checked': {
+                                                    color: '#8B5CF6',
+                                                },
+                                            }}
+                                        />
+                                        <Typography variant="body2" sx={{ mr: 1 }}>
+                                            חברה חיצונית המספקת שרותי תחזוקה - ציין את שם החברה:
+                                        </Typography>
+                                    </Box>
+                                    
+                                    {project?.machineMaintenance?.externalCompany === true && (
+                                        <Box sx={{ mb: 2, ml: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="שם החברה"
+                                                value={project?.machineMaintenance?.externalCompanyName || ''}
+                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.externalCompanyName', e.target.value)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                size="small"
+                                                sx={{ direction: 'rtl' }}
+                                            />
+                                        </Box>
+                                    )}
+
+                                    {/* אפשרות 3 - גורם מקצועי אחר */}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Checkbox
+                                            checked={project?.machineMaintenance?.otherProfessional === true}
+                                            onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessional', e.target.checked)}
+                                            disabled={mode === 'view' || !canEdit}
+                                            sx={{
+                                                color: '#8B5CF6',
+                                                '&.Mui-checked': {
+                                                    color: '#8B5CF6',
+                                                },
+                                            }}
+                                        />
+                                        <Typography variant="body2" sx={{ mr: 1 }}>
+                                            גורם מקצועי אחר המספק שרותי תחזוקה – פרט:
+                                        </Typography>
+                                    </Box>
+                                    
+                                    {project?.machineMaintenance?.otherProfessional === true && (
+                                        <Box sx={{ mb: 2, ml: 4 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="פירוט הגורם המקצועי"
+                                                value={project?.machineMaintenance?.otherProfessionalDetails || ''}
+                                                onChange={(e) => handleNestedFieldChange('machineMaintenance.otherProfessionalDetails', e.target.value)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                size="small"
+                                                sx={{ direction: 'rtl' }}
+                                            />
+                                        </Box>
+                                    )}
                                 </Box>
                             </Box>
                         )}
