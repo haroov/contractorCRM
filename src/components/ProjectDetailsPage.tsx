@@ -7426,15 +7426,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 3 && (
                             <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    ביטוח
-                                </Typography>
-
                                 {/* שורה 1 - מפרט הביטוח */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        מפרט הביטוח
-                                    </Typography>
                                     <FileUpload
                                         label="מפרט הביטוח"
                                         value={fileUploadState.insuranceSpecification?.url || project?.insuranceSpecification?.file || ''}
@@ -7481,9 +7474,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* שורה 2 - סעיף הביטוח בחוזה / מכרז */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        סעיף הביטוח בחוזה / מכרז
-                                    </Typography>
                                     <FileUpload
                                         label="סעיף הביטוח בחוזה / מכרז"
                                         value={fileUploadState.insuranceContractClause?.url || project?.insuranceContractClause?.file || ''}
@@ -7521,9 +7511,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* שורה 3 - טופס הצעה */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        טופס הצעה
-                                    </Typography>
                                     <FileUpload
                                         label="טופס הצעה"
                                         value={fileUploadState.proposalForm?.url || project?.proposalForm?.file || ''}
