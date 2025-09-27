@@ -5848,6 +5848,193 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             inputProps={{ min: 0, max: 200 }}
                                         />
 
+                                        {/* שאלות עבודות בניה */}
+                                        <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                עבודות בניה מיוחדות
+                                            </Typography>
+                                            
+                                            {/* עבודות פיצוץ */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                                    עבודות פיצוץ:
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.blastingWork === true ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.blastingWork === false ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.blastingWork', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                </Box>
+                                                {project?.environmentalSurvey?.blastingWork === true && (
+                                                    <Autocomplete
+                                                        freeSolo
+                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
+                                                        value={project?.environmentalSurvey?.blastingContractor || ''}
+                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.blastingContractor', newValue || '')}
+                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.blastingContractor', newInputValue)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                placeholder="שם הקבלן המבצע"
+                                                                size="small"
+                                                                sx={{ minWidth: 200 }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            </Box>
+
+                                            {/* עבודות חציבה */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                                    עבודות חציבה:
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.quarryingWork === true ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.quarryingWork === false ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.quarryingWork', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                </Box>
+                                                {project?.environmentalSurvey?.quarryingWork === true && (
+                                                    <Autocomplete
+                                                        freeSolo
+                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
+                                                        value={project?.environmentalSurvey?.quarryingContractor || ''}
+                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', newValue || '')}
+                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.quarryingContractor', newInputValue)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                placeholder="שם הקבלן המבצע"
+                                                                size="small"
+                                                                sx={{ minWidth: 200 }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            </Box>
+
+                                            {/* עבודות הריסה */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                                    עבודות הריסה:
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.demolitionWork === true ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.demolitionWork === false ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.demolitionWork', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                </Box>
+                                                {project?.environmentalSurvey?.demolitionWork === true && (
+                                                    <Autocomplete
+                                                        freeSolo
+                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
+                                                        value={project?.environmentalSurvey?.demolitionContractor || ''}
+                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', newValue || '')}
+                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.demolitionContractor', newInputValue)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                placeholder="שם הקבלן המבצע"
+                                                                size="small"
+                                                                sx={{ minWidth: 200 }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            </Box>
+
+                                            {/* קירות תמך */}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                                <Typography variant="body2" sx={{ minWidth: 120, textAlign: 'right' }}>
+                                                    קירות תמך:
+                                                </Typography>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.retainingWalls === true ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', true)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        כן
+                                                    </Button>
+                                                    <Button
+                                                        variant={project?.environmentalSurvey?.retainingWalls === false ? 'contained' : 'outlined'}
+                                                        size="small"
+                                                        onClick={() => handleNestedFieldChange('environmentalSurvey.retainingWalls', false)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        sx={{ minWidth: 60 }}
+                                                    >
+                                                        לא
+                                                    </Button>
+                                                </Box>
+                                                {project?.environmentalSurvey?.retainingWalls === true && (
+                                                    <Autocomplete
+                                                        freeSolo
+                                                        options={project?.subcontractors?.map(sub => sub.companyName).filter(Boolean) || []}
+                                                        value={project?.environmentalSurvey?.retainingWallsContractor || ''}
+                                                        onChange={(event, newValue) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', newValue || '')}
+                                                        onInputChange={(event, newInputValue) => handleNestedFieldChange('environmentalSurvey.retainingWallsContractor', newInputValue)}
+                                                        disabled={mode === 'view' || !canEdit}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                {...params}
+                                                                placeholder="שם הקבלן המבצע"
+                                                                size="small"
+                                                                sx={{ minWidth: 200 }}
+                                                            />
+                                                        )}
+                                                    />
+                                                )}
+                                            </Box>
+                                        </Box>
+
                                         {/* טבלת מרחקים לשירותי חירום */}
                                         <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
