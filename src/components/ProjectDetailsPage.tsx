@@ -7002,9 +7002,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
                                 <Box sx={{ mb: 4 }}>
-                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                    עלות בנייה לפי מבנים
-                                </Typography>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        עלות בנייה לפי מבנים
+                                    </Typography>
                                     {project?.engineeringQuestionnaire?.buildingPlan?.numberOfBuildings > 0 ? (
                                         <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                             <Table size="small">
@@ -7037,27 +7037,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell sx={{ padding: 1 }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        size="small"
-                                                                        type="text"
-                                                                        inputMode="numeric"
-                                                                        value={building?.constructionCost ? formatCurrency(building.constructionCost) : ''}
-                                                                        onChange={(e) => {
-                                                                            const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                            handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, numericValue);
-                                                                        }}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        placeholder="עלות בנייה"
-                                                                        variant="outlined"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': { height: 40 },
-                                                                            '& .MuiInputBase-input': {
-                                                                                textAlign: 'right',
-                                                                                direction: 'ltr'
-                                                                            }
-                                                                        }}
-                                                                    />
+                                                        <TextField
+                                                            fullWidth
+                                                            size="small"
+                                                            type="text"
+                                                            inputMode="numeric"
+                                                            value={building?.constructionCost ? '₪ ' + parseInt(building.constructionCost.toString()).toLocaleString('he-IL') : ''}
+                                                            onChange={(e) => {
+                                                                const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, numericValue);
+                                                            }}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            placeholder="עלות בנייה"
+                                                            variant="outlined"
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': { height: 40 },
+                                                                '& .MuiInputBase-input': {
+                                                                    textAlign: 'right',
+                                                                    direction: 'ltr'
+                                                                }
+                                                            }}
+                                                        />
                                                                 </TableCell>
                                                             </TableRow>
                                                         );
@@ -7124,59 +7124,59 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 />
                                                             </TableCell>
                                                             <TableCell sx={{ padding: 1 }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    size="small"
-                                                                    type="text"
-                                                                    inputMode="numeric"
-                                                                    value={area.areaSize ? area.areaSize.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
-                                                                    onChange={(e) => {
-                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
-                                                                    }}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    placeholder="גודל השטח"
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': { height: 40 },
-                                                                        '& .MuiInputBase-input': {
-                                                                            textAlign: 'right',
-                                                                            direction: 'ltr'
-                                                                        }
-                                                                    }}
-                                                                />
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                type="text"
+                                                                inputMode="numeric"
+                                                                value={area.areaSize ? parseInt(area.areaSize).toLocaleString('he-IL') : ''}
+                                                                onChange={(e) => {
+                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                    handleNestedFieldChange(`budgetEstimate.${index}.areaSize`, numericValue);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="גודל השטח"
+                                                                variant="outlined"
+                                                                sx={{ 
+                                                                    '& .MuiOutlinedInput-root': { height: 40 },
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'ltr'
+                                                                    }
+                                                                }}
+                                                            />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                type="text"
+                                                                inputMode="numeric"
+                                                                value={area.costPerSquareMeter ? '₪ ' + parseInt(area.costPerSquareMeter).toLocaleString('he-IL') : ''}
+                                                                onChange={(e) => {
+                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                    handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="עלות למ״ר"
+                                                                variant="outlined"
+                                                                sx={{ 
+                                                                    '& .MuiOutlinedInput-root': { height: 40 },
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'ltr'
+                                                                    }
+                                                                }}
+                                                            />
                                                             </TableCell>
                                                             <TableCell sx={{ padding: 1 }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    type="text"
-                                                                    inputMode="numeric"
-                                                                    value={area.costPerSquareMeter ? '₪ ' + area.costPerSquareMeter.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
-                                                                    onChange={(e) => {
-                                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                                        handleNestedFieldChange(`budgetEstimate.${index}.costPerSquareMeter`, numericValue);
-                                                                    }}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    placeholder="עלות למ״ר"
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': { height: 40 },
-                                                                        '& .MuiInputBase-input': {
-                                                                            textAlign: 'right',
-                                                                            direction: 'ltr'
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1 }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    size="small"
-                                                                    value={totalCost > 0 ? '₪ ' + totalCost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''}
+                                                                    value={totalCost > 0 ? '₪ ' + totalCost.toLocaleString('he-IL') : ''}
                                                                     disabled={true}
                                                                     variant="outlined"
-                                                                    sx={{
+                                                                    sx={{ 
                                                                         '& .MuiOutlinedInput-root': { height: 40 },
                                                                         '& .MuiInputBase-input': {
                                                                             textAlign: 'right',
