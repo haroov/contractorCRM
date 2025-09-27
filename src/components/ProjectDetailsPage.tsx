@@ -451,10 +451,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    // Format currency with commas (₪ symbol is handled by InputProps)
+    // Format currency with commas and shekel symbol
     const formatCurrency = (value: number): string => {
         if (!value || value === 0) return '';
-        return value.toLocaleString('he-IL');
+        return value.toLocaleString('he-IL') + ' ₪';
     };
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(false);
@@ -7027,9 +7027,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         value={buildingName}
                                                                         disabled={true}
                                                                         variant="outlined"
-                                                                        sx={{ 
+                                                                        sx={{
                                                                             '& .MuiOutlinedInput-root': { height: 40 },
-                                                                            '& .MuiInputBase-input': { 
+                                                                            '& .MuiInputBase-input': {
                                                                                 color: 'text.secondary',
                                                                                 backgroundColor: '#f5f5f5'
                                                                             }
@@ -7040,13 +7040,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <TextField
                                                                         fullWidth
                                                                         size="small"
-                                                                        type="number"
-                                                                        value={building?.constructionCost || ''}
-                                                                        onChange={(e) => handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, e.target.value)}
+                                                                        type="text"
+                                                                        inputMode="numeric"
+                                                                        value={building?.constructionCost ? formatCurrency(building.constructionCost) : ''}
+                                                                        onChange={(e) => {
+                                                                            const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                            handleNestedFieldChange(`engineeringQuestionnaire.buildingPlan.buildings.${index}.constructionCost`, numericValue);
+                                                                        }}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         placeholder="עלות בנייה"
                                                                         variant="outlined"
-                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        sx={{ 
+                                                                            '& .MuiOutlinedInput-root': { height: 40 },
+                                                                            '& .MuiInputBase-input': {
+                                                                                textAlign: 'right',
+                                                                                direction: 'ltr'
+                                                                            }
+                                                                        }}
                                                                     />
                                                                 </TableCell>
                                                             </TableRow>
