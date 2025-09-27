@@ -139,7 +139,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           handleContractorSelect(contractor, viewMode as 'view' | 'edit');
 
           // Store the tab parameter for ContractorTabsSimple to use
-          if (tab === 'projects') {
+          // Only set tab if there's no existing tab stored (to preserve tab on refresh)
+          const existingTab = sessionStorage.getItem('contractor_active_tab');
+          if (tab === 'projects' && !existingTab) {
             console.log('🔍 Setting contractor_active_tab to 2 for projects tab');
             sessionStorage.setItem('contractor_active_tab', '2');
           }
