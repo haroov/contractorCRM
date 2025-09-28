@@ -9983,53 +9983,70 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         alignItems: 'flex-start'
                                     }}>
                                         {/* עמודה ראשונה - שאלה */}
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            minHeight: '56px',
+                                        <Box sx={{
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
-                                            padding: '12px',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            width: '100%'
                                         }}>
-                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
                                                 כיסוי לביטוח אחריות כלפי צד שלישי
                                             </Typography>
-                                            <Box sx={{ display: 'flex', gap: 0, marginRight: 'auto' }}>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
                                                 <Button
-                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'contained' : 'outlined'}
-                                                    size="small"
+                                                    variant="text"
                                                     onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', false)}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    sx={{ 
-                                                        minWidth: '60px',
-                                                        height: '40px',
-                                                        fontSize: '0.875rem',
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
-                                                        borderRadius: '4px 0 0 4px',
+                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'white' : '#6B46C1',
                                                         '&:hover': {
-                                                            border: '1px solid #9ca3af'
-                                                        }
+                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        marginRight: '0px'
                                                     }}
                                                 >
                                                     לא
                                                 </Button>
                                                 <Button
-                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'contained' : 'outlined'}
-                                                    size="small"
+                                                    variant="text"
                                                     onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', true)}
                                                     disabled={mode === 'view' || !canEdit}
-                                                    sx={{ 
-                                                        minWidth: '60px',
-                                                        height: '40px',
-                                                        fontSize: '0.875rem',
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        borderRadius: '0 4px 4px 0',
-                                                        borderLeft: 'none',
+                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'white' : '#6B46C1',
                                                         '&:hover': {
-                                                            border: '1px solid #9ca3af',
-                                                            borderLeft: 'none'
-                                                        }
+                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                        },
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem'
                                                     }}
                                                 >
                                                     כן
