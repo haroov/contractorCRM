@@ -10,12 +10,16 @@ import {
     Tab,
     Snackbar,
     Alert,
-    CircularProgress
+    CircularProgress,
+    Avatar,
+    IconButton
 } from '@mui/material';
 import {
     Save as SaveIcon,
     Close as CloseIcon,
-    ArrowBack as ArrowBackIcon
+    ArrowBack as ArrowBackIcon,
+    MoreVert as MoreVertIcon,
+    AccountCircle as AccountCircleIcon
 } from '@mui/icons-material';
 
 interface ClaimFormData {
@@ -41,6 +45,7 @@ export default function ClaimFormPage() {
         message: '',
         severity: 'success' as 'success' | 'error' | 'warning' | 'info'
     });
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -53,6 +58,34 @@ export default function ClaimFormPage() {
         createdAt: new Date(),
         updatedAt: new Date()
     });
+
+    useEffect(() => {
+        const projectId = searchParams.get('projectId');
+        const projectName = searchParams.get('projectName');
+        
+        if (projectId && projectName) {
+            setFormData(prev => ({
+                ...prev,
+                projectId,
+                projectName: decodeURIComponent(projectName)
+            }));
+        }
+        
+        // Load current user
+        const loadCurrentUser = async () => {
+            try {
+                const response = await authenticatedFetch('/api/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    setCurrentUser(userData);
+                }
+            } catch (error) {
+                console.error('Error loading current user:', error);
+            }
+        };
+        
+        loadCurrentUser();
+    }, [searchParams]);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
@@ -127,68 +160,122 @@ export default function ClaimFormPage() {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            {/* Header */}
-            <Paper sx={{ 
-                p: 2, 
-                mb: 2, 
-                borderRadius: 0,
-                boxShadow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
+            {/* Top Banner - Same as ProjectDetailsPage */}
+            <Box sx={{ 
+                bgcolor: 'white', 
+                borderBottom: '1px solid #e0e0e0',
+                p: 2
             }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Button
-                        startIcon={<ArrowBackIcon />}
-                        onClick={handleBack}
-                        sx={{ 
-                            color: '#6b47c1',
-                            borderColor: '#6b47c1',
-                            '&:hover': {
-                                borderColor: '#5a3aa1',
-                                backgroundColor: 'rgba(136, 47, 215, 0.04)'
-                            }
-                        }}
-                    >
-                        חזרה
-                    </Button>
-                    <Typography variant="h5" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    maxWidth: '1200px',
+                    mx: 'auto'
+                }}>
+                    {/* Left side - Logo and Title */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
+                        </Box>
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242', fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' } }}>
+                            ניהול סיכונים באתרי בניה
+                        </Typography>
+                    </Box>
+
+                    {/* Right side - User profile */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {currentUser?.picture ? (
+                            <Avatar src={currentUser.picture} alt={currentUser.name} sx={{ width: 32, height: 32 }} />
+                        ) : (
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
+                                <AccountCircleIcon />
+                            </Avatar>
+                        )}
+                        <Typography variant="body2">{currentUser?.name || 'משתמש'}</Typography>
+                        <IconButton>
+                            <MoreVertIcon />
+                        </IconButton>
+                    </Box>
+                </Box>
+            </Box>
+
+            {/* Project Title and Action Buttons */}
+            <Box sx={{ 
+                bgcolor: 'white', 
+                borderBottom: '1px solid #e0e0e0',
+                p: 2,
+                mb: 2
+            }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    maxWidth: '1200px',
+                    mx: 'auto'
+                }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
                         {formData.projectName} - תביעה
                     </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={handleBack}
+                            sx={{ 
+                                minWidth: 'auto',
+                                px: 2,
+                                color: '#6b47c1',
+                                borderColor: '#6b47c1',
+                                '&:hover': {
+                                    borderColor: '#5a3aa1',
+                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
+                                }
+                            }}
+                        >
+                            חזרה
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={handleClose}
+                            sx={{ 
+                                minWidth: 'auto',
+                                px: 2,
+                                color: '#6b47c1',
+                                borderColor: '#6b47c1',
+                                '&:hover': {
+                                    borderColor: '#5a3aa1',
+                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
+                                }
+                            }}
+                        >
+                            סגירה
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                            onClick={handleSave}
+                            disabled={saving}
+                            sx={{
+                                minWidth: 'auto',
+                                px: 2,
+                                bgcolor: '#6b47c1',
+                                '&:hover': {
+                                    bgcolor: '#5a3aa1'
+                                }
+                            }}
+                        >
+                            {saving ? 'שומר...' : 'שמירה'}
+                        </Button>
+                    </Box>
                 </Box>
-                
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<CloseIcon />}
-                        onClick={handleClose}
-                        sx={{ 
-                            color: '#6b47c1',
-                            borderColor: '#6b47c1',
-                            '&:hover': {
-                                borderColor: '#5a3aa1',
-                                backgroundColor: 'rgba(136, 47, 215, 0.04)'
-                            }
-                        }}
-                    >
-                        סגירה
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-                        onClick={handleSave}
-                        disabled={saving}
-                        sx={{
-                            backgroundColor: '#6b47c1',
-                            '&:hover': {
-                                backgroundColor: '#5a3aa1'
-                            }
-                        }}
-                    >
-                        {saving ? 'שומר...' : 'שמירה'}
-                    </Button>
-                </Box>
-            </Paper>
+            </Box>
 
             {/* Main Content */}
             <Box sx={{ flex: 1, p: 2 }}>
