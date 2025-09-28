@@ -5420,11 +5420,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             top: '0px'
                                                         }
                                                     }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
                                                 />
                                             )}
                                         </Box>
@@ -5542,11 +5537,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             top: '0px'
                                                         }
                                                     }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
                                                 />
                                             )}
                                         </Box>
@@ -5663,11 +5653,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
-                                                    }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
                                                     }}
                                                 />
                                             )}
@@ -9035,11 +9020,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             top: '0px'
                                                         }
                                                     }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
                                                 />
                                             )}
                                         </Box>
@@ -9155,11 +9135,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
-                                                    }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
                                                     }}
                                                 />
                                             )}
@@ -9277,11 +9252,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             top: '0px'
                                                         }
                                                     }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
                                                 />
                                             )}
                                         </Box>
@@ -9397,11 +9367,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         '& .MuiInputLabel-root': {
                                                             top: '0px'
                                                         }
-                                                    }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
                                                     }}
                                                 />
                                             )}
@@ -9520,11 +9485,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             top: '0px'
                                                         }
                                                     }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
                                                 />
                                             )}
                                         </Box>
@@ -9598,9 +9558,242 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             {project?.insuranceSpecification?.additionalNecessaryExpenses === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.additionalNecessaryExpensesAmount ? parseInt(project.insuranceSpecification.additionalNecessaryExpensesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.additionalNecessaryExpensesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.additionalNecessaryExpensesAmount ? parseInt(project.insuranceSpecification.additionalNecessaryExpensesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.additionalNecessaryExpensesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
+                                    </Box>
+
+                                    {/* סקשן שיעבוד הרכוש */}
+                                    <Box sx={{ mb: 4 }}>
+                                        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                            שיעבוד הרכוש
+                                        </Typography>
+
+                                        {/* גריד 2 עמודות */}
+                                        <Box sx={{ 
+                                            display: 'grid', 
+                                            gridTemplateColumns: '1fr 1fr', 
+                                            gap: 2, 
+                                            mb: 2 
+                                        }}>
+                                            {/* עמודה 1 - האם נדרש/קיים שיעבוד על הרכוש */}
+                                            <Box sx={{ 
+                                                display: 'flex', 
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'flex-end'
+                                            }}>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        האם נדרש/קיים שיעבוד על הרכוש
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.propertyPledge.required', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.propertyPledge?.required === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#5B21B6' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.propertyPledge.required', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.propertyPledge?.required === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#5B21B6' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                            </Box>
+
+                                            {/* עמודה 2 - ריקה כרגע */}
+                                            <Box></Box>
+                                        </Box>
+
+                                        {/* טבלת משעבדים - מופיעה רק אם נבחר "כן" */}
+                                        {project?.insuranceSpecification?.propertyPledge?.required === true && (
+                                            <Box sx={{ mt: 2 }}>
+                                                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                                                    פרטי המשעבדים
+                                                </Typography>
+                                                <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                                    <Table size="small">
+                                                        <TableHead>
+                                                            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סיווג הגוף המשעבד</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>שם</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '35%' }}>כתובת מלאה</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>אימייל</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: '', name: '', address: '', email: '' }]).map((pledger, index) => {
+                                                                const isFirstRow = index === 0;
+                                                                return (
+                                                                    <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                                        <TableCell sx={{ padding: 1, width: '20%' }}>
+                                                                            <Autocomplete
+                                                                                freeSolo
+                                                                                options={['בנק', 'חברת ביטוח', 'אחר']}
+                                                                                value={pledger.classification || ''}
+                                                                                onChange={(event, newValue) => {
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newValue || '');
+                                                                                }}
+                                                                                onInputChange={(event, newInputValue) => {
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newInputValue);
+                                                                                }}
+                                                                                renderInput={(params) => (
+                                                                                    <TextField
+                                                                                        {...params}
+                                                                                        size="small"
+                                                                                        placeholder="סיווג הגוף המשעבד"
+                                                                                        variant="outlined"
+                                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ padding: 1, width: '25%' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                size="small"
+                                                                                value={pledger.name || ''}
+                                                                                onChange={(e) => {
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, e.target.value);
+                                                                                }}
+                                                                                placeholder="שם"
+                                                                                variant="outlined"
+                                                                                sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ padding: 1, width: '35%' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                size="small"
+                                                                                value={pledger.address || ''}
+                                                                                onChange={(e) => {
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, e.target.value);
+                                                                                }}
+                                                                                placeholder="כתובת מלאה"
+                                                                                variant="outlined"
+                                                                                sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ padding: 1, width: '15%' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                size="small"
+                                                                                value={pledger.email || ''}
+                                                                                onChange={(e) => {
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.email`, e.target.value);
+                                                                                }}
+                                                                                placeholder="אימייל"
+                                                                                variant="outlined"
+                                                                                sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ padding: 1, width: '5%' }}>
+                                                                            {!isFirstRow && (
+                                                                                <IconButton
+                                                                                    onClick={() => {
+                                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את המשעבד?')) {
+                                                                                            const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
+                                                                                            const newPledgers = currentPledgers.filter((_, i) => i !== index);
+                                                                                            handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', newPledgers);
+                                                                                        }
+                                                                                    }}
+                                                                                    title="מחיקה"
+                                                                                    sx={{
+                                                                                        '& img': {
+                                                                                            filter: 'brightness(0) saturate(0)',
+                                                                                            width: '16px',
+                                                                                            height: '16px'
+                                                                                        },
+                                                                                        '&:hover, &:focus': {
+                                                                                            backgroundColor: '#f44336',
+                                                                                            borderRadius: '50%'
+                                                                                        },
+                                                                                        '&:hover img, &:focus img': {
+                                                                                            filter: 'brightness(0) invert(1)'
+                                                                                        }
+                                                                                    }}
+                                                                                >
+                                                                                    <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                                </IconButton>
+                                                                            )}
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                );
+                                                            })}
+                                                            <TableRow>
+                                                                <TableCell colSpan={5} sx={{ padding: 1, textAlign: 'center' }}>
+                                                                    <Button
+                                                                        variant="outlined"
+                                                                        onClick={() => {
+                                                                            const newPledger = { classification: '', name: '', address: '', email: '' };
+                                                                            const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
+                                                                            handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
+                                                                        }}
+                                                                        sx={{ mr: 1 }}
+                                                                    >
+                                                                        + הוספה
+                                                                    </Button>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                            </Box>
+                                        )}
                                     </Box>
                                 </Box>
                             </Box>
