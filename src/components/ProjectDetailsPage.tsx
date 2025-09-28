@@ -3335,297 +3335,293 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     {project.subcontractors.map((subcontractor, index) => (
                                                         <React.Fragment key={subcontractor.id}>
                                                             <TableRow sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
-                                                            <TableCell>
-                                                                <Autocomplete
-                                                                    freeSolo
-                                                                    getOptionLabel={(option) => option}
-                                                                    isOptionEqualToValue={(option, value) => option === value}
-                                                                    options={[
-                                                                        'חפירה ודיפון',
-                                                                        'שלד',
-                                                                        'חשמל',
-                                                                        'אינסטלציה',
-                                                                        'ריצוף',
-                                                                        'גגן',
-                                                                        'איטום',
-                                                                        'גמר',
-                                                                        'גמרים',
-                                                                        'חלונות',
-                                                                        'דלתות',
-                                                                        'נגרות',
-                                                                        'צבע',
-                                                                        'אלקטרוניקה',
-                                                                        'מיזוג אוויר',
-                                                                        'אבטחה',
-                                                                        'גינון',
-                                                                        'כבישים וחנייה',
-                                                                        'ביטון',
-                                                                        'פלדה',
-                                                                        'אבן',
-                                                                        'טיח',
-                                                                        'קרמיקה',
-                                                                        'פרקט',
-                                                                        'טפט',
-                                                                        'תריסים',
-                                                                        'שערים',
-                                                                        'מעקות',
-                                                                        'מדרגות',
-                                                                        'מעליות',
-                                                                        'מערכות כיבוי',
-                                                                        'מערכות אזעקה',
-                                                                        'מערכות תקשורת',
-                                                                        'מערכות מיזוג',
-                                                                        'מערכות חימום',
-                                                                        'מערכות אוורור',
-                                                                        'מערכות ניקוז',
-                                                                        'מערכות ביוב',
-                                                                        'מערכות מים',
-                                                                        'מערכות גז',
-                                                                        'מערכות תאורה',
-                                                                        'מערכות בטיחות',
-                                                                        'מערכות גישה',
-                                                                        'מערכות ניטור',
-                                                                        'מערכות בקרה',
-                                                                        'מערכות אוטומציה',
-                                                                        'מערכות חכמות',
-                                                                        'מערכות אנרגיה',
-                                                                        'מערכות סולאריות',
-                                                                        'מערכות חיסכון',
-                                                                        'מערכות מיחזור',
-                                                                        'מערכות טיהור',
-                                                                        'מערכות סינון',
-                                                                        'מערכות חיטוי',
-                                                                        'מערכות ניקוי',
-                                                                        'מערכות תחזוקה',
-                                                                        'מערכות שירות',
-                                                                        'מערכות לוגיסטיקה',
-                                                                        'מערכות אספקה',
-                                                                        'מערכות הובלה',
-                                                                        'מערכות אחסון',
-                                                                        'מערכות אריזה',
-                                                                        'מערכות סימון',
-                                                                        'מערכות זיהוי',
-                                                                        'מערכות בקרת איכות',
-                                                                        'מערכות בדיקה',
-                                                                        'מערכות מדידה',
-                                                                        'מערכות כיול',
-                                                                        'מערכות תיקון',
-                                                                        'מערכות החלפה',
-                                                                        'מערכות עדכון',
-                                                                        'מערכות שדרוג',
-                                                                        'מערכות התקנה',
-                                                                        'מערכות הסרה',
-                                                                        'מערכות פירוק',
-                                                                        'מערכות הרכבה',
-                                                                        'מערכות חיבור',
-                                                                        'מערכות ניתוק',
-                                                                        'מערכות חיתוך',
-                                                                        'מערכות חריטה',
-                                                                        'מערכות ליטוש',
-                                                                        'מערכות הברקה',
-                                                                        'מערכות ציפוי',
-                                                                        'מערכות הגנה',
-                                                                        'מערכות בידוד',
-                                                                        'מערכות אטימה'
-                                                                    ]}
-                                                                    value={subcontractor.role || null}
-                                                                    onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
-                                                                    onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
-                                                                    onOpen={() => console.log('Autocomplete opened')}
-                                                                    onClose={() => console.log('Autocomplete closed')}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    size="small"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            height: '40px',
-                                                                        },
-                                                                    }}
-                                                                    renderInput={(params) => (
+                                                                <TableCell>
+                                                                    <Autocomplete
+                                                                        freeSolo
+                                                                        getOptionLabel={(option) => option}
+                                                                        isOptionEqualToValue={(option, value) => option === value}
+                                                                        options={[
+                                                                            'חפירה ודיפון',
+                                                                            'שלד',
+                                                                            'חשמל',
+                                                                            'אינסטלציה',
+                                                                            'ריצוף',
+                                                                            'גגן',
+                                                                            'איטום',
+                                                                            'גמר',
+                                                                            'גמרים',
+                                                                            'חלונות',
+                                                                            'דלתות',
+                                                                            'נגרות',
+                                                                            'צבע',
+                                                                            'אלקטרוניקה',
+                                                                            'מיזוג אוויר',
+                                                                            'אבטחה',
+                                                                            'גינון',
+                                                                            'כבישים וחנייה',
+                                                                            'ביטון',
+                                                                            'פלדה',
+                                                                            'אבן',
+                                                                            'טיח',
+                                                                            'קרמיקה',
+                                                                            'פרקט',
+                                                                            'טפט',
+                                                                            'תריסים',
+                                                                            'שערים',
+                                                                            'מעקות',
+                                                                            'מדרגות',
+                                                                            'מעליות',
+                                                                            'מערכות כיבוי',
+                                                                            'מערכות אזעקה',
+                                                                            'מערכות תקשורת',
+                                                                            'מערכות מיזוג',
+                                                                            'מערכות חימום',
+                                                                            'מערכות אוורור',
+                                                                            'מערכות ניקוז',
+                                                                            'מערכות ביוב',
+                                                                            'מערכות מים',
+                                                                            'מערכות גז',
+                                                                            'מערכות תאורה',
+                                                                            'מערכות בטיחות',
+                                                                            'מערכות גישה',
+                                                                            'מערכות ניטור',
+                                                                            'מערכות בקרה',
+                                                                            'מערכות אוטומציה',
+                                                                            'מערכות חכמות',
+                                                                            'מערכות אנרגיה',
+                                                                            'מערכות סולאריות',
+                                                                            'מערכות חיסכון',
+                                                                            'מערכות מיחזור',
+                                                                            'מערכות טיהור',
+                                                                            'מערכות סינון',
+                                                                            'מערכות חיטוי',
+                                                                            'מערכות ניקוי',
+                                                                            'מערכות תחזוקה',
+                                                                            'מערכות שירות',
+                                                                            'מערכות לוגיסטיקה',
+                                                                            'מערכות אספקה',
+                                                                            'מערכות הובלה',
+                                                                            'מערכות אחסון',
+                                                                            'מערכות אריזה',
+                                                                            'מערכות סימון',
+                                                                            'מערכות זיהוי',
+                                                                            'מערכות בקרת איכות',
+                                                                            'מערכות בדיקה',
+                                                                            'מערכות מדידה',
+                                                                            'מערכות כיול',
+                                                                            'מערכות תיקון',
+                                                                            'מערכות החלפה',
+                                                                            'מערכות עדכון',
+                                                                            'מערכות שדרוג',
+                                                                            'מערכות התקנה',
+                                                                            'מערכות הסרה',
+                                                                            'מערכות פירוק',
+                                                                            'מערכות הרכבה',
+                                                                            'מערכות חיבור',
+                                                                            'מערכות ניתוק',
+                                                                            'מערכות חיתוך',
+                                                                            'מערכות חריטה',
+                                                                            'מערכות ליטוש',
+                                                                            'מערכות הברקה',
+                                                                            'מערכות ציפוי',
+                                                                            'מערכות הגנה',
+                                                                            'מערכות בידוד',
+                                                                            'מערכות אטימה'
+                                                                        ]}
+                                                                        value={subcontractor.role || null}
+                                                                        onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
+                                                                        onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
+                                                                        onOpen={() => console.log('Autocomplete opened')}
+                                                                        onClose={() => console.log('Autocomplete closed')}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                height: '40px',
+                                                                            },
+                                                                        }}
+                                                                        renderInput={(params) => (
+                                                                            <TextField
+                                                                                {...params}
+                                                                                placeholder="תחום"
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                        borderColor: '#6B46C1',
+                                                                                    },
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ position: 'relative' }}>
                                                                         <TextField
-                                                                            {...params}
-                                                                            placeholder="תחום"
+                                                                            fullWidth
+                                                                            value={subcontractor.companyId}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                handleSubcontractorChange(index, 'companyId', value);
+                                                                                const numericValue = value.replace(/\D/g, '');
+                                                                                if (numericValue.length >= 8) {
+                                                                                    fetchSubcontractorData(numericValue, index);
+                                                                                }
+                                                                            }}
+                                                                            disabled={mode === 'view' || !canEdit}
                                                                             variant="outlined"
                                                                             size="small"
+                                                                            placeholder="ח״פ"
+                                                                            inputProps={{
+                                                                                maxLength: 9,
+                                                                                pattern: '[0-9]*',
+                                                                                inputMode: 'numeric',
+                                                                                style: { textAlign: 'right' }
+                                                                            }}
+                                                                            error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
+                                                                            helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                     borderColor: '#6B46C1',
                                                                                 },
                                                                             }}
                                                                         />
-                                                                    )}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box sx={{ position: 'relative' }}>
+                                                                        {loadingCompanyData[`subcontractor-${index}`] && (
+                                                                            <CircularProgress
+                                                                                size={16}
+                                                                                sx={{
+                                                                                    position: 'absolute',
+                                                                                    left: 8,
+                                                                                    top: 'calc(50% - 8px)',
+                                                                                    color: '#6B46C1',
+                                                                                    verticalAlign: 'center'
+                                                                                }}
+                                                                            />
+                                                                        )}
+                                                                    </Box>
+                                                                </TableCell>
+                                                                <TableCell>
                                                                     <TextField
                                                                         fullWidth
-                                                                        value={subcontractor.companyId}
-                                                                        onChange={(e) => {
-                                                                            const value = e.target.value;
-                                                                            handleSubcontractorChange(index, 'companyId', value);
-                                                                            const numericValue = value.replace(/\D/g, '');
-                                                                            if (numericValue.length >= 8) {
-                                                                                fetchSubcontractorData(numericValue, index);
-                                                                            }
-                                                                        }}
+                                                                        value={subcontractor.companyName}
+                                                                        onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         variant="outlined"
                                                                         size="small"
-                                                                        placeholder="ח״פ"
-                                                                        inputProps={{
-                                                                            maxLength: 9,
-                                                                            pattern: '[0-9]*',
-                                                                            inputMode: 'numeric',
-                                                                            style: { textAlign: 'right' }
-                                                                        }}
-                                                                        error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
-                                                                        helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
+                                                                        placeholder="שם החברה"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                 borderColor: '#6B46C1',
                                                                             },
                                                                         }}
                                                                     />
-                                                                    {loadingCompanyData[`subcontractor-${index}`] && (
-                                                                        <CircularProgress
-                                                                            size={16}
-                                                                            sx={{
-                                                                                position: 'absolute',
-                                                                                left: 8,
-                                                                                top: 'calc(50% - 8px)',
-                                                                                color: '#6B46C1',
-                                                                                verticalAlign: 'center'
-                                                                            }}
-                                                                        />
-                                                                    )}
-                                                                </Box>
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    value={subcontractor.companyName}
-                                                                    onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    placeholder="שם החברה"
-                                                                    inputProps={{ style: { textAlign: 'right' } }}
-                                                                    sx={{
-                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
-                                                                        },
-                                                                    }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    value={subcontractor.address}
-                                                                    onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    placeholder="עיר"
-                                                                    inputProps={{ style: { textAlign: 'right' } }}
-                                                                    sx={{
-                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
-                                                                        },
-                                                                    }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    value={subcontractor.companyId && subcontractor.companyId.length >= 8
-                                                                        ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
-                                                                        : ''}
-                                                                    disabled={true} // Read-only field
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    placeholder="מספר קבלן"
-                                                                    inputProps={{ style: { textAlign: 'right' } }}
-                                                                    sx={{
-                                                                        '& .MuiInputBase-input': {
-                                                                            color: 'text.secondary',
-                                                                            backgroundColor: 'grey.100'
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                                    <IconButton
-                                                                        onClick={() => toggleSubcontractorExpansion(index)}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={subcontractor.address}
+                                                                        onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        placeholder="עיר"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
-                                                                            color: 'grey.600',
-                                                                            '&:hover': {
-                                                                                color: '#6B46C1',
-                                                                                backgroundColor: 'rgba(107, 70, 193, 0.1)'
-                                                                            }
-                                                                        }}
-                                                                        title={expandedSubcontractors[index] ? "סגור פרטים" : "פתח פרטים"}
-                                                                    >
-                                                                        <img
-                                                                            src="/assets/iconArrowOpenDown.svg"
-                                                                            alt={expandedSubcontractors[index] ? "סגור" : "פתח"}
-                                                                            style={{
-                                                                                width: '16px',
-                                                                                height: '16px',
-                                                                                transform: expandedSubcontractors[index] ? 'rotate(180deg)' : 'rotate(0deg)',
-                                                                                transition: 'transform 0.2s ease-in-out'
-                                                                            }}
-                                                                        />
-                                                                    </IconButton>
-                                                                    <IconButton
-                                                                        onClick={() => removeSubcontractor(index)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        sx={{
-                                                                            color: 'grey.600',
-                                                                            '&:hover': {
-                                                                                color: 'white',
-                                                                                backgroundColor: 'error.main',
-                                                                                '& img': {
-                                                                                    filter: 'brightness(0) invert(1)'
-                                                                                }
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
                                                                             },
-                                                                            '&:focus': {
-                                                                                color: 'white',
-                                                                                backgroundColor: 'error.main',
-                                                                                '& img': {
-                                                                                    filter: 'brightness(0) invert(1)'
-                                                                                }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={subcontractor.companyId && subcontractor.companyId.length >= 8
+                                                                            ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
+                                                                            : ''}
+                                                                        disabled={true} // Read-only field
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        placeholder="מספר קבלן"
+                                                                        inputProps={{ style: { textAlign: 'right' } }}
+                                                                        sx={{
+                                                                            '& .MuiInputBase-input': {
+                                                                                color: 'text.secondary',
+                                                                                backgroundColor: 'grey.100'
                                                                             }
                                                                         }}
-                                                                        title="מחק קבלן משנה"
-                                                                    >
-                                                                        <img
-                                                                            src="/assets/icon-trash.svg"
-                                                                            alt="מחק"
-                                                                            style={{
-                                                                                width: '16px',
-                                                                                height: '16px',
-                                                                                filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                                        <IconButton
+                                                                            onClick={() => toggleSubcontractorExpansion(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{
+                                                                                color: 'grey.600',
+                                                                                '&:hover': {
+                                                                                    color: '#6B46C1',
+                                                                                    backgroundColor: 'rgba(107, 70, 193, 0.1)'
+                                                                                }
                                                                             }}
-                                                                        />
-                                                                    </IconButton>
-                                                                </Box>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        
-                                                        {/* Expanded row with agreement details */}
-                                                        {expandedSubcontractors[index] && (
-                                                            <TableRow>
-                                                                <TableCell colSpan={6} sx={{ padding: 2, backgroundColor: '#f8f9fa' }}>
-                                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 1 }}>
-                                                                            הסכם התקשרות
-                                                                        </Typography>
+                                                                            title={expandedSubcontractors[index] ? "סגור פרטים" : "פתח פרטים"}
+                                                                        >
+                                                                            <img
+                                                                                src="/assets/iconArrowOpenDown.svg"
+                                                                                alt={expandedSubcontractors[index] ? "סגור" : "פתח"}
+                                                                                style={{
+                                                                                    width: '16px',
+                                                                                    height: '16px',
+                                                                                    transform: expandedSubcontractors[index] ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                                                    transition: 'transform 0.2s ease-in-out'
+                                                                                }}
+                                                                            />
+                                                                        </IconButton>
+                                                                        <IconButton
+                                                                            onClick={() => removeSubcontractor(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{
+                                                                                color: 'grey.600',
+                                                                                '&:hover': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
+                                                                                },
+                                                                                '&:focus': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
+                                                                                }
+                                                                            }}
+                                                                            title="מחק קבלן משנה"
+                                                                        >
+                                                                            <img
+                                                                                src="/assets/icon-trash.svg"
+                                                                                alt="מחק"
+                                                                                style={{
+                                                                                    width: '16px',
+                                                                                    height: '16px',
+                                                                                    filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
+                                                                                }}
+                                                                            />
+                                                                        </IconButton>
+                                                                    </Box>
+                                                                </TableCell>
+                                                            </TableRow>
+
+                                                            {/* Expanded row with agreement details */}
+                                                            {expandedSubcontractors[index] && (
+                                                                <TableRow>
+                                                                    <TableCell colSpan={6} sx={{ padding: 2, backgroundColor: '#f8f9fa' }}>
                                                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                                                             <Box>
                                                                                 <FileUpload
-                                                                                    label="הסכם התקשרות"
+                                                                                    label=""
                                                                                     value={(subcontractor as any).agreementFile || ''}
                                                                                     thumbnailUrl={(subcontractor as any).agreementThumbnail || ''}
                                                                                     projectId={project?._id || project?.id}
@@ -3665,10 +3661,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 />
                                                                             </Box>
                                                                         </Box>
-                                                                    </Box>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        )}
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            )}
                                                         </React.Fragment>
                                                     ))}
 
