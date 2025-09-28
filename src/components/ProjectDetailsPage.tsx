@@ -8377,7 +8377,155 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     />
                                 </Box>
 
-                                {/* סקשן 2 - טבלת עלות בניית כל מבנה */}
+                                {/* סקשן 2 - דוח שמאי */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        דוח שמאי
+                                    </Typography>
+                                    <FileUpload
+                                        label="דוח שמאי"
+                                        value={fileUploadState.appraiserReport?.url || project?.appraiserReport?.file || ''}
+                                        thumbnailUrl={fileUploadState.appraiserReport?.thumbnailUrl || project?.appraiserReport?.thumbnailUrl || ''}
+                                        projectId={project?._id || project?.id}
+                                        aiIcon={
+                                            <AutoAwesomeIcon
+                                                sx={{
+                                                    color: '#6B46C1',
+                                                    fontSize: '24px',
+                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
+                                                }}
+                                            />
+                                        }
+                                        onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔄 Appraiser Report FileUpload onChange called with:', { url, thumbnailUrl });
+
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                appraiserReport: {
+                                                    ...prev.appraiserReport,
+                                                    url: url,
+                                                    thumbnailUrl: thumbnailUrl
+                                                }
+                                            }));
+
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'appraiserReport.file': url,
+                                                        'appraiserReport.thumbnailUrl': thumbnailUrl || ''
+                                                    };
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    await handleSave();
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save appraiser report file:', error);
+                                                }
+                                            }
+
+                                            handleNestedFieldChange('appraiserReport.file', url);
+                                            if (thumbnailUrl) {
+                                                handleNestedFieldChange('appraiserReport.thumbnailUrl', thumbnailUrl);
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Deleting appraiser report file');
+                                            try {
+                                                if (!project) {
+                                                    console.error('❌ Project is null, cannot delete file');
+                                                    alert('שגיאה: לא ניתן למחוק קובץ - פרויקט לא נטען');
+                                                    return;
+                                                }
+
+                                                const currentFileUrl = fileUploadState.appraiserReport?.url || project?.appraiserReport?.file;
+                                                const currentThumbnailUrl = fileUploadState.appraiserReport?.thumbnailUrl || project?.appraiserReport?.thumbnailUrl;
+
+                                                setFileUploadState(prev => ({
+                                                    ...prev,
+                                                    appraiserReport: {
+                                                        url: '',
+                                                        thumbnailUrl: '',
+                                                        creationDate: ''
+                                                    }
+                                                }));
+
+                                                handleNestedFieldChange('appraiserReport.file', '');
+                                                handleNestedFieldChange('appraiserReport.thumbnailUrl', '');
+                                                handleNestedFieldChange('appraiserReport.fileCreationDate', '');
+
+                                                if (currentFileUrl || currentThumbnailUrl) {
+                                                    const { authenticatedFetch } = await import('../config/api');
+                                                    const response = await authenticatedFetch('/api/delete-project-file', {
+                                                        method: 'DELETE',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                                        },
+                                                        body: JSON.stringify({
+                                                            fileUrl: currentFileUrl,
+                                                            thumbnailUrl: currentThumbnailUrl
+                                                        })
+                                                    });
+
+                                                    if (!response.ok) {
+                                                        throw new Error('Failed to delete file from storage');
+                                                    }
+                                                }
+
+                                                if (project?._id || project?.id) {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const projectId = project._id || project.id;
+                                                    const updateData = {
+                                                        'appraiserReport.file': '',
+                                                        'appraiserReport.thumbnailUrl': '',
+                                                        'appraiserReport.fileCreationDate': ''
+                                                    };
+                                                    await projectsAPI.update(projectId, updateData);
+                                                    await handleSave();
+                                                }
+
+                                                console.log('✅ Appraiser report file deletion completed successfully');
+                                            } catch (error) {
+                                                console.error('❌ Error deleting appraiser report file:', error);
+                                                alert('שגיאה במחיקת הקובץ: ' + error.message);
+                                            }
+                                        }}
+                                        disabled={mode === 'view' || !canEdit}
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        showCreationDate={true}
+                                        creationDateValue={fileUploadState.appraiserReport?.creationDate || project?.appraiserReport?.fileCreationDate || ''}
+                                        onCreationDateChange={async (date) => {
+                                            console.log('🔄 Appraiser Report onCreationDateChange called with:', date);
+
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                appraiserReport: {
+                                                    ...prev.appraiserReport,
+                                                    creationDate: date
+                                                }
+                                            }));
+
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'appraiserReport.fileCreationDate': date
+                                                    };
+                                                    await projectsAPI.update(project._id || project.id, updateData);
+                                                    await handleSave();
+                                                } catch (error) {
+                                                    console.error('❌ Failed to save appraiser report creation date:', error);
+                                                }
+                                            }
+
+                                            handleNestedFieldChange('appraiserReport.fileCreationDate', date);
+                                        }}
+                                        projectId={project?._id || project?.id}
+                                        autoSave={true}
+                                        onAutoSave={handleSave}
+                                    />
+                                </Box>
+
+                                {/* סקשן 3 - טבלת עלות בניית כל מבנה */}
                                 <Box sx={{ mb: 4 }}>
                                     <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                         עלויות לפי מבנים
@@ -8749,154 +8897,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 minHeight: '100px'
                                             }
                                         }}
-                                    />
-                                </Box>
-
-                                {/* סקשן 2 - דוח שמאי */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        דוח שמאי
-                                    </Typography>
-                                    <FileUpload
-                                        label="דוח שמאי"
-                                        value={fileUploadState.appraiserReport?.url || project?.appraiserReport?.file || ''}
-                                        thumbnailUrl={fileUploadState.appraiserReport?.thumbnailUrl || project?.appraiserReport?.thumbnailUrl || ''}
-                                        projectId={project?._id || project?.id}
-                                        aiIcon={
-                                            <AutoAwesomeIcon
-                                                sx={{
-                                                    color: '#6B46C1',
-                                                    fontSize: '24px',
-                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
-                                                }}
-                                            />
-                                        }
-                                        onChange={async (url, thumbnailUrl) => {
-                                            console.log('🔄 Appraiser Report FileUpload onChange called with:', { url, thumbnailUrl });
-
-                                            setFileUploadState(prev => ({
-                                                ...prev,
-                                                appraiserReport: {
-                                                    ...prev.appraiserReport,
-                                                    url: url,
-                                                    thumbnailUrl: thumbnailUrl
-                                                }
-                                            }));
-
-                                            if (project?._id || project?.id) {
-                                                try {
-                                                    const { projectsAPI } = await import('../services/api');
-                                                    const updateData = {
-                                                        'appraiserReport.file': url,
-                                                        'appraiserReport.thumbnailUrl': thumbnailUrl || ''
-                                                    };
-                                                    await projectsAPI.update(project._id || project.id, updateData);
-                                                    await handleSave();
-                                                } catch (error) {
-                                                    console.error('❌ Failed to save appraiser report file:', error);
-                                                }
-                                            }
-
-                                            handleNestedFieldChange('appraiserReport.file', url);
-                                            if (thumbnailUrl) {
-                                                handleNestedFieldChange('appraiserReport.thumbnailUrl', thumbnailUrl);
-                                            }
-                                        }}
-                                        onDelete={async () => {
-                                            console.log('🗑️ Deleting appraiser report file');
-                                            try {
-                                                if (!project) {
-                                                    console.error('❌ Project is null, cannot delete file');
-                                                    alert('שגיאה: לא ניתן למחוק קובץ - פרויקט לא נטען');
-                                                    return;
-                                                }
-
-                                                const currentFileUrl = fileUploadState.appraiserReport?.url || project?.appraiserReport?.file;
-                                                const currentThumbnailUrl = fileUploadState.appraiserReport?.thumbnailUrl || project?.appraiserReport?.thumbnailUrl;
-
-                                                setFileUploadState(prev => ({
-                                                    ...prev,
-                                                    appraiserReport: {
-                                                        url: '',
-                                                        thumbnailUrl: '',
-                                                        creationDate: ''
-                                                    }
-                                                }));
-
-                                                handleNestedFieldChange('appraiserReport.file', '');
-                                                handleNestedFieldChange('appraiserReport.thumbnailUrl', '');
-                                                handleNestedFieldChange('appraiserReport.fileCreationDate', '');
-
-                                                if (currentFileUrl || currentThumbnailUrl) {
-                                                    const { authenticatedFetch } = await import('../config/api');
-                                                    const response = await authenticatedFetch('/api/delete-project-file', {
-                                                        method: 'DELETE',
-                                                        headers: {
-                                                            'Content-Type': 'application/json',
-                                                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                                        },
-                                                        body: JSON.stringify({
-                                                            fileUrl: currentFileUrl,
-                                                            thumbnailUrl: currentThumbnailUrl
-                                                        })
-                                                    });
-
-                                                    if (!response.ok) {
-                                                        throw new Error('Failed to delete file from storage');
-                                                    }
-                                                }
-
-                                                if (project?._id || project?.id) {
-                                                    const { projectsAPI } = await import('../services/api');
-                                                    const projectId = project._id || project.id;
-                                                    const updateData = {
-                                                        'appraiserReport.file': '',
-                                                        'appraiserReport.thumbnailUrl': '',
-                                                        'appraiserReport.fileCreationDate': ''
-                                                    };
-                                                    await projectsAPI.update(projectId, updateData);
-                                                    await handleSave();
-                                                }
-
-                                                console.log('✅ Appraiser report file deletion completed successfully');
-                                            } catch (error) {
-                                                console.error('❌ Error deleting appraiser report file:', error);
-                                                alert('שגיאה במחיקת הקובץ: ' + error.message);
-                                            }
-                                        }}
-                                        disabled={mode === 'view' || !canEdit}
-                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                        showCreationDate={true}
-                                        creationDateValue={fileUploadState.appraiserReport?.creationDate || project?.appraiserReport?.fileCreationDate || ''}
-                                        onCreationDateChange={async (date) => {
-                                            console.log('🔄 Appraiser Report onCreationDateChange called with:', date);
-
-                                            setFileUploadState(prev => ({
-                                                ...prev,
-                                                appraiserReport: {
-                                                    ...prev.appraiserReport,
-                                                    creationDate: date
-                                                }
-                                            }));
-
-                                            if (project?._id || project?.id) {
-                                                try {
-                                                    const { projectsAPI } = await import('../services/api');
-                                                    const updateData = {
-                                                        'appraiserReport.fileCreationDate': date
-                                                    };
-                                                    await projectsAPI.update(project._id || project.id, updateData);
-                                                    await handleSave();
-                                                } catch (error) {
-                                                    console.error('❌ Failed to save appraiser report creation date:', error);
-                                                }
-                                            }
-
-                                            handleNestedFieldChange('appraiserReport.fileCreationDate', date);
-                                        }}
-                                        projectId={project?._id || project?.id}
-                                        autoSave={true}
-                                        onAutoSave={handleSave}
                                     />
                                 </Box>
                             </Box>
