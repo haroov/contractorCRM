@@ -2720,6 +2720,83 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                     </Box>
                                 </Box>
+
+                                {/* החזרי הוצאות במקרה ביטוח - 4 שורות חדשות */}
+                                {/* 1. הוצאות לפינוי הריסות (במקרה ביטוח) */}
+                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות לפינוי הריסות</Typography>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        {project?.insuranceSpecification?.debrisRemoval === true && (
+                                            <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.debrisRemovalAmount ? parseInt(project.insuranceSpecification.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                        )}
+                                    </Box>
+                                </Box>
+
+                                {/* 2. הוצאות שכר אדריכלים ואחרים (במקרה ביטוח) */}
+                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות שכר אדריכלים ואחרים</Typography>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        {project?.insuranceSpecification?.architectFees === true && (
+                                            <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.architectFeesAmount ? parseInt(project.insuranceSpecification.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                        )}
+                                    </Box>
+                                </Box>
+
+                                {/* 3. הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח) */}
+                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות בגין שינויים ותוספות על פי דרישת הרשויות</Typography>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        {project?.insuranceSpecification?.authorityChanges === true && (
+                                            <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.authorityChangesAmount ? parseInt(project.insuranceSpecification.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                        )}
+                                    </Box>
+                                </Box>
+
+                                {/* 4. הוצאות נוספות הכרכיות (במקרה ביטוח) */}
+                                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות נוספות הכרכיות</Typography>
+                                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.additionalNecessaryExpenses', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.additionalNecessaryExpenses === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.additionalNecessaryExpenses === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.additionalNecessaryExpenses === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.additionalNecessaryExpenses', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.additionalNecessaryExpenses === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.additionalNecessaryExpenses === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.additionalNecessaryExpenses === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        {project?.insuranceSpecification?.additionalNecessaryExpenses === true && (
+                                            <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.additionalNecessaryExpensesAmount ? parseInt(project.insuranceSpecification.additionalNecessaryExpensesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.additionalNecessaryExpensesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                        )}
+                                    </Box>
+                                </Box>
                             </Box>
                         )}
 
