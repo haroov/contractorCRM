@@ -490,16 +490,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         'בנק לאומי': ['001', '002', '003', '004', '005', '010', '011', '012', '013', '014', '015', '020', '021', '022', '023', '024', '025', '030', '031', '032', '033', '034', '035', '040', '041', '042', '043', '044', '045', '050', '051', '052', '053', '054', '055', '060', '061', '062', '063', '064', '065', '070', '071', '072', '073', '074', '075', '080', '081', '082', '083', '084', '085', '090', '091', '092', '093', '094', '095', '100', '101', '102', '103', '104', '105', '110', '111', '112', '113', '114', '115', '120', '121', '122', '123', '124', '125', '130', '131', '132', '133', '134', '135', '140', '141', '142', '143', '144', '145', '150', '151', '152', '153', '154', '155', '160', '161', '162', '163', '164', '165', '170', '171', '172', '173', '174', '175', '180', '181', '182', '183', '184', '185', '190', '191', '192', '193', '194', '195', '200', '201', '202', '203', '204', '205', '210', '211', '212', '213', '214', '215', '220', '221', '222', '223', '224', '225', '230', '231', '232', '233', '234', '235', '240', '241', '242', '243', '244', '245', '250', '251', '252', '253', '254', '255', '260', '261', '262', '263', '264', '265', '270', '271', '272', '273', '274', '275', '280', '281', '282', '283', '284', '285', '290', '291', '292', '293', '294', '295', '300', '301', '302', '303', '304', '305', '310', '311', '312', '313', '314', '315', '320', '321', '322', '323', '324', '325', '330', '331', '332', '333', '334', '335', '340', '341', '342', '343', '344', '345', '350', '351', '352', '353', '354', '355', '360', '361', '362', '363', '364', '365', '370', '371', '372', '373', '374', '375', '380', '381', '382', '383', '384', '385', '390', '391', '392', '393', '394', '395', '400', '401', '402', '403', '404', '405', '410', '411', '412', '413', '414', '415', '420', '421', '422', '423', '424', '425', '430', '431', '432', '433', '434', '435', '440', '441', '442', '443', '444', '445', '450', '451', '452', '453', '454', '455', '460', '461', '462', '463', '464', '465', '470', '471', '472', '473', '474', '475', '480', '481', '482', '483', '484', '485', '490', '491', '492', '493', '494', '495', '500', '501', '502', '503', '504', '505', '510', '511', '512', '513', '514', '515', '520', '521', '522', '523', '524', '525', '530', '531', '532', '533', '534', '535', '540', '541', '542', '543', '544', '545', '550', '551', '552', '553', '554', '555', '560', '561', '562', '563', '564', '565', '570', '571', '572', '573', '574', '575', '580', '581', '582', '583', '584', '585', '590', '591', '592', '593', '594', '595', '600', '601', '602', '603', '604', '605', '610', '611', '612', '613', '614', '615', '620', '621', '622', '623', '624', '625', '630', '631', '632', '633', '634', '635', '640', '641', '642', '643', '644', '645', '650', '651', '652', '653', '654', '655', '660', '661', '662', '663', '664', '665', '670', '671', '672', '673', '674', '675', '680', '681', '682', '683', '684', '685', '690', '691', '692', '693', '694', '695', '700', '701', '702', '703', '704', '705', '710', '711', '712', '713', '714', '715', '720', '721', '722', '723', '724', '725', '730', '731', '732', '733', '734', '735', '740', '741', '742', '743', '744', '745', '750', '751', '752', '753', '754', '755', '760', '761', '762', '763', '764', '765', '770', '771', '772', '773', '774', '775', '780', '781', '782', '783', '784', '785', '790', '791', '792', '793', '794', '795', '800', '801', '802', '803', '804', '805', '810', '811', '812', '813', '814', '815', '820', '821', '822', '823', '824', '825', '830', '831', '832', '833', '834', '835', '840', '841', '842', '843', '844', '845', '850', '851', '852', '853', '854', '855', '860', '861', '862', '863', '864', '865', '870', '871', '872', '873', '874', '875', '880', '881', '882', '883', '884', '885', '890', '891', '892', '893', '894', '895', '900', '901', '902', '903', '904', '905', '910', '911', '912', '913', '914', '915', '920', '921', '922', '923', '924', '925', '930', '931', '932', '933', '934', '935', '940', '941', '942', '943', '944', '945', '950', '951', '952', '953', '954', '955', '960', '961', '962', '963', '964', '965', '970', '971', '972', '973', '974', '975', '980', '981', '982', '983', '984', '985', '990', '991', '992', '993', '994', '995'],
         'בנק דיסקונט': ['001', '002', '003', '004', '005', '010', '011', '012', '013', '014', '015', '020', '021', '022', '023', '024', '025', '030', '031', '032', '033', '034', '035', '040', '041', '042', '043', '044', '045', '050', '051', '052', '053', '054', '055', '060', '061', '062', '063', '064', '065', '070', '071', '072', '073', '074', '075', '080', '081', '082', '083', '084', '085', '090', '091', '092', '093', '094', '095', '100', '101', '102', '103', '104', '105', '110', '111', '112', '113', '114', '115', '120', '121', '122', '123', '124', '125', '130', '131', '132', '133', '134', '135', '140', '141', '142', '143', '144', '145', '150', '151', '152', '153', '154', '155', '160', '161', '162', '163', '164', '165', '170', '171', '172', '173', '174', '175', '180', '181', '182', '183', '184', '185', '190', '191', '192', '193', '194', '195', '200', '201', '202', '203', '204', '205', '210', '211', '212', '213', '214', '215', '220', '221', '222', '223', '224', '225', '230', '231', '232', '233', '234', '235', '240', '241', '242', '243', '244', '245', '250', '251', '252', '253', '254', '255', '260', '261', '262', '263', '264', '265', '270', '271', '272', '273', '274', '275', '280', '281', '282', '283', '284', '285', '290', '291', '292', '293', '294', '295', '300', '301', '302', '303', '304', '305', '310', '311', '312', '313', '314', '315', '320', '321', '322', '323', '324', '325', '330', '331', '332', '333', '334', '335', '340', '341', '342', '343', '344', '345', '350', '351', '352', '353', '354', '355', '360', '361', '362', '363', '364', '365', '370', '371', '372', '373', '374', '375', '380', '381', '382', '383', '384', '385', '390', '391', '392', '393', '394', '395', '400', '401', '402', '403', '404', '405', '410', '411', '412', '413', '414', '415', '420', '421', '422', '423', '424', '425', '430', '431', '432', '433', '434', '435', '440', '441', '442', '443', '444', '445', '450', '451', '452', '453', '454', '455', '460', '461', '462', '463', '464', '465', '470', '471', '472', '473', '474', '475', '480', '481', '482', '483', '484', '485', '490', '491', '492', '493', '494', '495', '500', '501', '502', '503', '504', '505', '510', '511', '512', '513', '514', '515', '520', '521', '522', '523', '524', '525', '530', '531', '532', '533', '534', '535', '540', '541', '542', '543', '544', '545', '550', '551', '552', '553', '554', '555', '560', '561', '562', '563', '564', '565', '570', '571', '572', '573', '574', '575', '580', '581', '582', '583', '584', '585', '590', '591', '592', '593', '594', '595', '600', '601', '602', '603', '604', '605', '610', '611', '612', '613', '614', '615', '620', '621', '622', '623', '624', '625', '630', '631', '632', '633', '634', '635', '640', '641', '642', '643', '644', '645', '650', '651', '652', '653', '654', '655', '660', '661', '662', '663', '664', '665', '670', '671', '672', '673', '674', '675', '680', '681', '682', '683', '684', '685', '690', '691', '692', '693', '694', '695', '700', '701', '702', '703', '704', '705', '710', '711', '712', '713', '714', '715', '720', '721', '722', '723', '724', '725', '730', '731', '732', '733', '734', '735', '740', '741', '742', '743', '744', '745', '750', '751', '752', '753', '754', '755', '760', '761', '762', '763', '764', '765', '770', '771', '772', '773', '774', '775', '780', '781', '782', '783', '784', '785', '790', '791', '792', '793', '794', '795', '800', '801', '802', '803', '804', '805', '810', '811', '812', '813', '814', '815', '820', '821', '822', '823', '824', '825', '830', '831', '832', '833', '834', '835', '840', '841', '842', '843', '844', '845', '850', '851', '852', '853', '854', '855', '860', '861', '862', '863', '864', '865', '870', '871', '872', '873', '874', '875', '880', '881', '882', '883', '884', '885', '890', '891', '892', '893', '894', '895', '900', '901', '902', '903', '904', '905', '910', '911', '912', '913', '914', '915', '920', '921', '922', '923', '924', '925', '930', '931', '932', '933', '934', '935', '940', '941', '942', '943', '944', '945', '950', '951', '952', '953', '954', '955', '960', '961', '962', '963', '964', '965', '970', '971', '972', '973', '974', '975', '980', '981', '982', '983', '984', '985', '990', '991', '992', '993', '994', '995']
     });
-    const [branchDetails, setBranchDetails] = useState<{[key: string]: {address: string, email: string}}>({
-        'בנק הפועלים_001': { address: 'רחוב הרצל 1, תל אביב', email: 'branch001@bankhapoalim.co.il' },
-        'בנק הפועלים_002': { address: 'רחוב דיזנגוף 100, תל אביב', email: 'branch002@bankhapoalim.co.il' },
-        'בנק הפועלים_003': { address: 'רחוב אלנבי 50, תל אביב', email: 'branch003@bankhapoalim.co.il' },
-        'בנק לאומי_001': { address: 'רחוב רוטשילד 1, תל אביב', email: 'branch001@leumi.co.il' },
-        'בנק לאומי_002': { address: 'רחוב בן יהודה 100, תל אביב', email: 'branch002@leumi.co.il' },
-        'בנק לאומי_003': { address: 'רחוב הרצל 50, תל אביב', email: 'branch003@leumi.co.il' },
-        'בנק דיסקונט_001': { address: 'רחוב הרצל 1, תל אביב', email: 'branch001@bankdiscount.co.il' },
-        'בנק דיסקונט_002': { address: 'רחוב דיזנגוף 100, תל אביב', email: 'branch002@bankdiscount.co.il' },
-        'בנק דיסקונט_003': { address: 'רחוב אלנבי 50, תל אביב', email: 'branch003@bankdiscount.co.il' }
+    const [branchDetails, setBranchDetails] = useState<{ [key: string]: { address: string, amount: string } }>({
+        'בנק הפועלים_001': { address: 'רחוב הרצל 1, תל אביב', amount: '' },
+        'בנק הפועלים_002': { address: 'רחוב דיזנגוף 100, תל אביב', amount: '' },
+        'בנק הפועלים_003': { address: 'רחוב אלנבי 50, תל אביב', amount: '' },
+        'בנק לאומי_001': { address: 'רחוב רוטשילד 1, תל אביב', amount: '' },
+        'בנק לאומי_002': { address: 'רחוב בן יהודה 100, תל אביב', amount: '' },
+        'בנק לאומי_003': { address: 'רחוב הרצל 50, תל אביב', amount: '' },
+        'בנק דיסקונט_001': { address: 'רחוב הרצל 1, תל אביב', amount: '' },
+        'בנק דיסקונט_002': { address: 'רחוב דיזנגוף 100, תל אביב', amount: '' },
+        'בנק דיסקונט_003': { address: 'רחוב אלנבי 50, תל אביב', amount: '' }
     });
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [contractorName, setContractorName] = useState<string>('');
@@ -1645,20 +1645,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                     // Create branches mapping and branch details
                     const branchesMap: { [bankName: string]: string[] } = {};
-                    const detailsMap: {[key: string]: {address: string, email: string}} = {};
+                    const detailsMap: { [key: string]: { address: string, email: string } } = {};
                     banks.forEach((bank: any) => {
                         if (bank.bank_name && bank.branch_number) {
                             if (!branchesMap[bank.bank_name]) {
                                 branchesMap[bank.bank_name] = [];
                             }
                             branchesMap[bank.bank_name].push(bank.branch_number);
-                            
+
                             // Create unique key for branch details
                             const branchKey = `${bank.bank_name}_${bank.branch_number}`;
-                            detailsMap[branchKey] = {
-                                address: bank.address || '',
-                                email: bank.email || ''
-                            };
+                            // Only add if we have actual data
+                            if (bank.address) {
+                                detailsMap[branchKey] = {
+                                    address: bank.address || '',
+                                    amount: '' // Amount is manual input, not from database
+                                };
+                            }
                         }
                     });
                     setBankBranches(branchesMap);
@@ -9754,12 +9757,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>שם</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '10%' }}>מס׳ סניף</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>כתובת מלאה</TableCell>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>אימייל</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סכום השיעבוד (ש״ח)</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                             </TableRow>
                                                         </TableHead>
                                                         <TableBody>
-                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: 'בנק', name: '', address: '', email: '', branchNumber: '' }]).map((pledger: any, index) => {
+                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: 'בנק', name: '', address: '', amount: '', branchNumber: '' }]).map((pledger: any, index) => {
                                                                 const isFirstRow = index === 0;
                                                                 return (
                                                                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -9794,11 +9797,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     onChange={(event, newValue) => {
                                                                                         console.log('🔄 Bank name selected:', newValue);
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newValue || '');
-                                                                                        
-                                                                                        // Clear branch number, address and email when bank changes
+
+                                                                                        // Clear branch number, address and amount when bank changes
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, '');
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, '');
-                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.email`, '');
+                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.amount`, '');
                                                                                     }}
                                                                                     onInputChange={(event, newInputValue) => {
                                                                                         console.log('🔄 Bank name input changed:', newInputValue);
@@ -9841,15 +9844,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                         onChange={(event, newValue) => {
                                                                                             console.log('🔄 Branch number selected:', newValue);
                                                                                             handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, newValue || '');
-                                                                                            
+
                                                                                             // Auto-fill address and email based on selected branch
                                                                                             if (newValue && (pledger as any).name) {
                                                                                                 const branchKey = `${(pledger as any).name}_${newValue}`;
                                                                                                 const branchInfo = branchDetails[branchKey];
                                                                                                 if (branchInfo) {
                                                                                                     console.log('🔄 Auto-filling branch details:', branchInfo);
-                                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
-                                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.email`, branchInfo.email);
+                                                                                                    // Only fill if we have actual data
+                                                                                                    if (branchInfo.address) {
+                                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, branchInfo.address);
+                                                                                                    }
+                                                                                                    // Note: amount field is now manual input, not auto-filled from branch data
                                                                                                 }
                                                                                             }
                                                                                         }}
@@ -9892,13 +9898,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <TextField
                                                                                 fullWidth
                                                                                 size="small"
-                                                                                value={(pledger as any).email || ''}
+                                                                                value={(pledger as any).amount ? parseInt((pledger as any).amount.toString()).toLocaleString('he-IL') : ''}
                                                                                 onChange={(e) => {
-                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.email`, e.target.value);
+                                                                                    const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.amount`, numericValue || '');
                                                                                 }}
-                                                                                placeholder="אימייל"
+                                                                                placeholder="סכום השיעבוד"
                                                                                 variant="outlined"
-                                                                                sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                type="text"
+                                                                                inputMode="numeric"
+                                                                                sx={{ 
+                                                                                    direction: 'rtl',
+                                                                                    '& .MuiOutlinedInput-root': { height: 40 } 
+                                                                                }}
+                                                                                InputProps={{
+                                                                                    endAdornment: (
+                                                                                        <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>
+                                                                                            ₪
+                                                                                        </Typography>
+                                                                                    )
+                                                                                }}
                                                                             />
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '5%' }}>
@@ -9939,7 +9958,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <Button
                                                                         variant="outlined"
                                                                         onClick={() => {
-                                                                            const newPledger = { classification: 'בנק', name: '', address: '', email: '', branchNumber: '' };
+                                                                                const newPledger = { classification: 'בנק', name: '', address: '', amount: '', branchNumber: '' };
                                                                             const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
                                                                             handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
                                                                         }}
