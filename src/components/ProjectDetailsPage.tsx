@@ -464,6 +464,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
+    const [bankNames, setBankNames] = useState<string[]>([]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [contractorName, setContractorName] = useState<string>('');
 
@@ -1591,6 +1592,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             });
         }
     }, [project?.subcontractors]);
+
+    // Load bank names from enrichment data
+    useEffect(() => {
+        const loadBankNames = async () => {
+            try {
+                const response = await fetch('/api/enrichment/banks');
+                if (response.ok) {
+                    const banks = await response.json();
+                    const bankNamesList = banks.map((bank: any) => bank.bank_name).filter(Boolean);
+                    setBankNames(bankNamesList);
+                }
+            } catch (error) {
+                console.error('Error loading bank names:', error);
+            }
+        };
+        loadBankNames();
+    }, []);
 
     // Import functions for subcontractors
     const handleCloudImport = () => {
@@ -9700,17 +9718,40 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             />
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '25%' }}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                size="small"
-                                                                                value={pledger.name || ''}
-                                                                                onChange={(e) => {
-                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, e.target.value);
-                                                                                }}
-                                                                                placeholder="שם"
-                                                                                variant="outlined"
-                                                                                sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                            />
+                                                                            {pledger.classification === 'בנק' ? (
+                                                                                <Autocomplete
+                                                                                    freeSolo
+                                                                                    options={bankNames}
+                                                                                    value={pledger.name || ''}
+                                                                                    onChange={(event, newValue) => {
+                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newValue || '');
+                                                                                    }}
+                                                                                    onInputChange={(event, newInputValue) => {
+                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newInputValue);
+                                                                                    }}
+                                                                                    renderInput={(params) => (
+                                                                                        <TextField
+                                                                                            {...params}
+                                                                                            size="small"
+                                                                                            placeholder="שם הבנק"
+                                                                                            variant="outlined"
+                                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                        />
+                                                                                    )}
+                                                                                />
+                                                                            ) : (
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    size="small"
+                                                                                    value={pledger.name || ''}
+                                                                                    onChange={(e) => {
+                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, e.target.value);
+                                                                                    }}
+                                                                                    placeholder="שם"
+                                                                                    variant="outlined"
+                                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                />
+                                                                            )}
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '35%' }}>
                                                                             <TextField
