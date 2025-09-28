@@ -806,7 +806,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             {user?.picture ? (
               <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
             ) : (
-              <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
+              <Avatar sx={{ width: 32, height: 32, bgcolor: '#882fd7' }}>
                 <AccountCircleIcon />
               </Avatar>
             )}
@@ -848,7 +848,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleAddNewContractor}
-                sx={{ bgcolor: '#882DD7' }}
+                sx={{ bgcolor: '#882fd7' }}
               >
                 הוסף קבלן
               </Button>
