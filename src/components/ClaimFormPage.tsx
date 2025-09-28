@@ -201,13 +201,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         top: 0,
                         zIndex: 1000,
                         bgcolor: 'white',
-                        borderBottom: '1px solid #e0e0e0',
-                        p: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2
+                        flexShrink: 0
                     }}>
-                        {/* Claim Title and Action Buttons */}
+                        {/* Claim Header */}
                         <Box sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -215,7 +211,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             bgcolor: 'white',
                             color: 'black',
                             flexWrap: 'wrap',
-                            gap: 1
+                            gap: 1,
+                            p: 2,
+                            borderBottom: '1px solid #e0e0e0'
                         }}>
                             <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
                                 {formData.projectName} - תביעה
@@ -224,7 +222,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 <Button
                                     variant="outlined"
                                     onClick={handleClose}
-                                    sx={{
+                                    sx={{ 
                                         minWidth: 'auto',
                                         px: 2,
                                         color: '#6b47c1',
