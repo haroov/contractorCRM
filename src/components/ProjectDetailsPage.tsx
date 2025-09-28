@@ -2272,14 +2272,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     }
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto' }}>
-            {/* Main Header with System Name and Profile - Same as contractor card */}
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+            {/* Main Header with System Name and Profile - Sticky */}
             <Paper elevation={2} sx={{
                 p: { xs: 1, sm: 2 },
                 mb: 2,
                 bgcolor: 'white',
                 width: '100%',
-                maxWidth: '100%'
+                maxWidth: '100%',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1001,
+                flexShrink: 0
             }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {/* Left side - Logo and title */}
@@ -2351,7 +2355,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             </Paper>
 
             {/* Project Card - Same style as contractor card */}
-            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                 <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Project Header and Tabs - Combined Sticky */}
                     <Box sx={{

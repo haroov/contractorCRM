@@ -142,14 +142,18 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     };
 
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto' }}>
-            {/* Main Header with System Name and Profile - Same as contractor card */}
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+            {/* Main Header with System Name and Profile - Sticky */}
             <Paper elevation={2} sx={{
                 p: { xs: 1, sm: 2 },
                 mb: 2,
                 bgcolor: 'white',
                 width: '100%',
-                maxWidth: '100%'
+                maxWidth: '100%',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1001,
+                flexShrink: 0
             }}>
                 <Box sx={{
                     display: 'flex',
@@ -193,7 +197,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             </Paper>
 
             {/* Claim Card - Same style as project card */}
-            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                 <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Claim Header and Tabs - Combined Sticky */}
                     <Box sx={{
@@ -222,7 +226,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 <Button
                                     variant="outlined"
                                     onClick={handleClose}
-                                    sx={{ 
+                                    sx={{
                                         minWidth: 'auto',
                                         px: 2,
                                         color: '#6b47c1',
