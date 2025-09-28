@@ -2826,34 +2826,45 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 }}>
                                     {/* Role Holders Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-                                                בעלי תפקיד
-                                            </Typography>
-                                        </Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                            בעלי תפקיד
+                                        </Typography>
 
-                                        <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
+                                        <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
                                             <Table size="small">
                                                 <TableHead>
-                                                    <TableRow>
-                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>תפקיד</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>שם מלא</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>טלפון נייד</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 0.5 }}>אימייל</TableCell>
-                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 60, px: 0.5 }}>פעולות</TableCell>
+                                                    <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '150px' }}>
+                                                            תפקיד
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            שם מלא
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            טלפון נייד
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            אימייל
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
+                                                            פעולות
+                                                        </TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
                                                     {/* Default mandatory roles */}
-                                                    <TableRow>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                    <TableRow sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value="מנהל העבודה"
                                                                 disabled
                                                                 sx={{ 
-                                                                    direction: 'rtl',
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
                                                                     '& .MuiInputBase-input.Mui-disabled': {
                                                                         color: 'text.primary',
                                                                         WebkitTextFillColor: 'unset'
@@ -2861,52 +2872,70 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[0]?.fullName || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.0.fullName`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="שם מלא"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[0]?.mobilePhone || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.0.mobilePhone`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="טלפון נייד"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[0]?.email || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.0.email`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="אימייל"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             {/* No delete button for mandatory role */}
                                                         </TableCell>
                                                     </TableRow>
-                                                    <TableRow>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                    <TableRow sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value="עוזר בטיחות"
                                                                 disabled
                                                                 sx={{ 
-                                                                    direction: 'rtl',
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
                                                                     '& .MuiInputBase-input.Mui-disabled': {
                                                                         color: 'text.primary',
                                                                         WebkitTextFillColor: 'unset'
@@ -2914,52 +2943,72 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[1]?.fullName || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.1.fullName`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="שם מלא"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[1]?.mobilePhone || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.1.mobilePhone`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="טלפון נייד"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             <TextField
                                                                 fullWidth
+                                                                variant="outlined"
                                                                 size="small"
                                                                 value={project?.roleHolders?.[1]?.email || ''}
                                                                 onChange={(e) => handleNestedFieldChange(`roleHolders.1.email`, e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 placeholder="אימייל"
-                                                                sx={{ direction: 'rtl' }}
+                                                                sx={{
+                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                        borderColor: '#6B46C1',
+                                                                    },
+                                                                }}
                                                             />
                                                         </TableCell>
-                                                        <TableCell sx={{ px: 0.5 }}>
+                                                        <TableCell>
                                                             {/* No delete button for mandatory role */}
                                                         </TableCell>
                                                     </TableRow>
 
                                                     {/* Additional roles */}
                                                     {project?.roleHolders && project.roleHolders.length > 2 && project.roleHolders.slice(2).map((roleHolder, index) => (
-                                                        <TableRow key={roleHolder.id}>
-                                                            <TableCell sx={{ px: 0.5 }}>
+                                                        <TableRow key={roleHolder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                            <TableCell>
                                                                 <Autocomplete
+                                                                    value={roleHolder.role}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newInputValue);
+                                                                    }}
                                                                     freeSolo
-                                                                    getOptionLabel={(option) => option}
-                                                                    isOptionEqualToValue={(option, value) => option === value}
                                                                     options={[
                                                                         'ממונה ביטחון',
                                                                         'מפקח',
@@ -3083,112 +3132,139 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         'מהנדס תחזוקה מרחוק',
                                                                         'מהנדס תחזוקה מונעת AI'
                                                                     ]}
-                                                                    value={roleHolder.role || ''}
-                                                                    onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newValue || '');
-                                                                    }}
-                                                                    onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newInputValue);
-                                                                    }}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     renderInput={(params) => (
                                                                         <TextField
                                                                             {...params}
+                                                                            variant="outlined"
                                                                             size="small"
                                                                             placeholder="בחר תפקיד"
-                                                                            sx={{ direction: 'rtl' }}
+                                                                            sx={{
+                                                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: '#6B46C1',
+                                                                                },
+                                                                            }}
                                                                         />
                                                                     )}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ px: 0.5 }}>
+                                                            <TableCell>
                                                                 <TextField
                                                                     fullWidth
+                                                                    variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.fullName || ''}
                                                                     onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.fullName`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="שם מלא"
-                                                                    sx={{ direction: 'rtl' }}
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ px: 0.5 }}>
+                                                            <TableCell>
                                                                 <TextField
                                                                     fullWidth
+                                                                    variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.mobilePhone || ''}
                                                                     onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.mobilePhone`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="טלפון נייד"
-                                                                    sx={{ direction: 'rtl' }}
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ px: 0.5 }}>
+                                                            <TableCell>
                                                                 <TextField
                                                                     fullWidth
+                                                                    variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.email || ''}
                                                                     onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.email`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="אימייל"
-                                                                    sx={{ direction: 'rtl' }}
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ px: 0.5 }}>
-                                                                <IconButton
-                                                                    onClick={() => {
-                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל התפקיד?')) {
-                                                                            const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index + 2) || [];
-                                                                            handleNestedFieldChange('roleHolders', newRoleHolders);
-                                                                        }
-                                                                    }}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{ color: 'error.main' }}
-                                                                    size="small"
-                                                                >
-                                                                    <img 
-                                                                        src="/src/assets/icon-trash.svg" 
-                                                                        alt="מחיקה" 
-                                                                        style={{ width: '16px', height: '16px' }}
-                                                                    />
-                                                                </IconButton>
+                                                            <TableCell>
+                                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל התפקיד?')) {
+                                                                                const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index + 2) || [];
+                                                                                handleNestedFieldChange('roleHolders', newRoleHolders);
+                                                                            }
+                                                                        }}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        sx={{
+                                                                            color: 'grey.600',
+                                                                            '&:hover': {
+                                                                                color: 'white',
+                                                                                backgroundColor: 'error.main'
+                                                                            },
+                                                                            '&:focus': {
+                                                                                color: 'white',
+                                                                                backgroundColor: 'error.main'
+                                                                            }
+                                                                        }}
+                                                                        title="מחק בעל תפקיד"
+                                                                    >
+                                                                        <img
+                                                                            src="/assets/icon-trash.svg"
+                                                                            alt="מחק"
+                                                                            style={{
+                                                                                width: '16px',
+                                                                                height: '16px',
+                                                                                filter: 'brightness(0) invert(1)'
+                                                                            }}
+                                                                        />
+                                                                    </IconButton>
+                                                                </Box>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))}
 
-                                                    {/* Add button row */}
-                                                    <TableRow>
-                                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
-                                                            <Button
-                                                                variant="outlined"
-                                                                onClick={() => {
-                                                                    const newRoleHolder = {
-                                                                        id: Date.now().toString(),
-                                                                        role: '',
-                                                                        fullName: '',
-                                                                        mobilePhone: '',
-                                                                        email: ''
-                                                                    };
-                                                                    const currentRoleHolders = project?.roleHolders || [];
-                                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
-                                                                }}
-                                                                disabled={mode === 'view' || !canEdit}
-                                                                sx={{
-                                                                    borderColor: '#6B46C1',
-                                                                    color: '#6B46C1',
-                                                                    '&:hover': {
-                                                                        borderColor: '#5B21B6',
-                                                                        backgroundColor: 'rgba(107, 70, 193, 0.04)'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                + הוספה
-                                                            </Button>
-                                                        </TableCell>
-                                                    </TableRow>
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
+                                            <Button
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    const newRoleHolder = {
+                                                        id: Date.now().toString(),
+                                                        role: '',
+                                                        fullName: '',
+                                                        mobilePhone: '',
+                                                        email: ''
+                                                    };
+                                                    const currentRoleHolders = project?.roleHolders || [];
+                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
+                                                }}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    borderColor: '#6B46C1',
+                                                    color: '#6B46C1',
+                                                    '&:hover': {
+                                                        borderColor: '#5B21B6',
+                                                        backgroundColor: '#F3F4F6'
+                                                    }
+                                                }}
+                                            >
+                                                + הוספה
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </Box>
                             </Box>
@@ -3208,59 +3284,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 }}>
                                     {/* Subcontractors Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-                                                קבלני משנה
-                                            </Typography>
-                                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                                <IconButton
-                                                    onClick={handleCloudImport}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        color: '#6B46C1',
-                                                        '&:hover': {
-                                                            color: '#5B21B6',
-                                                            backgroundColor: 'rgba(107, 70, 193, 0.04)'
-                                                        }
-                                                    }}
-                                                    title="סינכרון קבלני משנה עם Safeguard"
-                                                >
-                                                    <CloudSyncIcon fontSize="large" />
-                                                </IconButton>
-                                                <IconButton
-                                                    onClick={handleExcelImport}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    sx={{
-                                                        color: '#6B46C1',
-                                                        '&:hover': {
-                                                            color: '#5B21B6',
-                                                            backgroundColor: 'rgba(107, 70, 193, 0.04)'
-                                                        }
-                                                    }}
-                                                    title="ייבוא מאקסל/CSV"
-                                                >
-                                                    <GentleCloudUploadIcon fontSize="large" />
-                                                </IconButton>
-                                            </Box>
-                                        </Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: 'text.secondary', mb: 2 }}>
+                                            קבלני משנה
+                                        </Typography>
 
                                         {project?.subcontractors && project.subcontractors.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
+                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>
-                                                        <TableRow>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>תחום</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100, px: 0.5 }}>ח״פ</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>שם החברה</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>עיר</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 100, px: 0.5 }}>מספר קבלן</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 60, px: 0.5 }}>פעולות</TableCell>
+                                                        <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '120px' }}>
+                                                                תחום
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                                ח״פ
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                                שם החברה
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                                עיר
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                                מספר קבלן
+                                                            </TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
+                                                                פעולות
+                                                            </TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         {project.subcontractors.map((subcontractor, index) => (
-                                                            <TableRow key={subcontractor.id}>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                            <TableRow key={subcontractor.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                                <TableCell>
                                                                     <Autocomplete
                                                                         freeSolo
                                                                         getOptionLabel={(option) => option}
@@ -3380,9 +3436,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                <TableCell>
                                                                     <Box sx={{ position: 'relative' }}>
                                                                         <TextField
+                                                                            fullWidth
                                                                             value={subcontractor.companyId}
                                                                             onChange={(e) => {
                                                                                 const value = e.target.value;
@@ -3393,6 +3450,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }
                                                                             }}
                                                                             disabled={mode === 'view' || !canEdit}
+                                                                            variant="outlined"
                                                                             size="small"
                                                                             placeholder="ח״פ"
                                                                             inputProps={{
@@ -3423,11 +3481,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         )}
                                                                     </Box>
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                <TableCell>
                                                                     <TextField
+                                                                        fullWidth
                                                                         value={subcontractor.companyName}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
                                                                         size="small"
                                                                         placeholder="שם החברה"
                                                                         inputProps={{ style: { textAlign: 'right' } }}
@@ -3438,11 +3498,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                <TableCell>
                                                                     <TextField
+                                                                        fullWidth
                                                                         value={subcontractor.address}
                                                                         onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
                                                                         disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
                                                                         size="small"
                                                                         placeholder="עיר"
                                                                         inputProps={{ style: { textAlign: 'right' } }}
@@ -3453,12 +3515,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                <TableCell>
                                                                     <TextField
+                                                                        fullWidth
                                                                         value={subcontractor.companyId && subcontractor.companyId.length >= 8
                                                                             ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
                                                                             : ''}
                                                                         disabled={true} // Read-only field
+                                                                        variant="outlined"
                                                                         size="small"
                                                                         placeholder="מספר קבלן"
                                                                         inputProps={{ style: { textAlign: 'right' } }}
@@ -3470,7 +3534,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
+                                                                <TableCell>
                                                                     <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                                         <IconButton
                                                                             onClick={() => removeSubcontractor(index)}
