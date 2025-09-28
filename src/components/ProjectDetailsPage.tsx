@@ -9968,6 +9968,88 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         )}
                                     </Box>
                                 </Box>
+
+                                {/* סקשן חבות חוקית כלפי צד שלישי */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        חבות חוקית כלפי צד שלישי
+                                    </Typography>
+
+                                    {/* גריד 2 עמודות */}
+                                    <Box sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: 3,
+                                        alignItems: 'flex-start'
+                                    }}>
+                                        {/* עמודה ראשונה - שאלה */}
+                                        <Box sx={{ display: 'flex', alignItems: 'center', minHeight: '56px' }}>
+                                            <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>
+                                                כיסוי לביטוח אחריות כלפי צד שלישי
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Button
+                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'contained' : 'outlined'}
+                                                    size="small"
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', true)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{ 
+                                                        minWidth: '60px',
+                                                        height: '40px',
+                                                        fontSize: '0.875rem',
+                                                        border: '1px solid #d1d5db',
+                                                        '&:hover': {
+                                                            border: '1px solid #9ca3af'
+                                                        }
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                                <Button
+                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'contained' : 'outlined'}
+                                                    size="small"
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', false)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{ 
+                                                        minWidth: '60px',
+                                                        height: '40px',
+                                                        fontSize: '0.875rem',
+                                                        border: '1px solid #d1d5db',
+                                                        '&:hover': {
+                                                            border: '1px solid #9ca3af'
+                                                        }
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                            </Box>
+                                        </Box>
+
+                                        {/* עמודה שנייה - שדה גבול אחריות */}
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                            {project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="גבול אחריות (₪)"
+                                                    value={project?.insuranceSpecification?.thirdPartyLiability?.liabilityLimit ? parseInt(project.insuranceSpecification.thirdPartyLiability.liabilityLimit.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.liabilityLimit', numericValue || '');
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{ 
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </Box>
                             </Box>
                         )}
 
