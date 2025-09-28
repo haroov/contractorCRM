@@ -2932,7 +2932,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             'מהנדס רובוטיקה',
                                                                             'מהנדס אוטומציה',
                                                                             'מהנדס IoT',
-                                                                            'מהנדס בלוקצ'יין',
+                                                                            'מהנדס בלוקציין',
                                                                             'מהנדס ענן',
                                                                             'מהנדס אבטחת מידע',
                                                                             'מהנדס רשתות',
@@ -3111,7 +3111,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     title="סינכרון קבלני משנה עם Safeguard"
                                                 >
-                                                    <CloudSyncIcon fontSize="xlarge" />
+                                                    <CloudSyncIcon fontSize="large" />
                                                 </IconButton>
                                                 <IconButton
                                                     onClick={handleExcelImport}
