@@ -8231,9 +8231,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             <Box>
                                 {/* סקשן 1 - דוח FS (אפ.אס) */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        דוח FS (אפ.אס)
-                                    </Typography>
                                     <FileUpload
                                         label="דוח FS (אפ.אס)"
                                         value={fileUploadState.reportFS?.url || project?.reportFS?.file || ''}
@@ -8379,23 +8376,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן 2 - דוח שמאי */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                        דוח שמאי
-                                    </Typography>
                                     <FileUpload
                                         label="דוח שמאי"
                                         value={fileUploadState.appraiserReport?.url || project?.appraiserReport?.file || ''}
                                         thumbnailUrl={fileUploadState.appraiserReport?.thumbnailUrl || project?.appraiserReport?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
-                                        aiIcon={
-                                            <AutoAwesomeIcon
-                                                sx={{
-                                                    color: '#6B46C1',
-                                                    fontSize: '24px',
-                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
-                                                }}
-                                            />
-                                        }
                                         onChange={async (url, thumbnailUrl) => {
                                             console.log('🔄 Appraiser Report FileUpload onChange called with:', { url, thumbnailUrl });
 
