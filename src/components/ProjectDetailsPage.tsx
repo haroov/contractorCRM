@@ -11315,12 +11315,79 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 4 && (
                             <Box>
-                                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-                                    תביעות
-                                </Typography>
-                                <Typography variant="body1" color="text.secondary">
-                                    ניהול תביעות יוצג כאן בעתיד...
-                                </Typography>
+                                {/* Search and Add Section */}
+                                <Box sx={{ display: 'flex', gap: 2, mb: 3, alignItems: 'center' }}>
+                                    <TextField
+                                        fullWidth
+                                        placeholder="חיפוש תביעה"
+                                        variant="outlined"
+                                        size="small"
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: '#d0d0d0'
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: '#882fd7'
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#882fd7'
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon />}
+                                        sx={{
+                                            backgroundColor: '#882fd7',
+                                            '&:hover': {
+                                                backgroundColor: '#6a1b9a'
+                                            },
+                                            minWidth: 'auto',
+                                            px: 3
+                                        }}
+                                    >
+                                        הוספה
+                                    </Button>
+                                </Box>
+
+                                {/* Filter Tabs */}
+                                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+                                    <Tabs
+                                        value={0} // Default to "הכל"
+                                        sx={{
+                                            '& .MuiTab-root': {
+                                                color: '#6B7280',
+                                                '&.Mui-selected': {
+                                                    color: '#882fd7',
+                                                },
+                                            },
+                                            '& .MuiTabs-indicator': {
+                                                backgroundColor: '#882fd7',
+                                            },
+                                        }}
+                                    >
+                                        <Tab label="הכל" />
+                                        <Tab label="פתוחות" />
+                                        <Tab label="סגורות" />
+                                    </Tabs>
+                                </Box>
+
+                                {/* Claims Content Area */}
+                                <Box sx={{ 
+                                    minHeight: '400px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    border: '1px dashed #e0e0e0',
+                                    borderRadius: 1,
+                                    backgroundColor: '#fafafa'
+                                }}>
+                                    <Typography variant="body1" color="text.secondary">
+                                        אין תביעות להצגה
+                                    </Typography>
+                                </Box>
                             </Box>
                         )}
 
