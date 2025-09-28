@@ -9757,7 +9757,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>שם</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '10%' }}>מס׳ סניף</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>כתובת מלאה</TableCell>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סכום השיעבוד (ש״ח)</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סכום השיעבוד ₪</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                             </TableRow>
                                                         </TableHead>
@@ -9907,16 +9907,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 variant="outlined"
                                                                                 type="text"
                                                                                 inputMode="numeric"
-                                                                                sx={{ 
+                                                                                sx={{
                                                                                     direction: 'rtl',
-                                                                                    '& .MuiOutlinedInput-root': { height: 40 } 
-                                                                                }}
-                                                                                InputProps={{
-                                                                                    endAdornment: (
-                                                                                        <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>
-                                                                                            ₪
-                                                                                        </Typography>
-                                                                                    )
+                                                                                    '& .MuiOutlinedInput-root': { height: 40 }
                                                                                 }}
                                                                             />
                                                                         </TableCell>
@@ -9958,7 +9951,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <Button
                                                                         variant="outlined"
                                                                         onClick={() => {
-                                                                                const newPledger = { classification: 'בנק', name: '', address: '', amount: '', branchNumber: '' };
+                                                                            const newPledger = { classification: 'בנק', name: '', address: '', amount: '', branchNumber: '' };
                                                                             const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
                                                                             handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
                                                                         }}
