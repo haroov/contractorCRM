@@ -464,7 +464,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
-    const [bankNames, setBankNames] = useState<string[]>([]);
+    const [bankNames, setBankNames] = useState<string[]>([
+        'בנק הפועלים',
+        'בנק לאומי',
+        'בנק דיסקונט',
+        'בנק מזרחי טפחות',
+        'בנק יהב',
+        'בנק אוצר החייל',
+        'בנק ירושלים',
+        'בנק מסד',
+        'בנק אגוד',
+        'בנק פועלי אגודת ישראל',
+        'בנק מרכנתיל דיסקונט',
+        'בנק אדנים',
+        'בנק הבינלאומי הראשון',
+        'בנק ישראל',
+        'הבנק הבינלאומי',
+        'בנק אוניון',
+        'בנק פאג',
+        'בנק אקספרס',
+        'בנק איגוד'
+    ]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [contractorName, setContractorName] = useState<string>('');
 
@@ -1606,8 +1626,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     const bankNamesList = banks.map((bank: any) => bank.bank_name).filter(Boolean);
                     console.log('🔄 Bank names list:', bankNamesList);
                     setBankNames(bankNamesList);
+                    console.log('🔄 Bank names state updated:', bankNamesList);
                 } else {
                     console.error('🔄 Failed to load banks, status:', response.status);
+                    const errorText = await response.text();
+                    console.error('🔄 Error response:', errorText);
                 }
             } catch (error) {
                 console.error('Error loading bank names:', error);
@@ -9725,15 +9748,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             />
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '20%' }}>
-                                                                            {(pledger as any).classification === 'בנק' ? (
+                                                                            {((pledger as any).classification || 'בנק') === 'בנק' ? (
                                                                                 <Autocomplete
                                                                                     freeSolo
                                                                                     options={bankNames}
                                                                                     value={(pledger as any).name || ''}
                                                                                     onChange={(event, newValue) => {
+                                                                                        console.log('🔄 Bank name selected:', newValue);
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newValue || '');
                                                                                     }}
                                                                                     onInputChange={(event, newInputValue) => {
+                                                                                        console.log('🔄 Bank name input changed:', newInputValue);
+                                                                                        console.log('🔄 Available bank names:', bankNames);
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newInputValue);
                                                                                     }}
                                                                                     renderInput={(params) => (
@@ -9761,23 +9787,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             )}
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '10%' }}>
-                                                                            {(pledger as any).classification === 'בנק' ? (
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    size="small"
-                                                                                    value={(pledger as any).branchNumber || ''}
-                                                                                    onChange={(e) => {
-                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, e.target.value);
-                                                                                    }}
-                                                                                    placeholder="מס׳ סניף"
-                                                                                    variant="outlined"
-                                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                                />
-                                                                            ) : (
-                                                                                <Box sx={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.disabled' }}>
-                                                                                    -
-                                                                                </Box>
-                                                                            )}
+                                                                            {(() => {
+                                                                                const classification = (pledger as any).classification || 'בנק';
+                                                                                console.log('🔄 Branch field - classification:', classification, 'pledger:', pledger);
+                                                                                return classification === 'בנק' ? (
+                                                                                    <TextField
+                                                                                        fullWidth
+                                                                                        size="small"
+                                                                                        value={(pledger as any).branchNumber || ''}
+                                                                                        onChange={(e) => {
+                                                                                            handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, e.target.value);
+                                                                                        }}
+                                                                                        placeholder="מס׳ סניף"
+                                                                                        variant="outlined"
+                                                                                        sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                    />
+                                                                                ) : (
+                                                                                    <Box sx={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.disabled' }}>
+                                                                                        -
+                                                                                    </Box>
+                                                                                );
+                                                                            })()}
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '30%' }}>
                                                                             <TextField
