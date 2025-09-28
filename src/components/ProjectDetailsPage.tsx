@@ -10907,7 +10907,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     sx={{
                                                         direction: 'rtl',
-                                                        '& .MuiInputBase-root': { 
+                                                        '& .MuiInputBase-root': {
                                                             minHeight: '56px',
                                                             backgroundColor: '#f5f5f5'
                                                         },
@@ -10917,6 +10917,517 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             )}
                                         </Box>
                                     </Box>
+                                    {/* שורות נוספות - מופיעות רק כאשר בוחרים כן בכיסוי חבות מעבידים */}
+                                    {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                        <>
+                                            {/* שורה 1 - העסקת נוער */}
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3,
+                                                alignItems: 'flex-start',
+                                                mt: 2
+                                            }}>
+                                                {/* עמודה ראשונה - שאלה */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        העסקת נוער
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                                {/* עמודה שנייה - שדה פירוט */}
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                                    {project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט"
+                                                            value={project?.insuranceSpecification?.employerLiability?.youthEmployment?.details || ''}
+                                                            onChange={(e) => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.details', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            type="text"
+                                                            sx={{
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        </>
+                                    )}
+                                    {/* שורות נוספות - מופיעות רק כאשר בוחרים כן בכיסוי חבות מעבידים */}
+                                    {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                        <>
+                                            {/* שורה 1 - העסקת נוער */}
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3,
+                                                alignItems: 'flex-start',
+                                                mt: 2
+                                            }}>
+                                                {/* עמודה ראשונה - שאלה */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        העסקת נוער
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                                {/* עמודה שנייה - שדה פירוט */}
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                                    {project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט"
+                                                            value={project?.insuranceSpecification?.employerLiability?.youthEmployment?.details || ''}
+                                                            onChange={(e) => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.details', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            type="text"
+                                                            sx={{
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        </>
+                                    )}
+
+                                    {/* שורות נוספות - מופיעות רק כאשר בוחרים כן בכיסוי חבות מעבידים */}
+                                    {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                        <>
+                                            {/* שורה 1 - העסקת נוער */}
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3,
+                                                alignItems: 'flex-start',
+                                                mt: 2
+                                            }}>
+                                                {/* עמודה ראשונה - שאלה */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        העסקת נוער
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.hasCoverage', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {/* עמודה שנייה - שדה פירוט */}
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                                    {project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט"
+                                                            value={project?.insuranceSpecification?.employerLiability?.youthEmployment?.details || ''}
+                                                            onChange={(e) => handleNestedFieldChange('insuranceSpecification.employerLiability.youthEmployment.details', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            type="text"
+                                                            sx={{
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+
+                                            {/* שורה 2 - העסקת מתנדבים */}
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3,
+                                                alignItems: 'flex-start',
+                                                mt: 2
+                                            }}>
+                                                {/* עמודה ראשונה - שאלה */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        העסקת מתנדבים
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.volunteerEmployment.hasCoverage', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.volunteerEmployment.hasCoverage', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {/* עמודה שנייה - שדה פירוט */}
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                                    {project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט"
+                                                            value={project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.details || ''}
+                                                            onChange={(e) => handleNestedFieldChange('insuranceSpecification.employerLiability.volunteerEmployment.details', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            type="text"
+                                                            sx={{
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+
+                                            {/* שורה 3 - עובדים שאינם מכוסים לפי חוק ביטוח לאומי */}
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3,
+                                                alignItems: 'flex-start',
+                                                mt: 2
+                                            }}>
+                                                {/* עמודה ראשונה - שאלה */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        עובדים שאינם מכוסים לפי חוק ביטוח לאומי
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.uncoveredEmployees.hasCoverage', false)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.uncoveredEmployees.hasCoverage', true)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                '&:hover': {
+                                                                    backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                                }
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {/* עמודה שנייה - שדה פירוט */}
+                                                <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                                    {project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט"
+                                                            value={project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.details || ''}
+                                                            onChange={(e) => handleNestedFieldChange('insuranceSpecification.employerLiability.uncoveredEmployees.details', e.target.value)}
+                                                            disabled={mode === 'view' || !canEdit}
+                                                            size="small"
+                                                            type="text"
+                                                            sx={{
+                                                                direction: 'rtl',
+                                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+                                        </>
+                                    )}
                                 </Box>
                             </Box>
                         )}
