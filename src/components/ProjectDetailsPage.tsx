@@ -8885,14 +8885,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Button
+                                                <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
-                                                            borderRadius: '0 4px 4px 0',
-                                                            border: '1px solid #d1d5db',
-                                                            borderLeft: 'none',
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
                                                             backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#6B46C1' : 'transparent',
                                                             color: project?.insuranceSpecification?.theftCoverage === false ? 'white' : '#6B46C1',
                                                             '&:hover': {
@@ -9006,14 +9006,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Button
+                                                <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
-                                                            borderRadius: '0 4px 4px 0',
-                                                            border: '1px solid #d1d5db',
-                                                            borderLeft: 'none',
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
                                                             backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#6B46C1' : 'transparent',
                                                             color: project?.insuranceSpecification?.workPropertyCoverage === false ? 'white' : '#6B46C1',
                                                             '&:hover': {
@@ -9127,14 +9127,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Button
+                                                <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
-                                                            borderRadius: '0 4px 4px 0',
-                                                            border: '1px solid #d1d5db',
-                                                            borderLeft: 'none',
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
                                                             backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#6B46C1' : 'transparent',
                                                             color: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? 'white' : '#6B46C1',
                                                             '&:hover': {
@@ -9248,14 +9248,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Button
+                                                <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
-                                                            borderRadius: '0 4px 4px 0',
-                                                            border: '1px solid #d1d5db',
-                                                            borderLeft: 'none',
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
                                                             backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#6B46C1' : 'transparent',
                                                             color: project?.insuranceSpecification?.transitPropertyCoverage === false ? 'white' : '#6B46C1',
                                                             '&:hover': {
