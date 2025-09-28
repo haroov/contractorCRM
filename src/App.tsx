@@ -389,7 +389,7 @@ function App() {
               path="/claim-form"
               element={
                 <ProtectedRoute>
-                  <ClaimFormPage />
+                  <ClaimFormPage currentUser={user} />
                 </ProtectedRoute>
               }
             />

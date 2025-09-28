@@ -34,7 +34,11 @@ interface ClaimFormData {
     updatedAt: Date;
 }
 
-export default function ClaimFormPage() {
+interface ClaimFormPageProps {
+    currentUser: any;
+}
+
+export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     
@@ -45,7 +49,6 @@ export default function ClaimFormPage() {
         message: '',
         severity: 'success' as 'success' | 'error' | 'warning' | 'info'
     });
-    const [currentUser, setCurrentUser] = useState<any>(null);
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -70,21 +73,6 @@ export default function ClaimFormPage() {
                 projectName: decodeURIComponent(projectName)
             }));
         }
-        
-        // Load current user
-        const loadCurrentUser = async () => {
-            try {
-                const response = await authenticatedFetch('/api/auth/me');
-                if (response.ok) {
-                    const userData = await response.json();
-                    setCurrentUser(userData);
-                }
-            } catch (error) {
-                console.error('Error loading current user:', error);
-            }
-        };
-        
-        loadCurrentUser();
     }, [searchParams]);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
