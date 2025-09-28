@@ -2586,31 +2586,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Typography>
 
 
-                                        {project?.stakeholders && project.stakeholders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
-                                                <Table size="small">
-                                                    <TableHead>
-                                                        <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '150px' }}>
-                                                                תחום
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                ח״פ
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                שם החברה
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                טלפון
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                אימייל
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
-                                                                פעולות
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
+                                        <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%', boxShadow: 'none', border: 'none' }}>
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '150px' }}>
+                                                            תחום
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            ח״פ
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            שם החברה
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            טלפון
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            אימייל
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
+                                                            פעולות
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableHead>
                                                     <TableBody>
                                                         {project.stakeholders.map((stakeholder, index) => (
                                                             <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
@@ -2775,7 +2774,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     style={{
                                                                                         width: '16px',
                                                                                         height: '16px',
-                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                        filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
                                                                                     }}
                                                                                 />
                                                                             </IconButton>
@@ -2784,28 +2783,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </TableCell>
                                                             </TableRow>
                                                         ))}
+
+                                                        {/* Add button row */}
+                                                        <TableRow>
+                                                            <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    onClick={addStakeholder}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    sx={{
+                                                                        borderColor: '#6B46C1',
+                                                                        color: '#6B46C1',
+                                                                        '&:hover': {
+                                                                            borderColor: '#5B21B6',
+                                                                            backgroundColor: '#F3F4F6'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    + הוספה
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
                                                     </TableBody>
                                                 </Table>
                                             </TableContainer>
-                                        )}
-
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
-                                            <Button
-                                                variant="outlined"
-                                                onClick={addStakeholder}
-                                                disabled={mode === 'view' || !canEdit}
-                                                sx={{
-                                                    borderColor: '#6B46C1',
-                                                    color: '#6B46C1',
-                                                    '&:hover': {
-                                                        borderColor: '#5B21B6',
-                                                        backgroundColor: '#F3F4F6'
-                                                    }
-                                                }}
-                                            >
-                                                + הוספה
-                                            </Button>
-                                        </Box>
                                     </Box>
                                 </Box>
 
@@ -2830,7 +2831,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             בעלי תפקיד
                                         </Typography>
 
-                                        <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
+                                        <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%', boxShadow: 'none', border: 'none' }}>
                                             <Table size="small">
                                                 <TableHead>
                                                     <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
@@ -2861,7 +2862,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 size="small"
                                                                 value="מנהל העבודה"
                                                                 disabled
-                                                                sx={{ 
+                                                                sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                         borderColor: '#6B46C1',
                                                                     },
@@ -2932,7 +2933,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 size="small"
                                                                 value="עוזר בטיחות"
                                                                 disabled
-                                                                sx={{ 
+                                                                sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                         borderColor: '#6B46C1',
                                                                     },
@@ -3225,7 +3226,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             style={{
                                                                                 width: '16px',
                                                                                 height: '16px',
-                                                                                filter: 'brightness(0) invert(1)'
+                                                                                filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
                                                                             }}
                                                                         />
                                                                     </IconButton>
@@ -3234,37 +3235,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </TableRow>
                                                     ))}
 
+                                                    {/* Add button row */}
+                                                    <TableRow>
+                                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
+                                                            <Button
+                                                                variant="outlined"
+                                                                onClick={() => {
+                                                                    const newRoleHolder = {
+                                                                        id: Date.now().toString(),
+                                                                        role: '',
+                                                                        fullName: '',
+                                                                        mobilePhone: '',
+                                                                        email: ''
+                                                                    };
+                                                                    const currentRoleHolders = project?.roleHolders || [];
+                                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderColor: '#6B46C1',
+                                                                    color: '#6B46C1',
+                                                                    '&:hover': {
+                                                                        borderColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                + הוספה
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>
-
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
-                                            <Button
-                                                variant="outlined"
-                                                onClick={() => {
-                                                    const newRoleHolder = {
-                                                        id: Date.now().toString(),
-                                                        role: '',
-                                                        fullName: '',
-                                                        mobilePhone: '',
-                                                        email: ''
-                                                    };
-                                                    const currentRoleHolders = project?.roleHolders || [];
-                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
-                                                }}
-                                                disabled={mode === 'view' || !canEdit}
-                                                sx={{
-                                                    borderColor: '#6B46C1',
-                                                    color: '#6B46C1',
-                                                    '&:hover': {
-                                                        borderColor: '#5B21B6',
-                                                        backgroundColor: '#F3F4F6'
-                                                    }
-                                                }}
-                                            >
-                                                + הוספה
-                                            </Button>
-                                        </Box>
                                     </Box>
                                 </Box>
                             </Box>
@@ -3288,31 +3291,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             קבלני משנה
                                         </Typography>
 
-                                        {project?.subcontractors && project.subcontractors.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ borderRadius: 1, overflow: 'auto', maxWidth: '100%' }}>
-                                                <Table size="small">
-                                                    <TableHead>
-                                                        <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '120px' }}>
-                                                                תחום
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                ח״פ
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                שם החברה
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                עיר
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
-                                                                מספר קבלן
-                                                            </TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
-                                                                פעולות
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
+                                        <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%', boxShadow: 'none', border: 'none' }}>
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right', minWidth: '120px' }}>
+                                                            תחום
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            ח״פ
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            שם החברה
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            עיר
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', textAlign: 'right' }}>
+                                                            מספר קבלן
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', fontSize: '0.875rem', color: '#374151', width: 80, textAlign: 'right' }}>
+                                                            פעולות
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableHead>
                                                     <TableBody>
                                                         {project.subcontractors.map((subcontractor, index) => (
                                                             <TableRow key={subcontractor.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
@@ -3558,7 +3560,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 style={{
                                                                                     width: '16px',
                                                                                     height: '16px',
-                                                                                    filter: 'brightness(0) invert(1)'
+                                                                                    filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
                                                                                 }}
                                                                             />
                                                                         </IconButton>
@@ -3566,28 +3568,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </TableCell>
                                                             </TableRow>
                                                         ))}
+
+                                                        {/* Add button row */}
+                                                        <TableRow>
+                                                            <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    onClick={addSubcontractor}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    sx={{
+                                                                        borderColor: '#6B46C1',
+                                                                        color: '#6B46C1',
+                                                                        '&:hover': {
+                                                                            borderColor: '#5B21B6',
+                                                                            backgroundColor: '#F3F4F6'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    + הוספה
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
                                                     </TableBody>
                                                 </Table>
                                             </TableContainer>
-                                        )}
-
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mt: 2 }}>
-                                            <Button
-                                                variant="outlined"
-                                                onClick={addSubcontractor}
-                                                disabled={mode === 'view' || !canEdit}
-                                                sx={{
-                                                    borderColor: '#6B46C1',
-                                                    color: '#6B46C1',
-                                                    '&:hover': {
-                                                        borderColor: '#5B21B6',
-                                                        backgroundColor: '#F3F4F6'
-                                                    }
-                                                }}
-                                            >
-                                                + הוספה
-                                            </Button>
-                                        </Box>
                                     </Box>
                                 </Box>
                             </Box>
