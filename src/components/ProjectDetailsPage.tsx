@@ -3566,8 +3566,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }}
                                                                         title={expandedSubcontractors[index] ? "סגור פרטים" : "פתח פרטים"}
                                                                     >
-                                                                        <img 
-                                                                            src="/assets/iconArrowOpenDown.svg" 
+                                                                        <img
+                                                                            src="/assets/iconArrowOpenDown.svg"
                                                                             alt={expandedSubcontractors[index] ? "סגור" : "פתח"}
                                                                             style={{
                                                                                 width: '16px',
@@ -3612,62 +3612,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </Box>
                                                             </TableCell>
                                                         </TableRow>
-                                                        
-                                                        {/* Expanded row with agreement details */}
-                                                        {expandedSubcontractors[index] && (
-                                                            <TableRow>
-                                                                <TableCell colSpan={6} sx={{ padding: 2, backgroundColor: '#f8f9fa' }}>
-                                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 1 }}>
-                                                                            הסכם התקשרות
-                                                                        </Typography>
-                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                                                            <Box>
-                                                                                <FileUpload
-                                                                                    label="הסכם התקשרות"
-                                                                                    value={subcontractor.agreementFile || ''}
-                                                                                    thumbnailUrl={subcontractor.agreementThumbnail || ''}
-                                                                                    projectId={project?._id || project?.id}
-                                                                                    onChange={async (url, thumbnailUrl) => {
-                                                                                        handleSubcontractorChange(index, 'agreementFile', url);
-                                                                                        if (thumbnailUrl) {
-                                                                                            handleSubcontractorChange(index, 'agreementThumbnail', thumbnailUrl);
-                                                                                        }
-                                                                                    }}
-                                                                                    onDelete={async () => {
-                                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הסכם ההתקשרות?')) {
-                                                                                            handleSubcontractorChange(index, 'agreementFile', '');
-                                                                                            handleSubcontractorChange(index, 'agreementThumbnail', '');
-                                                                                        }
-                                                                                    }}
-                                                                                    disabled={mode === 'view' || !canEdit}
-                                                                                    showCreationDate={false}
-                                                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                                                                />
-                                                                            </Box>
-                                                                            <Box>
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    label="תאריך תוקף"
-                                                                                    type="date"
-                                                                                    value={subcontractor.agreementValidUntil || ''}
-                                                                                    onChange={(e) => handleSubcontractorChange(index, 'agreementValidUntil', e.target.value)}
-                                                                                    disabled={mode === 'view' || !canEdit}
-                                                                                    variant="outlined"
-                                                                                    size="small"
-                                                                                    InputLabelProps={{ shrink: true }}
-                                                                                    sx={{
-                                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                            borderColor: '#6B46C1',
-                                                                                        },
-                                                                                    }}
-                                                                                />
-                                                                            </Box>
-                                                                        </Box>
-                                                                    </Box>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        )}
                                                     ))}
 
                                                     {/* Add button row */}
