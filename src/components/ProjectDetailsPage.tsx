@@ -9000,11 +9000,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 0,
+                                                    gap: 1,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage', false)}
@@ -9121,11 +9122,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 0,
+                                                    gap: 1,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', false)}
@@ -9242,11 +9244,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 0,
+                                                    gap: 1,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', false)}
@@ -9363,11 +9366,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 0,
+                                                    gap: 1,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', false)}
@@ -9485,11 +9489,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 0,
+                                                    gap: 1,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage', false)}
