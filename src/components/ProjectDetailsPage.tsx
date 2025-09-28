@@ -9757,7 +9757,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>שם</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '10%' }}>מס׳ סניף</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>כתובת מלאה</TableCell>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סכום השיעבוד ₪</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סכום השיעבוד (₪)</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                             </TableRow>
                                                         </TableHead>
