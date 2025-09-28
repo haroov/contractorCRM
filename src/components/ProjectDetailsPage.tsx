@@ -9698,7 +9698,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </TableRow>
                                                         </TableHead>
                                                         <TableBody>
-                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: 'בנק', name: '', address: '', email: '', branchNumber: '' }]).map((pledger, index) => {
+                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: 'בנק', name: '', address: '', email: '', branchNumber: '' }]).map((pledger: any, index) => {
                                                                 const isFirstRow = index === 0;
                                                                 return (
                                                                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -9706,7 +9706,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <Autocomplete
                                                                                 freeSolo
                                                                                 options={['בנק', 'חברת ביטוח', 'אחר']}
-                                                                                value={pledger.classification || 'בנק'}
+                                                                                value={(pledger as any).classification || 'בנק'}
                                                                                 onChange={(event, newValue) => {
                                                                                     handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newValue || 'בנק');
                                                                                 }}
@@ -9725,11 +9725,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             />
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '20%' }}>
-                                                                            {pledger.classification === 'בנק' ? (
+                                                                            {(pledger as any).classification === 'בנק' ? (
                                                                                 <Autocomplete
                                                                                     freeSolo
                                                                                     options={bankNames}
-                                                                                    value={pledger.name || ''}
+                                                                                    value={(pledger as any).name || ''}
                                                                                     onChange={(event, newValue) => {
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, newValue || '');
                                                                                     }}
@@ -9750,7 +9750,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 <TextField
                                                                                     fullWidth
                                                                                     size="small"
-                                                                                    value={pledger.name || ''}
+                                                                                    value={(pledger as any).name || ''}
                                                                                     onChange={(e) => {
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.name`, e.target.value);
                                                                                     }}
@@ -9761,11 +9761,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             )}
                                                                         </TableCell>
                                                                         <TableCell sx={{ padding: 1, width: '10%' }}>
-                                                                            {pledger.classification === 'בנק' ? (
+                                                                            {(pledger as any).classification === 'בנק' ? (
                                                                                 <TextField
                                                                                     fullWidth
                                                                                     size="small"
-                                                                                    value={pledger.branchNumber || ''}
+                                                                                    value={(pledger as any).branchNumber || ''}
                                                                                     onChange={(e) => {
                                                                                         handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, e.target.value);
                                                                                     }}
@@ -9783,7 +9783,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <TextField
                                                                                 fullWidth
                                                                                 size="small"
-                                                                                value={pledger.address || ''}
+                                                                                value={(pledger as any).address || ''}
                                                                                 onChange={(e) => {
                                                                                     handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.address`, e.target.value);
                                                                                 }}
@@ -9796,7 +9796,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             <TextField
                                                                                 fullWidth
                                                                                 size="small"
-                                                                                value={pledger.email || ''}
+                                                                                value={(pledger as any).email || ''}
                                                                                 onChange={(e) => {
                                                                                     handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.email`, e.target.value);
                                                                                 }}
@@ -9840,17 +9840,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             })}
                                                             <TableRow>
                                                                 <TableCell colSpan={6} sx={{ padding: 1, textAlign: 'center' }}>
-                                                                        <Button
-                                                                            variant="outlined"
-                                                                            onClick={() => {
-                                                                                const newPledger = { classification: 'בנק', name: '', address: '', email: '', branchNumber: '' };
-                                                                                const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
-                                                                                handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
-                                                                            }}
-                                                                            sx={{ mr: 1 }}
-                                                                        >
-                                                                            + הוספה
-                                                                        </Button>
+                                                                    <Button
+                                                                        variant="outlined"
+                                                                        onClick={() => {
+                                                                            const newPledger = { classification: 'בנק', name: '', address: '', email: '', branchNumber: '' };
+                                                                            const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
+                                                                            handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
+                                                                        }}
+                                                                        sx={{ mr: 1 }}
+                                                                    >
+                                                                        + הוספה
+                                                                    </Button>
                                                                 </TableCell>
                                                             </TableRow>
                                                         </TableBody>

@@ -303,6 +303,11 @@ const googleDocsRoutes = require('./routes/google-docs.js');
 app.use('/api/google-docs', googleDocsRoutes);
 console.log('✅ Google Docs routes configured');
 
+// Import enrichment routes
+const enrichmentRoutes = require('./routes/enrichment.js');
+app.use('/api/enrichment', enrichmentRoutes);
+console.log('✅ Enrichment routes configured');
+
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
