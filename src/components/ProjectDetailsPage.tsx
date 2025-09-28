@@ -9986,10 +9986,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Box sx={{ 
                                             display: 'flex', 
                                             alignItems: 'center', 
-                                            height: '40px',
+                                            minHeight: '56px',
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
-                                            padding: '8px 12px',
+                                            padding: '12px',
                                             backgroundColor: 'white'
                                         }}>
                                             <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>
@@ -10003,7 +10003,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{ 
                                                         minWidth: '60px',
-                                                        height: '32px',
+                                                        height: '40px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
                                                         borderRadius: '4px 0 0 4px',
@@ -10021,7 +10021,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{ 
                                                         minWidth: '60px',
-                                                        height: '32px',
+                                                        height: '40px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
                                                         borderRadius: '0 4px 4px 0',
