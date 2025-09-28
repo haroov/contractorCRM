@@ -5,7 +5,7 @@ const PrivacyPolicy: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
-        <Box sx={{ textAlign: 'center', mb: 4, pb: 2, borderBottom: '2px solid #882DD7' }}>
+        <Box sx={{ textAlign: 'center', mb: 4, pb: 2, borderBottom: '2px solid #6b47c1' }}>
           <Box
             component="img"
             src="/assets/logo.svg"
@@ -25,14 +25,14 @@ const PrivacyPolicy: React.FC = () => {
         </Box>
 
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             1. מבוא
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
             שוקו ביטוח מתחייבת להגן על פרטיות המשתמשים במערכת ניהול הקבלנים. מדיניות זו מסבירה כיצד אנו אוספים, משתמשים ומגנים על המידע שלכם.
           </Typography>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             2. איסוף מידע
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -53,7 +53,7 @@ const PrivacyPolicy: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             3. שימוש במידע
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -74,7 +74,7 @@ const PrivacyPolicy: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             4. הגנת מידע
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -95,7 +95,7 @@ const PrivacyPolicy: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             5. שיתוף מידע
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -113,7 +113,7 @@ const PrivacyPolicy: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             6. זכויות המשתמש
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -134,21 +134,21 @@ const PrivacyPolicy: React.FC = () => {
             </Typography>
           </Box>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             7. עוגיות (Cookies)
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
             המערכת משתמשת בעוגיות לשיפור חוויית המשתמש ולפונקציונליות המערכת.
           </Typography>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             8. שינויים במדיניות
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
             אנו שומרים לעצמנו את הזכות לעדכן מדיניות זו מעת לעת. שינויים ייכנסו לתוקף מייד עם פרסומם.
           </Typography>
 
-          <Typography variant="h5" sx={{ color: '#882DD7', mb: 2, mt: 4 }}>
+          <Typography variant="h5" sx={{ color: '#6b47c1', mb: 2, mt: 4 }}>
             9. קשר
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, color: '#555', lineHeight: 1.8 }}>
@@ -164,7 +164,7 @@ const PrivacyPolicy: React.FC = () => {
             <Link 
               href="/termsOfUse" 
               sx={{ 
-                color: '#882DD7', 
+                color: '#6b47c1', 
                 textDecoration: 'none',
                 '&:hover': { textDecoration: 'underline' },
                 mr: 2
@@ -175,7 +175,7 @@ const PrivacyPolicy: React.FC = () => {
             <Link 
               href="/" 
               sx={{ 
-                color: '#882DD7', 
+                color: '#6b47c1', 
                 textDecoration: 'none',
                 '&:hover': { textDecoration: 'underline' }
               }}

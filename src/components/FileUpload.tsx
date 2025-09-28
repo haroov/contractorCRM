@@ -260,7 +260,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     sx={{
                         width: 56,
                         height: 56,
-                        backgroundColor: '#6B46C1',
+                        backgroundColor: '#6b47c1',
                         borderRadius: 1,
                         display: 'flex',
                         alignItems: 'center',
@@ -319,8 +319,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         borderRadius: 1,
                         height: 40,
                         width: 40,
-                        color: '#6B46C1',
-                        '&:hover': { backgroundColor: 'rgba(156, 39, 176, 0.04)', borderColor: '#6B46C1' }
+                        color: '#6b47c1',
+                        '&:hover': { backgroundColor: 'rgba(156, 39, 176, 0.04)', borderColor: '#6b47c1' }
                     }}
                 >
                     {isUploading ? <CircularProgress size={20} /> : <GentleCloudUploadIcon fontSize="xlarge" />}
@@ -331,13 +331,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <Typography
                 variant="body2"
                 sx={{
-                    color: hasFile ? '#6B46C1' : 'text.secondary',
+                    color: hasFile ? '#6b47c1' : 'text.secondary',
                     fontSize: '1rem',
                     minWidth: 'fit-content',
                     cursor: hasFile ? 'pointer' : 'default',
                     textDecoration: hasFile ? 'underline' : 'none',
                     '&:hover': hasFile ? {
-                        color: '#5B21B6',
+                        color: '#5a3aa1',
                         textDecoration: 'underline'
                     } : {}
                 }}

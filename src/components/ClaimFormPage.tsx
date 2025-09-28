@@ -142,17 +142,17 @@ export default function ClaimFormPage() {
                         startIcon={<ArrowBackIcon />}
                         onClick={handleBack}
                         sx={{ 
-                            color: '#882fd7',
-                            borderColor: '#882fd7',
+                            color: '#6b47c1',
+                            borderColor: '#6b47c1',
                             '&:hover': {
-                                borderColor: '#6a1b9a',
+                                borderColor: '#5a3aa1',
                                 backgroundColor: 'rgba(136, 47, 215, 0.04)'
                             }
                         }}
                     >
                         חזרה
                     </Button>
-                    <Typography variant="h5" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                    <Typography variant="h5" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                         {formData.projectName} - תביעה
                     </Typography>
                 </Box>
@@ -163,10 +163,10 @@ export default function ClaimFormPage() {
                         startIcon={<CloseIcon />}
                         onClick={handleClose}
                         sx={{ 
-                            color: '#882fd7',
-                            borderColor: '#882fd7',
+                            color: '#6b47c1',
+                            borderColor: '#6b47c1',
                             '&:hover': {
-                                borderColor: '#6a1b9a',
+                                borderColor: '#5a3aa1',
                                 backgroundColor: 'rgba(136, 47, 215, 0.04)'
                             }
                         }}
@@ -179,9 +179,9 @@ export default function ClaimFormPage() {
                         onClick={handleSave}
                         disabled={saving}
                         sx={{
-                            backgroundColor: '#882fd7',
+                            backgroundColor: '#6b47c1',
                             '&:hover': {
-                                backgroundColor: '#6a1b9a'
+                                backgroundColor: '#5a3aa1'
                             }
                         }}
                     >
@@ -206,11 +206,11 @@ export default function ClaimFormPage() {
                                 '& .MuiTab-root': {
                                     color: '#6B7280',
                                     '&.Mui-selected': {
-                                        color: '#882fd7',
+                                        color: '#6b47c1',
                                     },
                                 },
                                 '& .MuiTabs-indicator': {
-                                    backgroundColor: '#882fd7',
+                                    backgroundColor: '#6b47c1',
                                 },
                             }}
                         >
@@ -225,7 +225,7 @@ export default function ClaimFormPage() {
                     <Box sx={{ p: 3 }}>
                         {activeTab === 0 && (
                             <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
                                     פרטי התביעה
                                 </Typography>
                                 <TextField
@@ -243,16 +243,16 @@ export default function ClaimFormPage() {
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         },
                                         '& .MuiInputLabel-root': {
                                             color: '#666666',
                                             '&.Mui-focused': {
-                                                color: '#882fd7'
+                                                color: '#6b47c1'
                                             }
                                         }
                                     }}
@@ -262,7 +262,7 @@ export default function ClaimFormPage() {
 
                         {activeTab === 1 && (
                             <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
                                     צדדים מעורבים
                                 </Typography>
                                 <TextField
@@ -280,16 +280,16 @@ export default function ClaimFormPage() {
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         },
                                         '& .MuiInputLabel-root': {
                                             color: '#666666',
                                             '&.Mui-focused': {
-                                                color: '#882fd7'
+                                                color: '#6b47c1'
                                             }
                                         }
                                     }}
@@ -299,7 +299,7 @@ export default function ClaimFormPage() {
 
                         {activeTab === 2 && (
                             <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
                                     הליכים משפטיים
                                 </Typography>
                                 <TextField
@@ -317,16 +317,16 @@ export default function ClaimFormPage() {
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         },
                                         '& .MuiInputLabel-root': {
                                             color: '#666666',
                                             '&.Mui-focused': {
-                                                color: '#882fd7'
+                                                color: '#6b47c1'
                                             }
                                         }
                                     }}
@@ -336,7 +336,7 @@ export default function ClaimFormPage() {
 
                         {activeTab === 3 && (
                             <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
                                     סיכום התביעה
                                 </Typography>
                                 <TextField
@@ -354,16 +354,16 @@ export default function ClaimFormPage() {
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused fieldset': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         },
                                         '& .MuiInputLabel-root': {
                                             color: '#666666',
                                             '&.Mui-focused': {
-                                                color: '#882fd7'
+                                                color: '#6b47c1'
                                             }
                                         }
                                     }}

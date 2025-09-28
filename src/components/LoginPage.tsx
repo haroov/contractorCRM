@@ -372,9 +372,9 @@ const LoginPage: React.FC = () => {
                 disabled={loading}
                 sx={{
                   py: 1.5,
-                  bgcolor: '#882fd7',
+                  bgcolor: '#6b47c1',
                   '&:hover': {
-                    bgcolor: '#6a1b9a'
+                    bgcolor: '#5a3aa1'
                   }
                 }}
               >
@@ -418,9 +418,9 @@ const LoginPage: React.FC = () => {
                 disabled={loading || otp.length !== 6}
                 sx={{
                   py: 1.5,
-                  bgcolor: '#882fd7',
+                  bgcolor: '#6b47c1',
                   '&:hover': {
-                    bgcolor: '#6a1b9a'
+                    bgcolor: '#5a3aa1'
                   }
                 }}
               >
@@ -440,7 +440,7 @@ const LoginPage: React.FC = () => {
                     onClick={handleResendOtp}
                     disabled={loading}
                     sx={{
-                      color: '#882fd7',
+                      color: '#6b47c1',
                       textDecoration: 'underline',
                       '&:hover': {
                         backgroundColor: 'rgba(136, 47, 215, 0.04)',

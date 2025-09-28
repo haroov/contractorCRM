@@ -385,16 +385,16 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 borderColor: '#d0d0d0'
             },
             '&:hover fieldset': {
-                borderColor: '#882fd7'
+                borderColor: '#6b47c1'
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#882fd7'
+                borderColor: '#6b47c1'
             }
         },
         '& .MuiInputLabel-root': {
             color: '#666666',
             '&.Mui-focused': {
-                color: '#882fd7'
+                color: '#6b47c1'
             }
         }
     };
@@ -1786,11 +1786,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                         '& .MuiTab-root': {
                             color: 'text.secondary',
                             '&.Mui-selected': {
-                                color: '#882fd7' // סגול שוקו
+                                color: '#6b47c1' // סגול שוקו
                             }
                         },
                         '& .MuiTabs-indicator': {
-                            backgroundColor: '#882fd7' // סגול שוקו
+                            backgroundColor: '#6b47c1' // סגול שוקו
                         }
                     }}
                 >
@@ -1837,7 +1837,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 gap: 1
                                             }}>
                                                 {isLoadingCompanyData && (
-                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
                                                 )}
                                                 {companyStatusIndicator && !isLoadingCompanyData && (
                                                     <Tooltip
@@ -1968,10 +1968,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         }}
                                     >
@@ -2120,7 +2120,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
                                             InputProps={{
                                                 endAdornment: isLoadingAbout && (
-                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
                                                 )
                                             }}
                                         />
@@ -2134,10 +2134,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     minWidth: 'auto',
                                                     px: 2,
                                                     height: '56px',
-                                                    borderColor: '#882fd7',
-                                                    color: '#882fd7',
+                                                    borderColor: '#6b47c1',
+                                                    color: '#6b47c1',
                                                     '&:hover': {
-                                                        borderColor: '#6a1b9a',
+                                                        borderColor: '#5a3aa1',
                                                         backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                     },
                                                     '&:disabled': {
@@ -2147,7 +2147,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 }}
                                             >
                                                 {isLoadingAbout ? (
-                                                    <CircularProgress size={20} sx={{ color: '#882fd7' }} />
+                                                    <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
                                                 ) : (
                                                     'סרוק מחדש'
                                                 )}
@@ -2209,7 +2209,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     סוגי רישיונות מפנקס הקבלנים:
                                 </Typography>
                                 {isLoadingLicenses && (
-                                    <CircularProgress size={16} sx={{ color: '#882fd7' }} />
+                                    <CircularProgress size={16} sx={{ color: '#6b47c1' }} />
                                 )}
                                 {!isLoadingLicenses && localClassifications && localClassifications.length > 0 && (
                                     <Chip
@@ -2234,7 +2234,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     disabled={isLoadingLicenses}
                                     title="רענן רישיונות מפנקס הקבלנים"
                                     sx={{
-                                        color: '#882fd7',
+                                        color: '#6b47c1',
                                         '&:hover': {
                                             backgroundColor: 'rgba(156, 39, 176, 0.04)'
                                         }
@@ -2287,10 +2287,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     <InputLabel sx={{
                                         backgroundColor: 'white',
                                         px: 1,
-                                        color: '#882fd7',
+                                        color: '#6b47c1',
                                         '&.Mui-focused': {
                                             backgroundColor: 'white',
-                                            color: '#882fd7'
+                                            color: '#6b47c1'
                                         }
                                     }}>
                                         מספר כוכבי בטיחות
@@ -2310,10 +2310,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 borderColor: '#d0d0d0'
                                             },
                                             '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             },
                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#882fd7'
+                                                borderColor: '#6b47c1'
                                             }
                                         }}
                                     >
@@ -2450,9 +2450,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 setLocalIso45001(e.target.checked);
                                             }}
                                             sx={{
-                                                color: '#882fd7',
+                                                color: '#6b47c1',
                                                 '&.Mui-checked': {
-                                                    color: '#882fd7'
+                                                    color: '#6b47c1'
                                                 }
                                             }}
                                         />
@@ -3269,16 +3269,16 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             borderColor: '#d0d0d0'
                                         },
                                         '&:hover fieldset': {
-                                            borderColor: '#882fd7'
+                                            borderColor: '#6b47c1'
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: '#882fd7'
+                                            borderColor: '#6b47c1'
                                         }
                                     },
                                     '& .MuiInputLabel-root': {
                                         color: '#666666',
                                         '&.Mui-focused': {
-                                            color: '#882fd7'
+                                            color: '#6b47c1'
                                         }
                                     }
                                 }}
@@ -3314,9 +3314,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     size="small"
                                     sx={{
-                                        backgroundColor: '#882fd7', // סגול שוקו
+                                        backgroundColor: '#6b47c1', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
+                                            backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >
@@ -3338,12 +3338,12 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         textTransform: 'none',
                                         color: '#666',
                                         '&.Mui-selected': {
-                                            color: '#882fd7',
+                                            color: '#6b47c1',
                                             fontWeight: 'bold'
                                         }
                                     },
                                     '& .MuiTabs-indicator': {
-                                        backgroundColor: '#882fd7'
+                                        backgroundColor: '#6b47c1'
                                     }
                                 }}
                             >
@@ -3428,10 +3428,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             borderColor: '#d0d0d0'
                                         },
                                         '&:hover fieldset': {
-                                            borderColor: '#882fd7'
+                                            borderColor: '#6b47c1'
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: '#882fd7'
+                                            borderColor: '#6b47c1'
                                         }
                                     }
                                 }}
@@ -3443,9 +3443,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     onClick={handleAddContact}
                                     size="small"
                                     sx={{
-                                        backgroundColor: '#882fd7', // סגול שוקו
+                                        backgroundColor: '#6b47c1', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
+                                            backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >
@@ -3632,10 +3632,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         borderColor: '#d0d0d0'
                                     },
                                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#882fd7'
+                                        borderColor: '#6b47c1'
                                     },
                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#882fd7'
+                                        borderColor: '#6b47c1'
                                     }
                                 }}
                             >
@@ -3646,14 +3646,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseContactDialog} sx={{ color: '#882fd7' }}>ביטול</Button>
+                    <Button onClick={handleCloseContactDialog} sx={{ color: '#6b47c1' }}>ביטול</Button>
                     <Button
                         variant="contained"
                         onClick={handleSaveContact}
                         sx={{
-                            backgroundColor: '#882fd7', // סגול שוקו
+                            backgroundColor: '#6b47c1', // סגול שוקו
                             '&:hover': {
-                                backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
+                                backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
                             }
                         }}
                     >
@@ -3697,9 +3697,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     startIcon={<GentleCloudUploadIcon fontSize="xlarge" />}
                                     sx={{
                                         mb: 2,
-                                        backgroundColor: '#882fd7', // סגול שוקו
+                                        backgroundColor: '#6b47c1', // סגול שוקו
                                         '&:hover': {
-                                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
+                                            backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
                                         }
                                     }}
                                 >

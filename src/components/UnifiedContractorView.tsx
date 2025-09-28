@@ -806,7 +806,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             {user?.picture ? (
               <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
             ) : (
-              <Avatar sx={{ width: 32, height: 32, bgcolor: '#882fd7' }}>
+              <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
                 <AccountCircleIcon />
               </Avatar>
             )}
@@ -848,7 +848,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={handleAddNewContractor}
-                sx={{ bgcolor: '#882fd7' }}
+                sx={{ bgcolor: '#6b47c1' }}
               >
                 הוסף קבלן
               </Button>
@@ -1164,15 +1164,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         sx={{
                           minWidth: 'auto',
                           px: 2,
-                          borderColor: '#882fd7', // סגול שוקו
-                          color: '#882fd7', // סגול שוקו
+                          borderColor: '#6b47c1', // סגול שוקו
+                          color: '#6b47c1', // סגול שוקו
                           '&:hover': {
-                            borderColor: '#6a1b9a', // סגול כהה יותר בהובר
+                            borderColor: '#5a3aa1', // סגול כהה יותר בהובר
                             backgroundColor: 'rgba(136, 47, 215, 0.04)' // רקע בהיר בהובר
                           },
                           '&:disabled': {
-                            borderColor: '#882fd7',
-                            color: '#882fd7',
+                            borderColor: '#6b47c1',
+                            color: '#6b47c1',
                             opacity: 0.7
                           }
                         }}
@@ -1193,12 +1193,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                         sx={{
                           minWidth: 'auto',
                           px: 2,
-                          backgroundColor: '#882fd7', // סגול שוקו
+                          backgroundColor: '#6b47c1', // סגול שוקו
                           '&:hover': {
-                            backgroundColor: '#6a1b9a' // סגול כהה יותר בהובר
+                            backgroundColor: '#5a3aa1' // סגול כהה יותר בהובר
                           },
                           '&:disabled': {
-                            backgroundColor: '#882fd7',
+                            backgroundColor: '#6b47c1',
                             opacity: 0.7
                           }
                         }}

@@ -287,7 +287,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#6B46C1'
+                                                    borderColor: '#6b47c1'
                                                 }
                                             }
                                         }}
@@ -312,7 +312,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#6B46C1'
+                                                    borderColor: '#6b47c1'
                                                 }
                                             }
                                         }}
@@ -337,7 +337,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#6B46C1'
+                                                    borderColor: '#6b47c1'
                                                 }
                                             }
                                         }}
@@ -365,7 +365,7 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                                     borderColor: '#bdbdbd'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#6B46C1'
+                                                    borderColor: '#6b47c1'
                                                 }
                                             }
                                         }}
@@ -424,10 +424,10 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                                         disabled={disabled}
                                         variant="outlined"
                                         sx={{
-                                            borderColor: '#6B46C1',
-                                            color: '#6B46C1',
+                                            borderColor: '#6b47c1',
+                                            color: '#6b47c1',
                                             '&:hover': {
-                                                borderColor: '#5B21B6',
+                                                borderColor: '#5a3aa1',
                                                 backgroundColor: '#f3e5f5'
                                             }
                                         }}
@@ -2312,7 +2312,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         {currentUser?.picture ? (
                             <Avatar src={currentUser.picture} alt={currentUser.name} sx={{ width: 32, height: 32 }} />
                         ) : (
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#882DD7' }}>
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
                                 <AccountCircleIcon />
                             </Avatar>
                         )}
@@ -2397,10 +2397,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 sx={{
                                                     minWidth: 'auto',
                                                     px: 2,
-                                                    borderColor: '#6B46C1', // סגול שוקו
-                                                    color: '#6B46C1',
+                                                    borderColor: '#6b47c1', // סגול שוקו
+                                                    color: '#6b47c1',
                                                     '&:hover': {
-                                                        borderColor: '#5B21B6',
+                                                        borderColor: '#5a3aa1',
                                                         bgcolor: 'rgba(107, 70, 193, 0.04)'
                                                     }
                                                 }}
@@ -2422,9 +2422,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 sx={{
                                                     minWidth: 'auto',
                                                     px: 2,
-                                                    bgcolor: '#6B46C1',
+                                                    bgcolor: '#6b47c1',
                                                     '&:hover': {
-                                                        bgcolor: '#5B21B6'
+                                                        bgcolor: '#5a3aa1'
                                                     }
                                                 }}
                                             >
@@ -2447,10 +2447,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 sx={{
                                                     minWidth: 'auto',
                                                     px: 2,
-                                                    borderColor: '#6B46C1', // סגול שוקו
-                                                    color: '#6B46C1',
+                                                    borderColor: '#6b47c1', // סגול שוקו
+                                                    color: '#6b47c1',
                                                     '&:hover': {
-                                                        borderColor: '#5B21B6',
+                                                        borderColor: '#5a3aa1',
                                                         backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                     }
                                                 }}
@@ -2465,9 +2465,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 sx={{
                                                     minWidth: 'auto',
                                                     px: 2,
-                                                    bgcolor: '#6B46C1',
+                                                    bgcolor: '#6b47c1',
                                                     '&:hover': {
-                                                        bgcolor: '#5B21B6'
+                                                        bgcolor: '#5a3aa1'
                                                     }
                                                 }}
                                             >
@@ -2495,11 +2495,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     '& .MuiTab-root': {
                                         color: '#6B7280',
                                         '&.Mui-selected': {
-                                            color: '#6B46C1',
+                                            color: '#6b47c1',
                                         },
                                     },
                                     '& .MuiTabs-indicator': {
-                                        backgroundColor: '#6B46C1',
+                                        backgroundColor: '#6b47c1',
                                     },
                                 }}
                             >
@@ -2661,7 +2661,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             size="small"
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#6B46C1',
+                                                                                    borderColor: '#6b47c1',
                                                                                 },
                                                                             }}
                                                                         />
@@ -2693,7 +2693,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         helperText={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId) ? 'ח״פ לא תקין' : ''}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
+                                                                                borderColor: '#6b47c1',
                                                                             },
                                                                         }}
                                                                     />
@@ -2704,7 +2704,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 position: 'absolute',
                                                                                 left: 8,
                                                                                 top: 'calc(50% - 8px)',
-                                                                                color: '#6B46C1',
+                                                                                color: '#6b47c1',
                                                                                 verticalAlign: 'center'
                                                                             }}
                                                                         />
@@ -2721,7 +2721,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -2736,7 +2736,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -2751,7 +2751,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -2765,7 +2765,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             sx={{
                                                                                 color: 'grey.600',
                                                                                 '&:hover': {
-                                                                                    color: '#6B46C1',
+                                                                                    color: '#6b47c1',
                                                                                     backgroundColor: '#F3F4F6'
                                                                                 }
                                                                             }}
@@ -2821,10 +2821,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={addStakeholder}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderColor: '#6B46C1',
-                                                                    color: '#6B46C1',
+                                                                    borderColor: '#6b47c1',
+                                                                    color: '#6b47c1',
                                                                     '&:hover': {
-                                                                        borderColor: '#5B21B6',
+                                                                        borderColor: '#5a3aa1',
                                                                         backgroundColor: '#F3F4F6'
                                                                     }
                                                                 }}
@@ -2891,7 +2891,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                     '& .MuiInputBase-input.Mui-disabled': {
                                                                         color: 'text.primary',
@@ -2911,7 +2911,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="שם מלא"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -2927,7 +2927,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="טלפון נייד"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -2943,7 +2943,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="אימייל"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -2962,7 +2962,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                     '& .MuiInputBase-input.Mui-disabled': {
                                                                         color: 'text.primary',
@@ -2982,7 +2982,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="שם מלא"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -2998,7 +2998,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="טלפון נייד"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -3014,7 +3014,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 placeholder="אימייל"
                                                                 sx={{
                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                        borderColor: '#6B46C1',
+                                                                        borderColor: '#6b47c1',
                                                                     },
                                                                 }}
                                                             />
@@ -3169,7 +3169,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             placeholder="בחר תפקיד"
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#6B46C1',
+                                                                                    borderColor: '#6b47c1',
                                                                                 },
                                                                             }}
                                                                         />
@@ -3187,7 +3187,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     placeholder="שם מלא"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -3203,7 +3203,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     placeholder="טלפון נייד"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -3219,7 +3219,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     placeholder="אימייל"
                                                                     sx={{
                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                            borderColor: '#6B46C1',
+                                                                            borderColor: '#6b47c1',
                                                                         },
                                                                     }}
                                                                 />
@@ -3286,10 +3286,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 }}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderColor: '#6B46C1',
-                                                                    color: '#6B46C1',
+                                                                    borderColor: '#6b47c1',
+                                                                    color: '#6b47c1',
                                                                     '&:hover': {
-                                                                        borderColor: '#5B21B6',
+                                                                        borderColor: '#5a3aa1',
                                                                         backgroundColor: '#F3F4F6'
                                                                     }
                                                                 }}
@@ -3463,7 +3463,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 size="small"
                                                                                 sx={{
                                                                                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                        borderColor: '#6B46C1',
+                                                                                        borderColor: '#6b47c1',
                                                                                     },
                                                                                 }}
                                                                             />
@@ -3497,7 +3497,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                    borderColor: '#6B46C1',
+                                                                                    borderColor: '#6b47c1',
                                                                                 },
                                                                             }}
                                                                         />
@@ -3508,7 +3508,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     position: 'absolute',
                                                                                     left: 8,
                                                                                     top: 'calc(50% - 8px)',
-                                                                                    color: '#6B46C1',
+                                                                                    color: '#6b47c1',
                                                                                     verticalAlign: 'center'
                                                                                 }}
                                                                             />
@@ -3527,7 +3527,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
+                                                                                borderColor: '#6b47c1',
                                                                             },
                                                                         }}
                                                                     />
@@ -3544,7 +3544,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         inputProps={{ style: { textAlign: 'right' } }}
                                                                         sx={{
                                                                             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
+                                                                                borderColor: '#6b47c1',
                                                                             },
                                                                         }}
                                                                     />
@@ -3576,7 +3576,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             sx={{
                                                                                 color: 'grey.600',
                                                                                 '&:hover': {
-                                                                                    color: '#6B46C1',
+                                                                                    color: '#6b47c1',
                                                                                     backgroundColor: 'rgba(107, 70, 193, 0.1)'
                                                                                 }
                                                                             }}
@@ -3670,7 +3670,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     InputLabelProps={{ shrink: true }}
                                                                                     sx={{
                                                                                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                            borderColor: '#6B46C1',
+                                                                                            borderColor: '#6b47c1',
                                                                                         },
                                                                                     }}
                                                                                 />
@@ -3690,10 +3690,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 onClick={addSubcontractor}
                                                                 disabled={mode === 'view' || !canEdit}
                                                                 sx={{
-                                                                    borderColor: '#6B46C1',
-                                                                    color: '#6B46C1',
+                                                                    borderColor: '#6b47c1',
+                                                                    color: '#6b47c1',
                                                                     '&:hover': {
-                                                                        borderColor: '#5B21B6',
+                                                                        borderColor: '#5a3aa1',
                                                                         backgroundColor: '#F3F4F6'
                                                                     }
                                                                 }}
@@ -3952,7 +3952,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 disabled={isAnalyzing || mode === 'view'}
                                                                 sx={{
                                                                     backgroundColor: 'white',
-                                                                    color: '#6B46C1',
+                                                                    color: '#6b47c1',
                                                                     width: '40px',
                                                                     height: '40px',
                                                                     alignSelf: 'center',
@@ -3968,7 +3968,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <AutoAwesomeIcon
                                                                     sx={{
                                                                         animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
-                                                                        color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                        color: isAnalyzing ? '#6b47c1' : 'inherit',
                                                                         filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                         '@keyframes sparkle': {
                                                                             '0%, 100%': {
@@ -4076,10 +4076,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4101,10 +4101,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.governmentProgram === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4150,10 +4150,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4171,10 +4171,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.constructionRenovation === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4220,10 +4220,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4241,10 +4241,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolition === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4290,10 +4290,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4311,10 +4311,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.civilEngineering === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4360,10 +4360,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4381,10 +4381,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_1 === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4430,10 +4430,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4451,10 +4451,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.tama38_2 === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4500,10 +4500,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4521,10 +4521,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.preservation === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4666,10 +4666,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     borderRadius: '0 4px 4px 0',
                                                                     border: '1px solid #d1d5db',
                                                                     borderLeft: 'none',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === false ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -4691,10 +4691,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     borderRadius: '4px 0 0 4px',
                                                                     border: '1px solid #d1d5db',
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#6B46C1' : 'transparent',
-                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'white' : '#6B46C1',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#6b47c1' : 'transparent',
+                                                                    color: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? 'white' : '#6b47c1',
                                                                     '&:hover': {
-                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#5B21B6' : '#f3f4f6',
+                                                                        backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.sharedBasementFloors === true ? '#5a3aa1' : '#f3f4f6',
                                                                     },
                                                                     minWidth: '50px',
                                                                     height: '32px',
@@ -5277,7 +5277,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={isAnalyzing || mode === 'view'}
                                                             sx={{
                                                                 backgroundColor: 'white',
-                                                                color: '#6B46C1',
+                                                                color: '#6b47c1',
                                                                 width: '48px',
                                                                 height: '48px',
                                                                 '&:hover': {
@@ -5292,7 +5292,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <AutoAwesomeIcon
                                                                 sx={{
                                                                     animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
-                                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                    color: isAnalyzing ? '#6b47c1' : 'inherit',
                                                                     filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                     '@keyframes sparkle': {
                                                                         '0%, 100%': {
@@ -5397,7 +5397,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{
-                                                        color: '#6B46C1',
+                                                        color: '#6b47c1',
                                                         '&:hover': {
                                                             backgroundColor: '#f3f4f6'
                                                         }
@@ -5442,7 +5442,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{
-                                                        color: '#6B46C1',
+                                                        color: '#6b47c1',
                                                         '&:hover': {
                                                             backgroundColor: '#f3f4f6'
                                                         }
@@ -5524,10 +5524,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5549,10 +5549,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.soilConsultantReport?.perimeterDewatering === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5626,7 +5626,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={isAnalyzing || mode === 'view'}
                                                             sx={{
                                                                 backgroundColor: 'white',
-                                                                color: '#6B46C1',
+                                                                color: '#6b47c1',
                                                                 width: '48px',
                                                                 height: '48px',
                                                                 '&:hover': {
@@ -5641,7 +5641,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <AutoAwesomeIcon
                                                                 sx={{
                                                                     animation: isAnalyzing ? 'sparkle 1.5s ease-in-out infinite' : 'none',
-                                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                                    color: isAnalyzing ? '#6b47c1' : 'inherit',
                                                                     filter: isAnalyzing ? 'drop-shadow(0 0 8px rgba(107, 70, 193, 0.6))' : 'none',
                                                                     '@keyframes sparkle': {
                                                                         '0%, 100%': {
@@ -5706,10 +5706,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5731,10 +5731,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.workOnExistingStructure === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5825,10 +5825,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5850,10 +5850,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.engineeringQuestionnaire?.buildingPlan?.demolitionWork === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -5930,10 +5930,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -5951,10 +5951,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6047,10 +6047,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6068,10 +6068,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6133,18 +6133,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             rows={3}
                                             sx={{
                                                 '& .MuiInputBase-input': {
-                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                    color: isAnalyzing ? '#6b47c1' : 'inherit',
                                                     fontStyle: isAnalyzing ? 'italic' : 'normal'
                                                 },
                                                 '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused fieldset': {
-                                                        borderColor: '#6B46C1',
+                                                        borderColor: '#6b47c1',
                                                     },
                                                 },
                                                 '& .MuiInputLabel-root': {
-                                                    color: '#6B46C1',
+                                                    color: '#6b47c1',
                                                     '&.Mui-focused': {
-                                                        color: '#6B46C1',
+                                                        color: '#6b47c1',
                                                     },
                                                 },
                                             }}
@@ -6160,18 +6160,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             rows={3}
                                             sx={{
                                                 '& .MuiInputBase-input': {
-                                                    color: isAnalyzing ? '#6B46C1' : 'inherit',
+                                                    color: isAnalyzing ? '#6b47c1' : 'inherit',
                                                     fontStyle: isAnalyzing ? 'italic' : 'normal'
                                                 },
                                                 '& .MuiOutlinedInput-root': {
                                                     '&.Mui-focused fieldset': {
-                                                        borderColor: '#6B46C1',
+                                                        borderColor: '#6b47c1',
                                                     },
                                                 },
                                                 '& .MuiInputLabel-root': {
-                                                    color: '#6B46C1',
+                                                    color: '#6b47c1',
                                                     '&.Mui-focused': {
-                                                        color: '#6B46C1',
+                                                        color: '#6b47c1',
                                                     },
                                                 },
                                             }}
@@ -6212,10 +6212,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6235,10 +6235,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.adjacentBuildings?.exists === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6328,10 +6328,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.electricalCables?.exists === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.electricalCables?.exists === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6351,10 +6351,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.electricalCables?.exists === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.electricalCables?.exists === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.electricalCables?.exists === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6414,10 +6414,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6437,10 +6437,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.undergroundInfrastructure?.exists === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6500,10 +6500,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.kindergartens?.exists === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.kindergartens?.exists === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6523,10 +6523,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.kindergartens?.exists === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.kindergartens?.exists === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.kindergartens?.exists === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6587,10 +6587,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.onMountainRidge === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.onMountainRidge === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6610,10 +6610,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.onMountainRidge === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.onMountainRidge === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.onMountainRidge === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6661,10 +6661,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.environmentalSurvey?.inValley === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.inValley === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.inValley === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.inValley === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.inValley === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.inValley === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6684,10 +6684,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.environmentalSurvey?.inValley === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.environmentalSurvey?.inValley === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.environmentalSurvey?.inValley === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.environmentalSurvey?.inValley === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.environmentalSurvey?.inValley === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.environmentalSurvey?.inValley === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -6784,10 +6784,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.blastingWork === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.blastingWork === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.blastingWork === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -6805,10 +6805,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.blastingWork === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.blastingWork === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.blastingWork === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -6877,10 +6877,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.quarryingWork === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.quarryingWork === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.quarryingWork === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -6898,10 +6898,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.quarryingWork === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.quarryingWork === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.quarryingWork === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -6970,10 +6970,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.demolitionWork === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.demolitionWork === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.demolitionWork === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -6991,10 +6991,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.demolitionWork === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.demolitionWork === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.demolitionWork === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -7063,10 +7063,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.retainingWalls === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.retainingWalls === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.retainingWalls === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -7084,10 +7084,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.environmentalSurvey?.retainingWalls === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.environmentalSurvey?.retainingWalls === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.environmentalSurvey?.retainingWalls === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -7159,7 +7159,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7178,7 +7178,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7198,7 +7198,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7218,7 +7218,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7242,7 +7242,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7261,7 +7261,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7281,7 +7281,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7301,7 +7301,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7325,7 +7325,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7344,7 +7344,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7364,7 +7364,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7384,7 +7384,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             height: 40,
                                                                             '& fieldset': { borderColor: '#e0e0e0' },
                                                                             '&:hover fieldset': { borderColor: '#bdbdbd' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6B46C1' }
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
                                                                         }
                                                                     }}
                                                                 />
@@ -7455,10 +7455,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -7478,10 +7478,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.runoffTreatmentPlan === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -7528,10 +7528,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -7551,10 +7551,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.entrancesOppositeWaterFlow === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -7604,10 +7604,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -7627,10 +7627,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.hydrologicalPlan?.basementPumpsAvailable === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.hydrologicalPlan?.basementPumpsAvailable === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -8338,7 +8338,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         aiIcon={
                                             <AutoAwesomeIcon
                                                 sx={{
-                                                    color: '#6B46C1',
+                                                    color: '#6b47c1',
                                                     fontSize: '24px',
                                                     filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
                                                 }}
@@ -9122,7 +9122,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         aiIcon={
                                             <AutoAwesomeIcon
                                                 sx={{
-                                                    color: '#6B46C1',
+                                                    color: '#6b47c1',
                                                     fontSize: '24px',
                                                     filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
                                                 }}
@@ -9557,10 +9557,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.machineryCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.machineryCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9578,10 +9578,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.machineryCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.machineryCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9670,10 +9670,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.theftCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9691,10 +9691,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.theftCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9786,10 +9786,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.workPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.workPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9807,10 +9807,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.workPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.workPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9902,10 +9902,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -9923,10 +9923,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10018,10 +10018,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10039,10 +10039,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10135,10 +10135,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10156,10 +10156,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? 'white' : '#6B46C1',
+                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10212,8 +10212,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות לפינוי הריסות (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -10230,8 +10230,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות שכר אדריכלים ואחרים (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -10248,8 +10248,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6B46C1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6B46C1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5B21B6' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -10313,10 +10313,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 borderRadius: '0 4px 4px 0',
                                                                 border: '1px solid #d1d5db',
                                                                 borderLeft: 'none',
-                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.propertyPledge?.required === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.propertyPledge?.required === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === false ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -10334,10 +10334,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             sx={{
                                                                 borderRadius: '4px 0 0 4px',
                                                                 border: '1px solid #d1d5db',
-                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.propertyPledge?.required === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.propertyPledge?.required === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
-                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#5B21B6' : '#f3f4f6',
+                                                                    backgroundColor: project?.insuranceSpecification?.propertyPledge?.required === true ? '#5a3aa1' : '#f3f4f6',
                                                                 },
                                                                 minWidth: '50px',
                                                                 height: '32px',
@@ -10626,10 +10626,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10647,10 +10647,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10734,10 +10734,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10755,10 +10755,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10838,10 +10838,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         borderRadius: '0 4px 4px 0',
                                                         border: '1px solid #d1d5db',
                                                         borderLeft: 'none',
-                                                        backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10859,10 +10859,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     sx={{
                                                         borderRadius: '4px 0 0 4px',
                                                         border: '1px solid #d1d5db',
-                                                        backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
-                                                            backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? '#5B21B6' : '#f3f4f6',
+                                                            backgroundColor: project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                         },
                                                         minWidth: '50px',
                                                         height: '32px',
@@ -10962,8 +10962,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         height: '32px',
                                                         textTransform: 'none',
                                                         fontSize: '0.875rem',
-                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? 'white' : '#6b47c1',
                                                         '&:hover': {
                                                             backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
                                                         }
@@ -10982,8 +10982,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         height: '32px',
                                                         textTransform: 'none',
                                                         fontSize: '0.875rem',
-                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? 'white' : '#6b47c1',
                                                         '&:hover': {
                                                             backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
                                                         }
@@ -11066,8 +11066,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11086,8 +11086,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11170,8 +11170,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11190,8 +11190,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11270,8 +11270,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11290,8 +11290,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 height: '32px',
                                                                 textTransform: 'none',
                                                                 fontSize: '0.875rem',
-                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? '#6B46C1' : 'transparent',
-                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                                backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? '#6b47c1' : 'transparent',
+                                                                color: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? 'white' : '#6b47c1',
                                                                 '&:hover': {
                                                                     backgroundColor: project?.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
                                                                 }
@@ -11343,10 +11343,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     borderColor: '#d0d0d0'
                                                 },
                                                 '&:hover fieldset': {
-                                                    borderColor: '#882fd7'
+                                                    borderColor: '#6b47c1'
                                                 },
                                                 '&.Mui-focused fieldset': {
-                                                    borderColor: '#882fd7'
+                                                    borderColor: '#6b47c1'
                                                 }
                                             }
                                         }}
@@ -11356,9 +11356,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         startIcon={<AddIcon />}
                                         onClick={handleOpenClaimDialog}
                                         sx={{
-                                            backgroundColor: '#882fd7',
+                                            backgroundColor: '#6b47c1',
                                             '&:hover': {
-                                                backgroundColor: '#6a1b9a'
+                                                backgroundColor: '#5a3aa1'
                                             },
                                             minWidth: 'auto',
                                             px: 3
@@ -11377,11 +11377,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             '& .MuiTab-root': {
                                                 color: '#6B7280',
                                                 '&.Mui-selected': {
-                                                    color: '#882fd7',
+                                                    color: '#6b47c1',
                                                 },
                                             },
                                             '& .MuiTabs-indicator': {
-                                                backgroundColor: '#882fd7',
+                                                backgroundColor: '#6b47c1',
                                             },
                                         }}
                                     >
@@ -11446,7 +11446,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <Box sx={{
                                                     height: '100%',
                                                     width: '66%',
-                                                    bgcolor: '#6B46C1',
+                                                    bgcolor: '#6b47c1',
                                                     borderRadius: 10,
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -11527,7 +11527,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 בטיחות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.5
                                                 </Typography>
                                             </Box>
@@ -11562,7 +11562,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 ביטחון וגישה
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                                                     Avg. Score 9.5
                                                 </Typography>
                                             </Box>
@@ -11597,7 +11597,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת כיבוי אש
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.1
                                                 </Typography>
                                             </Box>
@@ -11632,7 +11632,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 מערכת מים
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                                                     Avg. Score 7.9
                                                 </Typography>
                                             </Box>
@@ -11667,7 +11667,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 רעידות מבניות
                                             </Typography>
                                             <Box sx={{ ml: 'auto' }}>
-                                                <Typography variant="h6" sx={{ color: '#6B46C1', fontWeight: 'bold' }}>
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
                                                     Avg. Score 8.9
                                                 </Typography>
                                             </Box>

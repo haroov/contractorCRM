@@ -15,7 +15,7 @@ const theme = createTheme({
   direction: 'rtl',
   palette: {
     primary: {
-      main: '#6B46C1', // סגול שוקו
+      main: '#6b47c1', // סגול שוקו
     },
     secondary: {
       main: '#dc004e',
@@ -30,10 +30,10 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
           },
         },
@@ -43,10 +43,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused fieldset': {
-            borderColor: '#6B46C1', // סגול שוקו
+            borderColor: '#6b47c1', // סגול שוקו
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6B46C1', // סגול שוקו
+            borderColor: '#6b47c1', // סגול שוקו
           },
         },
       },
@@ -56,10 +56,10 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
           },
         },
@@ -69,10 +69,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&.Mui-focused fieldset': {
-            borderColor: '#6B46C1', // סגול שוקו
+            borderColor: '#6b47c1', // סגול שוקו
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6B46C1', // סגול שוקו
+            borderColor: '#6b47c1', // סגול שוקו
           },
         },
       },
@@ -82,10 +82,10 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&.Mui-focused fieldset': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6B46C1', // סגול שוקו
+              borderColor: '#6b47c1', // סגול שוקו
             },
           },
         },
