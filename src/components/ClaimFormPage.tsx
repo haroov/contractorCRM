@@ -99,7 +99,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
         setSaving(true);
         try {
-            const response = await fetch('http://localhost:3001/api/claims', {
+            const response = await fetch('https://dash.chocoinsurance.com/api/claims', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,11 +113,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     message: 'התביעה נשמרה בהצלחה',
                     severity: 'success'
                 });
-
-                // Navigate back to project after successful save
-                setTimeout(() => {
-                    navigate(-1);
-                }, 2000);
             } else {
                 throw new Error('Failed to save claim');
             }
