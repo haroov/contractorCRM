@@ -154,17 +154,14 @@ export default function ClaimFormPage() {
     };
 
     return (
-        <Box sx={{ 
-            minHeight: '100vh', 
-            bgcolor: '#f5f5f5',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            {/* Top Banner - Same as ProjectDetailsPage */}
-            <Box sx={{ 
-                bgcolor: 'white', 
-                borderBottom: '1px solid #e0e0e0',
-                p: 2
+        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f4f6f8', width: '100%', maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto' }}>
+            {/* Main Header with System Name and Profile - Same as contractor card */}
+            <Paper elevation={2} sx={{
+                p: { xs: 1, sm: 2 },
+                mb: 2,
+                bgcolor: 'white',
+                width: '100%',
+                maxWidth: '100%'
             }}>
                 <Box sx={{ 
                     display: 'flex', 
@@ -205,87 +202,73 @@ export default function ClaimFormPage() {
                         </IconButton>
                     </Box>
                 </Box>
-            </Box>
+            </Paper>
 
-            {/* Project Title and Action Buttons */}
-            <Box sx={{ 
-                bgcolor: 'white', 
-                borderBottom: '1px solid #e0e0e0',
-                p: 2,
-                mb: 2
-            }}>
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    maxWidth: '1200px',
-                    mx: 'auto'
-                }}>
-                    <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
-                        {formData.projectName} - תביעה
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Button
-                            variant="outlined"
-                            onClick={handleBack}
-                            sx={{ 
-                                minWidth: 'auto',
-                                px: 2,
-                                color: '#6b47c1',
-                                borderColor: '#6b47c1',
-                                '&:hover': {
-                                    borderColor: '#5a3aa1',
-                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
-                                }
-                            }}
-                        >
-                            חזרה
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            onClick={handleClose}
-                            sx={{ 
-                                minWidth: 'auto',
-                                px: 2,
-                                color: '#6b47c1',
-                                borderColor: '#6b47c1',
-                                '&:hover': {
-                                    borderColor: '#5a3aa1',
-                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
-                                }
-                            }}
-                        >
-                            סגירה
-                        </Button>
-                        <Button
-                            variant="contained"
-                            startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-                            onClick={handleSave}
-                            disabled={saving}
-                            sx={{
-                                minWidth: 'auto',
-                                px: 2,
-                                bgcolor: '#6b47c1',
-                                '&:hover': {
-                                    bgcolor: '#5a3aa1'
-                                }
-                            }}
-                        >
-                            {saving ? 'שומר...' : 'שמירה'}
-                        </Button>
-                    </Box>
-                </Box>
-            </Box>
+            {/* Claim Card - Same style as project card */}
+            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    {/* Claim Header and Tabs - Combined Sticky */}
+                    <Box sx={{
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1000,
+                        bgcolor: 'white',
+                        borderBottom: '1px solid #e0e0e0',
+                        p: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2
+                    }}>
+                        {/* Claim Title and Action Buttons */}
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            bgcolor: 'white',
+                            color: 'black',
+                            flexWrap: 'wrap',
+                            gap: 1
+                        }}>
+                            <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
+                                {formData.projectName} - תביעה
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={handleClose}
+                                    sx={{ 
+                                        minWidth: 'auto',
+                                        px: 2,
+                                        color: '#6b47c1',
+                                        borderColor: '#6b47c1',
+                                        '&:hover': {
+                                            borderColor: '#5a3aa1',
+                                            backgroundColor: 'rgba(107, 71, 193, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    סגירה
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={saving ? <CircularProgress size={20} color="inherit" /> : null}
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    sx={{
+                                        minWidth: 'auto',
+                                        px: 2,
+                                        bgcolor: '#6b47c1',
+                                        '&:hover': {
+                                            bgcolor: '#5a3aa1'
+                                        }
+                                    }}
+                                >
+                                    {saving ? 'שומר...' : 'שמירה'}
+                                </Button>
+                            </Box>
+                        </Box>
 
-            {/* Main Content */}
-            <Box sx={{ flex: 1, p: 2 }}>
-                <Paper sx={{ 
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    boxShadow: 1
-                }}>
-                    {/* Tabs */}
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        {/* Tabs */}
                         <Tabs
                             value={activeTab}
                             onChange={handleTabChange}
@@ -309,7 +292,7 @@ export default function ClaimFormPage() {
                     </Box>
 
                     {/* Tab Content */}
-                    <Box sx={{ p: 3 }}>
+                    <Box sx={{ flex: 1, p: 3, overflowY: 'auto' }}>
                         {activeTab === 0 && (
                             <Box>
                                 <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
