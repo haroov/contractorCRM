@@ -8,6 +8,7 @@ import ProjectDetailsPage from './components/ProjectDetailsPage';
 import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
 import UnifiedContractorView from './components/UnifiedContractorView';
+import ClaimFormPage from './components/ClaimFormPage';
 // Removed API imports - using simple localStorage-based auth
 
 const theme = createTheme({
@@ -381,6 +382,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <UserManagement currentUser={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/claim-form"
+              element={
+                <ProtectedRoute>
+                  <ClaimFormPage />
                 </ProtectedRoute>
               }
             />

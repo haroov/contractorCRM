@@ -308,6 +308,11 @@ const enrichmentRoutes = require('./routes/enrichment.js');
 app.use('/api/enrichment', enrichmentRoutes);
 console.log('✅ Enrichment routes configured');
 
+// Import claims routes
+const claimsRoutes = require('./routes/claims.js');
+app.use('/api/claims', claimsRoutes);
+console.log('✅ Claims routes configured');
+
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
