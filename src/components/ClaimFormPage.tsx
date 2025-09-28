@@ -215,8 +215,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             color: 'black',
                             flexWrap: 'wrap',
                             gap: 1,
-                            p: 2,
-                            borderBottom: '1px solid #e0e0e0'
+                            p: 2
                         }}>
                             <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
                                 {formData.projectName} - תביעה
@@ -271,6 +270,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 '& .MuiTabs-indicator': {
                                     backgroundColor: '#6b47c1',
                                 },
+                                borderBottom: '1px solid #e0e0e0'
                             }}
                         >
                             <Tab label="כללי" />
