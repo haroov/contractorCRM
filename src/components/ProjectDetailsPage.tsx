@@ -3621,7 +3621,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                                                             <Box>
                                                                                 <FileUpload
-                                                                                    label=""
+                                                                                    label="הסכם התקשרות"
                                                                                     value={(subcontractor as any).agreementFile || ''}
                                                                                     thumbnailUrl={(subcontractor as any).agreementThumbnail || ''}
                                                                                     projectId={project?._id || project?.id}
