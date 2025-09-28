@@ -5229,127 +5229,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                     </Box>
 
-                                    {/* שורה 6 - הוצאות לפינוי הריסות */}
-                                    <Box sx={{ 
-                                        display: 'grid', 
-                                        gridTemplateColumns: '1fr 1fr', 
-                                        gap: 2, 
-                                        mb: 2 
-                                    }}>
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
-                                            <Box sx={{
-                                                border: '1px solid #d1d5db',
-                                                borderRadius: '4px',
-                                                backgroundColor: 'white',
-                                                minHeight: '56px',
-                                                padding: '0 14px',
-                                                direction: 'rtl',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'space-between',
-                                                width: '100%'
-                                            }}>
-                                                <Typography sx={{
-                                                    fontSize: '1rem',
-                                                    color: 'text.secondary',
-                                                    marginRight: '10px'
-                                                }}>
-                                                    הוצאות לפינוי הריסות
-                                                </Typography>
-                                                <Box sx={{
-                                                    display: 'flex',
-                                                    gap: 0,
-                                                    alignItems: 'center',
-                                                    justifyContent: 'flex-start',
-                                                    marginLeft: '10px'
-                                                }}>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>(במקרה ביטוח)</Typography>
-                                                    <Button
-                                                        variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', false)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        sx={{
-                                                            borderRadius: '0 4px 4px 0',
-                                                            border: '1px solid #d1d5db',
-                                                            borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.debrisRemoval === false ? 'white' : '#6B46C1',
-                                                            '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#5B21B6' : '#f3f4f6',
-                                                            },
-                                                            minWidth: '50px',
-                                                            height: '32px',
-                                                            textTransform: 'none',
-                                                            fontSize: '0.875rem',
-                                                            marginRight: '0px'
-                                                        }}
-                                                    >
-                                                        לא
-                                                    </Button>
-                                                    <Button
-                                                        variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', true)}
-                                                        disabled={mode === 'view' || !canEdit}
-                                                        sx={{
-                                                            borderRadius: '4px 0 0 4px',
-                                                            border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#6B46C1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.debrisRemoval === true ? 'white' : '#6B46C1',
-                                                            '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#5B21B6' : '#f3f4f6',
-                                                            },
-                                                            minWidth: '50px',
-                                                            height: '32px',
-                                                            textTransform: 'none',
-                                                            fontSize: '0.875rem'
-                                                        }}
-                                                    >
-                                                        כן
-                                                    </Button>
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
-                                            {project?.insuranceSpecification?.debrisRemoval === true && (
-                                                <TextField
-                                                    fullWidth
-                                                    label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.debrisRemovalAmount ? 
-                                                        parseInt(project.insuranceSpecification.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''}
-                                                    onChange={(e) => {
-                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.debrisRemovalAmount', numericValue || '');
-                                                    }}
-                                                    disabled={mode === 'view' || !canEdit}
-                                                    size="small"
-                                                    type="text"
-                                                    inputMode="numeric"
-                                                    sx={{ 
-                                                        direction: 'rtl',
-                                                        '& .MuiInputBase-root': {
-                                                            minHeight: '56px'
-                                                        },
-                                                        '& .MuiInputLabel-root': {
-                                                            top: '0px'
-                                                        }
-                                                    }}
-                                                    InputProps={{
-                                                        endAdornment: (
-                                                            <Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>
-                                                        )
-                                                    }}
-                                                />
-                                            )}
-                                        </Box>
-                                    </Box>
+                                    
 
                                     {/* שורה 7 - הוצאות שכר אדריכלים ואחרים */}
                                     <Box sx={{ 
@@ -9000,12 +8880,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 1,
+                                                    gap: 0,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage', false)}
@@ -9122,12 +9001,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 1,
+                                                    gap: 0,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', false)}
@@ -9244,12 +9122,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 1,
+                                                    gap: 0,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', false)}
@@ -9366,12 +9243,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Typography>
                                                 <Box sx={{
                                                     display: 'flex',
-                                                    gap: 1,
+                                                    gap: 0,
                                                     alignItems: 'center',
                                                     justifyContent: 'flex-start',
                                                     marginLeft: '10px'
                                                 }}>
-                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
                                                         onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', false)}
