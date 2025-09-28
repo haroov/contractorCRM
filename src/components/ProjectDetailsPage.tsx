@@ -466,6 +466,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
+    const [claims, setClaims] = useState<any[]>([]);
+    const [loadingClaims, setLoadingClaims] = useState(false);
     const [bankNames, setBankNames] = useState<string[]>([
         'בנק הפועלים',
         'בנק לאומי',
@@ -885,6 +887,24 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleClaimsFilterTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setClaimsFilterTab(newValue);
+    };
+
+    const loadClaims = async () => {
+        if (!project?._id && !project?.id) return;
+        
+        setLoadingClaims(true);
+        try {
+            const projectId = project._id || project.id;
+            const response = await fetch(`/api/claims/project/${projectId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setClaims(data.claims || []);
+            }
+        } catch (error) {
+            console.error('Error loading claims:', error);
+        } finally {
+            setLoadingClaims(false);
+        }
     };
 
     const handleOpenClaimDialog = () => {
@@ -1651,6 +1671,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             });
         }
     }, [project?.subcontractors]);
+
+    // Load claims when project is loaded
+    useEffect(() => {
+        if (project && (project._id || project.id)) {
+            loadClaims();
+        }
+    }, [project]);
 
     // Load bank names and branches from enrichment data
     useEffect(() => {
@@ -11395,21 +11422,95 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 </Box>
 
                                 {/* Claims Content Area */}
-                                <Box sx={{
-                                    minHeight: '400px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    border: '1px dashed #e0e0e0',
-                                    borderRadius: 1,
-                                    backgroundColor: '#fafafa'
-                                }}>
-                                    <Typography variant="body1" color="text.secondary">
-                                        {claimsFilterTab === 0 && 'אין תביעות להצגה'}
-                                        {claimsFilterTab === 1 && 'אין תביעות פתוחות'}
-                                        {claimsFilterTab === 2 && 'אין תביעות סגורות'}
-                                    </Typography>
-                                </Box>
+                                {loadingClaims ? (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                        <CircularProgress />
+                                    </Box>
+                                ) : (
+                                    <Box sx={{ minHeight: '400px' }}>
+                                        {claims.length === 0 ? (
+                                            <Box sx={{
+                                                minHeight: '400px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                border: '1px dashed #e0e0e0',
+                                                borderRadius: 1,
+                                                backgroundColor: '#fafafa'
+                                            }}>
+                                                <Typography variant="body1" color="text.secondary">
+                                                    {claimsFilterTab === 0 && 'אין תביעות להצגה'}
+                                                    {claimsFilterTab === 1 && 'אין תביעות פתוחות'}
+                                                    {claimsFilterTab === 2 && 'אין תביעות סגורות'}
+                                                </Typography>
+                                            </Box>
+                                        ) : (
+                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תיאור</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סטטוס</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך יצירה</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>פעולות</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {claims
+                                                            .filter(claim => {
+                                                                if (claimsFilterTab === 0) return true; // הכל
+                                                                if (claimsFilterTab === 1) return claim.status === 'open'; // פתוחות
+                                                                if (claimsFilterTab === 2) return claim.status === 'closed'; // סגורות
+                                                                return true;
+                                                            })
+                                                            .map((claim, index) => (
+                                                                <TableRow key={claim._id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                                                    <TableCell sx={{ textAlign: 'right' }}>{claim.description || 'ללא תיאור'}</TableCell>
+                                                                    <TableCell sx={{ textAlign: 'right' }}>
+                                                                        <Box sx={{
+                                                                            display: 'inline-block',
+                                                                            px: 2,
+                                                                            py: 0.5,
+                                                                            borderRadius: 1,
+                                                                            backgroundColor: claim.status === 'open' ? '#e3f2fd' : '#f3e5f5',
+                                                                            color: claim.status === 'open' ? '#1976d2' : '#7b1fa2',
+                                                                            fontSize: '0.875rem',
+                                                                            fontWeight: 'bold'
+                                                                        }}>
+                                                                            {claim.status === 'open' ? 'פתוחה' : 'סגורה'}
+                                                                        </Box>
+                                                                    </TableCell>
+                                                                    <TableCell sx={{ textAlign: 'right' }}>
+                                                                        {new Date(claim.createdAt).toLocaleDateString('he-IL')}
+                                                                    </TableCell>
+                                                                    <TableCell sx={{ textAlign: 'right' }}>
+                                                                        <Button
+                                                                            size="small"
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                borderColor: '#6b47c1',
+                                                                                color: '#6b47c1',
+                                                                                '&:hover': {
+                                                                                    borderColor: '#5a3aa1',
+                                                                                    backgroundColor: '#f3f0ff'
+                                                                                }
+                                                                            }}
+                                                                            onClick={() => {
+                                                                                const claimUrl = `/claim-form?projectId=${project?._id || project?.id}&projectName=${encodeURIComponent(project?.projectName || '')}&claimId=${claim._id}`;
+                                                                                navigate(claimUrl);
+                                                                            }}
+                                                                        >
+                                                                            עריכה
+                                                                        </Button>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        )}
+                                    </Box>
+                                )}
                             </Box>
                         )}
 

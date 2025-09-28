@@ -7,6 +7,8 @@ router.post('/', async (req, res) => {
     try {
         const db = await getDb();
         const claimsCollection = db.collection('claims');
+        const projectsCollection = db.collection('projects');
+        const { ObjectId } = require('mongodb');
         
         const claimData = {
             ...req.body,
@@ -15,6 +17,20 @@ router.post('/', async (req, res) => {
         };
         
         const result = await claimsCollection.insertOne(claimData);
+        
+        // Add claim ID to project's claimsId array
+        if (req.body.projectId) {
+            try {
+                await projectsCollection.updateOne(
+                    { _id: new ObjectId(req.body.projectId) },
+                    { $push: { claimsId: result.insertedId.toString() } }
+                );
+                console.log('✅ Added claim ID to project:', req.body.projectId);
+            } catch (projectError) {
+                console.error('❌ Error updating project with claim ID:', projectError);
+                // Don't fail the main request if project update fails
+            }
+        }
         
         res.status(201).json({
             success: true,
