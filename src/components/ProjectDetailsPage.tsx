@@ -9986,10 +9986,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Box sx={{ 
                                             display: 'flex', 
                                             alignItems: 'center', 
-                                            minHeight: '56px',
+                                            height: '40px',
                                             border: '1px solid #d1d5db',
                                             borderRadius: '4px',
-                                            padding: '12px',
+                                            padding: '8px 12px',
                                             backgroundColor: 'white'
                                         }}>
                                             <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>
@@ -9997,13 +9997,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                             <Box sx={{ display: 'flex', gap: 0, marginRight: 'auto' }}>
                                                 <Button
-                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'contained' : 'outlined'}
+                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'contained' : 'outlined'}
                                                     size="small"
-                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', true)}
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', false)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{ 
                                                         minWidth: '60px',
-                                                        height: '40px',
+                                                        height: '32px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
                                                         borderRadius: '4px 0 0 4px',
@@ -10012,16 +10012,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                     }}
                                                 >
-                                                    כן
+                                                    לא
                                                 </Button>
                                                 <Button
-                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === false ? 'contained' : 'outlined'}
+                                                    variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'contained' : 'outlined'}
                                                     size="small"
-                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', false)}
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.hasCoverage', true)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     sx={{ 
                                                         minWidth: '60px',
-                                                        height: '40px',
+                                                        height: '32px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
                                                         borderRadius: '0 4px 4px 0',
@@ -10032,7 +10032,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
                                                     }}
                                                 >
-                                                    לא
+                                                    כן
                                                 </Button>
                                             </Box>
                                         </Box>
