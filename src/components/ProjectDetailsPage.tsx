@@ -10167,7 +10167,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="גבול אחריות (₪)"
+                                                    label="תת גבול אחריות (₪)"
                                                     value={project?.insuranceSpecification?.consequentialDamage?.liabilityLimit ? parseInt(project.insuranceSpecification.consequentialDamage.liabilityLimit.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
@@ -10271,16 +10271,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="גבול אחריות (₪)"
+                                                    label="תת גבול אחריות (₪)"
                                                     value={project?.insuranceSpecification?.vibrationsWeakening?.liabilityLimit ? parseInt(project.insuranceSpecification.vibrationsWeakening.liabilityLimit.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.vibrationsWeakening.liabilityLimit', numericValue || '');
+                                                        const numericAmount = parseInt(numericValue) || 0;
+                                                        
+                                                        // הגבלה: 4,000,000 ₪ או 20% מגבול אחריות צד ג', הנמוך מביניהם
+                                                        const thirdPartyLimit = parseInt(project?.insuranceSpecification?.thirdPartyLiability?.liabilityLimit || '0') || 0;
+                                                        const twentyPercentLimit = Math.floor(thirdPartyLimit * 0.2);
+                                                        const maxLimit = Math.min(4000000, twentyPercentLimit);
+                                                        
+                                                        const finalValue = numericAmount > maxLimit ? maxLimit.toString() : numericValue;
+                                                        handleNestedFieldChange('insuranceSpecification.vibrationsWeakening.liabilityLimit', finalValue || '');
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
                                                     inputMode="numeric"
+                                                    helperText="מוגבל ל-4,000,000 ₪ או 20% מגבול אחריות צד ג', הנמוך מביניהם"
                                                     sx={{ 
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
