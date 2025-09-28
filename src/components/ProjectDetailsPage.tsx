@@ -2276,7 +2276,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             {/* Main Header with System Name and Profile - Sticky */}
             <Paper elevation={2} sx={{
                 p: { xs: 1, sm: 2 },
-                mb: 2,
                 bgcolor: 'white',
                 width: '100%',
                 maxWidth: '100%',
@@ -2355,7 +2354,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             </Paper>
 
             {/* Project Card - Same style as contractor card */}
-            <Box sx={{ p: 1, flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+            <Box sx={{ p: 1, pt: 2, flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                 <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Project Header and Tabs - Combined Sticky */}
                     <Box sx={{
