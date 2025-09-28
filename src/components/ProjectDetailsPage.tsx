@@ -9983,11 +9983,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         alignItems: 'flex-start'
                                     }}>
                                         {/* עמודה ראשונה - שאלה */}
-                                        <Box sx={{ display: 'flex', alignItems: 'center', minHeight: '56px' }}>
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            minHeight: '56px',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            padding: '12px',
+                                            backgroundColor: 'white'
+                                        }}>
                                             <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>
                                                 כיסוי לביטוח אחריות כלפי צד שלישי
                                             </Typography>
-                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                            <Box sx={{ display: 'flex', gap: 0, marginRight: 'auto' }}>
                                                 <Button
                                                     variant={project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true ? 'contained' : 'outlined'}
                                                     size="small"
@@ -9998,6 +10006,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         height: '40px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
+                                                        borderRadius: '4px 0 0 4px',
                                                         '&:hover': {
                                                             border: '1px solid #9ca3af'
                                                         }
@@ -10015,8 +10024,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         height: '40px',
                                                         fontSize: '0.875rem',
                                                         border: '1px solid #d1d5db',
+                                                        borderRadius: '0 4px 4px 0',
+                                                        borderLeft: 'none',
                                                         '&:hover': {
-                                                            border: '1px solid #9ca3af'
+                                                            border: '1px solid #9ca3af',
+                                                            borderLeft: 'none'
                                                         }
                                                     }}
                                                 >
@@ -10040,7 +10052,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     size="small"
                                                     type="text"
                                                     inputMode="numeric"
-                                                    sx={{ 
+                                                    sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
