@@ -195,14 +195,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 </Box>
             </Paper>
 
-            {/* Claim Card - Same style as project card */}
-            <Box sx={{ p: 1, pt: 2, flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                <Paper elevation={1} sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Claim Card - Same style as contractor card */}
+            <Box sx={{ p: 2 }}>
+                <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
                     {/* Claim Header and Tabs - Combined Sticky */}
                     <Box sx={{
                         position: 'sticky',
                         top: 0,
-                        zIndex: 1000,
+                        zIndex: 10,
                         bgcolor: 'white',
                         flexShrink: 0
                     }}>
