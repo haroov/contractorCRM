@@ -2610,203 +2610,209 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </TableCell>
                                                     </TableRow>
                                                 </TableHead>
-                                                    <TableBody>
-                                                        {project.stakeholders.map((stakeholder, index) => (
-                                                            <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
-                                                                <TableCell sx={{ minWidth: '150px' }}>
-                                                                    <Autocomplete
-                                                                        value={stakeholder.role}
-                                                                        onChange={(event, newValue) => {
-                                                                            handleStakeholderChange(index, 'role', newValue || '');
-                                                                        }}
-                                                                        onInputChange={(event, newInputValue) => {
-                                                                            handleStakeholderChange(index, 'role', newInputValue);
-                                                                        }}
-                                                                        freeSolo
-                                                                        options={[
-                                                                            'יזם',
-                                                                            'מזמין העבודה',
-                                                                            'קבלן ראשי',
-                                                                            'בנק / גוף פיננסי מלווה',
-                                                                            'קבלן משנה'
-                                                                        ]}
-                                                                        disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
-                                                                        renderInput={(params) => (
-                                                                            <TextField
-                                                                                {...params}
-                                                                                variant="outlined"
-                                                                                size="small"
-                                                                                sx={{
-                                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                        borderColor: '#6B46C1',
-                                                                                    },
-                                                                                }}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Box sx={{ position: 'relative' }}>
+                                                <TableBody>
+                                                    {project.stakeholders.map((stakeholder, index) => (
+                                                        <TableRow key={stakeholder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                            <TableCell sx={{ minWidth: '150px' }}>
+                                                                <Autocomplete
+                                                                    value={stakeholder.role}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleStakeholderChange(index, 'role', newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleStakeholderChange(index, 'role', newInputValue);
+                                                                    }}
+                                                                    freeSolo
+                                                                    options={[
+                                                                        'יזם',
+                                                                        'מזמין העבודה',
+                                                                        'קבלן ראשי',
+                                                                        'בנק / גוף פיננסי מלווה',
+                                                                        'קבלן משנה'
+                                                                    ]}
+                                                                    disabled={mode === 'view' || !canEdit || stakeholder.isDefault}
+                                                                    renderInput={(params) => (
                                                                         <TextField
-                                                                            fullWidth
-                                                                            value={stakeholder.companyId}
-                                                                            onChange={(e) => {
-                                                                                handleStakeholderChange(index, 'companyId', e.target.value);
-                                                                                // Auto-fetch company data when company ID is complete
-                                                                                if (e.target.value.replace(/\D/g, '').length >= 8) {
-                                                                                    fetchCompanyData(e.target.value.replace(/\D/g, ''), index);
-                                                                                }
-                                                                            }}
-                                                                            disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                            {...params}
                                                                             variant="outlined"
                                                                             size="small"
-                                                                            placeholder="ח״פ"
-                                                                            inputProps={{
-                                                                                maxLength: 9,
-                                                                                pattern: '[0-9]*',
-                                                                                inputMode: 'numeric'
-                                                                            }}
-                                                                            error={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId)}
-                                                                            helperText={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId) ? 'ח״פ לא תקין' : ''}
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                     borderColor: '#6B46C1',
                                                                                 },
                                                                             }}
                                                                         />
-                                                                        {loadingCompanyData[`stakeholder-${index}`] && (
-                                                                            <CircularProgress
-                                                                                size={16}
-                                                                                sx={{
-                                                                                    position: 'absolute',
-                                                                                    left: 8,
-                                                                                    top: 'calc(50% - 8px)',
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box sx={{ position: 'relative' }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={stakeholder.companyId}
+                                                                        onChange={(e) => {
+                                                                            handleStakeholderChange(index, 'companyId', e.target.value);
+                                                                            // Auto-fetch company data when company ID is complete
+                                                                            if (e.target.value.replace(/\D/g, '').length >= 8) {
+                                                                                fetchCompanyData(e.target.value.replace(/\D/g, ''), index);
+                                                                            }
+                                                                        }}
+                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        placeholder="ח״פ"
+                                                                        inputProps={{
+                                                                            maxLength: 9,
+                                                                            pattern: '[0-9]*',
+                                                                            inputMode: 'numeric'
+                                                                        }}
+                                                                        error={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId)}
+                                                                        helperText={stakeholder.companyId && stakeholder.companyId.length >= 8 && !validateIsraeliId(stakeholder.companyId) ? 'ח״פ לא תקין' : ''}
+                                                                        sx={{
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
+                                                                    />
+                                                                    {loadingCompanyData[`stakeholder-${index}`] && (
+                                                                        <CircularProgress
+                                                                            size={16}
+                                                                            sx={{
+                                                                                position: 'absolute',
+                                                                                left: 8,
+                                                                                top: 'calc(50% - 8px)',
+                                                                                color: '#6B46C1',
+                                                                                verticalAlign: 'center'
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </Box>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={stakeholder.companyName}
+                                                                    onChange={(e) => handleStakeholderChange(index, 'companyName', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={stakeholder.phone}
+                                                                    onChange={(e) => handleStakeholderChange(index, 'phone', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={stakeholder.email}
+                                                                    onChange={(e) => handleStakeholderChange(index, 'email', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                                    {(stakeholder.role === 'מזמין העבודה' || stakeholder.role === 'קבלן ראשי') && (
+                                                                        <IconButton
+                                                                            onClick={() => duplicateEntrepreneurDetails(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{
+                                                                                color: 'grey.600',
+                                                                                '&:hover': {
                                                                                     color: '#6B46C1',
-                                                                                    verticalAlign: 'center'
+                                                                                    backgroundColor: '#F3F4F6'
+                                                                                }
+                                                                            }}
+                                                                            title="שכפל פרטי היזם"
+                                                                        >
+                                                                            <ContentCopyIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    )}
+                                                                    {(!stakeholder.isDefault || stakeholder.role === 'בנק / גוף פיננסי מלווה') && (
+                                                                        <IconButton
+                                                                            onClick={() => removeStakeholder(index)}
+                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            sx={{
+                                                                                color: 'grey.600',
+                                                                                '&:hover': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
+                                                                                },
+                                                                                '&:focus': {
+                                                                                    color: 'white',
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
+                                                                                }
+                                                                            }}
+                                                                            title="מחק בעל עניין"
+                                                                        >
+                                                                            <img
+                                                                                src="/assets/icon-trash.svg"
+                                                                                alt="מחק"
+                                                                                style={{
+                                                                                    width: '16px',
+                                                                                    height: '16px',
+                                                                                    filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
                                                                                 }}
                                                                             />
-                                                                        )}
-                                                                    </Box>
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={stakeholder.companyName}
-                                                                        onChange={(e) => handleStakeholderChange(index, 'companyName', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={stakeholder.phone}
-                                                                        onChange={(e) => handleStakeholderChange(index, 'phone', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={stakeholder.email}
-                                                                        onChange={(e) => handleStakeholderChange(index, 'email', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit || (stakeholder.isDefault && stakeholder.role === 'יזם')}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                                        {(stakeholder.role === 'מזמין העבודה' || stakeholder.role === 'קבלן ראשי') && (
-                                                                            <IconButton
-                                                                                onClick={() => duplicateEntrepreneurDetails(index)}
-                                                                                disabled={mode === 'view' || !canEdit}
-                                                                                sx={{
-                                                                                    color: 'grey.600',
-                                                                                    '&:hover': {
-                                                                                        color: '#6B46C1',
-                                                                                        backgroundColor: '#F3F4F6'
-                                                                                    }
-                                                                                }}
-                                                                                title="שכפל פרטי היזם"
-                                                                            >
-                                                                                <ContentCopyIcon fontSize="small" />
-                                                                            </IconButton>
-                                                                        )}
-                                                                        {(!stakeholder.isDefault || stakeholder.role === 'בנק / גוף פיננסי מלווה') && (
-                                                                            <IconButton
-                                                                                onClick={() => removeStakeholder(index)}
-                                                                                disabled={mode === 'view' || !canEdit}
-                                                                                sx={{
-                                                                                    color: 'grey.600',
-                                                                                    '&:hover': {
-                                                                                        color: 'white',
-                                                                                        backgroundColor: 'error.main'
-                                                                                    },
-                                                                                    '&:focus': {
-                                                                                        color: 'white',
-                                                                                        backgroundColor: 'error.main'
-                                                                                    }
-                                                                                }}
-                                                                                title="מחק בעל עניין"
-                                                                            >
-                                                                                <img
-                                                                                    src="/assets/icon-trash.svg"
-                                                                                    alt="מחק"
-                                                                                    style={{
-                                                                                        width: '16px',
-                                                                                        height: '16px',
-                                                                                        filter: 'brightness(0) saturate(100%) invert(40%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(86%)'
-                                                                                    }}
-                                                                                />
-                                                                            </IconButton>
-                                                                        )}
-                                                                    </Box>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        ))}
-
-                                                        {/* Add button row */}
-                                                        <TableRow>
-                                                            <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    onClick={addStakeholder}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderColor: '#6B46C1',
-                                                                        color: '#6B46C1',
-                                                                        '&:hover': {
-                                                                            borderColor: '#5B21B6',
-                                                                            backgroundColor: '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    + הוספה
-                                                                </Button>
+                                                                        </IconButton>
+                                                                    )}
+                                                                </Box>
                                                             </TableCell>
                                                         </TableRow>
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
+                                                    ))}
+
+                                                    {/* Add button row */}
+                                                    <TableRow>
+                                                        <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
+                                                            <Button
+                                                                variant="outlined"
+                                                                onClick={addStakeholder}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderColor: '#6B46C1',
+                                                                    color: '#6B46C1',
+                                                                    '&:hover': {
+                                                                        borderColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                + הוספה
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
                                     </Box>
                                 </Box>
 
@@ -2822,8 +2828,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     gap: { xs: 2, sm: 3 },
                                     p: 3,
                                     backgroundColor: 'white',
-                                    borderRadius: 2,
-                                    boxShadow: 1
                                 }}>
                                     {/* Role Holders Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
@@ -2998,16 +3002,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </TableRow>
 
                                                     {/* Additional roles */}
-                                                    {project?.roleHolders && project.roleHolders.length > 2 && project.roleHolders.slice(2).map((roleHolder, index) => (
+                                                    {project?.roleHolders && project.roleHolders.map((roleHolder, index) => (
                                                         <TableRow key={roleHolder.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
                                                             <TableCell>
                                                                 <Autocomplete
                                                                     value={roleHolder.role}
                                                                     onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newValue || '');
+                                                                        handleNestedFieldChange(`roleHolders.${index}.role`, newValue || '');
                                                                     }}
                                                                     onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newInputValue);
+                                                                        handleNestedFieldChange(`roleHolders.${index}.role`, newInputValue);
                                                                     }}
                                                                     freeSolo
                                                                     options={[
@@ -3155,7 +3159,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.fullName || ''}
-                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.fullName`, e.target.value)}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.fullName`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="שם מלא"
                                                                     sx={{
@@ -3171,7 +3175,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.mobilePhone || ''}
-                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.mobilePhone`, e.target.value)}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.mobilePhone`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="טלפון נייד"
                                                                     sx={{
@@ -3187,7 +3191,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     variant="outlined"
                                                                     size="small"
                                                                     value={roleHolder.email || ''}
-                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.email`, e.target.value)}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.email`, e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     placeholder="אימייל"
                                                                     sx={{
@@ -3202,7 +3206,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     <IconButton
                                                                         onClick={() => {
                                                                             if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל התפקיד?')) {
-                                                                                const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index + 2) || [];
+                                                                                const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index) || [];
                                                                                 handleNestedFieldChange('roleHolders', newRoleHolders);
                                                                             }
                                                                         }}
@@ -3211,11 +3215,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             color: 'grey.600',
                                                                             '&:hover': {
                                                                                 color: 'white',
-                                                                                backgroundColor: 'error.main'
+                                                                                backgroundColor: 'error.main',
+                                                                                '& img': {
+                                                                                    filter: 'brightness(0) invert(1)'
+                                                                                }
                                                                             },
                                                                             '&:focus': {
                                                                                 color: 'white',
-                                                                                backgroundColor: 'error.main'
+                                                                                backgroundColor: 'error.main',
+                                                                                '& img': {
+                                                                                    filter: 'brightness(0) invert(1)'
+                                                                                }
                                                                             }
                                                                         }}
                                                                         title="מחק בעל תפקיד"
@@ -3282,8 +3292,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     gap: { xs: 2, sm: 3 },
                                     p: 3,
                                     backgroundColor: 'white',
-                                    borderRadius: 2,
-                                    boxShadow: 1
                                 }}>
                                     {/* Subcontractors Table */}
                                     <Box sx={{ gridColumn: '1 / -1', mt: 2 }}>
@@ -3315,229 +3323,229 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         </TableCell>
                                                     </TableRow>
                                                 </TableHead>
-                                                    <TableBody>
-                                                        {project.subcontractors.map((subcontractor, index) => (
-                                                            <TableRow key={subcontractor.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
-                                                                <TableCell>
-                                                                    <Autocomplete
-                                                                        freeSolo
-                                                                        getOptionLabel={(option) => option}
-                                                                        isOptionEqualToValue={(option, value) => option === value}
-                                                                        options={[
-                                                                            'חפירה ודיפון',
-                                                                            'שלד',
-                                                                            'חשמל',
-                                                                            'אינסטלציה',
-                                                                            'ריצוף',
-                                                                            'גגן',
-                                                                            'איטום',
-                                                                            'גמר',
-                                                                            'גמרים',
-                                                                            'חלונות',
-                                                                            'דלתות',
-                                                                            'נגרות',
-                                                                            'צבע',
-                                                                            'אלקטרוניקה',
-                                                                            'מיזוג אוויר',
-                                                                            'אבטחה',
-                                                                            'גינון',
-                                                                            'כבישים וחנייה',
-                                                                            'ביטון',
-                                                                            'פלדה',
-                                                                            'אבן',
-                                                                            'טיח',
-                                                                            'קרמיקה',
-                                                                            'פרקט',
-                                                                            'טפט',
-                                                                            'תריסים',
-                                                                            'שערים',
-                                                                            'מעקות',
-                                                                            'מדרגות',
-                                                                            'מעליות',
-                                                                            'מערכות כיבוי',
-                                                                            'מערכות אזעקה',
-                                                                            'מערכות תקשורת',
-                                                                            'מערכות מיזוג',
-                                                                            'מערכות חימום',
-                                                                            'מערכות אוורור',
-                                                                            'מערכות ניקוז',
-                                                                            'מערכות ביוב',
-                                                                            'מערכות מים',
-                                                                            'מערכות גז',
-                                                                            'מערכות תאורה',
-                                                                            'מערכות בטיחות',
-                                                                            'מערכות גישה',
-                                                                            'מערכות ניטור',
-                                                                            'מערכות בקרה',
-                                                                            'מערכות אוטומציה',
-                                                                            'מערכות חכמות',
-                                                                            'מערכות אנרגיה',
-                                                                            'מערכות סולאריות',
-                                                                            'מערכות חיסכון',
-                                                                            'מערכות מיחזור',
-                                                                            'מערכות טיהור',
-                                                                            'מערכות סינון',
-                                                                            'מערכות חיטוי',
-                                                                            'מערכות ניקוי',
-                                                                            'מערכות תחזוקה',
-                                                                            'מערכות שירות',
-                                                                            'מערכות לוגיסטיקה',
-                                                                            'מערכות אספקה',
-                                                                            'מערכות הובלה',
-                                                                            'מערכות אחסון',
-                                                                            'מערכות אריזה',
-                                                                            'מערכות סימון',
-                                                                            'מערכות זיהוי',
-                                                                            'מערכות בקרת איכות',
-                                                                            'מערכות בדיקה',
-                                                                            'מערכות מדידה',
-                                                                            'מערכות כיול',
-                                                                            'מערכות תיקון',
-                                                                            'מערכות החלפה',
-                                                                            'מערכות עדכון',
-                                                                            'מערכות שדרוג',
-                                                                            'מערכות התקנה',
-                                                                            'מערכות הסרה',
-                                                                            'מערכות פירוק',
-                                                                            'מערכות הרכבה',
-                                                                            'מערכות חיבור',
-                                                                            'מערכות ניתוק',
-                                                                            'מערכות חיתוך',
-                                                                            'מערכות חריטה',
-                                                                            'מערכות ליטוש',
-                                                                            'מערכות הברקה',
-                                                                            'מערכות ציפוי',
-                                                                            'מערכות הגנה',
-                                                                            'מערכות בידוד',
-                                                                            'מערכות אטימה'
-                                                                        ]}
-                                                                        value={subcontractor.role || null}
-                                                                        onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
-                                                                        onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
-                                                                        onOpen={() => console.log('Autocomplete opened')}
-                                                                        onClose={() => console.log('Autocomplete closed')}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        size="small"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': {
-                                                                                height: '40px',
-                                                                            },
-                                                                        }}
-                                                                        renderInput={(params) => (
-                                                                            <TextField
-                                                                                {...params}
-                                                                                placeholder="תחום"
-                                                                                variant="outlined"
-                                                                                size="small"
-                                                                                sx={{
-                                                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                        borderColor: '#6B46C1',
-                                                                                    },
-                                                                                }}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Box sx={{ position: 'relative' }}>
+                                                <TableBody>
+                                                    {project.subcontractors.map((subcontractor, index) => (
+                                                        <TableRow key={subcontractor.id} sx={{ '&:hover': { backgroundColor: '#F9FAFB' } }}>
+                                                            <TableCell>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    getOptionLabel={(option) => option}
+                                                                    isOptionEqualToValue={(option, value) => option === value}
+                                                                    options={[
+                                                                        'חפירה ודיפון',
+                                                                        'שלד',
+                                                                        'חשמל',
+                                                                        'אינסטלציה',
+                                                                        'ריצוף',
+                                                                        'גגן',
+                                                                        'איטום',
+                                                                        'גמר',
+                                                                        'גמרים',
+                                                                        'חלונות',
+                                                                        'דלתות',
+                                                                        'נגרות',
+                                                                        'צבע',
+                                                                        'אלקטרוניקה',
+                                                                        'מיזוג אוויר',
+                                                                        'אבטחה',
+                                                                        'גינון',
+                                                                        'כבישים וחנייה',
+                                                                        'ביטון',
+                                                                        'פלדה',
+                                                                        'אבן',
+                                                                        'טיח',
+                                                                        'קרמיקה',
+                                                                        'פרקט',
+                                                                        'טפט',
+                                                                        'תריסים',
+                                                                        'שערים',
+                                                                        'מעקות',
+                                                                        'מדרגות',
+                                                                        'מעליות',
+                                                                        'מערכות כיבוי',
+                                                                        'מערכות אזעקה',
+                                                                        'מערכות תקשורת',
+                                                                        'מערכות מיזוג',
+                                                                        'מערכות חימום',
+                                                                        'מערכות אוורור',
+                                                                        'מערכות ניקוז',
+                                                                        'מערכות ביוב',
+                                                                        'מערכות מים',
+                                                                        'מערכות גז',
+                                                                        'מערכות תאורה',
+                                                                        'מערכות בטיחות',
+                                                                        'מערכות גישה',
+                                                                        'מערכות ניטור',
+                                                                        'מערכות בקרה',
+                                                                        'מערכות אוטומציה',
+                                                                        'מערכות חכמות',
+                                                                        'מערכות אנרגיה',
+                                                                        'מערכות סולאריות',
+                                                                        'מערכות חיסכון',
+                                                                        'מערכות מיחזור',
+                                                                        'מערכות טיהור',
+                                                                        'מערכות סינון',
+                                                                        'מערכות חיטוי',
+                                                                        'מערכות ניקוי',
+                                                                        'מערכות תחזוקה',
+                                                                        'מערכות שירות',
+                                                                        'מערכות לוגיסטיקה',
+                                                                        'מערכות אספקה',
+                                                                        'מערכות הובלה',
+                                                                        'מערכות אחסון',
+                                                                        'מערכות אריזה',
+                                                                        'מערכות סימון',
+                                                                        'מערכות זיהוי',
+                                                                        'מערכות בקרת איכות',
+                                                                        'מערכות בדיקה',
+                                                                        'מערכות מדידה',
+                                                                        'מערכות כיול',
+                                                                        'מערכות תיקון',
+                                                                        'מערכות החלפה',
+                                                                        'מערכות עדכון',
+                                                                        'מערכות שדרוג',
+                                                                        'מערכות התקנה',
+                                                                        'מערכות הסרה',
+                                                                        'מערכות פירוק',
+                                                                        'מערכות הרכבה',
+                                                                        'מערכות חיבור',
+                                                                        'מערכות ניתוק',
+                                                                        'מערכות חיתוך',
+                                                                        'מערכות חריטה',
+                                                                        'מערכות ליטוש',
+                                                                        'מערכות הברקה',
+                                                                        'מערכות ציפוי',
+                                                                        'מערכות הגנה',
+                                                                        'מערכות בידוד',
+                                                                        'מערכות אטימה'
+                                                                    ]}
+                                                                    value={subcontractor.role || null}
+                                                                    onChange={(_, newValue) => handleSubcontractorChange(index, 'role', newValue || '')}
+                                                                    onInputChange={(_, newInputValue) => handleSubcontractorChange(index, 'role', newInputValue)}
+                                                                    onOpen={() => console.log('Autocomplete opened')}
+                                                                    onClose={() => console.log('Autocomplete closed')}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    size="small"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: '40px',
+                                                                        },
+                                                                    }}
+                                                                    renderInput={(params) => (
                                                                         <TextField
-                                                                            fullWidth
-                                                                            value={subcontractor.companyId}
-                                                                            onChange={(e) => {
-                                                                                const value = e.target.value;
-                                                                                handleSubcontractorChange(index, 'companyId', value);
-                                                                                const numericValue = value.replace(/\D/g, '');
-                                                                                if (numericValue.length >= 8) {
-                                                                                    fetchSubcontractorData(numericValue, index);
-                                                                                }
-                                                                            }}
-                                                                            disabled={mode === 'view' || !canEdit}
+                                                                            {...params}
+                                                                            placeholder="תחום"
                                                                             variant="outlined"
                                                                             size="small"
-                                                                            placeholder="ח״פ"
-                                                                            inputProps={{
-                                                                                maxLength: 9,
-                                                                                pattern: '[0-9]*',
-                                                                                inputMode: 'numeric',
-                                                                                style: { textAlign: 'right' }
-                                                                            }}
-                                                                            error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
-                                                                            helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
                                                                             sx={{
                                                                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                                                                     borderColor: '#6B46C1',
                                                                                 },
                                                                             }}
                                                                         />
-                                                                        {loadingCompanyData[`subcontractor-${index}`] && (
-                                                                            <CircularProgress
-                                                                                size={16}
-                                                                                sx={{
-                                                                                    position: 'absolute',
-                                                                                    left: 8,
-                                                                                    top: 'calc(50% - 8px)',
-                                                                                    color: '#6B46C1',
-                                                                                    verticalAlign: 'center'
-                                                                                }}
-                                                                            />
-                                                                        )}
-                                                                    </Box>
-                                                                </TableCell>
-                                                                <TableCell>
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box sx={{ position: 'relative' }}>
                                                                     <TextField
                                                                         fullWidth
-                                                                        value={subcontractor.companyName}
-                                                                        onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        placeholder="שם החברה"
-                                                                        inputProps={{ style: { textAlign: 'right' } }}
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={subcontractor.address}
-                                                                        onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        placeholder="עיר"
-                                                                        inputProps={{ style: { textAlign: 'right' } }}
-                                                                        sx={{
-                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                                                borderColor: '#6B46C1',
-                                                                            },
-                                                                        }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        value={subcontractor.companyId && subcontractor.companyId.length >= 8
-                                                                            ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
-                                                                            : ''}
-                                                                        disabled={true} // Read-only field
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        placeholder="מספר קבלן"
-                                                                        inputProps={{ style: { textAlign: 'right' } }}
-                                                                        sx={{
-                                                                            '& .MuiInputBase-input': {
-                                                                                color: 'text.secondary',
-                                                                                backgroundColor: 'grey.100'
+                                                                        value={subcontractor.companyId}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            handleSubcontractorChange(index, 'companyId', value);
+                                                                            const numericValue = value.replace(/\D/g, '');
+                                                                            if (numericValue.length >= 8) {
+                                                                                fetchSubcontractorData(numericValue, index);
                                                                             }
                                                                         }}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        placeholder="ח״פ"
+                                                                        inputProps={{
+                                                                            maxLength: 9,
+                                                                            pattern: '[0-9]*',
+                                                                            inputMode: 'numeric',
+                                                                            style: { textAlign: 'right' }
+                                                                        }}
+                                                                        error={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId)}
+                                                                        helperText={subcontractor.companyId && subcontractor.companyId.length >= 8 && !validateIsraeliId(subcontractor.companyId) ? 'ח״פ לא תקין' : ''}
+                                                                        sx={{
+                                                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                borderColor: '#6B46C1',
+                                                                            },
+                                                                        }}
                                                                     />
-                                                                </TableCell>
-                                                                <TableCell>
-                                                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                                    {loadingCompanyData[`subcontractor-${index}`] && (
+                                                                        <CircularProgress
+                                                                            size={16}
+                                                                            sx={{
+                                                                                position: 'absolute',
+                                                                                left: 8,
+                                                                                top: 'calc(50% - 8px)',
+                                                                                color: '#6B46C1',
+                                                                                verticalAlign: 'center'
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </Box>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={subcontractor.companyName}
+                                                                    onChange={(e) => handleSubcontractorChange(index, 'companyName', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    placeholder="שם החברה"
+                                                                    inputProps={{ style: { textAlign: 'right' } }}
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={subcontractor.address}
+                                                                    onChange={(e) => handleSubcontractorChange(index, 'address', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    placeholder="עיר"
+                                                                    inputProps={{ style: { textAlign: 'right' } }}
+                                                                    sx={{
+                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                            borderColor: '#6B46C1',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    value={subcontractor.companyId && subcontractor.companyId.length >= 8
+                                                                        ? (subcontractor.contractorNumber || 'אינו קבלן רשום')
+                                                                        : ''}
+                                                                    disabled={true} // Read-only field
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    placeholder="מספר קבלן"
+                                                                    inputProps={{ style: { textAlign: 'right' } }}
+                                                                    sx={{
+                                                                        '& .MuiInputBase-input': {
+                                                                            color: 'text.secondary',
+                                                                            backgroundColor: 'grey.100'
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                                         <IconButton
                                                                             onClick={() => removeSubcontractor(index)}
                                                                             disabled={mode === 'view' || !canEdit}
@@ -3545,11 +3553,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 color: 'grey.600',
                                                                                 '&:hover': {
                                                                                     color: 'white',
-                                                                                    backgroundColor: 'error.main'
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
                                                                                 },
                                                                                 '&:focus': {
                                                                                     color: 'white',
-                                                                                    backgroundColor: 'error.main'
+                                                                                    backgroundColor: 'error.main',
+                                                                                    '& img': {
+                                                                                        filter: 'brightness(0) invert(1)'
+                                                                                    }
                                                                                 }
                                                                             }}
                                                                             title="מחק קבלן משנה"
@@ -3564,34 +3578,34 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                             />
                                                                         </IconButton>
-                                                                    </Box>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        ))}
-
-                                                        {/* Add button row */}
-                                                        <TableRow>
-                                                            <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    onClick={addSubcontractor}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderColor: '#6B46C1',
-                                                                        color: '#6B46C1',
-                                                                        '&:hover': {
-                                                                            borderColor: '#5B21B6',
-                                                                            backgroundColor: '#F3F4F6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    + הוספה
-                                                                </Button>
+                                                                </Box>
                                                             </TableCell>
                                                         </TableRow>
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
+                                                    ))}
+
+                                                    {/* Add button row */}
+                                                    <TableRow>
+                                                        <TableCell colSpan={6} sx={{ textAlign: 'center', py: 2 }}>
+                                                            <Button
+                                                                variant="outlined"
+                                                                onClick={addSubcontractor}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderColor: '#6B46C1',
+                                                                    color: '#6B46C1',
+                                                                    '&:hover': {
+                                                                        borderColor: '#5B21B6',
+                                                                        backgroundColor: '#F3F4F6'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                + הוספה
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
                                     </Box>
                                 </Box>
                             </Box>
