@@ -9570,15 +9570,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Typography>
 
                                         {/* גריד 2 עמודות */}
-                                        <Box sx={{ 
-                                            display: 'grid', 
-                                            gridTemplateColumns: '1fr 1fr', 
-                                            gap: 2, 
-                                            mb: 2 
+                                        <Box sx={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2,
+                                            mb: 2
                                         }}>
                                             {/* עמודה 1 - האם נדרש/קיים שיעבוד על הרכוש */}
-                                            <Box sx={{ 
-                                                display: 'flex', 
+                                            <Box sx={{
+                                                display: 'flex',
                                                 alignItems: 'flex-start',
                                                 justifyContent: 'flex-end'
                                             }}>
@@ -9661,9 +9661,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         {/* טבלת משעבדים - מופיעה רק אם נבחר "כן" */}
                                         {project?.insuranceSpecification?.propertyPledge?.required === true && (
                                             <Box sx={{ mt: 2 }}>
-                                                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-                                                    פרטי המשעבדים
-                                                </Typography>
                                                 <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                                     <Table size="small">
                                                         <TableHead>
