@@ -8887,49 +8887,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                 {/* סקשן דוחות מפקח */}
                                 <Box sx={{ mb: 4 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                width: 32,
-                                                height: 32,
-                                                borderRadius: '50%',
-                                                backgroundColor: '#F3F4F6',
-                                                border: '2px solid #E5E7EB',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease-in-out',
-                                                '&:hover': {
-                                                    backgroundColor: '#E5E7EB',
-                                                    borderColor: '#D1D5DB',
-                                                    transform: 'scale(1.05)'
-                                                },
-                                                '&:focus': {
-                                                    outline: 'none',
-                                                    boxShadow: '0 0 0 3px rgba(139, 92, 246, 0.1)'
-                                                }
-                                            }}
-                                            tabIndex={0}
-                                        >
-                                            <AutoAwesomeIcon
-                                                sx={{
-                                                    color: '#8B5CF6',
-                                                    filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
-                                                }}
-                                            />
-                                        </Box>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>
-                                            דוחות מפקח
-                                        </Typography>
-                                    </Box>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        דוחות מפקח
+                                    </Typography>
                                     <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '40%' }}>דוח מפקח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>דוח מפקח</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>תאריך יצירת הקובץ</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '35%' }}>הערות</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '45%' }}>הערות</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                 </TableRow>
                                             </TableHead>
@@ -8938,7 +8905,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     const isFirstRow = index === 0;
                                                     return (
                                                         <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                            <TableCell sx={{ padding: 1, width: '40%' }}>
+                                                            <TableCell sx={{ padding: 1, width: '30%' }}>
                                                                 <FileUpload
                                                                     label=""
                                                                     value={report.file || ''}
@@ -8976,7 +8943,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '35%' }}>
+                                                            <TableCell sx={{ padding: 1, width: '45%' }}>
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
