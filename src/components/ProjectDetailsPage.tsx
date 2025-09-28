@@ -8884,6 +8884,163 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         }}
                                     />
                                 </Box>
+
+                                {/* סקשן דוחות מפקח */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 32,
+                                                height: 32,
+                                                borderRadius: '50%',
+                                                backgroundColor: '#F3F4F6',
+                                                border: '2px solid #E5E7EB',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease-in-out',
+                                                '&:hover': {
+                                                    backgroundColor: '#E5E7EB',
+                                                    borderColor: '#D1D5DB',
+                                                    transform: 'scale(1.05)'
+                                                },
+                                                '&:focus': {
+                                                    outline: 'none',
+                                                    boxShadow: '0 0 0 3px rgba(139, 92, 246, 0.1)'
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                        >
+                                            <AutoAwesomeIcon
+                                                sx={{
+                                                    color: '#8B5CF6',
+                                                    filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
+                                                }}
+                                            />
+                                        </Box>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>
+                                            דוחות מפקח
+                                        </Typography>
+                                    </Box>
+                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '40%' }}>דוח מפקח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>תאריך יצירת הקובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '35%' }}>הערות</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {(project?.supervisorReports && project.supervisorReports.length > 0 ? project.supervisorReports : [{ file: '', creationDate: '', notes: '' }]).map((report, index) => {
+                                                    const isFirstRow = index === 0;
+                                                    return (
+                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell sx={{ padding: 1, width: '40%' }}>
+                                                                <FileUpload
+                                                                    label=""
+                                                                    value={report.file || ''}
+                                                                    thumbnailUrl={report.thumbnailUrl || ''}
+                                                                    projectId={project?._id || project?.id}
+                                                                    onChange={async (url, thumbnailUrl) => {
+                                                                        handleNestedFieldChange(`supervisorReports.${index}.file`, url);
+                                                                        if (thumbnailUrl) {
+                                                                            handleNestedFieldChange(`supervisorReports.${index}.thumbnailUrl`, thumbnailUrl);
+                                                                        }
+                                                                    }}
+                                                                    onDelete={async () => {
+                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
+                                                                            handleNestedFieldChange(`supervisorReports.${index}.file`, '');
+                                                                            handleNestedFieldChange(`supervisorReports.${index}.thumbnailUrl`, '');
+                                                                        }
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    showCreationDate={false}
+                                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="date"
+                                                                    value={report.creationDate || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`supervisorReports.${index}.creationDate`, e.target.value);
+                                                                    }}
+                                                                    placeholder="תאריך יצירת הקובץ"
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '35%' }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={report.notes || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`supervisorReports.${index}.notes`, e.target.value);
+                                                                    }}
+                                                                    placeholder="הערות"
+                                                                    variant="outlined"
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '5%' }}>
+                                                                {!isFirstRow && (
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את הדוח?')) {
+                                                                                const currentReports = project?.supervisorReports || [];
+                                                                                const newReports = currentReports.filter((_, i) => i !== index);
+                                                                                handleNestedFieldChange('supervisorReports', newReports);
+                                                                            }
+                                                                        }}
+                                                                        title="מחיקה"
+                                                                        sx={{
+                                                                            '& img': {
+                                                                                filter: 'brightness(0) saturate(0)',
+                                                                                width: '16px',
+                                                                                height: '16px'
+                                                                            },
+                                                                            '&:hover, &:focus': {
+                                                                                backgroundColor: '#f44336',
+                                                                                borderRadius: '50%'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                    </IconButton>
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                                <TableRow>
+                                                    <TableCell colSpan={4} sx={{ padding: 1, textAlign: 'center' }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                const newReport = { file: '', creationDate: '', notes: '' };
+                                                                const currentReports = project?.supervisorReports || [];
+                                                                handleNestedFieldChange('supervisorReports', [...currentReports, newReport]);
+                                                            }}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            + הוספה
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
                             </Box>
                         )}
 
