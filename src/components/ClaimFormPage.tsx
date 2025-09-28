@@ -41,7 +41,7 @@ interface ClaimFormPageProps {
 export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    
+
     const [activeTab, setActiveTab] = useState(0);
     const [saving, setSaving] = useState(false);
     const [snackbar, setSnackbar] = useState({
@@ -65,7 +65,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     useEffect(() => {
         const projectId = searchParams.get('projectId');
         const projectName = searchParams.get('projectName');
-        
+
         if (projectId && projectName) {
             setFormData(prev => ({
                 ...prev,
@@ -113,7 +113,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     message: 'התביעה נשמרה בהצלחה',
                     severity: 'success'
                 });
-                
+
                 // Navigate back to project after successful save
                 setTimeout(() => {
                     navigate(-1);
@@ -151,18 +151,18 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 width: '100%',
                 maxWidth: '100%'
             }}>
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
                     maxWidth: '1200px',
                     mx: 'auto'
                 }}>
                     {/* Left side - Logo and Title */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box sx={{ 
-                            width: 40, 
-                            height: 40, 
+                        <Box sx={{
+                            width: 40,
+                            height: 40,
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
@@ -224,7 +224,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 <Button
                                     variant="outlined"
                                     onClick={handleClose}
-                                    sx={{ 
+                                    sx={{
                                         minWidth: 'auto',
                                         px: 2,
                                         color: '#6b47c1',
@@ -433,14 +433,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             </Box>
 
             {/* Snackbar */}
-            <Snackbar 
-                open={snackbar.open} 
-                autoHideDuration={6000} 
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
                 onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
             >
-                <Alert 
-                    onClose={() => setSnackbar(prev => ({ ...prev, open: false }))} 
-                    severity={snackbar.severity} 
+                <Alert
+                    onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+                    severity={snackbar.severity}
                     sx={{ width: '100%' }}
                 >
                     {snackbar.message}
