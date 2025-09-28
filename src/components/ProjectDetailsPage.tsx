@@ -1597,11 +1597,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     useEffect(() => {
         const loadBankNames = async () => {
             try {
+                console.log('🔄 Loading bank names from /api/enrichment/banks');
                 const response = await fetch('/api/enrichment/banks');
+                console.log('🔄 Response status:', response.status);
                 if (response.ok) {
                     const banks = await response.json();
+                    console.log('🔄 Banks data:', banks);
                     const bankNamesList = banks.map((bank: any) => bank.bank_name).filter(Boolean);
+                    console.log('🔄 Bank names list:', bankNamesList);
                     setBankNames(bankNamesList);
+                } else {
+                    console.error('🔄 Failed to load banks, status:', response.status);
                 }
             } catch (error) {
                 console.error('Error loading bank names:', error);
@@ -9683,25 +9689,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Table size="small">
                                                         <TableHead>
                                                             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סיווג הגוף המשעבד</TableCell>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>שם</TableCell>
-                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '35%' }}>כתובת מלאה</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>סיווג הגוף המשעבד</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>שם</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '10%' }}>מס׳ סניף</TableCell>
+                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>כתובת מלאה</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>אימייל</TableCell>
                                                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
                                                             </TableRow>
                                                         </TableHead>
                                                         <TableBody>
-                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: '', name: '', address: '', email: '' }]).map((pledger, index) => {
+                                                            {(project?.insuranceSpecification?.propertyPledge?.pledgers && project.insuranceSpecification.propertyPledge.pledgers.length > 0 ? project.insuranceSpecification.propertyPledge.pledgers : [{ classification: 'בנק', name: '', address: '', email: '', branchNumber: '' }]).map((pledger, index) => {
                                                                 const isFirstRow = index === 0;
                                                                 return (
                                                                     <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                                        <TableCell sx={{ padding: 1, width: '20%' }}>
+                                                                        <TableCell sx={{ padding: 1, width: '15%' }}>
                                                                             <Autocomplete
                                                                                 freeSolo
                                                                                 options={['בנק', 'חברת ביטוח', 'אחר']}
-                                                                                value={pledger.classification || ''}
+                                                                                value={pledger.classification || 'בנק'}
                                                                                 onChange={(event, newValue) => {
-                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newValue || '');
+                                                                                    handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newValue || 'בנק');
                                                                                 }}
                                                                                 onInputChange={(event, newInputValue) => {
                                                                                     handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.classification`, newInputValue);
@@ -9717,7 +9724,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 )}
                                                                             />
                                                                         </TableCell>
-                                                                        <TableCell sx={{ padding: 1, width: '25%' }}>
+                                                                        <TableCell sx={{ padding: 1, width: '20%' }}>
                                                                             {pledger.classification === 'בנק' ? (
                                                                                 <Autocomplete
                                                                                     freeSolo
@@ -9753,7 +9760,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 />
                                                                             )}
                                                                         </TableCell>
-                                                                        <TableCell sx={{ padding: 1, width: '35%' }}>
+                                                                        <TableCell sx={{ padding: 1, width: '10%' }}>
+                                                                            {pledger.classification === 'בנק' ? (
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    size="small"
+                                                                                    value={pledger.branchNumber || ''}
+                                                                                    onChange={(e) => {
+                                                                                        handleNestedFieldChange(`insuranceSpecification.propertyPledge.pledgers.${index}.branchNumber`, e.target.value);
+                                                                                    }}
+                                                                                    placeholder="מס׳ סניף"
+                                                                                    variant="outlined"
+                                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                                />
+                                                                            ) : (
+                                                                                <Box sx={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.disabled' }}>
+                                                                                    -
+                                                                                </Box>
+                                                                            )}
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ padding: 1, width: '30%' }}>
                                                                             <TextField
                                                                                 fullWidth
                                                                                 size="small"
@@ -9813,18 +9839,18 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 );
                                                             })}
                                                             <TableRow>
-                                                                <TableCell colSpan={5} sx={{ padding: 1, textAlign: 'center' }}>
-                                                                    <Button
-                                                                        variant="outlined"
-                                                                        onClick={() => {
-                                                                            const newPledger = { classification: '', name: '', address: '', email: '' };
-                                                                            const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
-                                                                            handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
-                                                                        }}
-                                                                        sx={{ mr: 1 }}
-                                                                    >
-                                                                        + הוספה
-                                                                    </Button>
+                                                                <TableCell colSpan={6} sx={{ padding: 1, textAlign: 'center' }}>
+                                                                        <Button
+                                                                            variant="outlined"
+                                                                            onClick={() => {
+                                                                                const newPledger = { classification: 'בנק', name: '', address: '', email: '', branchNumber: '' };
+                                                                                const currentPledgers = project?.insuranceSpecification?.propertyPledge?.pledgers || [];
+                                                                                handleNestedFieldChange('insuranceSpecification.propertyPledge.pledgers', [...currentPledgers, newPledger]);
+                                                                            }}
+                                                                            sx={{ mr: 1 }}
+                                                                        >
+                                                                            + הוספה
+                                                                        </Button>
                                                                 </TableCell>
                                                             </TableRow>
                                                         </TableBody>
