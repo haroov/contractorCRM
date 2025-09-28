@@ -99,7 +99,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
         setSaving(true);
         try {
-            const response = await fetch('/api/claims', {
+            const response = await fetch('http://localhost:3001/api/claims', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
