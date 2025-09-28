@@ -2832,249 +2832,363 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Typography>
                                         </Box>
 
-                                        {project?.roleHolders && project.roleHolders.length > 0 && (
-                                            <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
-                                                <Table size="small">
-                                                    <TableHead>
-                                                        <TableRow>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>תפקיד</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>שם מלא</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>טלפון נייד</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 0.5 }}>אימייל</TableCell>
-                                                            <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 60, px: 0.5 }}>פעולות</TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        {project.roleHolders.map((roleHolder, index) => (
-                                                            <TableRow key={roleHolder.id}>
-                                                                <TableCell sx={{ px: 0.5 }}>
-                                                                    <Autocomplete
-                                                                        freeSolo
-                                                                        getOptionLabel={(option) => option}
-                                                                        isOptionEqualToValue={(option, value) => option === value}
-                                                                        options={[
-                                                                            'מנהל העבודה',
-                                                                            'עוזר בטיחות',
-                                                                            'ממונה ביטחון',
-                                                                            'מפקח',
-                                                                            'מנהל פרויקט',
-                                                                            'מהנדס ראשי',
-                                                                            'מהנדס מבנים',
-                                                                            'מהנדס חשמל',
-                                                                            'מהנדס אינסטלציה',
-                                                                            'מהנדס מיזוג אוויר',
-                                                                            'מהנדס בטיחות',
-                                                                            'מהנדס איכות',
-                                                                            'מהנדס סביבה',
-                                                                            'מהנדס תכנון',
-                                                                            'מהנדס ביצוע',
-                                                                            'מהנדס בקרה',
-                                                                            'מהנדס תחזוקה',
-                                                                            'מהנדס מערכות',
-                                                                            'מהנדס תשתיות',
-                                                                            'מהנדס תחבורה',
-                                                                            'מהנדס נוף',
-                                                                            'מהנדס גיאוטכני',
-                                                                            'מהנדס אקוסטי',
-                                                                            'מהנדס אש',
-                                                                            'מהנדס אנרגיה',
-                                                                            'מהנדס מים',
-                                                                            'מהנדס ביוב',
-                                                                            'מהנדס גז',
-                                                                            'מהנדס תקשורת',
-                                                                            'מהנדס אבטחה',
-                                                                            'מהנדס מעליות',
-                                                                            'מהנדס כיבוי',
-                                                                            'מהנדס אזעקה',
-                                                                            'מהנדס תאורה',
-                                                                            'מהנדס ניקוז',
-                                                                            'מהנדס חימום',
-                                                                            'מהנדס אוורור',
-                                                                            'מהנדס קירור',
-                                                                            'מהנדס חימום מים',
-                                                                            'מהנדס סולארי',
-                                                                            'מהנדס רוח',
-                                                                            'מהנדס גיאותרמי',
-                                                                            'מהנדס ביוגז',
-                                                                            'מהנדס מיחזור',
-                                                                            'מהנדס טיהור',
-                                                                            'מהנדס סינון',
-                                                                            'מהנדס חיטוי',
-                                                                            'מהנדס ניקוי',
-                                                                            'מהנדס תחזוקה',
-                                                                            'מהנדס שירות',
-                                                                            'מהנדס לוגיסטיקה',
-                                                                            'מהנדס אספקה',
-                                                                            'מהנדס הובלה',
-                                                                            'מהנדס אחסון',
-                                                                            'מהנדס אריזה',
-                                                                            'מהנדס סימון',
-                                                                            'מהנדס זיהוי',
-                                                                            'מהנדס בקרת איכות',
-                                                                            'מהנדס בדיקות',
-                                                                            'מהנדס ניסויים',
-                                                                            'מהנדס מדידות',
-                                                                            'מהנדס תיעוד',
-                                                                            'מהנדס דיווח',
-                                                                            'מהנדס ניתוח',
-                                                                            'מהנדס הערכה',
-                                                                            'מהנדס תכנון',
-                                                                            'מהנדס עיצוב',
-                                                                            'מהנדס פיתוח',
-                                                                            'מהנדס מחקר',
-                                                                            'מהנדס חדשנות',
-                                                                            'מהנדס טכנולוגיה',
-                                                                            'מהנדס דיגיטל',
-                                                                            'מהנדס מידע',
-                                                                            'מהנדס נתונים',
-                                                                            'מהנדס בינה מלאכותית',
-                                                                            'מהנדס למידת מכונה',
-                                                                            'מהנדס רובוטיקה',
-                                                                            'מהנדס אוטומציה',
-                                                                            'מהנדס IoT',
-                                                                            'מהנדס בלוקציין',
-                                                                            'מהנדס ענן',
-                                                                            'מהנדס אבטחת מידע',
-                                                                            'מהנדס רשתות',
-                                                                            'מהנדס תוכנה',
-                                                                            'מהנדס חומרה',
-                                                                            'מהנדס מערכות',
-                                                                            'מהנדס אינטגרציה',
-                                                                            'מהנדס בדיקות תוכנה',
-                                                                            'מהנדס DevOps',
-                                                                            'מהנדס CI/CD',
-                                                                            'מהנדס מיקרו-שירותים',
-                                                                            'מהנדס API',
-                                                                            'מהנדס מסדי נתונים',
-                                                                            'מהנדס ביג דאטה',
-                                                                            'מהנדס אנליטיקה',
-                                                                            'מהנדס BI',
-                                                                            'מהנדס דשבורדים',
-                                                                            'מהנדס דוחות',
-                                                                            'מהנדס ויזואליזציה',
-                                                                            'מהנדס UX/UI',
-                                                                            'מהנדס חוויית משתמש',
-                                                                            'מהנדס ממשק משתמש',
-                                                                            'מהנדס נגישות',
-                                                                            'מהנדס ביצועים',
-                                                                            'מהנדס אופטימיזציה',
-                                                                            'מהנדס קנה מידה',
-                                                                            'מהנדס זמינות',
-                                                                            'מהנדס אמינות',
-                                                                            'מהנדס תחזוקה מונעת',
-                                                                            'מהנדס תחזוקה מתקנת',
-                                                                            'מהנדס תחזוקה מנבאת',
-                                                                            'מהנדס תחזוקה חכמה',
-                                                                            'מהנדס תחזוקה דיגיטלית',
-                                                                            'מהנדס תחזוקה אוטומטית',
-                                                                            'מהנדס תחזוקה רובוטית',
-                                                                            'מהנדס תחזוקה מרחוק',
-                                                                            'מהנדס תחזוקה מונעת AI',
-                                                                            'מהנדס תחזוקה חכמה',
-                                                                            'מהנדס תחזוקה דיגיטלית',
-                                                                            'מהנדס תחזוקה אוטומטית',
-                                                                            'מהנדס תחזוקה רובוטית',
-                                                                            'מהנדס תחזוקה מרחוק',
-                                                                            'מהנדס תחזוקה מונעת AI'
-                                                                        ]}
-                                                                        value={roleHolder.role || ''}
-                                                                        onChange={(event, newValue) => {
-                                                                            handleNestedFieldChange(`roleHolders.${index}.role`, newValue || '');
-                                                                        }}
-                                                                        onInputChange={(event, newInputValue) => {
-                                                                            handleNestedFieldChange(`roleHolders.${index}.role`, newInputValue);
-                                                                        }}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        renderInput={(params) => (
-                                                                            <TextField
-                                                                                {...params}
-                                                                                size="small"
-                                                                                placeholder="בחר תפקיד"
-                                                                                sx={{ direction: 'rtl' }}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        size="small"
-                                                                        value={roleHolder.fullName || ''}
-                                                                        onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.fullName`, e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        placeholder="שם מלא"
-                                                                        sx={{ direction: 'rtl' }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        size="small"
-                                                                        value={roleHolder.mobilePhone || ''}
-                                                                        onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.mobilePhone`, e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        placeholder="טלפון נייד"
-                                                                        sx={{ direction: 'rtl' }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        size="small"
-                                                                        value={roleHolder.email || ''}
-                                                                        onChange={(e) => handleNestedFieldChange(`roleHolders.${index}.email`, e.target.value)}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        placeholder="אימייל"
-                                                                        sx={{ direction: 'rtl' }}
-                                                                    />
-                                                                </TableCell>
-                                                                <TableCell sx={{ px: 0.5 }}>
-                                                                    <IconButton
-                                                                        onClick={() => {
-                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל התפקיד?')) {
-                                                                                const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index) || [];
-                                                                                handleNestedFieldChange('roleHolders', newRoleHolders);
-                                                                            }
-                                                                        }}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        sx={{ color: 'error.main' }}
-                                                                        size="small"
-                                                                    >
-                                                                        <DeleteIcon />
-                                                                    </IconButton>
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        ))}
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
-                                        )}
+                                        <TableContainer component={Paper} sx={{ overflow: 'auto', maxWidth: '100%' }}>
+                                            <Table size="small">
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>תפקיד</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 150, px: 0.5 }}>שם מלא</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 120, px: 0.5 }}>טלפון נייד</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 200, px: 0.5 }}>אימייל</TableCell>
+                                                        <TableCell align="right" sx={{ fontWeight: 'bold', minWidth: 60, px: 0.5 }}>פעולות</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {/* Default mandatory roles */}
+                                                    <TableRow>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value="מנהל העבודה"
+                                                                disabled
+                                                                sx={{ 
+                                                                    direction: 'rtl',
+                                                                    '& .MuiInputBase-input.Mui-disabled': {
+                                                                        color: 'text.primary',
+                                                                        WebkitTextFillColor: 'unset'
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[0]?.fullName || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.0.fullName`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="שם מלא"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[0]?.mobilePhone || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.0.mobilePhone`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="טלפון נייד"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[0]?.email || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.0.email`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="אימייל"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            {/* No delete button for mandatory role */}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                    <TableRow>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value="עוזר בטיחות"
+                                                                disabled
+                                                                sx={{ 
+                                                                    direction: 'rtl',
+                                                                    '& .MuiInputBase-input.Mui-disabled': {
+                                                                        color: 'text.primary',
+                                                                        WebkitTextFillColor: 'unset'
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[1]?.fullName || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.1.fullName`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="שם מלא"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[1]?.mobilePhone || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.1.mobilePhone`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="טלפון נייד"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                size="small"
+                                                                value={project?.roleHolders?.[1]?.email || ''}
+                                                                onChange={(e) => handleNestedFieldChange(`roleHolders.1.email`, e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                placeholder="אימייל"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ px: 0.5 }}>
+                                                            {/* No delete button for mandatory role */}
+                                                        </TableCell>
+                                                    </TableRow>
 
-                                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                                            <Button
-                                                variant="contained"
-                                                onClick={() => {
-                                                    const newRoleHolder = {
-                                                        id: Date.now().toString(),
-                                                        role: '',
-                                                        fullName: '',
-                                                        mobilePhone: '',
-                                                        email: ''
-                                                    };
-                                                    const currentRoleHolders = project?.roleHolders || [];
-                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
-                                                }}
-                                                disabled={mode === 'view' || !canEdit}
-                                                sx={{
-                                                    backgroundColor: '#6B46C1',
-                                                    '&:hover': {
-                                                        backgroundColor: '#5B21B6'
-                                                    }
-                                                }}
-                                            >
-                                                + הוספה
-                                            </Button>
-                                        </Box>
+                                                    {/* Additional roles */}
+                                                    {project?.roleHolders && project.roleHolders.length > 2 && project.roleHolders.slice(2).map((roleHolder, index) => (
+                                                        <TableRow key={roleHolder.id}>
+                                                            <TableCell sx={{ px: 0.5 }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    getOptionLabel={(option) => option}
+                                                                    isOptionEqualToValue={(option, value) => option === value}
+                                                                    options={[
+                                                                        'ממונה ביטחון',
+                                                                        'מפקח',
+                                                                        'מנהל פרויקט',
+                                                                        'מהנדס ראשי',
+                                                                        'מהנדס מבנים',
+                                                                        'מהנדס חשמל',
+                                                                        'מהנדס אינסטלציה',
+                                                                        'מהנדס מיזוג אוויר',
+                                                                        'מהנדס בטיחות',
+                                                                        'מהנדס איכות',
+                                                                        'מהנדס סביבה',
+                                                                        'מהנדס תכנון',
+                                                                        'מהנדס ביצוע',
+                                                                        'מהנדס בקרה',
+                                                                        'מהנדס תחזוקה',
+                                                                        'מהנדס מערכות',
+                                                                        'מהנדס תשתיות',
+                                                                        'מהנדס תחבורה',
+                                                                        'מהנדס נוף',
+                                                                        'מהנדס גיאוטכני',
+                                                                        'מהנדס אקוסטי',
+                                                                        'מהנדס אש',
+                                                                        'מהנדס אנרגיה',
+                                                                        'מהנדס מים',
+                                                                        'מהנדס ביוב',
+                                                                        'מהנדס גז',
+                                                                        'מהנדס תקשורת',
+                                                                        'מהנדס אבטחה',
+                                                                        'מהנדס מעליות',
+                                                                        'מהנדס כיבוי',
+                                                                        'מהנדס אזעקה',
+                                                                        'מהנדס תאורה',
+                                                                        'מהנדס ניקוז',
+                                                                        'מהנדס חימום',
+                                                                        'מהנדס אוורור',
+                                                                        'מהנדס קירור',
+                                                                        'מהנדס חימום מים',
+                                                                        'מהנדס סולארי',
+                                                                        'מהנדס רוח',
+                                                                        'מהנדס גיאותרמי',
+                                                                        'מהנדס ביוגז',
+                                                                        'מהנדס מיחזור',
+                                                                        'מהנדס טיהור',
+                                                                        'מהנדס סינון',
+                                                                        'מהנדס חיטוי',
+                                                                        'מהנדס ניקוי',
+                                                                        'מהנדס תחזוקה',
+                                                                        'מהנדס שירות',
+                                                                        'מהנדס לוגיסטיקה',
+                                                                        'מהנדס אספקה',
+                                                                        'מהנדס הובלה',
+                                                                        'מהנדס אחסון',
+                                                                        'מהנדס אריזה',
+                                                                        'מהנדס סימון',
+                                                                        'מהנדס זיהוי',
+                                                                        'מהנדס בקרת איכות',
+                                                                        'מהנדס בדיקות',
+                                                                        'מהנדס ניסויים',
+                                                                        'מהנדס מדידות',
+                                                                        'מהנדס תיעוד',
+                                                                        'מהנדס דיווח',
+                                                                        'מהנדס ניתוח',
+                                                                        'מהנדס הערכה',
+                                                                        'מהנדס תכנון',
+                                                                        'מהנדס עיצוב',
+                                                                        'מהנדס פיתוח',
+                                                                        'מהנדס מחקר',
+                                                                        'מהנדס חדשנות',
+                                                                        'מהנדס טכנולוגיה',
+                                                                        'מהנדס דיגיטל',
+                                                                        'מהנדס מידע',
+                                                                        'מהנדס נתונים',
+                                                                        'מהנדס בינה מלאכותית',
+                                                                        'מהנדס למידת מכונה',
+                                                                        'מהנדס רובוטיקה',
+                                                                        'מהנדס אוטומציה',
+                                                                        'מהנדס IoT',
+                                                                        'מהנדס בלוקציין',
+                                                                        'מהנדס ענן',
+                                                                        'מהנדס אבטחת מידע',
+                                                                        'מהנדס רשתות',
+                                                                        'מהנדס תוכנה',
+                                                                        'מהנדס חומרה',
+                                                                        'מהנדס מערכות',
+                                                                        'מהנדס אינטגרציה',
+                                                                        'מהנדס בדיקות תוכנה',
+                                                                        'מהנדס DevOps',
+                                                                        'מהנדס CI/CD',
+                                                                        'מהנדס מיקרו-שירותים',
+                                                                        'מהנדס API',
+                                                                        'מהנדס מסדי נתונים',
+                                                                        'מהנדס ביג דאטה',
+                                                                        'מהנדס אנליטיקה',
+                                                                        'מהנדס BI',
+                                                                        'מהנדס דשבורדים',
+                                                                        'מהנדס דוחות',
+                                                                        'מהנדס ויזואליזציה',
+                                                                        'מהנדס UX/UI',
+                                                                        'מהנדס חוויית משתמש',
+                                                                        'מהנדס ממשק משתמש',
+                                                                        'מהנדס נגישות',
+                                                                        'מהנדס ביצועים',
+                                                                        'מהנדס אופטימיזציה',
+                                                                        'מהנדס קנה מידה',
+                                                                        'מהנדס זמינות',
+                                                                        'מהנדס אמינות',
+                                                                        'מהנדס תחזוקה מונעת',
+                                                                        'מהנדס תחזוקה מתקנת',
+                                                                        'מהנדס תחזוקה מנבאת',
+                                                                        'מהנדס תחזוקה חכמה',
+                                                                        'מהנדס תחזוקה דיגיטלית',
+                                                                        'מהנדס תחזוקה אוטומטית',
+                                                                        'מהנדס תחזוקה רובוטית',
+                                                                        'מהנדס תחזוקה מרחוק',
+                                                                        'מהנדס תחזוקה מונעת AI',
+                                                                        'מהנדס תחזוקה חכמה',
+                                                                        'מהנדס תחזוקה דיגיטלית',
+                                                                        'מהנדס תחזוקה אוטומטית',
+                                                                        'מהנדס תחזוקה רובוטית',
+                                                                        'מהנדס תחזוקה מרחוק',
+                                                                        'מהנדס תחזוקה מונעת AI'
+                                                                    ]}
+                                                                    value={roleHolder.role || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`roleHolders.${index + 2}.role`, newInputValue);
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="בחר תפקיד"
+                                                                            sx={{ direction: 'rtl' }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ px: 0.5 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={roleHolder.fullName || ''}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.fullName`, e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="שם מלא"
+                                                                    sx={{ direction: 'rtl' }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ px: 0.5 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={roleHolder.mobilePhone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.mobilePhone`, e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="טלפון נייד"
+                                                                    sx={{ direction: 'rtl' }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ px: 0.5 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={roleHolder.email || ''}
+                                                                    onChange={(e) => handleNestedFieldChange(`roleHolders.${index + 2}.email`, e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    placeholder="אימייל"
+                                                                    sx={{ direction: 'rtl' }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ px: 0.5 }}>
+                                                                <IconButton
+                                                                    onClick={() => {
+                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את בעל התפקיד?')) {
+                                                                            const newRoleHolders = project?.roleHolders?.filter((_, i) => i !== index + 2) || [];
+                                                                            handleNestedFieldChange('roleHolders', newRoleHolders);
+                                                                        }
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    sx={{ color: 'error.main' }}
+                                                                    size="small"
+                                                                >
+                                                                    <img 
+                                                                        src="/src/assets/icon-trash.svg" 
+                                                                        alt="מחיקה" 
+                                                                        style={{ width: '16px', height: '16px' }}
+                                                                    />
+                                                                </IconButton>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+
+                                                    {/* Add button row */}
+                                                    <TableRow>
+                                                        <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
+                                                            <Button
+                                                                variant="outlined"
+                                                                onClick={() => {
+                                                                    const newRoleHolder = {
+                                                                        id: Date.now().toString(),
+                                                                        role: '',
+                                                                        fullName: '',
+                                                                        mobilePhone: '',
+                                                                        email: ''
+                                                                    };
+                                                                    const currentRoleHolders = project?.roleHolders || [];
+                                                                    handleNestedFieldChange('roleHolders', [...currentRoleHolders, newRoleHolder]);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    borderColor: '#6B46C1',
+                                                                    color: '#6B46C1',
+                                                                    '&:hover': {
+                                                                        borderColor: '#5B21B6',
+                                                                        backgroundColor: 'rgba(107, 70, 193, 0.04)'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                + הוספה
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
                                     </Box>
                                 </Box>
                             </Box>
