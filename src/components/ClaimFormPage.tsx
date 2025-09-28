@@ -99,7 +99,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
         setSaving(true);
         try {
-            const response = await fetch('https://contractorcrm-api.onrender.com/api/claims', {
+            const response = await fetch('/api/claims', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
