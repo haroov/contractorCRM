@@ -10810,6 +10810,114 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                     </Box>
                                 </Box>
+
+                                {/* סקשן חבות מעבידים */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        חבות מעבידים
+                                    </Typography>
+
+                                    {/* גריד של 2 עמודות */}
+                                    <Box sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: 3,
+                                        alignItems: 'flex-start'
+                                    }}>
+                                        {/* עמודה ראשונה - שאלה */}
+                                        <Box sx={{
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            backgroundColor: 'white',
+                                            minHeight: '56px',
+                                            padding: '0 14px',
+                                            direction: 'rtl',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            width: '100%'
+                                        }}>
+                                            <Typography sx={{
+                                                fontSize: '1rem',
+                                                color: 'text.secondary',
+                                                marginRight: '10px'
+                                            }}>
+                                                כיסוי חבות מעבידים
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                gap: 0,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginLeft: '10px'
+                                            }}>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.hasCoverage', false)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '0 4px 4px 0',
+                                                        border: '1px solid #d1d5db',
+                                                        borderLeft: 'none',
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? '#6B46C1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === false ? '#553C9A' : '#F3F4F6'
+                                                        }
+                                                    }}
+                                                >
+                                                    לא
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    onClick={() => handleNestedFieldChange('insuranceSpecification.employerLiability.hasCoverage', true)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{
+                                                        borderRadius: '4px 0 0 4px',
+                                                        border: '1px solid #d1d5db',
+                                                        minWidth: '50px',
+                                                        height: '32px',
+                                                        textTransform: 'none',
+                                                        fontSize: '0.875rem',
+                                                        backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? '#6B46C1' : 'transparent',
+                                                        color: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? 'white' : '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: project?.insuranceSpecification?.employerLiability?.hasCoverage === true ? '#553C9A' : '#F3F4F6'
+                                                        }
+                                                    }}
+                                                >
+                                                    כן
+                                                </Button>
+                                            </Box>
+                                        </Box>
+
+                                        {/* עמודה שנייה - שדה גבול אחריות */}
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                            {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="גבול אחריות (₪)"
+                                                    value="20,000,000"
+                                                    disabled={true}
+                                                    size="small"
+                                                    type="text"
+                                                    sx={{
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { 
+                                                            minHeight: '56px',
+                                                            backgroundColor: '#f5f5f5'
+                                                        },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </Box>
                             </Box>
                         )}
 
