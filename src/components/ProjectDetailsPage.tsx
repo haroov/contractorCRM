@@ -462,6 +462,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [saving, setSaving] = useState(false);
     const [fileUploadState, setFileUploadState] = useState<{ [key: string]: { url: string; thumbnailUrl?: string; creationDate?: string } }>({});
     const [loadingCompanyData, setLoadingCompanyData] = useState<{ [key: string]: boolean }>({});
+    const [expandedSubcontractors, setExpandedSubcontractors] = useState<{ [key: number]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [bankNames, setBankNames] = useState<string[]>([
@@ -1549,6 +1550,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 subcontractors: [...(project.subcontractors || []), newSubcontractor]
             });
         }
+    };
+
+    const toggleSubcontractorExpansion = (index: number) => {
+        setExpandedSubcontractors(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
     };
 
     const removeSubcontractor = (index: number) => {
@@ -3547,6 +3555,29 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <TableCell>
                                                                 <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                                     <IconButton
+                                                                        onClick={() => toggleSubcontractorExpansion(index)}
+                                                                        disabled={mode === 'view' || !canEdit}
+                                                                        sx={{
+                                                                            color: 'grey.600',
+                                                                            '&:hover': {
+                                                                                color: '#6B46C1',
+                                                                                backgroundColor: 'rgba(107, 70, 193, 0.1)'
+                                                                            }
+                                                                        }}
+                                                                        title={expandedSubcontractors[index] ? "סגור פרטים" : "פתח פרטים"}
+                                                                    >
+                                                                        <img 
+                                                                            src="/assets/iconArrowOpenDown.svg" 
+                                                                            alt={expandedSubcontractors[index] ? "סגור" : "פתח"}
+                                                                            style={{
+                                                                                width: '16px',
+                                                                                height: '16px',
+                                                                                transform: expandedSubcontractors[index] ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                                                transition: 'transform 0.2s ease-in-out'
+                                                                            }}
+                                                                        />
+                                                                    </IconButton>
+                                                                    <IconButton
                                                                         onClick={() => removeSubcontractor(index)}
                                                                         disabled={mode === 'view' || !canEdit}
                                                                         sx={{
@@ -3581,6 +3612,62 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </Box>
                                                             </TableCell>
                                                         </TableRow>
+                                                        
+                                                        {/* Expanded row with agreement details */}
+                                                        {expandedSubcontractors[index] && (
+                                                            <TableRow>
+                                                                <TableCell colSpan={6} sx={{ padding: 2, backgroundColor: '#f8f9fa' }}>
+                                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 1 }}>
+                                                                            הסכם התקשרות
+                                                                        </Typography>
+                                                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                                            <Box>
+                                                                                <FileUpload
+                                                                                    label="הסכם התקשרות"
+                                                                                    value={subcontractor.agreementFile || ''}
+                                                                                    thumbnailUrl={subcontractor.agreementThumbnail || ''}
+                                                                                    projectId={project?._id || project?.id}
+                                                                                    onChange={async (url, thumbnailUrl) => {
+                                                                                        handleSubcontractorChange(index, 'agreementFile', url);
+                                                                                        if (thumbnailUrl) {
+                                                                                            handleSubcontractorChange(index, 'agreementThumbnail', thumbnailUrl);
+                                                                                        }
+                                                                                    }}
+                                                                                    onDelete={async () => {
+                                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הסכם ההתקשרות?')) {
+                                                                                            handleSubcontractorChange(index, 'agreementFile', '');
+                                                                                            handleSubcontractorChange(index, 'agreementThumbnail', '');
+                                                                                        }
+                                                                                    }}
+                                                                                    disabled={mode === 'view' || !canEdit}
+                                                                                    showCreationDate={false}
+                                                                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                                                />
+                                                                            </Box>
+                                                                            <Box>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="תאריך תוקף"
+                                                                                    type="date"
+                                                                                    value={subcontractor.agreementValidUntil || ''}
+                                                                                    onChange={(e) => handleSubcontractorChange(index, 'agreementValidUntil', e.target.value)}
+                                                                                    disabled={mode === 'view' || !canEdit}
+                                                                                    variant="outlined"
+                                                                                    size="small"
+                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                    sx={{
+                                                                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                                                            borderColor: '#6B46C1',
+                                                                                        },
+                                                                                    }}
+                                                                                />
+                                                                            </Box>
+                                                                        </Box>
+                                                                    </Box>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )}
                                                     ))}
 
                                                     {/* Add button row */}
