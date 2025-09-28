@@ -93,9 +93,9 @@ export default function ClaimFormPage() {
                     severity: 'success'
                 });
                 
-                // Close window after successful save
+                // Navigate back to project after successful save
                 setTimeout(() => {
-                    window.close();
+                    navigate(-1);
                 }, 2000);
             } else {
                 throw new Error('Failed to save claim');
@@ -113,11 +113,11 @@ export default function ClaimFormPage() {
     };
 
     const handleClose = () => {
-        window.close();
+        navigate(-1); // Go back to previous page (project details)
     };
 
     const handleBack = () => {
-        window.close();
+        navigate(-1); // Go back to previous page (project details)
     };
 
     return (
@@ -153,7 +153,7 @@ export default function ClaimFormPage() {
                         חזרה
                     </Button>
                     <Typography variant="h5" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
-                        {formData.projectName} - תביעה חדשה
+                        {formData.projectName} - תביעה
                     </Typography>
                 </Box>
                 

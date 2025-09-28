@@ -888,11 +888,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleOpenClaimDialog = () => {
-        // Open new window for claim form
+        // Navigate to claim form in the same window
         const projectId = project?._id || project?.id;
         if (projectId) {
             const claimUrl = `/claim-form?projectId=${projectId}&projectName=${encodeURIComponent(project?.name || '')}`;
-            window.open(claimUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            navigate(claimUrl);
         }
     };
 
