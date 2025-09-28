@@ -32,7 +32,11 @@ import {
     TableHead,
     TableRow,
     Autocomplete,
-    Checkbox
+    Checkbox,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -465,6 +469,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [expandedSubcontractors, setExpandedSubcontractors] = useState<{ [key: number]: boolean }>({});
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
+    const [claimsFilterTab, setClaimsFilterTab] = useState(0);
+    const [claimDialogOpen, setClaimDialogOpen] = useState(false);
+    const [claimDialogTab, setClaimDialogTab] = useState(0);
+    const [claimDescription, setClaimDescription] = useState('');
     const [bankNames, setBankNames] = useState<string[]>([
         'בנק הפועלים',
         'בנק לאומי',
@@ -880,6 +888,63 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('tab', newValue.toString());
         navigate(`?${newSearchParams.toString()}`, { replace: true });
+    };
+
+    const handleClaimsFilterTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setClaimsFilterTab(newValue);
+    };
+
+    const handleOpenClaimDialog = () => {
+        setClaimDialogOpen(true);
+        setClaimDialogTab(0);
+        setClaimDescription('');
+    };
+
+    const handleCloseClaimDialog = () => {
+        setClaimDialogOpen(false);
+        setClaimDialogTab(0);
+        setClaimDescription('');
+    };
+
+    const handleClaimDialogTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setClaimDialogTab(newValue);
+    };
+
+    const handleSaveClaim = async () => {
+        if (!project?._id && !project?.id) {
+            console.error('No project ID available');
+            return;
+        }
+
+        try {
+            const claimData = {
+                projectId: project._id || project.id,
+                description: claimDescription,
+                status: 'open',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+
+            // TODO: Save to MongoDB claims collection
+            console.log('Saving claim:', claimData);
+            
+            // Close dialog
+            handleCloseClaimDialog();
+            
+            // Show success message
+            setSnackbar({
+                open: true,
+                message: 'התביעה נשמרה בהצלחה',
+                severity: 'success'
+            });
+        } catch (error) {
+            console.error('Error saving claim:', error);
+            setSnackbar({
+                open: true,
+                message: 'שגיאה בשמירת התביעה',
+                severity: 'error'
+            });
+        }
     };
 
     const handleFieldChange = (field: keyof Project, value: any) => {
@@ -11339,6 +11404,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     <Button
                                         variant="contained"
                                         startIcon={<AddIcon />}
+                                        onClick={handleOpenClaimDialog}
                                         sx={{
                                             backgroundColor: '#882fd7',
                                             '&:hover': {
@@ -11355,7 +11421,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* Filter Tabs */}
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                                     <Tabs
-                                        value={0} // Default to "הכל"
+                                        value={claimsFilterTab}
+                                        onChange={handleClaimsFilterTabChange}
                                         sx={{
                                             '& .MuiTab-root': {
                                                 color: '#6B7280',
@@ -11385,7 +11452,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     backgroundColor: '#fafafa'
                                 }}>
                                     <Typography variant="body1" color="text.secondary">
-                                        אין תביעות להצגה
+                                        {claimsFilterTab === 0 && 'אין תביעות להצגה'}
+                                        {claimsFilterTab === 1 && 'אין תביעות פתוחות'}
+                                        {claimsFilterTab === 2 && 'אין תביעות סגורות'}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -11681,6 +11750,159 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
+
+            {/* Claim Dialog */}
+            <Dialog 
+                open={claimDialogOpen} 
+                onClose={handleCloseClaimDialog}
+                maxWidth="md"
+                fullWidth
+                sx={{
+                    '& .MuiDialog-paper': {
+                        borderRadius: 2,
+                        minHeight: '600px'
+                    }
+                }}
+            >
+                <DialogTitle sx={{ 
+                    borderBottom: 1, 
+                    borderColor: 'divider',
+                    pb: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                }}>
+                    <Typography variant="h6" sx={{ color: '#882fd7', fontWeight: 'bold' }}>
+                        {project?.name} - תביעה
+                    </Typography>
+                </DialogTitle>
+
+                <DialogContent sx={{ p: 0 }}>
+                    {/* Claim Dialog Tabs */}
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs
+                            value={claimDialogTab}
+                            onChange={handleClaimDialogTabChange}
+                            sx={{
+                                '& .MuiTab-root': {
+                                    color: '#6B7280',
+                                    '&.Mui-selected': {
+                                        color: '#882fd7',
+                                    },
+                                },
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: '#882fd7',
+                                },
+                            }}
+                        >
+                            <Tab label="כללי" />
+                            <Tab label="צדדים" />
+                            <Tab label="הליכים" />
+                            <Tab label="סיכום" />
+                        </Tabs>
+                    </Box>
+
+                    {/* Tab Content */}
+                    <Box sx={{ p: 3 }}>
+                        {claimDialogTab === 0 && (
+                            <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                    פרטי התביעה
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={8}
+                                    label="תאור האירוע"
+                                    value={claimDescription}
+                                    onChange={(e) => setClaimDescription(e.target.value)}
+                                    variant="outlined"
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                borderColor: '#d0d0d0'
+                                            },
+                                            '&:hover fieldset': {
+                                                borderColor: '#882fd7'
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: '#882fd7'
+                                            }
+                                        },
+                                        '& .MuiInputLabel-root': {
+                                            color: '#666666',
+                                            '&.Mui-focused': {
+                                                color: '#882fd7'
+                                            }
+                                        }
+                                    }}
+                                />
+                            </Box>
+                        )}
+
+                        {claimDialogTab === 1 && (
+                            <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                    צדדים מעורבים
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    תוכן טאב צדדים יוצג כאן...
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {claimDialogTab === 2 && (
+                            <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                    הליכים משפטיים
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    תוכן טאב הליכים יוצג כאן...
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {claimDialogTab === 3 && (
+                            <Box>
+                                <Typography variant="h6" gutterBottom sx={{ color: '#882fd7', mb: 2 }}>
+                                    סיכום התביעה
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    תוכן טאב סיכום יוצג כאן...
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
+                </DialogContent>
+
+                <DialogActions sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
+                    <Button 
+                        onClick={handleCloseClaimDialog}
+                        sx={{ 
+                            color: '#882fd7',
+                            borderColor: '#882fd7',
+                            '&:hover': {
+                                borderColor: '#6a1b9a',
+                                backgroundColor: 'rgba(136, 47, 215, 0.04)'
+                            }
+                        }}
+                    >
+                        ביטול
+                    </Button>
+                    <Button 
+                        onClick={handleSaveClaim}
+                        variant="contained"
+                        sx={{
+                            backgroundColor: '#882fd7',
+                            '&:hover': {
+                                backgroundColor: '#6a1b9a'
+                            }
+                        }}
+                    >
+                        שמירה
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
