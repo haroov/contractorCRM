@@ -211,6 +211,15 @@ function App() {
       // Remove sessionId from URL to clean it up
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
+      
+      // Check if we should return to a saved location (for user management)
+      const returnUrl = localStorage.getItem('userManagementReturnUrl');
+      if (returnUrl && returnUrl !== window.location.href) {
+        console.log('🔍 Found return URL, redirecting to:', returnUrl);
+        localStorage.removeItem('userManagementReturnUrl');
+        window.location.href = returnUrl;
+        return;
+      }
 
       // Try to get user info from server first
       try {

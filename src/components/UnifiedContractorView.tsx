@@ -450,6 +450,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   };
 
   const handleUserManagementClick = () => {
+    // Save current location before opening user management
+    const currentUrl = window.location.href;
+    localStorage.setItem('userManagementReturnUrl', currentUrl);
     setUserManagementOpen(true);
     handleUserMenuClose();
   };
@@ -1337,7 +1340,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               </Typography>
               <Button
                 variant="outlined"
-                onClick={() => setUserManagementOpen(false)}
+                onClick={() => {
+                  setUserManagementOpen(false);
+                  // Return to the saved location
+                  const returnUrl = localStorage.getItem('userManagementReturnUrl');
+                  if (returnUrl) {
+                    localStorage.removeItem('userManagementReturnUrl');
+                    window.location.href = returnUrl;
+                  }
+                }}
                 startIcon={<CloseIcon />}
               >
                 סגור

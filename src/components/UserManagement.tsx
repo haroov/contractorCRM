@@ -53,7 +53,11 @@ interface User {
     createdAt: string;
 }
 
-const UserManagement: React.FC = () => {
+interface UserManagementProps {
+    onClose?: () => void;
+}
+
+const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -86,6 +90,18 @@ const UserManagement: React.FC = () => {
             window.location.href = '/login';
         }
     }, []);
+
+    // Handle close button
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            // Fallback: navigate back to main view
+            const returnUrl = localStorage.getItem('userManagementReturnUrl') || '/';
+            localStorage.removeItem('userManagementReturnUrl');
+            window.location.href = returnUrl;
+        }
+    };
 
     const loadUsers = async () => {
         try {
