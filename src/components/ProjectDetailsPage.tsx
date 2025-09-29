@@ -938,13 +938,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 if (project && (project._id || project.id)) {
                     const projectId = project._id || project.id;
                     console.log('Updating project claimsId array');
+                    
+                    // Handle claimsId as array or string
+                    let claimsIdArray = [];
+                    if (project.claimsId) {
+                        if (Array.isArray(project.claimsId)) {
+                            claimsIdArray = project.claimsId;
+                        } else if (typeof project.claimsId === 'string' && project.claimsId.trim() !== '') {
+                            claimsIdArray = [project.claimsId];
+                        }
+                    }
+                    
+                    // Remove the deleted claim ID
+                    const updatedClaimsId = claimsIdArray.filter((id: string) => id !== claimId);
+                    
                     await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            claimsId: project.claimsId?.filter((id: string) => id !== claimId) || []
+                            claimsId: updatedClaimsId
                         })
                     });
                 }
