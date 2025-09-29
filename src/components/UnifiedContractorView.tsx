@@ -52,6 +52,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   // State for API status indicators
   const [contractorStatusIndicators, setContractorStatusIndicators] = useState<{ [key: string]: string }>({});
 
+  // State for view mode (contractors vs projects)
+  const [viewMode, setViewMode] = useState<'contractors' | 'projects'>('contractors');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
+  const [projectsFilter, setProjectsFilter] = useState<'all' | 'open' | 'closed'>('all');
+
   // Function to get tooltip text for status indicator
   const getStatusTooltipText = (statusIndicator: string): string => {
     switch (statusIndicator) {
@@ -262,6 +268,25 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   };
 
+  // Load projects from MongoDB
+  const loadProjects = async () => {
+    try {
+      setProjectsLoading(true);
+      const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data.projects || []);
+      } else {
+        console.error('Failed to load projects');
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      setProjects([]);
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
 
   // Load status indicators for all contractors
   const loadAllContractorStatusIndicators = async () => {
@@ -473,6 +498,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     // Clear localStorage and redirect to login
     localStorage.clear();
     window.location.href = '/login';
+  };
+
+  const handleViewModeToggle = () => {
+    if (viewMode === 'contractors') {
+      setViewMode('projects');
+      loadProjects();
+    } else {
+      setViewMode('contractors');
+    }
+    handleUserMenuClose();
   };
 
   const handleCloseContractorDetails = () => {
@@ -834,13 +869,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       </Paper>
 
       {!showContractorDetails && !userManagementOpen ? (
-        /* Contractor List View */
+        /* Main List View */
         <Box sx={{ p: 2 }}>
           {/* Search and Add Button */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <TextField
               size="small"
-              placeholder="חיפוש קבלנים, אנשי קשר, עיר, שם פרויקט..."
+              placeholder={viewMode === 'contractors' ? "חיפוש קבלנים, אנשי קשר, עיר, שם פרויקט..." : "חיפוש פרויקטים..."}
               value={searchTerm}
               onChange={handleSearchChange}
               InputProps={{
@@ -857,8 +892,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               }}
             />
 
-            {/* Only show Add Contractor button for system users, not contact users */}
-            {!isContactUser && (
+            {/* Only show Add Contractor button for system users in contractors view */}
+            {!isContactUser && viewMode === 'contractors' && (
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -873,269 +908,448 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
           {/* Statistics Cards */}
           <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {filteredContractors.length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {searchTerm ? 'קבלנים נמצאו' : 'סה״כ קבלנים'}
-              </Typography>
-            </Paper>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {filteredContractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                פרויקטים פעילים
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                ₪{filteredContractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
-              </Typography>
-            </Paper>
-            <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                {filteredContractors.reduce((sum, c) => sum + (c.forcast_projects || 0), 0)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                פרויקטים עתידיים
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                ₪{filteredContractors.reduce((sum, c) => sum + (c.forcast_projects_value_nis || 0), 0).toLocaleString()}
-              </Typography>
-            </Paper>
+            {viewMode === 'contractors' ? (
+              <>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {filteredContractors.length}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {searchTerm ? 'קבלנים נמצאו' : 'סה״כ קבלנים'}
+                  </Typography>
+                </Paper>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {filteredContractors.reduce((sum, c) => sum + (c.current_projects || 0), 0)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    פרויקטים פעילים
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ₪{filteredContractors.reduce((sum, c) => sum + (c.current_projects_value_nis || 0), 0).toLocaleString()}
+                  </Typography>
+                </Paper>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {filteredContractors.reduce((sum, c) => sum + (c.forcast_projects || 0), 0)}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    פרויקטים עתידיים
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ₪{filteredContractors.reduce((sum, c) => sum + (c.forcast_projects_value_nis || 0), 0).toLocaleString()}
+                  </Typography>
+                </Paper>
+              </>
+            ) : (
+              <>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {projects.filter(p => projectsFilter === 'all' || (projectsFilter === 'open' ? p.status === 'open' : p.status === 'closed')).length}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {projectsFilter === 'all' ? 'סה״כ פרויקטים' : projectsFilter === 'open' ? 'פרויקטים פתוחים' : 'פרויקטים סגורים'}
+                  </Typography>
+                </Paper>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {projects.filter(p => p.status === 'open').length}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    פרויקטים פתוחים
+                  </Typography>
+                </Paper>
+                <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
+                    {projects.filter(p => p.status === 'closed').length}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    פרויקטים סגורים
+                  </Typography>
+                </Paper>
+              </>
+            )}
           </Box>
 
-          {/* Contractor List */}
+          {/* Filter Tabs for Projects */}
+          {viewMode === 'projects' && (
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <Button
+                variant={projectsFilter === 'all' ? 'contained' : 'outlined'}
+                onClick={() => setProjectsFilter('all')}
+                sx={{
+                  bgcolor: projectsFilter === 'all' ? '#6b47c1' : 'transparent',
+                  color: projectsFilter === 'all' ? 'white' : '#6b47c1',
+                  borderColor: '#6b47c1',
+                  '&:hover': {
+                    bgcolor: projectsFilter === 'all' ? '#5a3aa1' : '#f3f0ff',
+                    borderColor: '#6b47c1'
+                  }
+                }}
+              >
+                הכל
+              </Button>
+              <Button
+                variant={projectsFilter === 'open' ? 'contained' : 'outlined'}
+                onClick={() => setProjectsFilter('open')}
+                sx={{
+                  bgcolor: projectsFilter === 'open' ? '#6b47c1' : 'transparent',
+                  color: projectsFilter === 'open' ? 'white' : '#6b47c1',
+                  borderColor: '#6b47c1',
+                  '&:hover': {
+                    bgcolor: projectsFilter === 'open' ? '#5a3aa1' : '#f3f0ff',
+                    borderColor: '#6b47c1'
+                  }
+                }}
+              >
+                פתוח
+              </Button>
+              <Button
+                variant={projectsFilter === 'closed' ? 'contained' : 'outlined'}
+                onClick={() => setProjectsFilter('closed')}
+                sx={{
+                  bgcolor: projectsFilter === 'closed' ? '#6b47c1' : 'transparent',
+                  color: projectsFilter === 'closed' ? 'white' : '#6b47c1',
+                  borderColor: '#6b47c1',
+                  '&:hover': {
+                    bgcolor: projectsFilter === 'closed' ? '#5a3aa1' : '#f3f0ff',
+                    borderColor: '#6b47c1'
+                  }
+                }}
+              >
+                סגור
+              </Button>
+            </Box>
+          )}
+
+          {/* Main List */}
           <Paper elevation={1} sx={{ p: 2, height: 'calc(100vh - 120px)', overflow: 'auto' }}>
+            {viewMode === 'contractors' ? (
+              <>
+                {filteredContractors.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="body1" color="text.secondary">
+                      {searchTerm ? 'לא נמצאו קבלנים התואמים לחיפוש' : 'אין קבלנים במערכת'}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+                    <Table>
+                      <TableBody>
+                        {filteredContractors.map((contractor) => (
+                          <TableRow
+                            key={contractor.contractorId || contractor.contractor_id}
+                            sx={{
+                              '&:hover': { backgroundColor: '#f0f0f0' },
+                              cursor: 'pointer',
+                              backgroundColor: (selectedContractor && (
+                                (selectedContractor.contractorId && contractor.contractorId && selectedContractor.contractorId === contractor.contractorId) ||
+                                (selectedContractor.contractor_id && contractor.contractor_id && selectedContractor.contractor_id === contractor.contractor_id) ||
+                                (selectedContractor._id && contractor._id && selectedContractor._id === contractor._id)
+                              )) ? '#e3f2fd' : '#ffffff'
+                            }}
+                            onClick={(e) => {
+                              console.log('🔥 Contractor row clicked!', contractor.name);
+                              e.preventDefault();
+                              e.stopPropagation();
 
-            {filteredContractors.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="body1" color="text.secondary">
-                  {searchTerm ? 'לא נמצאו קבלנים התואמים לחיפוש' : 'אין קבלנים במערכת'}
-                </Typography>
-              </Box>
-            ) : (
-              <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
-                <Table>
-                  <TableBody>
-                    {filteredContractors.map((contractor) => (
-                      <TableRow
-                        key={contractor.contractorId || contractor.contractor_id}
-                        sx={{
-                          '&:hover': { backgroundColor: '#f0f0f0' },
-                          cursor: 'pointer',
-                          backgroundColor: (selectedContractor && (
-                            (selectedContractor.contractorId && contractor.contractorId && selectedContractor.contractorId === contractor.contractorId) ||
-                            (selectedContractor.contractor_id && contractor.contractor_id && selectedContractor.contractor_id === contractor.contractor_id) ||
-                            (selectedContractor._id && contractor._id && selectedContractor._id === contractor._id)
-                          )) ? '#e3f2fd' : '#ffffff'
-                        }}
-                        onClick={(e) => {
-                          console.log('🔥 Contractor row clicked!', contractor.name);
-                          e.preventDefault();
-                          e.stopPropagation();
+                              const contactUserData = localStorage.getItem('contactUser');
 
-                          const contactUserData = localStorage.getItem('contactUser');
+                              console.log('🔥 Contact user check:', { isContactUser, hasContactUserData: !!contactUserData });
 
-                          console.log('🔥 Contact user check:', { isContactUser, hasContactUserData: !!contactUserData });
+                              let mode: 'view' | 'edit' = 'view';
 
-                          let mode: 'view' | 'edit' = 'view';
+                              if (isContactUser && contactUserData) {
+                                try {
+                                  const userData = JSON.parse(contactUserData);
+                                  const permissions = userData.permissions;
+                                  const contractorId = userData.contractorId;
 
-                          if (isContactUser && contactUserData) {
-                            try {
-                              const userData = JSON.parse(contactUserData);
-                              const permissions = userData.permissions;
-                              const contractorId = userData.contractorId;
+                                  // Check if this contact user has access to this contractor
+                                  if (contractorId !== contractor._id) {
+                                    console.log('🚫 Contact user does not have access to this contractor');
+                                    return; // Don't open contractor details
+                                  }
 
-                              // Check if this contact user has access to this contractor
-                              if (contractorId !== contractor._id) {
-                                console.log('🚫 Contact user does not have access to this contractor');
-                                return; // Don't open contractor details
+                                  // Contact admins can edit, contact users can only view
+                                  mode = (permissions === 'contactAdmin') ? 'edit' : 'view';
+                                } catch (error) {
+                                  console.error('Error parsing contact user data:', error);
+                                  mode = 'view';
+                                }
+                              } else {
+                                // Regular users can edit
+                                mode = 'edit';
                               }
 
-                              // Contact admins can edit, contact users can only view
-                              mode = (permissions === 'contactAdmin') ? 'edit' : 'view';
-                            } catch (error) {
-                              console.error('Error parsing contact user data:', error);
-                              mode = 'view';
-                            }
-                          } else {
-                            // Regular users can edit
-                            mode = 'edit';
-                          }
+                              console.log('🔥 Opening contractor in mode:', mode);
+                              console.log('🔥 Calling handleContractorSelect with:', { contractor: contractor.name, mode });
+                              handleContractorSelect(contractor, mode);
+                            }}
+                          >
+                            {/* קבלן */}
+                            <TableCell sx={{ textAlign: 'right' }}>
+                              <Box>
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                  {contractor.name}
+                                </Typography>
+                                {contractor.email && (
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{
+                                      display: 'block',
+                                      cursor: 'pointer'
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = `mailto:${contractor.email}`;
+                                    }}
+                                  >
+                                    📧                                 <span style={{
+                                      textDecoration: 'underline'
+                                    }}>{contractor.email}</span>
+                                  </Typography>
+                                )}
+                                {contractor.phone && (
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{
+                                      display: 'block',
+                                      cursor: 'pointer'
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = `tel:${contractor.phone}`;
+                                    }}
+                                  >
+                                    📞                                 <span style={{
+                                      textDecoration: 'underline'
+                                    }}>{contractor.phone}</span>
+                                  </Typography>
+                                )}
+                              </Box>
+                            </TableCell>
 
-                          console.log('🔥 Opening contractor in mode:', mode);
-                          console.log('🔥 Calling handleContractorSelect with:', { contractor: contractor.name, mode });
-                          handleContractorSelect(contractor, mode);
-                        }}
-                      >
-                        {/* קבלן */}
-                        <TableCell sx={{ textAlign: 'right' }}>
-                          <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                              {contractor.name}
-                            </Typography>
-                            {contractor.email && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'block',
-                                  cursor: 'pointer'
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = `mailto:${contractor.email}`;
-                                }}
-                              >
-                                📧                                 <span style={{
-                                  textDecoration: 'underline'
-                                }}>{contractor.email}</span>
+                            {/* ח"פ */}
+                            <TableCell sx={{ textAlign: 'right', paddingRight: 0 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', direction: 'rtl', width: '100%' }}>
+                                {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
+                                  <Tooltip
+                                    title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help', marginLeft: '4px' }}>
+                                      {contractorStatusIndicators[contractor.companyId || contractor.company_id]}
+                                    </Box>
+                                  </Tooltip>
+                                )}
+                                <Typography variant="body2" sx={{ textAlign: 'right', margin: 0 }}>
+                                  {contractor.companyId || contractor.company_id}
+                                </Typography>
+                              </Box>
+                              <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
+                                קבלן {contractor.contractorId || contractor.contractor_id}
                               </Typography>
-                            )}
-                            {contractor.phone && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: 'block',
-                                  cursor: 'pointer'
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = `tel:${contractor.phone}`;
-                                }}
-                              >
-                                📞                                 <span style={{
-                                  textDecoration: 'underline'
-                                }}>{contractor.phone}</span>
+                              <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
+                                {contractor.companyType === 'private_company' ? 'חברה פרטית' :
+                                  contractor.companyType === 'public_company' ? 'חברה ציבורית' :
+                                    contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
+                                      contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
+                                        contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
+                                          contractor.companyType || 'לא צוין'}
                               </Typography>
-                            )}
-                          </Box>
-                        </TableCell>
+                            </TableCell>
 
-                        {/* ח"פ */}
-                        <TableCell sx={{ textAlign: 'right', paddingRight: 0 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', direction: 'rtl', width: '100%' }}>
-                            {(contractor.companyId || contractor.company_id) && contractorStatusIndicators[contractor.companyId || contractor.company_id] && (
-                              <Tooltip
-                                title={getStatusTooltipText(contractorStatusIndicators[contractor.companyId || contractor.company_id])}
-                                arrow
-                                placement="top"
-                              >
-                                <Box sx={{ fontSize: '16px', lineHeight: 1, cursor: 'help', marginLeft: '4px' }}>
-                                  {contractorStatusIndicators[contractor.companyId || contractor.company_id]}
+                            {/* כתובת */}
+                            <TableCell sx={{ textAlign: 'right' }}>
+                              <Typography variant="body2">
+                                {contractor.city}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {contractor.address}
+                              </Typography>
+                            </TableCell>
+
+                            {/* פרויקטים פעילים */}
+                            <TableCell sx={{ textAlign: 'right' }}>
+                              <Typography variant="body2">
+                                {contractor.current_projects || 0} פעילים
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
+                              </Typography>
+                            </TableCell>
+
+                            {/* פרויקטים עתידיים */}
+                            <TableCell sx={{ textAlign: 'right' }}>
+                              <Typography variant="body2">
+                                {contractor.forcast_projects || 0} עתידיים
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                ₪{(contractor.forcast_projects_value_nis || 0).toLocaleString()}
+                              </Typography>
+                            </TableCell>
+
+                            {/* דירוג בטיחות */}
+                            <TableCell sx={{ textAlign: 'right' }}>
+                              <Typography variant="body2">
+                                {contractor.safetyRating || 0} כוכבים
+                              </Typography>
+                              {contractor.iso45001 && (
+                                <Typography variant="caption" color="text.secondary">
+                                  ISO45001
+                                </Typography>
+                              )}
+                            </TableCell>
+
+                            {/* פעולות - רק למשתמשי מערכת */}
+                            {!isContactUser && (
+                              <TableCell sx={{ textAlign: 'center' }}>
+                                <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
+                                  {/* כפתור ארכב - לכל המשתמשים */}
+                                  <IconButton
+                                    size="small"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleArchiveContractor(contractor);
+                                    }}
+                                    sx={{
+                                      color: '#5f6368',
+                                      '&:hover': {
+                                        backgroundColor: '#f1f3f4',
+                                        color: '#202124'
+                                      }
+                                    }}
+                                  >
+                                    <ArchiveIcon fontSize="small" />
+                                  </IconButton>
+
+                                  {/* כפתור מחק - רק לאדמין */}
+                                  {currentUser?.permissions === 'admin' && (
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteContractor(contractor);
+                                      }}
+                                      sx={{
+                                        color: '#5f6368',
+                                        '&:hover': {
+                                          backgroundColor: '#fce8e6',
+                                          color: '#d93025'
+                                        }
+                                      }}
+                                    >
+                                      <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                  )}
                                 </Box>
-                              </Tooltip>
+                              </TableCell>
                             )}
-                            <Typography variant="body2" sx={{ textAlign: 'right', margin: 0 }}>
-                              {contractor.companyId || contractor.company_id}
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
-                            קבלן {contractor.contractorId || contractor.contractor_id}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', display: 'block' }}>
-                            {contractor.companyType === 'private_company' ? 'חברה פרטית' :
-                              contractor.companyType === 'public_company' ? 'חברה ציבורית' :
-                                contractor.companyType === 'authorized_dealer' ? 'עוסק מורשה' :
-                                  contractor.companyType === 'exempt_dealer' ? 'עוסק פטור' :
-                                    contractor.companyType === 'cooperative' ? 'אגודה שיתופית' :
-                                      contractor.companyType || 'לא צוין'}
-                          </Typography>
-                        </TableCell>
-
-                        {/* כתובת */}
-                        <TableCell sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">
-                            {contractor.city}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {contractor.address}
-                          </Typography>
-                        </TableCell>
-
-                        {/* פרויקטים פעילים */}
-                        <TableCell sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">
-                            {contractor.current_projects || 0} פעילים
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            ₪{(contractor.current_projects_value_nis || 0).toLocaleString()}
-                          </Typography>
-                        </TableCell>
-
-                        {/* פרויקטים עתידיים */}
-                        <TableCell sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">
-                            {contractor.forcast_projects || 0} עתידיים
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            ₪{(contractor.forcast_projects_value_nis || 0).toLocaleString()}
-                          </Typography>
-                        </TableCell>
-
-                        {/* דירוג בטיחות */}
-                        <TableCell sx={{ textAlign: 'right' }}>
-                          <Typography variant="body2">
-                            {contractor.safetyRating || 0} כוכבים
-                          </Typography>
-                          {contractor.iso45001 && (
-                            <Typography variant="caption" color="text.secondary">
-                              ISO45001
-                            </Typography>
-                          )}
-                        </TableCell>
-
-                        {/* פעולות - רק למשתמשי מערכת */}
-                        {!isContactUser && (
-                          <TableCell sx={{ textAlign: 'center' }}>
-                            <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
-                              {/* כפתור ארכב - לכל המשתמשים */}
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleArchiveContractor(contractor);
-                                }}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </>
+            ) : (
+              <>
+                {projectsLoading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <>
+                    {projects.filter(p => {
+                      if (projectsFilter === 'all') return true;
+                      return p.status === projectsFilter;
+                    }).filter(p => {
+                      if (!searchTerm) return true;
+                      return p.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        p.description?.toLowerCase().includes(searchTerm.toLowerCase());
+                    }).length === 0 ? (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography variant="body1" color="text.secondary">
+                          {searchTerm ? 'לא נמצאו פרויקטים התואמים לחיפוש' : 'אין פרויקטים במערכת'}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>שם פרויקט</TableCell>
+                              <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>תיאור</TableCell>
+                              <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>סטטוס</TableCell>
+                              <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>תאריך יצירה</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {projects.filter(p => {
+                              if (projectsFilter === 'all') return true;
+                              return p.status === projectsFilter;
+                            }).filter(p => {
+                              if (!searchTerm) return true;
+                              return p.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                p.description?.toLowerCase().includes(searchTerm.toLowerCase());
+                            }).map((project) => (
+                              <TableRow
+                                key={project._id}
                                 sx={{
-                                  color: '#5f6368',
+                                  cursor: 'pointer',
                                   '&:hover': {
-                                    backgroundColor: '#f1f3f4',
-                                    color: '#202124'
+                                    backgroundColor: '#f5f5f5'
                                   }
                                 }}
+                                onClick={() => {
+                                  // Navigate to project details
+                                  window.location.href = `/project-details?projectId=${project._id}&projectName=${encodeURIComponent(project.projectName || '')}`;
+                                }}
                               >
-                                <ArchiveIcon fontSize="small" />
-                              </IconButton>
-
-                              {/* כפתור מחק - רק לאדמין */}
-                              {currentUser?.permissions === 'admin' && (
-                                <IconButton
-                                  size="small"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteContractor(contractor);
-                                  }}
-                                  sx={{
-                                    color: '#5f6368',
-                                    '&:hover': {
-                                      backgroundColor: '#fce8e6',
-                                      color: '#d93025'
-                                    }
-                                  }}
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
-                              )}
-                            </Box>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                    {project.projectName || 'ללא שם'}
+                                  </Typography>
+                                </TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                  <Typography variant="body2">
+                                    {project.description || 'ללא תיאור'}
+                                  </Typography>
+                                </TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                  <Box sx={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: '16px',
+                                    bgcolor: project.status === 'open' ? '#e3f2fd' : '#f0f0f0',
+                                    color: project.status === 'open' ? '#2196f3' : '#666',
+                                    fontWeight: 'bold',
+                                    minWidth: '70px'
+                                  }}>
+                                    {project.status === 'open' ? 'פתוח' : 'סגור'}
+                                  </Box>
+                                </TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                  <Typography variant="body2">
+                                    {project.createdAt ? new Date(project.createdAt).toLocaleDateString('he-IL') : 'ללא תאריך'}
+                                  </Typography>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    )}
+                  </>
+                )}
+              </>
             )}
           </Paper>
         </Box>
@@ -1300,6 +1514,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <MenuItem onClick={handleUserManagementClick}>
             <AccountCircleIcon sx={{ mr: 1 }} />
             ניהול משתמשים
+          </MenuItem>
+        )}
+        {/* Show view mode toggle for system users */}
+        {(currentUser?.role === 'admin' || currentUser?.role === 'user') && (
+          <MenuItem onClick={handleViewModeToggle}>
+            <AccountCircleIcon sx={{ mr: 1 }} />
+            {viewMode === 'contractors' ? 'פרוייקטים' : 'קבלנים'}
           </MenuItem>
         )}
         <MenuItem onClick={handleLogout}>
