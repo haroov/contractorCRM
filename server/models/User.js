@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
       message: 'Phone number must be in format 05x-xxxxxxx'
     }
   },
+  position: {
+    type: String,
+    required: false
+  },
   picture: {
     type: String
   },

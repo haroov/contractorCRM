@@ -39,7 +39,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     console.log('Creating user with request body:', req.body);
 
-    const { name, email, phone, role, isActive } = req.body;
+    const { name, email, phone, position, role, isActive } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -62,6 +62,11 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       userData.phone = phone.trim();
     }
 
+    // Only add position if it's provided and not empty
+    if (position && position.trim() !== '') {
+      userData.position = position.trim();
+    }
+
     console.log('Final user data:', userData);
 
     const user = new User(userData);
@@ -80,7 +85,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 // Update user (admin only)
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
-    const { name, email, phone, role, isActive } = req.body;
+    const { name, email, phone, position, role, isActive } = req.body;
 
     // Check if email is being changed and if it already exists
     if (email) {
@@ -97,6 +102,7 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (name) updateData.name = name;
     if (email) updateData.email = email.toLowerCase();
     if (phone !== undefined) updateData.phone = phone || undefined;
+    if (position !== undefined) updateData.position = position || undefined;
     if (role) updateData.role = role;
     if (isActive !== undefined) updateData.isActive = isActive;
 
