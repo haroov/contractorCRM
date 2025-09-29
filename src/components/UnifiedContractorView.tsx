@@ -275,7 +275,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
       if (response.ok) {
         const data = await response.json();
-        const projectsData = data.projects || [];
+        // Handle both array response and object with projects property
+        const projectsData = Array.isArray(data) ? data : (data.projects || []);
         
         // Classify projects by status
         const classifiedProjects = projectsData.map((project: any) => {
