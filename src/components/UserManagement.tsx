@@ -107,7 +107,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
         try {
             setLoading(true);
             console.log('🔍 Loading users - sessionId from localStorage:', localStorage.getItem('sessionId'));
-            const response = await authenticatedFetch('/users');
+            const response = await authenticatedFetch('/api/users');
             console.log('🔍 Users API response status:', response.status);
             console.log('🔍 Users API response headers:', response.headers.get('content-type'));
             
@@ -156,7 +156,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
         if (!userToDelete) return;
 
         try {
-            const response = await authenticatedFetch(`/users/${userToDelete._id}`, {
+            const response = await authenticatedFetch(`/api/users/${userToDelete._id}`, {
                 method: 'DELETE'
             });
 
@@ -190,7 +190,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
             let response;
             if (editingUser) {
                 // Update existing user
-                response = await authenticatedFetch(`/users/${editingUser._id}`, {
+                response = await authenticatedFetch(`/api/users/${editingUser._id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -199,7 +199,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
                 });
             } else {
                 // Create new user
-                response = await authenticatedFetch('/users', {
+                response = await authenticatedFetch('/api/users', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
