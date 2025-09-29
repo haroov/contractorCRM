@@ -168,9 +168,21 @@ router.delete('/:claimId', async (req, res) => {
     try {
         const db = await getDb();
         const claimsCollection = db.collection('claims');
+        const projectsCollection = db.collection('projects');
         const { ObjectId } = require('mongodb');
         
         const { claimId } = req.params;
+        
+        // First, get the claim to find its projectId
+        const claim = await claimsCollection.findOne({ _id: new ObjectId(claimId) });
+        if (!claim) {
+            return res.status(404).json({
+                success: false,
+                message: 'Claim not found'
+            });
+        }
+        
+        // Delete the claim
         const result = await claimsCollection.deleteOne({ _id: new ObjectId(claimId) });
         
         if (result.deletedCount === 0) {
@@ -178,6 +190,34 @@ router.delete('/:claimId', async (req, res) => {
                 success: false,
                 message: 'Claim not found'
             });
+        }
+        
+        // Remove claim ID from project's claimsId array
+        if (claim.projectId) {
+            try {
+                const project = await projectsCollection.findOne({ _id: new ObjectId(claim.projectId) });
+                if (project && project.claimsId) {
+                    let claimsIdArray = [];
+                    if (Array.isArray(project.claimsId)) {
+                        claimsIdArray = project.claimsId;
+                    } else if (typeof project.claimsId === 'string' && project.claimsId.trim() !== '') {
+                        claimsIdArray = [project.claimsId];
+                    }
+                    
+                    // Remove the deleted claim ID
+                    const updatedClaimsId = claimsIdArray.filter((id: string) => id !== claimId);
+                    
+                    // Update the project
+                    await projectsCollection.updateOne(
+                        { _id: new ObjectId(claim.projectId) },
+                        { $set: { claimsId: updatedClaimsId } }
+                    );
+                    console.log('✅ Removed claim ID from project:', claim.projectId, 'Updated claims array:', updatedClaimsId);
+                }
+            } catch (projectError) {
+                console.error('❌ Error updating project after claim deletion:', projectError);
+                // Don't fail the main request if project update fails
+            }
         }
         
         res.json({
