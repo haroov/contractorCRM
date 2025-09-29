@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 async function createGISSpatialIndexes() {
-  const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://choco_db_user:choco_db_password@cluster0.rtburip.mongodb.net/contractor-crm?retryWrites=true&w=majority';
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm';
   const client = new MongoClient(mongoUri);
 
   try {
