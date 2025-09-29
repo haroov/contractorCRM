@@ -901,7 +901,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         setLoadingClaims(true);
         try {
             const projectId = project._id || project.id;
-            const response = await fetch(`/api/claims/project/${projectId}`);
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/project/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
                 setClaims(data.claims || []);
@@ -924,7 +924,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         // If this is the second click on the same claim, proceed with deletion
         if (claimToDelete === claimId) {
             try {
-                const response = await fetch(`/api/claims/${claimId}`, {
+                const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
                     method: 'DELETE'
                 });
                 
@@ -932,7 +932,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     // Remove claim from project's claimsId array
                     if (project && (project._id || project.id)) {
                         const projectId = project._id || project.id;
-                        await fetch(`/api/projects/${projectId}`, {
+                        await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json',

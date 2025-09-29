@@ -88,7 +88,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const loadClaim = async (claimId: string) => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/claims/${claimId}`);
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`);
             if (response.ok) {
                 const data = await response.json();
                 if (data.success && data.claim) {
@@ -144,7 +144,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         setSaving(true);
         try {
             const claimId = searchParams.get('claimId');
-            const url = isEditMode && claimId ? `/api/claims/${claimId}` : '/api/claims';
+            const url = isEditMode && claimId ? `https://contractorcrm-api.onrender.com/api/claims/${claimId}` : 'https://contractorcrm-api.onrender.com/api/claims';
             const method = isEditMode && claimId ? 'PUT' : 'POST';
             
             const response = await fetch(url, {
