@@ -205,7 +205,7 @@ router.delete('/:claimId', async (req, res) => {
                     }
                     
                     // Remove the deleted claim ID
-                    const updatedClaimsId = claimsIdArray.filter((id: string) => id !== claimId);
+                    const updatedClaimsId = claimsIdArray.filter((id) => id !== claimId);
                     
                     // Update the project
                     await projectsCollection.updateOne(
