@@ -911,16 +911,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const handleDeleteClaim = async (claimId: string) => {
         // Use native browser confirmation dialog
         const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את התביעה?');
-        
+
         if (!confirmed) {
             return; // User cancelled
         }
-        
+
         try {
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
                 method: 'DELETE'
             });
-            
+
             if (response.ok) {
                 // Remove claim from project's claimsId array
                 if (project && (project._id || project.id)) {
@@ -935,10 +935,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         })
                     });
                 }
-                
+
                 // Remove claim from local state immediately
                 setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
-                
+
                 setSnackbarMessage('התביעה נמחקה בהצלחה');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
