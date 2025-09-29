@@ -106,6 +106,8 @@ export const getAuthHeaders = (): HeadersInit => {
 // Helper function for authenticated API calls
 export const authenticatedFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const sessionId = getSessionId();
+    console.log('🔍 authenticatedFetch - sessionId:', sessionId);
+    console.log('🔍 authenticatedFetch - url:', url);
 
     // For FormData, don't set Content-Type - let browser set it with boundary
     const isFormData = options.body instanceof FormData;
@@ -122,22 +124,30 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
 
     // Add base URL if the URL doesn't start with http
     const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.BASE_URL}${url}`;
+    console.log('🔍 authenticatedFetch - fullUrl:', fullUrl);
+    console.log('🔍 authenticatedFetch - API_CONFIG.BASE_URL:', API_CONFIG.BASE_URL);
 
     // Check if this is a contact user vs system user
     const isContactUser = localStorage.getItem('contactUserAuthenticated') === 'true';
     const contactUser = localStorage.getItem('contactUser');
     let isSystemUser = false;
 
+    console.log('🔍 authenticatedFetch - isContactUser:', isContactUser);
+    console.log('🔍 authenticatedFetch - contactUser:', contactUser);
+
     if (isContactUser && contactUser) {
         try {
             const contactUserData = JSON.parse(contactUser);
             isSystemUser = contactUserData.userType !== 'contact';
+            console.log('🔍 authenticatedFetch - contactUserData.userType:', contactUserData.userType);
+            console.log('🔍 authenticatedFetch - isSystemUser:', isSystemUser);
         } catch (error) {
             console.error('Error parsing contact user data:', error);
             isSystemUser = true; // Default to system user if parsing fails
         }
     } else {
         isSystemUser = true; // If not a contact user, assume system user
+        console.log('🔍 authenticatedFetch - defaulting to system user');
     }
 
     // For system users, add sessionId as query parameter
@@ -146,14 +156,17 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
         const urlWithSession = fullUrl.includes('?')
             ? `${fullUrl}&sessionId=${sessionId}`
             : `${fullUrl}?sessionId=${sessionId}`;
+        console.log('✅ authenticatedFetch - final URL with sessionId:', urlWithSession);
         return fetch(urlWithSession, fetchOptions);
     }
 
     // For contact users, don't add sessionId - they use session cookies
     if (sessionId && isContactUser && !isSystemUser) {
         // Contact users rely on session cookies only
+        console.log('✅ authenticatedFetch - contact user, using cookies only:', fullUrl);
         return fetch(fullUrl, fetchOptions);
     }
 
+    console.log('❌ authenticatedFetch - no sessionId or not system user, using basic URL:', fullUrl);
     return fetch(fullUrl, fetchOptions);
 };

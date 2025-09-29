@@ -90,12 +90,19 @@ const UserManagement: React.FC = () => {
     const loadUsers = async () => {
         try {
             setLoading(true);
+            console.log('🔍 Loading users - sessionId from localStorage:', localStorage.getItem('sessionId'));
             const response = await authenticatedFetch('/users');
+            console.log('🔍 Users API response status:', response.status);
+            console.log('🔍 Users API response headers:', response.headers.get('content-type'));
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ Users loaded successfully:', data.length);
                 setUsers(data);
             } else {
-                console.error('Failed to load users');
+                console.error('Failed to load users - status:', response.status);
+                const errorText = await response.text();
+                console.error('Error response:', errorText.substring(0, 500));
                 showSnackbar('שגיאה בטעינת המשתמשים', 'error');
             }
         } catch (error) {
