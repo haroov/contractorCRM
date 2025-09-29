@@ -33,11 +33,6 @@ import {
     TableRow,
     Autocomplete,
     Checkbox,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -474,8 +469,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
     const [claims, setClaims] = useState<any[]>([]);
     const [loadingClaims, setLoadingClaims] = useState(false);
-    const [claimToDelete, setClaimToDelete] = useState<string | null>(null);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [bankNames, setBankNames] = useState<string[]>([
         'בנק הפועלים',
         'בנק לאומי',
@@ -915,16 +908,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
-    const handleDeleteClaim = (claimId: string) => {
-        setClaimToDelete(claimId);
-        setDeleteDialogOpen(true);
-    };
-
-    const confirmDeleteClaim = async () => {
-        if (!claimToDelete) return;
+    const handleDeleteClaim = async (claimId: string) => {
+        // Use native browser confirmation dialog
+        const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את התביעה?');
+        
+        if (!confirmed) {
+            return; // User cancelled
+        }
         
         try {
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimToDelete}`, {
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
                 method: 'DELETE'
             });
             
@@ -938,13 +931,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            claimsId: project.claimsId?.filter((id: string) => id !== claimToDelete) || []
+                            claimsId: project.claimsId?.filter((id: string) => id !== claimId) || []
                         })
                     });
                 }
                 
                 // Remove claim from local state immediately
-                setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimToDelete));
+                setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
                 
                 setSnackbarMessage('התביעה נמחקה בהצלחה');
                 setSnackbarSeverity('success');
@@ -957,15 +950,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             setSnackbarMessage('שגיאה במחיקת התביעה');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
-        } finally {
-            setClaimToDelete(null);
-            setDeleteDialogOpen(false);
         }
-    };
-
-    const cancelDeleteClaim = () => {
-        setClaimToDelete(null);
-        setDeleteDialogOpen(false);
     };
 
     const handleOpenClaimDialog = () => {
@@ -11894,30 +11879,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 </Alert>
             </Snackbar>
 
-            {/* Delete Confirmation Dialog */}
-            <Dialog
-                open={deleteDialogOpen}
-                onClose={cancelDeleteClaim}
-                aria-labelledby="delete-dialog-title"
-                aria-describedby="delete-dialog-description"
-            >
-                <DialogTitle id="delete-dialog-title">
-                    אישור מחיקה
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="delete-dialog-description">
-                        האם אתה בטוח שברצונך למחוק את התביעה? פעולה זו לא ניתנת לביטול.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={cancelDeleteClaim} color="primary">
-                        ביטול
-                    </Button>
-                    <Button onClick={confirmDeleteClaim} color="error" variant="contained">
-                        אישור
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
 
         </Box>
