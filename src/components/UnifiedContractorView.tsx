@@ -56,7 +56,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [viewMode, setViewMode] = useState<'contractors' | 'projects'>('contractors');
   const [projects, setProjects] = useState<any[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
-  const [projectsFilter, setProjectsFilter] = useState<'all' | 'open' | 'closed'>('all');
+  const [projectsFilter, setProjectsFilter] = useState<'all' | 'active' | 'future' | 'closed'>('all');
 
   // Function to get tooltip text for status indicator
   const getStatusTooltipText = (statusIndicator: string): string => {
@@ -275,7 +275,35 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
       if (response.ok) {
         const data = await response.json();
-        setProjects(data.projects || []);
+        const projectsData = data.projects || [];
+        
+        // Classify projects by status
+        const classifiedProjects = projectsData.map((project: any) => {
+          const today = new Date();
+          const startDate = new Date(project.startDate);
+          const isClosed = project.isClosed === true;
+          const status = project.status;
+          
+          let projectStatus = 'open'; // default
+          
+          if (isClosed || status === 'closed') {
+            projectStatus = 'closed';
+          } else if (status === 'current' && startDate <= today) {
+            projectStatus = 'active';
+          } else if (startDate > today) {
+            projectStatus = 'future';
+          } else if (status === 'current') {
+            projectStatus = 'active';
+          }
+          
+          return {
+            ...project,
+            projectStatus // Add our classification
+          };
+        });
+        
+        console.log('Loaded and classified projects:', classifiedProjects);
+        setProjects(classifiedProjects);
       } else {
         console.error('Failed to load projects');
         setProjects([]);
@@ -945,26 +973,31 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <>
                 <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                    {projects.filter(p => projectsFilter === 'all' || (projectsFilter === 'open' ? p.status === 'open' : p.status === 'closed')).length}
+                    {projects.filter(p => {
+                      if (projectsFilter === 'all') return true;
+                      if (projectsFilter === 'active') return p.projectStatus === 'active';
+                      if (projectsFilter === 'future') return p.projectStatus === 'future';
+                      return p.projectStatus === 'closed';
+                    }).length}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {projectsFilter === 'all' ? 'סה״כ פרויקטים' : projectsFilter === 'open' ? 'פרויקטים פתוחים' : 'פרויקטים סגורים'}
+                    {projectsFilter === 'all' ? 'סה״כ פרויקטים' : projectsFilter === 'active' ? 'פרויקטים פעילים' : projectsFilter === 'future' ? 'פרויקטים עתידיים' : 'פרויקטים סגורים'}
                   </Typography>
                 </Paper>
                 <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                    {projects.filter(p => p.status === 'open').length}
+                    {projects.filter(p => p.projectStatus === 'active').length}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    פרויקטים פתוחים
+                    פרויקטים פעילים
                   </Typography>
                 </Paper>
                 <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                    {projects.filter(p => p.status === 'closed').length}
+                    {projects.filter(p => p.projectStatus === 'future').length}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    פרויקטים סגורים
+                    פרויקטים עתידיים
                   </Typography>
                 </Paper>
               </>
@@ -990,19 +1023,34 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 הכל
               </Button>
               <Button
-                variant={projectsFilter === 'open' ? 'contained' : 'outlined'}
-                onClick={() => setProjectsFilter('open')}
+                variant={projectsFilter === 'active' ? 'contained' : 'outlined'}
+                onClick={() => setProjectsFilter('active')}
                 sx={{
-                  bgcolor: projectsFilter === 'open' ? '#6b47c1' : 'transparent',
-                  color: projectsFilter === 'open' ? 'white' : '#6b47c1',
+                  bgcolor: projectsFilter === 'active' ? '#6b47c1' : 'transparent',
+                  color: projectsFilter === 'active' ? 'white' : '#6b47c1',
                   borderColor: '#6b47c1',
                   '&:hover': {
-                    bgcolor: projectsFilter === 'open' ? '#5a3aa1' : '#f3f0ff',
+                    bgcolor: projectsFilter === 'active' ? '#5a3aa1' : '#f3f0ff',
                     borderColor: '#6b47c1'
                   }
                 }}
               >
-                פתוח
+                פעילים
+              </Button>
+              <Button
+                variant={projectsFilter === 'future' ? 'contained' : 'outlined'}
+                onClick={() => setProjectsFilter('future')}
+                sx={{
+                  bgcolor: projectsFilter === 'future' ? '#6b47c1' : 'transparent',
+                  color: projectsFilter === 'future' ? 'white' : '#6b47c1',
+                  borderColor: '#6b47c1',
+                  '&:hover': {
+                    bgcolor: projectsFilter === 'future' ? '#5a3aa1' : '#f3f0ff',
+                    borderColor: '#6b47c1'
+                  }
+                }}
+              >
+                עתידיים
               </Button>
               <Button
                 variant={projectsFilter === 'closed' ? 'contained' : 'outlined'}
@@ -1266,7 +1314,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   <>
                     {projects.filter(p => {
                       if (projectsFilter === 'all') return true;
-                      return p.status === projectsFilter;
+                      return p.projectStatus === projectsFilter;
                     }).filter(p => {
                       if (!searchTerm) return true;
                       return p.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1291,7 +1339,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                           <TableBody>
                             {projects.filter(p => {
                               if (projectsFilter === 'all') return true;
-                              return p.status === projectsFilter;
+                              return p.projectStatus === projectsFilter;
                             }).filter(p => {
                               if (!searchTerm) return true;
                               return p.projectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1328,12 +1376,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                     px: 1.5,
                                     py: 0.5,
                                     borderRadius: '16px',
-                                    bgcolor: project.status === 'open' ? '#e3f2fd' : '#f0f0f0',
-                                    color: project.status === 'open' ? '#2196f3' : '#666',
+                                    bgcolor: project.projectStatus === 'active' ? '#e3f2fd' : project.projectStatus === 'future' ? '#fff3e0' : '#f0f0f0',
+                                    color: project.projectStatus === 'active' ? '#2196f3' : project.projectStatus === 'future' ? '#f57c00' : '#666',
                                     fontWeight: 'bold',
                                     minWidth: '70px'
                                   }}>
-                                    {project.status === 'open' ? 'פתוח' : 'סגור'}
+                                    {project.projectStatus === 'active' ? 'פעיל' : project.projectStatus === 'future' ? 'עתידי' : 'סגור'}
                                   </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right' }}>
