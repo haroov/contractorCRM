@@ -72,6 +72,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     loadUserData();
   }, []);
 
+  // Check if user management should be opened after refresh
+  useEffect(() => {
+    const shouldOpenUserManagement = localStorage.getItem('openUserManagement');
+    if (shouldOpenUserManagement === 'true') {
+      console.log('🔍 Opening user management after refresh');
+      setUserManagementOpen(true);
+      localStorage.removeItem('openUserManagement');
+    }
+  }, []);
+
   // Auto-navigate contact users to their contractor card
   useEffect(() => {
     if (isContactUser && contractors.length > 0) {
@@ -453,6 +463,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     // Save current location before opening user management
     const currentUrl = window.location.href;
     localStorage.setItem('userManagementReturnUrl', currentUrl);
+    // Set flag to remember user management mode for refresh
+    localStorage.setItem('userManagementMode', 'true');
     setUserManagementOpen(true);
     handleUserMenuClose();
   };
@@ -821,7 +833,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         </Box>
       </Paper>
 
-      {!showContractorDetails ? (
+      {!showContractorDetails && !userManagementOpen ? (
         /* Contractor List View */
         <Box sx={{ p: 2 }}>
           {/* Search and Add Button */}
@@ -1127,7 +1139,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             )}
           </Paper>
         </Box>
-      ) : (
+      ) : !userManagementOpen ? (
         /* Contractor Details View */
         <Box sx={{ p: 2 }}>
           <Paper elevation={1} sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
@@ -1271,7 +1283,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             </Box>
           </Paper>
         </Box>
-      )}
+      ) : null}
 
       {/* User Menu */}
       <Menu
@@ -1342,6 +1354,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 variant="outlined"
                 onClick={() => {
                   setUserManagementOpen(false);
+                  // Clear user management mode flag
+                  localStorage.removeItem('userManagementMode');
                   // Return to the saved location
                   const returnUrl = localStorage.getItem('userManagementReturnUrl');
                   if (returnUrl) {

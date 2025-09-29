@@ -159,6 +159,15 @@ function App() {
           // Check if this is actually a system user (userType: "system")
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, treating as system user');
+            
+            // Check if user was in user management mode before refresh
+            const wasInUserManagement = localStorage.getItem('userManagementMode');
+            if (wasInUserManagement === 'true') {
+              console.log('🔍 User was in user management mode, setting flag');
+              localStorage.setItem('openUserManagement', 'true');
+              localStorage.removeItem('userManagementMode');
+            }
+            
             // For system users who came through contact login, use their data directly
             // since they already have valid session data
             const userState = {
@@ -219,6 +228,15 @@ function App() {
         localStorage.removeItem('userManagementReturnUrl');
         window.location.href = returnUrl;
         return;
+      }
+
+      // Check if user was in user management mode before refresh
+      const wasInUserManagement = localStorage.getItem('userManagementMode');
+      if (wasInUserManagement === 'true') {
+        console.log('🔍 User was in user management mode, setting flag');
+        // Set a flag to indicate user management should be opened
+        localStorage.setItem('openUserManagement', 'true');
+        localStorage.removeItem('userManagementMode');
       }
 
       // Try to get user info from server first
