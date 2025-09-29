@@ -328,7 +328,7 @@ router.get('/me', async (req, res) => {
     });
   } else {
     // Check if session ID is provided in headers or query params
-    const sessionId = req.headers['x-session-id'] || req.query.sessionId;
+    const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
     console.log('🔍 /auth/me - Session ID validation:', sessionId, 'Length:', sessionId?.length);
     if (sessionId && sessionId.length > 5) {
       console.log('✅ /auth/me - Session ID provided, trying to find user in database');

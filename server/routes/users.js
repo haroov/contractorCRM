@@ -6,7 +6,12 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 // Get all users (admin only)
 router.get('/', requireAuth, requireAdmin, async (req, res) => {
   try {
+    console.log('🔍 Users endpoint - Session ID:', req.sessionId);
+    console.log('🔍 Users endpoint - User:', req.user);
+    console.log('🔍 Users endpoint - Session user:', req.session?.user);
+    
     const users = await User.find({}).select('-googleId').sort({ createdAt: -1 });
+    console.log('✅ Found users:', users.length);
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);

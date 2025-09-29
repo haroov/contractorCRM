@@ -25,8 +25,8 @@ const requireAuth = (req, res, next) => {
   const sessionId = req.headers['x-session-id'] || req.query.sessionId;
   if (sessionId && sessionId.length > 5) {
     console.log('✅ Session ID provided, allowing access:', sessionId);
-    // For now, allow access if session ID is provided
-    // In production, you'd want to validate the session ID properly
+    // Store session ID in request for later use
+    req.sessionId = sessionId;
     return next();
   }
   
@@ -57,11 +57,11 @@ const requireAdmin = (req, res, next) => {
   }
   
   // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId;
+  const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
   if (sessionId && sessionId.length > 5) {
     console.log('✅ Session ID provided for admin access, allowing:', sessionId);
-    // For now, allow admin access if session ID is provided
-    // In production, you'd want to validate the session ID and check user role
+    // Store session ID in request for later use
+    req.sessionId = sessionId;
     return next();
   }
   
