@@ -11558,7 +11558,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     borderRadius: '50%',
                                                                                     width: '32px',
                                                                                     height: '32px',
-                                                                                    backgroundColor: claimToDelete === claim._id ? '#d32f2f' : 'transparent',
                                                                                     '&:hover': {
                                                                                         backgroundColor: '#d32f2f',
                                                                                         color: 'white'
@@ -11570,8 +11569,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     alt="מחיקה"
                                                                                     style={{
                                                                                         width: '16px',
-                                                                                        height: '16px',
-                                                                                        filter: claimToDelete === claim._id ? 'invert(1)' : 'none'
+                                                                                        height: '16px'
                                                                                     }}
                                                                                 />
                                                                             </IconButton>
