@@ -48,6 +48,7 @@ interface User {
     phone?: string;
     picture?: string;
     role: 'admin' | 'user';
+    position?: string; // New field for job position
     isActive: boolean;
     lastLogin?: string;
     createdAt: string;
@@ -268,7 +269,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
                     onClick={handleAddUser}
                     sx={{ bgcolor: 'primary.main' }}
                 >
-                    הוסף משתמש חדש
+                    הוספה
                 </Button>
             </Box>
 
@@ -278,12 +279,13 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
                     <Table stickyHeader>
                         <TableHead>
                             <TableRow>
-                                <TableCell>משתמש</TableCell>
-                                <TableCell>אימייל</TableCell>
-                                <TableCell>תפקיד</TableCell>
-                                <TableCell>סטטוס</TableCell>
-                                <TableCell>תאריך יצירה</TableCell>
-                                <TableCell>פעולות</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>משתמש</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>אימייל</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>תפקיד</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>הרשאות</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>סטטוס</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>תאריך יצירה</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>פעולות</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -311,6 +313,11 @@ const UserManagement: React.FC<UserManagementProps> = ({ onClose }) => {
                                             <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                                             {user.email}
                                         </Box>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2">
+                                            {user.position || 'לא הוגדר'}
+                                        </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <Chip
@@ -430,6 +437,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
         name: user?.name || '',
         email: user?.email || '',
         phone: user?.phone || '',
+        position: user?.position || '',
         role: user?.role || 'user',
         isActive: user?.isActive ?? true
     });
@@ -555,8 +563,41 @@ const UserForm: React.FC<UserFormProps> = ({ user, onSave, onCancel }) => {
             />
             <TextField
                 fullWidth
-                select
                 label="תפקיד"
+                value={formData.position}
+                onChange={(e) => handleInputChange('position', e.target.value)}
+                margin="normal"
+                placeholder="חיתום, סיקור, תביעות, מכירות..."
+                inputProps={{
+                    list: 'position-options'
+                }}
+            />
+            <datalist id="position-options">
+                <option value="חיתום" />
+                <option value="סיקור" />
+                <option value="תביעות" />
+                <option value="מכירות" />
+                <option value="שירות לקוחות" />
+                <option value="מנהל חשבונות" />
+                <option value="מנהל סיכונים" />
+                <option value="מנהל פרויקטים" />
+                <option value="מנהל IT" />
+                <option value="מנהל משאבי אנוש" />
+                <option value="מנהל כספים" />
+                <option value="מנהל שיווק" />
+                <option value="מנהל מכירות" />
+                <option value="מנהל תפעול" />
+                <option value="מנהל אבטחה" />
+                <option value="מנהל איכות" />
+                <option value="מנהל לוגיסטיקה" />
+                <option value="מנהל רכש" />
+                <option value="מנהל משפטי" />
+                <option value="מנהל רגולציה" />
+            </datalist>
+            <TextField
+                fullWidth
+                select
+                label="הרשאות"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'user' })}
                 margin="normal"

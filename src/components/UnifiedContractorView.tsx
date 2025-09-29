@@ -1349,9 +1349,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                     window.location.href = returnUrl;
                   }
                 }}
-                startIcon={<CloseIcon />}
               >
-                סגור
+                סגירה
               </Button>
             </Box>
             <Box sx={{ flex: 1, overflow: 'hidden' }}>

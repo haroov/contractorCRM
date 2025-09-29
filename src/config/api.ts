@@ -1,11 +1,11 @@
 // API Configuration
 const getBaseUrl = () => {
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com/api';
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://contractorcrm-api.onrender.com';
         // Remove trailing /api if it exists to avoid duplication
         return baseUrl.endsWith('/api') ? baseUrl.slice(0, -4) : baseUrl;
     }
-    return 'https://contractorcrm-api.onrender.com/api';
+    return 'https://contractorcrm-api.onrender.com';
 };
 
 const getAuthBaseUrl = () => {
