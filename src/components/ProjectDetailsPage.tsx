@@ -473,7 +473,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
     const [claims, setClaims] = useState<any[]>([]);
     const [loadingClaims, setLoadingClaims] = useState(false);
-    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [claimToDelete, setClaimToDelete] = useState<string | null>(null);
     const [bankNames, setBankNames] = useState<string[]>([
         'בנק הפועלים',
@@ -914,54 +913,59 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         }
     };
 
-    const handleDeleteClaim = (claimId: string) => {
-        setClaimToDelete(claimId);
-        setDeleteConfirmOpen(true);
-    };
-
-    const confirmDeleteClaim = async () => {
-        if (!claimToDelete) return;
+    const handleDeleteClaim = async (claimId: string) => {
+        // Show confirmation message
+        setSnackbar({
+            open: true,
+            message: 'האם אתה בטוח שברצונך למחוק את התביעה? לחץ שוב על אייקון המחיקה לאישור',
+            severity: 'warning'
+        });
         
-        try {
-            const response = await fetch(`/api/claims/${claimToDelete}`, {
-                method: 'DELETE'
-            });
-            
-            if (response.ok) {
-                // Remove claim from project's claimsId array
-                if (project && (project._id || project.id)) {
-                    const projectId = project._id || project.id;
-                    await fetch(`/api/projects/${projectId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            claimsId: project.claimsId?.filter((id: string) => id !== claimToDelete) || []
-                        })
-                    });
-                }
+        // If this is the second click on the same claim, proceed with deletion
+        if (claimToDelete === claimId) {
+            try {
+                const response = await fetch(`/api/claims/${claimId}`, {
+                    method: 'DELETE'
+                });
                 
-                // Reload claims
-                await loadClaims();
+                if (response.ok) {
+                    // Remove claim from project's claimsId array
+                    if (project && (project._id || project.id)) {
+                        const projectId = project._id || project.id;
+                        await fetch(`/api/projects/${projectId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                claimsId: project.claimsId?.filter((id: string) => id !== claimId) || []
+                            })
+                        });
+                    }
+                    
+                    // Remove claim from local state immediately
+                    setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
+                    
+                    setSnackbar({
+                        open: true,
+                        message: 'התביעה נמחקה בהצלחה',
+                        severity: 'success'
+                    });
+                } else {
+                    throw new Error('Failed to delete claim');
+                }
+            } catch (error) {
+                console.error('Error deleting claim:', error);
                 setSnackbar({
                     open: true,
-                    message: 'התביעה נמחקה בהצלחה',
-                    severity: 'success'
+                    message: 'שגיאה במחיקת התביעה',
+                    severity: 'error'
                 });
-            } else {
-                throw new Error('Failed to delete claim');
             }
-        } catch (error) {
-            console.error('Error deleting claim:', error);
-            setSnackbar({
-                open: true,
-                message: 'שגיאה במחיקת התביעה',
-                severity: 'error'
-            });
-        } finally {
-            setDeleteConfirmOpen(false);
             setClaimToDelete(null);
+        } else {
+            // First click - set the claim to delete
+            setClaimToDelete(claimId);
         }
     };
 
@@ -11550,9 +11554,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     navigate(claimUrl);
                                                                                 }}
                                                                                 sx={{
-                                                                                    color: '#6b47c1',
+                                                                                    color: '#666666',
                                                                                     '&:hover': {
-                                                                                        backgroundColor: '#f3f0ff'
+                                                                                        backgroundColor: '#f5f5f5'
                                                                                     }
                                                                                 }}
                                                                             >
@@ -11562,16 +11566,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 size="small"
                                                                                 onClick={() => handleDeleteClaim(claim._id)}
                                                                                 sx={{
-                                                                                    color: '#d32f2f',
+                                                                                    color: '#666666',
                                                                                     '&:hover': {
-                                                                                        backgroundColor: '#ffebee'
+                                                                                        backgroundColor: '#d32f2f',
+                                                                                        color: 'white'
                                                                                     }
                                                                                 }}
                                                                             >
                                                                                 <img 
                                                                                     src={trashIconUrl} 
                                                                                     alt="מחיקה" 
-                                                                                    style={{ width: '16px', height: '16px' }}
+                                                                                    style={{ 
+                                                                                        width: '16px', 
+                                                                                        height: '16px',
+                                                                                        filter: claimToDelete === claim._id ? 'invert(1)' : 'none'
+                                                                                    }}
                                                                                 />
                                                                             </IconButton>
                                                                         </Box>
@@ -11878,36 +11887,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 </Alert>
             </Snackbar>
 
-            {/* Delete Confirmation Dialog */}
-            <Dialog
-                open={deleteConfirmOpen}
-                onClose={() => setDeleteConfirmOpen(false)}
-                aria-labelledby="delete-dialog-title"
-            >
-                <DialogTitle id="delete-dialog-title">
-                    אישור מחיקה
-                </DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        האם אתה בטוח שברצונך למחוק את התביעה? פעולה זו לא ניתנת לביטול.
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button 
-                        onClick={() => setDeleteConfirmOpen(false)}
-                        color="primary"
-                    >
-                        ביטול
-                    </Button>
-                    <Button 
-                        onClick={confirmDeleteClaim}
-                        color="error"
-                        variant="contained"
-                    >
-                        מחק
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
         </Box>
     );
