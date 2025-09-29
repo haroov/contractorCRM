@@ -938,7 +938,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 if (project && (project._id || project.id)) {
                     const projectId = project._id || project.id;
                     console.log('Updating project claimsId array');
-                    
+
                     // Handle claimsId as array or string
                     let claimsIdArray = [];
                     if (project.claimsId) {
@@ -948,10 +948,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             claimsIdArray = [project.claimsId];
                         }
                     }
-                    
+
                     // Remove the deleted claim ID
                     const updatedClaimsId = claimsIdArray.filter((id: string) => id !== claimId);
-                    
+
                     await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
                         method: 'PUT',
                         headers: {
@@ -11589,7 +11589,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     height: '32px',
                                                                                     '&:hover': {
                                                                                         backgroundColor: '#d32f2f',
-                                                                                        color: 'white'
+                                                                                        color: 'white',
+                                                                                        '& img': {
+                                                                                            filter: 'brightness(0) invert(1)'
+                                                                                        }
                                                                                     }
                                                                                 }}
                                                                             >
