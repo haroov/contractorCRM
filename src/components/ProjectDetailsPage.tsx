@@ -33,6 +33,10 @@ import {
     TableRow,
     Autocomplete,
     Checkbox,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import {
     ArrowBack as ArrowBackIcon,
@@ -48,11 +52,12 @@ import {
     AutoAwesome as AutoAwesomeIcon,
     ContentCopy as ContentCopyIcon,
     Clear as ClearIcon,
+    Edit as EditIcon,
     TableChart as ExcelIcon
 } from '@mui/icons-material';
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
-// import trashIconUrl from '../assets/icon-trash.svg';
+import trashIconUrl from '../assets/icon-trash.svg';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
@@ -468,6 +473,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
     const [claims, setClaims] = useState<any[]>([]);
     const [loadingClaims, setLoadingClaims] = useState(false);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [claimToDelete, setClaimToDelete] = useState<string | null>(null);
     const [bankNames, setBankNames] = useState<string[]>([
         'בנק הפועלים',
         'בנק לאומי',
@@ -904,6 +911,57 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.error('Error loading claims:', error);
         } finally {
             setLoadingClaims(false);
+        }
+    };
+
+    const handleDeleteClaim = (claimId: string) => {
+        setClaimToDelete(claimId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const confirmDeleteClaim = async () => {
+        if (!claimToDelete) return;
+        
+        try {
+            const response = await fetch(`/api/claims/${claimToDelete}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                // Remove claim from project's claimsId array
+                if (project && (project._id || project.id)) {
+                    const projectId = project._id || project.id;
+                    await fetch(`/api/projects/${projectId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            claimsId: project.claimsId?.filter((id: string) => id !== claimToDelete) || []
+                        })
+                    });
+                }
+                
+                // Reload claims
+                await loadClaims();
+                setSnackbar({
+                    open: true,
+                    message: 'התביעה נמחקה בהצלחה',
+                    severity: 'success'
+                });
+            } else {
+                throw new Error('Failed to delete claim');
+            }
+        } catch (error) {
+            console.error('Error deleting claim:', error);
+            setSnackbar({
+                open: true,
+                message: 'שגיאה במחיקת התביעה',
+                severity: 'error'
+            });
+        } finally {
+            setDeleteConfirmOpen(false);
+            setClaimToDelete(null);
         }
     };
 
@@ -11484,24 +11542,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         {new Date(claim.createdAt).toLocaleDateString('he-IL')}
                                                                     </TableCell>
                                                                     <TableCell sx={{ textAlign: 'right' }}>
-                                                                        <Button
-                                                                            size="small"
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                borderColor: '#6b47c1',
-                                                                                color: '#6b47c1',
-                                                                                '&:hover': {
-                                                                                    borderColor: '#5a3aa1',
-                                                                                    backgroundColor: '#f3f0ff'
-                                                                                }
-                                                                            }}
-                                                                            onClick={() => {
-                                                                                const claimUrl = `/claim-form?projectId=${project?._id || project?.id}&projectName=${encodeURIComponent(project?.projectName || '')}&claimId=${claim._id}`;
-                                                                                navigate(claimUrl);
-                                                                            }}
-                                                                        >
-                                                                            עריכה
-                                                                        </Button>
+                                                                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => {
+                                                                                    const claimUrl = `/claim-form?projectId=${project?._id || project?.id}&projectName=${encodeURIComponent(project?.projectName || '')}&claimId=${claim._id}&mode=edit`;
+                                                                                    navigate(claimUrl);
+                                                                                }}
+                                                                                sx={{
+                                                                                    color: '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: '#f3f0ff'
+                                                                                    }
+                                                                                }}
+                                                                            >
+                                                                                <EditIcon fontSize="small" />
+                                                                            </IconButton>
+                                                                            <IconButton
+                                                                                size="small"
+                                                                                onClick={() => handleDeleteClaim(claim._id)}
+                                                                                sx={{
+                                                                                    color: '#d32f2f',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: '#ffebee'
+                                                                                    }
+                                                                                }}
+                                                                            >
+                                                                                <img 
+                                                                                    src={trashIconUrl} 
+                                                                                    alt="מחיקה" 
+                                                                                    style={{ width: '16px', height: '16px' }}
+                                                                                />
+                                                                            </IconButton>
+                                                                        </Box>
                                                                     </TableCell>
                                                                 </TableRow>
                                                             ))}
@@ -11804,6 +11877,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                aria-labelledby="delete-dialog-title"
+            >
+                <DialogTitle id="delete-dialog-title">
+                    אישור מחיקה
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        האם אתה בטוח שברצונך למחוק את התביעה? פעולה זו לא ניתנת לביטול.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                        onClick={() => setDeleteConfirmOpen(false)}
+                        color="primary"
+                    >
+                        ביטול
+                    </Button>
+                    <Button 
+                        onClick={confirmDeleteClaim}
+                        color="error"
+                        variant="contained"
+                    >
+                        מחק
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );

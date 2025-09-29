@@ -44,6 +44,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const [activeTab, setActiveTab] = useState(0);
     const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: '',
@@ -65,6 +67,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     useEffect(() => {
         const projectId = searchParams.get('projectId');
         const projectName = searchParams.get('projectName');
+        const claimId = searchParams.get('claimId');
+        const mode = searchParams.get('mode');
 
         if (projectId && projectName) {
             setFormData(prev => ({
@@ -73,7 +77,47 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 projectName: decodeURIComponent(projectName)
             }));
         }
+
+        // If we have a claimId and mode is edit, load the existing claim
+        if (claimId && mode === 'edit') {
+            setIsEditMode(true);
+            loadClaim(claimId);
+        }
     }, [searchParams]);
+
+    const loadClaim = async (claimId: string) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/claims/${claimId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.claim) {
+                    setFormData({
+                        projectId: data.claim.projectId || '',
+                        projectName: data.claim.projectName || '',
+                        description: data.claim.description || '',
+                        status: data.claim.status || 'open',
+                        parties: data.claim.parties || '',
+                        procedures: data.claim.procedures || '',
+                        summary: data.claim.summary || '',
+                        createdAt: data.claim.createdAt ? new Date(data.claim.createdAt) : new Date(),
+                        updatedAt: data.claim.updatedAt ? new Date(data.claim.updatedAt) : new Date()
+                    });
+                }
+            } else {
+                throw new Error('Failed to load claim');
+            }
+        } catch (error) {
+            console.error('Error loading claim:', error);
+            setSnackbar({
+                open: true,
+                message: 'שגיאה בטעינת התביעה',
+                severity: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
@@ -99,8 +143,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
         setSaving(true);
         try {
-            const response = await fetch('/api/claims', {
-                method: 'POST',
+            const claimId = searchParams.get('claimId');
+            const url = isEditMode && claimId ? `/api/claims/${claimId}` : '/api/claims';
+            const method = isEditMode && claimId ? 'PUT' : 'POST';
+            
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -110,7 +158,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             if (response.ok) {
                 setSnackbar({
                     open: true,
-                    message: 'התביעה נשמרה בהצלחה',
+                    message: isEditMode ? 'התביעה עודכנה בהצלחה' : 'התביעה נשמרה בהצלחה',
                     severity: 'success'
                 });
             } else {
@@ -213,7 +261,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             p: 2
                         }}>
                             <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
-                                {formData.projectName} - תביעה
+                                {formData.projectName} - תביעה {isEditMode ? '(עריכה)' : '(חדשה)'}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Button
@@ -277,6 +325,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                     {/* Tab Content */}
                     <Box sx={{ flex: 1, p: 3, overflowY: 'auto' }}>
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <>
                         {activeTab === 0 && (
                             <Box>
                                 <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
@@ -423,6 +477,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                     }}
                                 />
                             </Box>
+                        )}
+                            </>
                         )}
                     </Box>
                 </Paper>

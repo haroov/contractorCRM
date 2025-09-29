@@ -21,11 +21,34 @@ router.post('/', async (req, res) => {
         // Add claim ID to project's claimsId array
         if (req.body.projectId) {
             try {
-                await projectsCollection.updateOne(
-                    { _id: new ObjectId(req.body.projectId) },
-                    { $push: { claimsId: result.insertedId.toString() } }
-                );
-                console.log('✅ Added claim ID to project:', req.body.projectId);
+                // First, get the current project to check if claimsId exists
+                const project = await projectsCollection.findOne({ _id: new ObjectId(req.body.projectId) });
+                
+                if (project) {
+                    // If claimsId doesn't exist or is not an array, initialize it
+                    let claimsIdArray = [];
+                    if (project.claimsId) {
+                        if (Array.isArray(project.claimsId)) {
+                            claimsIdArray = project.claimsId;
+                        } else if (typeof project.claimsId === 'string' && project.claimsId.trim() !== '') {
+                            // Convert string to array if it's not empty
+                            claimsIdArray = [project.claimsId];
+                        }
+                    }
+                    
+                    // Add the new claim ID if it's not already in the array
+                    const claimIdString = result.insertedId.toString();
+                    if (!claimsIdArray.includes(claimIdString)) {
+                        claimsIdArray.push(claimIdString);
+                    }
+                    
+                    // Update the project with the claimsId array
+                    await projectsCollection.updateOne(
+                        { _id: new ObjectId(req.body.projectId) },
+                        { $set: { claimsId: claimsIdArray } }
+                    );
+                    console.log('✅ Added claim ID to project:', req.body.projectId, 'Claims array:', claimsIdArray);
+                }
             } catch (projectError) {
                 console.error('❌ Error updating project with claim ID:', projectError);
                 // Don't fail the main request if project update fails
