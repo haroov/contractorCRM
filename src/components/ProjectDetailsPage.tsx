@@ -917,11 +917,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         // If this is the first click on this claim, show confirmation and set it as selected
         if (claimToDelete !== claimId) {
             setClaimToDelete(claimId);
-            setSnackbar({
-                open: true,
-                message: 'האם אתה בטוח שברצונך למחוק את התביעה? לחץ שוב על אייקון המחיקה לאישור',
-                severity: 'warning'
-            });
+            setSnackbarMessage('האם אתה בטוח שברצונך למחוק את התביעה? לחץ שוב על אייקון המחיקה לאישור');
+            setSnackbarSeverity('warning');
+            setSnackbarOpen(true);
             return;
         }
         
@@ -949,21 +947,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 // Remove claim from local state immediately
                 setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
                 
-                setSnackbar({
-                    open: true,
-                    message: 'התביעה נמחקה בהצלחה',
-                    severity: 'success'
-                });
+                setSnackbarMessage('התביעה נמחקה בהצלחה');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
             } else {
                 throw new Error('Failed to delete claim');
             }
         } catch (error) {
             console.error('Error deleting claim:', error);
-            setSnackbar({
-                open: true,
-                message: 'שגיאה במחיקת התביעה',
-                severity: 'error'
-            });
+            setSnackbarMessage('שגיאה במחיקת התביעה');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         } finally {
             setClaimToDelete(null);
         }
@@ -11581,11 +11575,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     }
                                                                                 }}
                                                                             >
-                                                                                <img 
-                                                                                    src={trashIconUrl} 
-                                                                                    alt="מחיקה" 
-                                                                                    style={{ 
-                                                                                        width: '16px', 
+                                                                                <img
+                                                                                    src={trashIconUrl}
+                                                                                    alt="מחיקה"
+                                                                                    style={{
+                                                                                        width: '16px',
                                                                                         height: '16px',
                                                                                         filter: claimToDelete === claim._id ? 'invert(1)' : 'none'
                                                                                     }}
