@@ -896,10 +896,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         setLoadingClaims(true);
         try {
             const projectId = project._id || project.id;
+            console.log('Loading claims for project:', projectId);
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/project/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
+                console.log('Loaded claims:', data.claims);
                 setClaims(data.claims || []);
+            } else {
+                console.error('Failed to load claims:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Error loading claims:', error);
@@ -909,22 +913,31 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleDeleteClaim = async (claimId: string) => {
+        console.log('Attempting to delete claim:', claimId);
+        
         // Use native browser confirmation dialog
         const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את התביעה?');
-
+        
         if (!confirmed) {
+            console.log('User cancelled deletion');
             return; // User cancelled
         }
-
+        
         try {
+            console.log('Sending DELETE request for claim:', claimId);
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
                 method: 'DELETE'
             });
-
+            
+            console.log('Delete response status:', response.status);
+            
             if (response.ok) {
+                console.log('Claim deleted successfully');
+                
                 // Remove claim from project's claimsId array
                 if (project && (project._id || project.id)) {
                     const projectId = project._id || project.id;
+                    console.log('Updating project claimsId array');
                     await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
                         method: 'PUT',
                         headers: {
@@ -935,15 +948,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         })
                     });
                 }
-
+                
                 // Remove claim from local state immediately
                 setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
-
+                
                 setSnackbarMessage('התביעה נמחקה בהצלחה');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
             } else {
-                throw new Error('Failed to delete claim');
+                const errorData = await response.json();
+                console.error('Delete failed:', response.status, errorData);
+                throw new Error(`Failed to delete claim: ${response.status} ${errorData.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error deleting claim:', error);
