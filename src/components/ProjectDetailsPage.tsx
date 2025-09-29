@@ -897,7 +897,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const loadClaims = async () => {
         if (!project?._id && !project?.id) return;
-        
+
         setLoadingClaims(true);
         try {
             const projectId = project._id || project.id;
@@ -914,58 +914,58 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleDeleteClaim = async (claimId: string) => {
-        // Show confirmation message
-        setSnackbar({
-            open: true,
-            message: 'האם אתה בטוח שברצונך למחוק את התביעה? לחץ שוב על אייקון המחיקה לאישור',
-            severity: 'warning'
-        });
+        // If this is the first click on this claim, show confirmation and set it as selected
+        if (claimToDelete !== claimId) {
+            setClaimToDelete(claimId);
+            setSnackbar({
+                open: true,
+                message: 'האם אתה בטוח שברצונך למחוק את התביעה? לחץ שוב על אייקון המחיקה לאישור',
+                severity: 'warning'
+            });
+            return;
+        }
         
         // If this is the second click on the same claim, proceed with deletion
-        if (claimToDelete === claimId) {
-            try {
-                const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    // Remove claim from project's claimsId array
-                    if (project && (project._id || project.id)) {
-                        const projectId = project._id || project.id;
-                        await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                claimsId: project.claimsId?.filter((id: string) => id !== claimId) || []
-                            })
-                        });
-                    }
-                    
-                    // Remove claim from local state immediately
-                    setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
-                    
-                    setSnackbar({
-                        open: true,
-                        message: 'התביעה נמחקה בהצלחה',
-                        severity: 'success'
+        try {
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                // Remove claim from project's claimsId array
+                if (project && (project._id || project.id)) {
+                    const projectId = project._id || project.id;
+                    await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            claimsId: project.claimsId?.filter((id: string) => id !== claimId) || []
+                        })
                     });
-                } else {
-                    throw new Error('Failed to delete claim');
                 }
-            } catch (error) {
-                console.error('Error deleting claim:', error);
+                
+                // Remove claim from local state immediately
+                setClaims(prevClaims => prevClaims.filter(claim => claim._id !== claimId));
+                
                 setSnackbar({
                     open: true,
-                    message: 'שגיאה במחיקת התביעה',
-                    severity: 'error'
+                    message: 'התביעה נמחקה בהצלחה',
+                    severity: 'success'
                 });
+            } else {
+                throw new Error('Failed to delete claim');
             }
+        } catch (error) {
+            console.error('Error deleting claim:', error);
+            setSnackbar({
+                open: true,
+                message: 'שגיאה במחיקת התביעה',
+                severity: 'error'
+            });
+        } finally {
             setClaimToDelete(null);
-        } else {
-            // First click - set the claim to delete
-            setClaimToDelete(claimId);
         }
     };
 
@@ -11555,8 +11555,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }}
                                                                                 sx={{
                                                                                     color: '#666666',
+                                                                                    borderRadius: '50%',
+                                                                                    width: '32px',
+                                                                                    height: '32px',
                                                                                     '&:hover': {
-                                                                                        backgroundColor: '#f5f5f5'
+                                                                                        backgroundColor: '#6b47c1',
+                                                                                        color: 'white'
                                                                                     }
                                                                                 }}
                                                                             >
@@ -11567,6 +11571,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 onClick={() => handleDeleteClaim(claim._id)}
                                                                                 sx={{
                                                                                     color: '#666666',
+                                                                                    borderRadius: '50%',
+                                                                                    width: '32px',
+                                                                                    height: '32px',
+                                                                                    backgroundColor: claimToDelete === claim._id ? '#d32f2f' : 'transparent',
                                                                                     '&:hover': {
                                                                                         backgroundColor: '#d32f2f',
                                                                                         color: 'white'

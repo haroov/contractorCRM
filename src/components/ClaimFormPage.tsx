@@ -146,7 +146,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             const claimId = searchParams.get('claimId');
             const url = isEditMode && claimId ? `https://contractorcrm-api.onrender.com/api/claims/${claimId}` : 'https://contractorcrm-api.onrender.com/api/claims';
             const method = isEditMode && claimId ? 'PUT' : 'POST';
-            
+
             const response = await fetch(url, {
                 method: method,
                 headers: {
@@ -331,153 +331,153 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             </Box>
                         ) : (
                             <>
-                        {activeTab === 0 && (
-                            <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                    פרטי התביעה
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={12}
-                                    label="תאור האירוע"
-                                    value={formData.description}
-                                    onChange={(e) => handleFieldChange('description', e.target.value)}
-                                    variant="outlined"
-                                    placeholder="תאר את האירוע בפירוט..."
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: '#d0d0d0'
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: '#6b47c1'
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#6b47c1'
-                                            }
-                                        },
-                                        '& .MuiInputLabel-root': {
-                                            color: '#666666',
-                                            '&.Mui-focused': {
-                                                color: '#6b47c1'
-                                            }
-                                        }
-                                    }}
-                                />
-                            </Box>
-                        )}
+                                {activeTab === 0 && (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                            פרטי התביעה
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            label="תאור האירוע"
+                                            value={formData.description}
+                                            onChange={(e) => handleFieldChange('description', e.target.value)}
+                                            variant="outlined"
+                                            placeholder="תאר את האירוע בפירוט..."
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
+                                                    },
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    }
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                )}
 
-                        {activeTab === 1 && (
-                            <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                    צדדים מעורבים
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={12}
-                                    label="פרטי הצדדים המעורבים"
-                                    value={formData.parties}
-                                    onChange={(e) => handleFieldChange('parties', e.target.value)}
-                                    variant="outlined"
-                                    placeholder="פרט את הצדדים המעורבים בתביעה..."
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: '#d0d0d0'
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: '#6b47c1'
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#6b47c1'
-                                            }
-                                        },
-                                        '& .MuiInputLabel-root': {
-                                            color: '#666666',
-                                            '&.Mui-focused': {
-                                                color: '#6b47c1'
-                                            }
-                                        }
-                                    }}
-                                />
-                            </Box>
-                        )}
+                                {activeTab === 1 && (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                            צדדים מעורבים
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            label="פרטי הצדדים המעורבים"
+                                            value={formData.parties}
+                                            onChange={(e) => handleFieldChange('parties', e.target.value)}
+                                            variant="outlined"
+                                            placeholder="פרט את הצדדים המעורבים בתביעה..."
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
+                                                    },
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    }
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                )}
 
-                        {activeTab === 2 && (
-                            <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                    הליכים משפטיים
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={12}
-                                    label="פרטי ההליכים המשפטיים"
-                                    value={formData.procedures}
-                                    onChange={(e) => handleFieldChange('procedures', e.target.value)}
-                                    variant="outlined"
-                                    placeholder="תאר את ההליכים המשפטיים..."
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: '#d0d0d0'
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: '#6b47c1'
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#6b47c1'
-                                            }
-                                        },
-                                        '& .MuiInputLabel-root': {
-                                            color: '#666666',
-                                            '&.Mui-focused': {
-                                                color: '#6b47c1'
-                                            }
-                                        }
-                                    }}
-                                />
-                            </Box>
-                        )}
+                                {activeTab === 2 && (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                            הליכים משפטיים
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            label="פרטי ההליכים המשפטיים"
+                                            value={formData.procedures}
+                                            onChange={(e) => handleFieldChange('procedures', e.target.value)}
+                                            variant="outlined"
+                                            placeholder="תאר את ההליכים המשפטיים..."
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
+                                                    },
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    }
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                )}
 
-                        {activeTab === 3 && (
-                            <Box>
-                                <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                    סיכום התביעה
-                                </Typography>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={12}
-                                    label="סיכום התביעה"
-                                    value={formData.summary}
-                                    onChange={(e) => handleFieldChange('summary', e.target.value)}
-                                    variant="outlined"
-                                    placeholder="סיכום התביעה..."
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: '#d0d0d0'
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: '#6b47c1'
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#6b47c1'
-                                            }
-                                        },
-                                        '& .MuiInputLabel-root': {
-                                            color: '#666666',
-                                            '&.Mui-focused': {
-                                                color: '#6b47c1'
-                                            }
-                                        }
-                                    }}
-                                />
-                            </Box>
-                        )}
+                                {activeTab === 3 && (
+                                    <Box>
+                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                            סיכום התביעה
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            label="סיכום התביעה"
+                                            value={formData.summary}
+                                            onChange={(e) => handleFieldChange('summary', e.target.value)}
+                                            variant="outlined"
+                                            placeholder="סיכום התביעה..."
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
+                                                    },
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    }
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                )}
                             </>
                         )}
                     </Box>
