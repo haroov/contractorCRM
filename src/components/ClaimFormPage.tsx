@@ -438,10 +438,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             <>
                                 {activeTab === 0 && (
                                     <Box>
-                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                            פרטי התביעה
-                                        </Typography>
-                                        
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
