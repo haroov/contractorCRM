@@ -10281,18 +10281,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         top: '0px'
                                                     }
                                                 }}
-                                                InputProps={{
-                                                    endAdornment: (
-                                                        <Typography sx={{
-                                                            color: 'text.secondary',
-                                                            ml: 1,
-                                                            fontSize: '1rem',
-                                                            fontWeight: 'bold'
-                                                        }}>
-                                                            ₪
-                                                        </Typography>
-                                                    )
-                                                }}
                                             />
                                         </Box>
 
