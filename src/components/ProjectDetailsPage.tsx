@@ -9455,11 +9455,77 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     freeSolo
                                                                     options={['פוליסה', 'תוספת', 'כתב כיסוי']}
                                                                     value={document.documentType || ''}
-                                                                    onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newValue || '');
+                                                                    onChange={async (event, newValue) => {
+                                                                        const value = newValue || '';
+                                                                        console.log('🔍 Policy document documentType onChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document documentType to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    documentType: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document documentType to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document documentType saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document documentType:', error);
+                                                                            }
+                                                                        }
                                                                     }}
-                                                                    onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newInputValue);
+                                                                    onInputChange={async (event, newInputValue) => {
+                                                                        const value = newInputValue;
+                                                                        console.log('🔍 Policy document documentType onInputChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document documentType to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    documentType: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document documentType to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document documentType saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document documentType:', error);
+                                                                            }
+                                                                        }
                                                                     }}
                                                                     renderInput={(params) => (
                                                                         <TextField
@@ -9479,15 +9545,80 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     thumbnailUrl={document.thumbnailUrl || ''}
                                                                     projectId={project?._id || project?.id}
                                                                     onChange={async (url, thumbnailUrl) => {
+                                                                        console.log('🔍 Policy document onChange called with:', { url, thumbnailUrl, index });
+
                                                                         handleNestedFieldChange(`policyDocuments.${index}.file`, url);
                                                                         if (thumbnailUrl) {
                                                                             handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, thumbnailUrl);
                                                                         }
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (url && (project?._id || project?.id)) {
+                                                                            console.log('🔍 Saving policy document to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    file: url,
+                                                                                    thumbnailUrl: thumbnailUrl || ''
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document:', error);
+                                                                            }
+                                                                        }
                                                                     }}
                                                                     onDelete={async () => {
                                                                         if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
+                                                                            console.log('🗑️ Policy document onDelete called for index:', index);
+
                                                                             handleNestedFieldChange(`policyDocuments.${index}.file`, '');
                                                                             handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
+
+                                                                            // Delete from database
+                                                                            if (project?._id || project?.id) {
+                                                                                try {
+                                                                                    const { projectsAPI } = await import('../services/api');
+                                                                                    const currentDocuments = project?.policyDocuments || [];
+                                                                                    const updatedDocuments = [...currentDocuments];
+                                                                                    updatedDocuments[index] = {
+                                                                                        ...updatedDocuments[index],
+                                                                                        file: '',
+                                                                                        thumbnailUrl: ''
+                                                                                    };
+
+                                                                                    const updateData = {
+                                                                                        'policyDocuments': updatedDocuments
+                                                                                    };
+
+                                                                                    console.log('🗑️ Deleting policy document from database:', updateData);
+                                                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                    console.log('✅ Policy document deleted successfully:', result);
+
+                                                                                    // Update project state after successful deletion
+                                                                                    setProject(prev => ({
+                                                                                        ...prev,
+                                                                                        policyDocuments: updatedDocuments
+                                                                                    }));
+                                                                                } catch (error) {
+                                                                                    console.error('❌ Error deleting policy document:', error);
+                                                                                }
+                                                                            }
                                                                         }
                                                                     }}
                                                                     disabled={mode === 'view' || !canEdit}
@@ -9500,8 +9631,41 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     size="small"
                                                                     type="date"
                                                                     value={document.validUntil || ''}
-                                                                    onChange={(e) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.validUntil`, e.target.value);
+                                                                    onChange={async (e) => {
+                                                                        const value = e.target.value;
+                                                                        console.log('🔍 Policy document validUntil onChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.validUntil`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document validUntil to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    validUntil: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document validUntil to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document validUntil saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document validUntil:', error);
+                                                                            }
+                                                                        }
                                                                     }}
                                                                     placeholder="תאריך תוקף"
                                                                     variant="outlined"
@@ -9514,8 +9678,41 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     value={document.policyNumber || ''}
-                                                                    onChange={(e) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.policyNumber`, e.target.value);
+                                                                    onChange={async (e) => {
+                                                                        const value = e.target.value;
+                                                                        console.log('🔍 Policy document policyNumber onChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.policyNumber`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document policyNumber to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    policyNumber: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document policyNumber to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document policyNumber saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document policyNumber:', error);
+                                                                            }
+                                                                        }
                                                                     }}
                                                                     placeholder="מספר פוליסה"
                                                                     variant="outlined"
@@ -9527,11 +9724,77 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     freeSolo
                                                                     options={['הראל', 'כלל', 'הפניקס', 'מנורה', 'מגדל', 'איילון', 'הכשרה', 'AIG', 'ליברה', 'שירביט', 'שומרה', 'ווישור', 'אנקור', 'סקוריטס']}
                                                                     value={document.insurer || ''}
-                                                                    onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newValue || '');
+                                                                    onChange={async (event, newValue) => {
+                                                                        const value = newValue || '';
+                                                                        console.log('🔍 Policy document insurer onChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document insurer to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    insurer: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document insurer to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document insurer saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document insurer:', error);
+                                                                            }
+                                                                        }
                                                                     }}
-                                                                    onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newInputValue);
+                                                                    onInputChange={async (event, newInputValue) => {
+                                                                        const value = newInputValue;
+                                                                        console.log('🔍 Policy document insurer onInputChange called with:', { value, index });
+
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, value);
+
+                                                                        // Save to database immediately if we have a project ID
+                                                                        if (project?._id || project?.id) {
+                                                                            console.log('🔍 Saving policy document insurer to database...');
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    insurer: value
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🔍 Saving policy document insurer to database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document insurer saved successfully:', result);
+
+                                                                                // Update project state after successful save
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error saving policy document insurer:', error);
+                                                                            }
+                                                                        }
                                                                     }}
                                                                     renderInput={(params) => (
                                                                         <TextField
