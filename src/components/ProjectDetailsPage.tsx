@@ -2388,7 +2388,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     siteDrainagePlan: project.siteDrainagePlan,
                     schedule: project.schedule,
                     // Include subcontractors array
-                    subcontractors: project.subcontractors || []
+                    subcontractors: project.subcontractors || [],
+                    // Include insurance specification with property pledge data
+                    insuranceSpecification: project.insuranceSpecification
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
                 console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
@@ -2426,7 +2428,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     environmentalSurvey: project.environmentalSurvey,
                     hydrologicalPlan: project.hydrologicalPlan,
                     siteDrainagePlan: project.siteDrainagePlan,
-                    schedule: project.schedule
+                    schedule: project.schedule,
+                    // Include insurance specification with property pledge data
+                    insuranceSpecification: project.insuranceSpecification
                 };
                 const projectId = project._id || project.id;
                 console.log('🔄 Sending update data to server:', updateData);
@@ -2435,8 +2439,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     garmoshkaFile: updateData.garmoshkaFile,
                     garmoshkaFileCreationDate: updateData.garmoshkaFileCreationDate,
                     plotDetails: updateData.plotDetails,
-                    stakeholders: updateData.stakeholders
+                    stakeholders: updateData.stakeholders,
+                    insuranceSpecification: updateData.insuranceSpecification
                 });
+                console.log('🔄 Property pledge data:', updateData.insuranceSpecification?.propertyPledge);
                 console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({
                     role: s.role,
                     contractorObjectId: s.contractorObjectId
