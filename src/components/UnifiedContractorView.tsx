@@ -261,7 +261,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
 
       setContractors(filteredContractors);
-      
+
       // If we have projects loaded, update contractor stats
       if (projects.length > 0) {
         updateContractorStatsFromProjects(projects);
@@ -282,35 +282,34 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const data = await response.json();
         // Handle both array response and object with projects property
         const projectsData = Array.isArray(data) ? data : (data.projects || []);
-        
+
         // Classify projects by status
         const classifiedProjects = projectsData.map((project: any) => {
           const today = new Date();
           const startDate = new Date(project.startDate);
           const isClosed = project.isClosed === true;
           const status = project.status;
-          
+
           let projectStatus = 'open'; // default
-          
+
           if (isClosed || status === 'closed') {
             projectStatus = 'closed';
-          } else if (status === 'current' && startDate <= today) {
+          } else if (status === 'current') {
+            // If status is 'current', always classify as 'active' regardless of start date
             projectStatus = 'active';
           } else if (startDate > today) {
             projectStatus = 'future';
-          } else if (status === 'current') {
-            projectStatus = 'active';
           }
-          
+
           return {
             ...project,
             projectStatus // Add our classification
           };
         });
-        
+
         console.log('Loaded and classified projects:', classifiedProjects);
         setProjects(classifiedProjects);
-        
+
         // Update contractor statistics based on real projects
         updateContractorStatsFromProjects(classifiedProjects);
       } else {
@@ -332,14 +331,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         // Find projects for this contractor
         const contractorProjects = projectsData.filter(project => {
           // Check if project belongs to this contractor by mainContractor field
-          const matches = project.mainContractor === contractor._id || 
-                 project.mainContractor === contractor.contractor_id ||
-                 project.contractorName === contractor.name ||
-                 // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
-                 (contractor.name === 'צ.מ.ח המרמן בע"מ' && 
-                  (project.mainContractor === '68b6e04d4cbe489fccf6151e' || 
-                   project.mainContractor === 'צ.מ.ח המרמן בע"מ'));
-          
+          const matches = project.mainContractor === contractor._id ||
+            project.mainContractor === contractor.contractor_id ||
+            project.contractorName === contractor.name ||
+            // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
+            (contractor.name === 'צ.מ.ח המרמן בע"מ' &&
+              (project.mainContractor === '68b6e04d4cbe489fccf6151e' ||
+                project.mainContractor === 'צ.מ.ח המרמן בע"מ'));
+
           if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
             console.log(`🔍 Checking project ${project.projectName} for ${contractor.name}:`, {
               projectMainContractor: project.mainContractor,
@@ -350,7 +349,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               matches
             });
           }
-          
+
           return matches;
         });
 
