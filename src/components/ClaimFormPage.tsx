@@ -19,7 +19,13 @@ import {
     FormControlLabel,
     Radio,
     Grid,
-    IconButton as MuiIconButton
+    IconButton as MuiIconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -596,200 +602,448 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Witnesses Section */}
                                         <Box sx={{ mb: 3 }}>
-                                            <FormControl component="fieldset" sx={{ mb: 2 }}>
-                                                <FormLabel component="legend" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                    האם יש עדי ראייה?
-                                                </FormLabel>
-                                                <RadioGroup
-                                                    row
-                                                    value={formData.hasWitnesses}
-                                                    onChange={(e) => handleFieldChange('hasWitnesses', e.target.value === 'true')}
-                                                >
-                                                    <FormControlLabel value={false} control={<Radio sx={{ color: '#6b47c1' }} />} label="לא" />
-                                                    <FormControlLabel value={true} control={<Radio sx={{ color: '#6b47c1' }} />} label="כן" />
-                                                </RadioGroup>
-                                            </FormControl>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'flex-end',
+                                                mb: 2
+                                            }}>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        האם יש עדי ראייה?
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('hasWitnesses', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: formData.hasWitnesses === false ? '#6b47c1' : 'transparent',
+                                                                color: formData.hasWitnesses === false ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.hasWitnesses === false ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('hasWitnesses', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: formData.hasWitnesses === true ? '#6b47c1' : 'transparent',
+                                                                color: formData.hasWitnesses === true ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.hasWitnesses === true ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                            </Box>
 
                                             {formData.hasWitnesses && (
                                                 <Box>
-                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                        <Typography variant="subtitle1" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                            פרטי עדי ראייה
-                                                        </Typography>
-                                                        <Button
-                                                            variant="outlined"
-                                                            startIcon={<AddIcon />}
-                                                            onClick={addWitness}
-                                                            sx={{
-                                                                color: '#6b47c1',
-                                                                borderColor: '#6b47c1',
-                                                                '&:hover': {
-                                                                    borderColor: '#5a3aa1',
-                                                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
-                                                                }
-                                                            }}
-                                                        >
-                                                            הוסף עד
-                                                        </Button>
-                                                    </Box>
-                                                    {formData.witnesses.map((witness, index) => (
-                                                        <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0' }}>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                                <Typography variant="subtitle2" sx={{ color: '#6b47c1' }}>
-                                                                    עד {index + 1}
-                                                                </Typography>
-                                                                <MuiIconButton
-                                                                    onClick={() => removeWitness(index)}
-                                                                    sx={{ color: '#f44336' }}
-                                                                >
-                                                                    <DeleteIcon />
-                                                                </MuiIconButton>
-                                                            </Box>
-                                                            <Grid container spacing={2}>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="שם מלא"
-                                                                        value={witness.fullName}
-                                                                        onChange={(e) => updateWitness(index, 'fullName', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="טלפון נייד"
-                                                                        value={witness.phone}
-                                                                        onChange={(e) => updateWitness(index, 'phone', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="אימייל"
-                                                                        type="email"
-                                                                        value={witness.email}
-                                                                        onChange={(e) => updateWitness(index, 'email', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="הערות"
-                                                                        value={witness.notes}
-                                                                        onChange={(e) => updateWitness(index, 'notes', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Paper>
-                                                    ))}
+                                                    <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                        <Table>
+                                                            <TableHead>
+                                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>שם מלא</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>טלפון נייד</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>אימייל</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>הערות</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>פעולות</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {formData.witnesses.map((witness, index) => (
+                                                                    <TableRow key={index}>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={witness.fullName}
+                                                                                onChange={(e) => updateWitness(index, 'fullName', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן שם מלא"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={witness.phone}
+                                                                                onChange={(e) => updateWitness(index, 'phone', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן טלפון"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                type="email"
+                                                                                value={witness.email}
+                                                                                onChange={(e) => updateWitness(index, 'email', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן אימייל"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={witness.notes}
+                                                                                onChange={(e) => updateWitness(index, 'notes', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן הערות"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <MuiIconButton
+                                                                                onClick={() => removeWitness(index)}
+                                                                                sx={{ color: '#f44336' }}
+                                                                            >
+                                                                                <DeleteIcon />
+                                                                            </MuiIconButton>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                                
+                                                                {/* Add button row */}
+                                                                <TableRow>
+                                                                    <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
+                                                                        <Button
+                                                                            variant="outlined"
+                                                                            onClick={addWitness}
+                                                                            sx={{
+                                                                                borderColor: '#6b47c1',
+                                                                                color: '#6b47c1',
+                                                                                '&:hover': {
+                                                                                    borderColor: '#5a3aa1',
+                                                                                    backgroundColor: '#F3F4F6'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            + הוספת עד
+                                                                        </Button>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
                                                 </Box>
                                             )}
                                         </Box>
 
                                         {/* Additional Responsible Section */}
                                         <Box sx={{ mb: 3 }}>
-                                            <FormControl component="fieldset" sx={{ mb: 2 }}>
-                                                <FormLabel component="legend" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                    האם יש גורם נוסף אפשרי שאחראי לאירוע?
-                                                </FormLabel>
-                                                <RadioGroup
-                                                    row
-                                                    value={formData.hasAdditionalResponsible}
-                                                    onChange={(e) => handleFieldChange('hasAdditionalResponsible', e.target.value === 'true')}
-                                                >
-                                                    <FormControlLabel value={false} control={<Radio sx={{ color: '#6b47c1' }} />} label="לא" />
-                                                    <FormControlLabel value={true} control={<Radio sx={{ color: '#6b47c1' }} />} label="כן" />
-                                                </RadioGroup>
-                                            </FormControl>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'flex-end',
+                                                mb: 2
+                                            }}>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        האם יש גורם נוסף אפשרי שאחראי לאירוע?
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('hasAdditionalResponsible', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: formData.hasAdditionalResponsible === false ? '#6b47c1' : 'transparent',
+                                                                color: formData.hasAdditionalResponsible === false ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.hasAdditionalResponsible === false ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('hasAdditionalResponsible', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: formData.hasAdditionalResponsible === true ? '#6b47c1' : 'transparent',
+                                                                color: formData.hasAdditionalResponsible === true ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.hasAdditionalResponsible === true ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+                                            </Box>
 
                                             {formData.hasAdditionalResponsible && (
                                                 <Box>
-                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                        <Typography variant="subtitle1" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
-                                                            פרטי גורם נוסף
-                                                        </Typography>
-                                                        <Button
-                                                            variant="outlined"
-                                                            startIcon={<AddIcon />}
-                                                            onClick={addAdditionalResponsible}
-                                                            sx={{
-                                                                color: '#6b47c1',
-                                                                borderColor: '#6b47c1',
-                                                                '&:hover': {
-                                                                    borderColor: '#5a3aa1',
-                                                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
-                                                                }
-                                                            }}
-                                                        >
-                                                            הוסף גורם
-                                                        </Button>
-                                                    </Box>
-                                                    {formData.additionalResponsible.map((person, index) => (
-                                                        <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0' }}>
-                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                                <Typography variant="subtitle2" sx={{ color: '#6b47c1' }}>
-                                                                    גורם {index + 1}
-                                                                </Typography>
-                                                                <MuiIconButton
-                                                                    onClick={() => removeAdditionalResponsible(index)}
-                                                                    sx={{ color: '#f44336' }}
-                                                                >
-                                                                    <DeleteIcon />
-                                                                </MuiIconButton>
-                                                            </Box>
-                                                            <Grid container spacing={2}>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="שם מלא"
-                                                                        value={person.fullName}
-                                                                        onChange={(e) => updateAdditionalResponsible(index, 'fullName', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="טלפון נייד"
-                                                                        value={person.phone}
-                                                                        onChange={(e) => updateAdditionalResponsible(index, 'phone', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="אימייל"
-                                                                        type="email"
-                                                                        value={person.email}
-                                                                        onChange={(e) => updateAdditionalResponsible(index, 'email', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="הערות"
-                                                                        value={person.notes}
-                                                                        onChange={(e) => updateAdditionalResponsible(index, 'notes', e.target.value)}
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Paper>
-                                                    ))}
+                                                    <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                        <Table>
+                                                            <TableHead>
+                                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>שם מלא</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>טלפון נייד</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>אימייל</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>הערות</TableCell>
+                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>פעולות</TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody>
+                                                                {formData.additionalResponsible.map((person, index) => (
+                                                                    <TableRow key={index}>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={person.fullName}
+                                                                                onChange={(e) => updateAdditionalResponsible(index, 'fullName', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן שם מלא"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={person.phone}
+                                                                                onChange={(e) => updateAdditionalResponsible(index, 'phone', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן טלפון"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                type="email"
+                                                                                value={person.email}
+                                                                                onChange={(e) => updateAdditionalResponsible(index, 'email', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן אימייל"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                value={person.notes}
+                                                                                onChange={(e) => updateAdditionalResponsible(index, 'notes', e.target.value)}
+                                                                                variant="outlined"
+                                                                                size="small"
+                                                                                placeholder="הזן הערות"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '& fieldset': {
+                                                                                            borderColor: '#d0d0d0'
+                                                                                        },
+                                                                                        '&:hover fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        },
+                                                                                        '&.Mui-focused fieldset': {
+                                                                                            borderColor: '#6b47c1'
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
+                                                                            <MuiIconButton
+                                                                                onClick={() => removeAdditionalResponsible(index)}
+                                                                                sx={{ color: '#f44336' }}
+                                                                            >
+                                                                                <DeleteIcon />
+                                                                            </MuiIconButton>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                                
+                                                                {/* Add button row */}
+                                                                <TableRow>
+                                                                    <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
+                                                                        <Button
+                                                                            variant="outlined"
+                                                                            onClick={addAdditionalResponsible}
+                                                                            sx={{
+                                                                                borderColor: '#6b47c1',
+                                                                                color: '#6b47c1',
+                                                                                '&:hover': {
+                                                                                    borderColor: '#5a3aa1',
+                                                                                    backgroundColor: '#F3F4F6'
+                                                                                }
+                                                                            }}
+                                                                        >
+                                                                            + הוספת גורם
+                                                                        </Button>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
                                                 </Box>
                                             )}
                                         </Box>
