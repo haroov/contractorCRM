@@ -9635,7 +9635,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 if (currentFileUrl || currentThumbnailUrl) {
                                                                                     try {
                                                                                         console.log('🗑️ Deleting files from blob:', { currentFileUrl, currentThumbnailUrl });
-                                                                                        const deleteResponse = await fetch('/api/project-files/delete-project-file', {
+                                                                                        const deleteResponse = await fetch('/api/delete-project-file', {
                                                                                             method: 'DELETE',
                                                                                             headers: {
                                                                                                 'Content-Type': 'application/json',
