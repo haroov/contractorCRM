@@ -331,13 +331,14 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         // Find projects for this contractor
         const contractorProjects = projectsData.filter(project => {
           // Check if project belongs to this contractor by mainContractor field
-          const matches = project.mainContractor === contractor._id ||
-            project.mainContractor === contractor.contractor_id ||
-            project.contractorName === contractor.name ||
-            // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
-            (contractor.name === 'צ.מ.ח המרמן בע"מ' &&
-              (project.mainContractor === '68b6e04d4cbe489fccf6151e' ||
-                project.mainContractor === 'צ.מ.ח המרמן בע"מ'));
+          const matches = project.mainContractor === contractor._id || 
+                 project.mainContractor === contractor.contractor_id ||
+                 project.contractorName === contractor.name ||
+                 // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
+                 (contractor.name === 'צ.מ.ח המרמן בע"מ' && 
+                  (project.mainContractor === '68b6e04d4cbe489fccf6151e' || 
+                   project.mainContractor === 'צ.מ.ח המרמן בע"מ' ||
+                   project.mainContractor === contractor.name));
 
           if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
             console.log(`🔍 Checking project ${project.projectName} for ${contractor.name}:`, {
