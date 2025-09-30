@@ -261,6 +261,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       }
 
       setContractors(filteredContractors);
+      
+      // If we have projects loaded, update contractor stats
+      if (projects.length > 0) {
+        updateContractorStatsFromProjects(projects);
+      }
     } catch (error) {
       console.error('Error loading contractors:', error);
     } finally {
@@ -305,6 +310,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         
         console.log('Loaded and classified projects:', classifiedProjects);
         setProjects(classifiedProjects);
+        
+        // Update contractor statistics based on real projects
+        updateContractorStatsFromProjects(classifiedProjects);
       } else {
         console.error('Failed to load projects');
         setProjects([]);
@@ -315,6 +323,44 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     } finally {
       setProjectsLoading(false);
     }
+  };
+
+  // Update contractor statistics based on real projects
+  const updateContractorStatsFromProjects = (projectsData: any[]) => {
+    setContractors(prevContractors => {
+      return prevContractors.map(contractor => {
+        // Find projects for this contractor
+        const contractorProjects = projectsData.filter(project => {
+          // Check if project belongs to this contractor by mainContractor field
+          return project.mainContractor === contractor._id || 
+                 project.mainContractor === contractor.contractor_id ||
+                 project.contractorName === contractor.name;
+        });
+
+        // Count active and future projects
+        const activeProjects = contractorProjects.filter(p => p.projectStatus === 'active');
+        const futureProjects = contractorProjects.filter(p => p.projectStatus === 'future');
+
+        // Calculate values
+        const activeProjectsValue = activeProjects.reduce((sum, p) => sum + (p.valueNis || 0), 0);
+        const futureProjectsValue = futureProjects.reduce((sum, p) => sum + (p.valueNis || 0), 0);
+
+        console.log(`📊 Updated stats for ${contractor.name}:`, {
+          activeProjects: activeProjects.length,
+          futureProjects: futureProjects.length,
+          activeValue: activeProjectsValue,
+          futureValue: futureProjectsValue
+        });
+
+        return {
+          ...contractor,
+          current_projects: activeProjects.length,
+          current_projects_value_nis: activeProjectsValue,
+          forcast_projects: futureProjects.length,
+          forcast_projects_value_nis: futureProjectsValue
+        };
+      });
+    });
   };
 
   // Load status indicators for all contractors
