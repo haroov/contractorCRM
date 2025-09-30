@@ -175,8 +175,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     const handleDelete = async () => {
         if (!onDelete) return;
-        const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
-        if (!confirmed) return;
         
         console.log('🗑️ FileUpload handleDelete called');
         

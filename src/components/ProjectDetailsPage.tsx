@@ -9586,42 +9586,93 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         }
                                                                     }}
                                                                     onDelete={async () => {
-                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
-                                                                            console.log('🗑️ Policy document onDelete called for index:', index);
+                                                                        // Single confirmation dialog
+                                                                        const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
+                                                                        if (!confirmed) return;
 
-                                                                            handleNestedFieldChange(`policyDocuments.${index}.file`, '');
-                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
+                                                                        console.log('🗑️ Policy document onDelete called for index:', index);
 
-                                                                            // Delete from database
-                                                                            if (project?._id || project?.id) {
-                                                                                try {
-                                                                                    const { projectsAPI } = await import('../services/api');
-                                                                                    const currentDocuments = project?.policyDocuments || [];
-                                                                                    const updatedDocuments = [...currentDocuments];
-                                                                                    
-                                                                                    // Preserve existing document data and only clear file-related fields
-                                                                                    updatedDocuments[index] = {
-                                                                                        ...updatedDocuments[index],
-                                                                                        file: '',
-                                                                                        thumbnailUrl: ''
-                                                                                    };
+                                                                        // Get current file URLs before deletion
+                                                                        const currentFileUrl = document.file;
+                                                                        const currentThumbnailUrl = document.thumbnailUrl;
 
-                                                                                    const updateData = {
-                                                                                        'policyDocuments': updatedDocuments
-                                                                                    };
+                                                                        console.log('🗑️ Current file URL:', currentFileUrl);
+                                                                        console.log('🗑️ Current thumbnail URL:', currentThumbnailUrl);
 
-                                                                                    console.log('🗑️ Deleting policy document from database:', updateData);
-                                                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
-                                                                                    console.log('✅ Policy document deleted successfully:', result);
+                                                                        // Clear from UI immediately
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.file`, '');
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
 
-                                                                                    // Update project state after successful deletion
-                                                                                    setProject(prev => ({
-                                                                                        ...prev,
-                                                                                        policyDocuments: updatedDocuments
-                                                                                    }));
-                                                                                } catch (error) {
-                                                                                    console.error('❌ Error deleting policy document:', error);
+                                                                        // Delete from database
+                                                                        if (project?._id || project?.id) {
+                                                                            try {
+                                                                                const { projectsAPI } = await import('../services/api');
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const updatedDocuments = [...currentDocuments];
+                                                                                
+                                                                                // Preserve existing document data and only clear file-related fields
+                                                                                updatedDocuments[index] = {
+                                                                                    ...updatedDocuments[index],
+                                                                                    file: '',
+                                                                                    thumbnailUrl: ''
+                                                                                };
+
+                                                                                const updateData = {
+                                                                                    'policyDocuments': updatedDocuments
+                                                                                };
+
+                                                                                console.log('🗑️ Deleting policy document from database:', updateData);
+                                                                                const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                                                console.log('✅ Policy document deleted successfully:', result);
+
+                                                                                // Update project state after successful deletion
+                                                                                setProject(prev => ({
+                                                                                    ...prev,
+                                                                                    policyDocuments: updatedDocuments
+                                                                                }));
+
+                                                                                // Delete files from blob storage
+                                                                                if (currentFileUrl) {
+                                                                                    try {
+                                                                                        console.log('🗑️ Deleting file from blob:', currentFileUrl);
+                                                                                        const deleteResponse = await fetch('/api/upload/delete', {
+                                                                                            method: 'DELETE',
+                                                                                            headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                            },
+                                                                                            body: JSON.stringify({ url: currentFileUrl })
+                                                                                        });
+                                                                                        if (deleteResponse.ok) {
+                                                                                            console.log('✅ File deleted from blob successfully');
+                                                                                        } else {
+                                                                                            console.error('❌ Failed to delete file from blob');
+                                                                                        }
+                                                                                    } catch (error) {
+                                                                                        console.error('❌ Error deleting file from blob:', error);
+                                                                                    }
                                                                                 }
+
+                                                                                if (currentThumbnailUrl) {
+                                                                                    try {
+                                                                                        console.log('🗑️ Deleting thumbnail from blob:', currentThumbnailUrl);
+                                                                                        const deleteResponse = await fetch('/api/upload/delete', {
+                                                                                            method: 'DELETE',
+                                                                                            headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                            },
+                                                                                            body: JSON.stringify({ url: currentThumbnailUrl })
+                                                                                        });
+                                                                                        if (deleteResponse.ok) {
+                                                                                            console.log('✅ Thumbnail deleted from blob successfully');
+                                                                                        } else {
+                                                                                            console.error('❌ Failed to delete thumbnail from blob');
+                                                                                        }
+                                                                                    } catch (error) {
+                                                                                        console.error('❌ Error deleting thumbnail from blob:', error);
+                                                                                    }
+                                                                                }
+                                                                            } catch (error) {
+                                                                                console.error('❌ Error deleting policy document:', error);
                                                                             }
                                                                         }
                                                                     }}
