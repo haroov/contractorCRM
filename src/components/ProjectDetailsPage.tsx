@@ -9559,6 +9559,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 const { projectsAPI } = await import('../services/api');
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
+                                                                                
+                                                                                // Preserve existing document data and only update file-related fields
                                                                                 updatedDocuments[index] = {
                                                                                     ...updatedDocuments[index],
                                                                                     file: url,
@@ -9596,6 +9598,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     const { projectsAPI } = await import('../services/api');
                                                                                     const currentDocuments = project?.policyDocuments || [];
                                                                                     const updatedDocuments = [...currentDocuments];
+                                                                                    
+                                                                                    // Preserve existing document data and only clear file-related fields
                                                                                     updatedDocuments[index] = {
                                                                                         ...updatedDocuments[index],
                                                                                         file: '',
