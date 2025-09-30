@@ -346,6 +346,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               contractorId2: contractor.contractor_id,
               contractorName: contractor.name,
               projectContractorName: project.contractorName,
+              projectStatus: project.projectStatus,
               matches
             });
           }
@@ -361,12 +362,16 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const activeProjectsValue = activeProjects.reduce((sum, p) => sum + (p.valueNis || 0), 0);
         const futureProjectsValue = futureProjects.reduce((sum, p) => sum + (p.valueNis || 0), 0);
 
-        console.log(`📊 Updated stats for ${contractor.name}:`, {
-          activeProjects: activeProjects.length,
-          futureProjects: futureProjects.length,
-          activeValue: activeProjectsValue,
-          futureValue: futureProjectsValue
-        });
+        if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
+          console.log(`📊 Updated stats for ${contractor.name}:`, {
+            totalProjects: contractorProjects.length,
+            activeProjects: activeProjects.length,
+            futureProjects: futureProjects.length,
+            activeValue: activeProjectsValue,
+            futureValue: futureProjectsValue,
+            allProjects: contractorProjects.map(p => ({ name: p.projectName, status: p.projectStatus, mainContractor: p.mainContractor }))
+          });
+        }
 
         return {
           ...contractor,
