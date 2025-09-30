@@ -9398,7 +9398,206 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 3 && (
                             <Box>
-                                {/* שורה 1 - מפרט הביטוח */}
+                                {/* שורה 1 - מסמכי הפוליסה */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: 32,
+                                                height: 32,
+                                                borderRadius: '50%',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                },
+                                                '&:focus-within': {
+                                                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                                                    outline: '2px solid rgba(139, 92, 246, 0.3)',
+                                                    outlineOffset: '2px',
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                        >
+                                            <AutoAwesomeIcon
+                                                sx={{
+                                                    color: '#8B5CF6',
+                                                    filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
+                                                }}
+                                            />
+                                        </Box>
+                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>
+                                            מסמכי הפוליסה
+                                        </Typography>
+                                    </Box>
+                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>קובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '12%' }}>תאריך תוקף</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '28%' }}>מספר פוליסה</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>מבטח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {(project?.policyDocuments && project.policyDocuments.length > 0 ? project.policyDocuments : [{ documentType: 'פוליסה', file: '', validUntil: '', policyNumber: '', insurer: '' }]).map((document, index) => {
+                                                    const isFirstRow = index === 0;
+                                                    return (
+                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['פוליסה', 'תוספת', 'כתב כיסוי']}
+                                                                    value={document.documentType || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newInputValue);
+                                                                    }}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="סוג המסמך"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '15%' }}>
+                                                                <FileUpload
+                                                                    label=""
+                                                                    value={document.file || ''}
+                                                                    thumbnailUrl={document.thumbnailUrl || ''}
+                                                                    projectId={project?._id || project?.id}
+                                                                    onChange={async (url, thumbnailUrl) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.file`, url);
+                                                                        if (thumbnailUrl) {
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, thumbnailUrl);
+                                                                        }
+                                                                    }}
+                                                                    onDelete={async () => {
+                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.file`, '');
+                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
+                                                                        }
+                                                                    }}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    showCreationDate={false}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '12%' }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    type="date"
+                                                                    value={document.validUntil || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.validUntil`, e.target.value);
+                                                                    }}
+                                                                    placeholder="תאריך תוקף"
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '28%' }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={document.policyNumber || ''}
+                                                                    onChange={(e) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.policyNumber`, e.target.value);
+                                                                    }}
+                                                                    placeholder="מספר פוליסה"
+                                                                    variant="outlined"
+                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
+                                                                <Autocomplete
+                                                                    freeSolo
+                                                                    options={['הראל', 'כלל', 'הפניקס', 'מנורה', 'מגדל', 'איילון', 'הכשרה', 'AIG', 'ליברה', 'שירביט', 'שומרה', 'ווישור', 'אנקור', 'סקוריטס']}
+                                                                    value={document.insurer || ''}
+                                                                    onChange={(event, newValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newValue || '');
+                                                                    }}
+                                                                    onInputChange={(event, newInputValue) => {
+                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newInputValue);
+                                                                    }}
+                                                                    renderInput={(params) => (
+                                                                        <TextField
+                                                                            {...params}
+                                                                            size="small"
+                                                                            placeholder="מבטח"
+                                                                            variant="outlined"
+                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1, width: '5%' }}>
+                                                                {!isFirstRow && (
+                                                                    <IconButton
+                                                                        onClick={() => {
+                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את המסמך?')) {
+                                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                                const newDocuments = currentDocuments.filter((_, i) => i !== index);
+                                                                                handleNestedFieldChange('policyDocuments', newDocuments);
+                                                                            }
+                                                                        }}
+                                                                        title="מחיקה"
+                                                                        sx={{
+                                                                            '& img': {
+                                                                                filter: 'brightness(0) saturate(0)',
+                                                                                width: '16px',
+                                                                                height: '16px'
+                                                                            },
+                                                                            '&:hover, &:focus': {
+                                                                                backgroundColor: '#f44336',
+                                                                                borderRadius: '50%'
+                                                                            },
+                                                                            '&:hover img, &:focus img': {
+                                                                                filter: 'brightness(0) invert(1)'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
+                                                                    </IconButton>
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                                <TableRow>
+                                                    <TableCell colSpan={6} sx={{ padding: 1, textAlign: 'center' }}>
+                                                        <Button
+                                                            variant="outlined"
+                                                            onClick={() => {
+                                                                const newDocument = { documentType: '', file: '', validUntil: '', policyNumber: '', insurer: '' };
+                                                                const currentDocuments = project?.policyDocuments || [];
+                                                                handleNestedFieldChange('policyDocuments', [...currentDocuments, newDocument]);
+                                                            }}
+                                                            sx={{ mr: 1 }}
+                                                        >
+                                                            + הוספה
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+
+                                {/* שורה 2 - מפרט יועץ הביטוח */}
                                 <Box sx={{ mb: 4 }}>
                                     <FileUpload
                                         label="מפרט יועץ הביטוח"
