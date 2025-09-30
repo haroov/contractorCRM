@@ -618,90 +618,87 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 ראשי נזק
                                             </Typography>
                                             
-                                            {/* Row 1 - Property Damage to Insured */}
-                                            <Box sx={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                justifyContent: 'flex-end',
-                                                mb: 2
-                                            }}>
-                                                <Box sx={{
-                                                    border: '1px solid #d1d5db',
-                                                    borderRadius: '4px',
-                                                    backgroundColor: 'white',
-                                                    minHeight: '56px',
-                                                    padding: '0 14px',
-                                                    direction: 'rtl',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    width: '100%'
-                                                }}>
-                                                    <Typography sx={{
-                                                        fontSize: '1rem',
-                                                        color: 'text.secondary',
-                                                        marginRight: '10px'
-                                                    }}>
-                                                        נזק לרכוש המבוטח
-                                                    </Typography>
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        gap: 0,
-                                                        alignItems: 'center',
-                                                        justifyContent: 'flex-start',
-                                                        marginLeft: '10px'
-                                                    }}>
-                                                        <Button
-                                                            variant="text"
-                                                            onClick={() => handleFieldChange('propertyDamageInsured', false)}
-                                                            sx={{
-                                                                borderRadius: '0 4px 4px 0',
-                                                                border: '1px solid #d1d5db',
-                                                                borderLeft: 'none',
-                                                                backgroundColor: formData.propertyDamageInsured === false ? '#6b47c1' : 'transparent',
-                                                                color: formData.propertyDamageInsured === false ? 'white' : '#6b47c1',
-                                                                '&:hover': {
-                                                                    backgroundColor: formData.propertyDamageInsured === false ? '#5a3aa1' : '#f3f4f6',
-                                                                },
-                                                                minWidth: '50px',
-                                                                height: '32px',
-                                                                textTransform: 'none',
-                                                                fontSize: '0.875rem',
-                                                                marginRight: '0px'
-                                                            }}
-                                                        >
-                                                            לא
-                                                        </Button>
-                                                        <Button
-                                                            variant="text"
-                                                            onClick={() => handleFieldChange('propertyDamageInsured', true)}
-                                                            sx={{
-                                                                borderRadius: '4px 0 0 4px',
-                                                                border: '1px solid #d1d5db',
-                                                                backgroundColor: formData.propertyDamageInsured === true ? '#6b47c1' : 'transparent',
-                                                                color: formData.propertyDamageInsured === true ? 'white' : '#6b47c1',
-                                                                '&:hover': {
-                                                                    backgroundColor: formData.propertyDamageInsured === true ? '#5a3aa1' : '#f3f4f6',
-                                                                },
-                                                                minWidth: '50px',
-                                                                height: '32px',
-                                                                textTransform: 'none',
-                                                                fontSize: '0.875rem'
-                                                            }}
-                                                        >
-                                                            כן
-                                                        </Button>
-                                                    </Box>
-                                                </Box>
-                                            </Box>
-
-                                            {/* Row 2 - Property Damage to Third Party & Bodily Injury to Third Party */}
                                             <Box sx={{
                                                 display: 'grid',
                                                 gridTemplateColumns: '1fr 1fr',
-                                                gap: 2,
-                                                mb: 2
+                                                gap: 2
                                             }}>
+                                                {/* Property Damage to Insured */}
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
+                                                            נזק לרכוש המבוטח
+                                                        </Typography>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleFieldChange('propertyDamageInsured', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsured === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsured === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsured === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleFieldChange('propertyDamageInsured', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsured === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsured === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsured === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+
                                                 {/* Property Damage to Third Party */}
                                                 <Box sx={{
                                                     display: 'flex',
@@ -853,81 +850,80 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         </Box>
                                                     </Box>
                                                 </Box>
-                                            </Box>
 
-                                            {/* Row 3 - Bodily Injury to Employee */}
-                                            <Box sx={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                justifyContent: 'flex-end',
-                                                mb: 2
-                                            }}>
+                                                {/* Bodily Injury to Employee */}
                                                 <Box sx={{
-                                                    border: '1px solid #d1d5db',
-                                                    borderRadius: '4px',
-                                                    backgroundColor: 'white',
-                                                    minHeight: '56px',
-                                                    padding: '0 14px',
-                                                    direction: 'rtl',
                                                     display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    width: '100%'
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
                                                 }}>
-                                                    <Typography sx={{
-                                                        fontSize: '1rem',
-                                                        color: 'text.secondary',
-                                                        marginRight: '10px'
-                                                    }}>
-                                                        נזק גוף לעובד
-                                                    </Typography>
                                                     <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
                                                         display: 'flex',
-                                                        gap: 0,
                                                         alignItems: 'center',
-                                                        justifyContent: 'flex-start',
-                                                        marginLeft: '10px'
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
                                                     }}>
-                                                        <Button
-                                                            variant="text"
-                                                            onClick={() => handleFieldChange('bodilyInjuryEmployee', false)}
-                                                            sx={{
-                                                                borderRadius: '0 4px 4px 0',
-                                                                border: '1px solid #d1d5db',
-                                                                borderLeft: 'none',
-                                                                backgroundColor: formData.bodilyInjuryEmployee === false ? '#6b47c1' : 'transparent',
-                                                                color: formData.bodilyInjuryEmployee === false ? 'white' : '#6b47c1',
-                                                                '&:hover': {
-                                                                    backgroundColor: formData.bodilyInjuryEmployee === false ? '#5a3aa1' : '#f3f4f6',
-                                                                },
-                                                                minWidth: '50px',
-                                                                height: '32px',
-                                                                textTransform: 'none',
-                                                                fontSize: '0.875rem',
-                                                                marginRight: '0px'
-                                                            }}
-                                                        >
-                                                            לא
-                                                        </Button>
-                                                        <Button
-                                                            variant="text"
-                                                            onClick={() => handleFieldChange('bodilyInjuryEmployee', true)}
-                                                            sx={{
-                                                                borderRadius: '4px 0 0 4px',
-                                                                border: '1px solid #d1d5db',
-                                                                backgroundColor: formData.bodilyInjuryEmployee === true ? '#6b47c1' : 'transparent',
-                                                                color: formData.bodilyInjuryEmployee === true ? 'white' : '#6b47c1',
-                                                                '&:hover': {
-                                                                    backgroundColor: formData.bodilyInjuryEmployee === true ? '#5a3aa1' : '#f3f4f6',
-                                                                },
-                                                                minWidth: '50px',
-                                                                height: '32px',
-                                                                textTransform: 'none',
-                                                                fontSize: '0.875rem'
-                                                            }}
-                                                        >
-                                                            כן
-                                                        </Button>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
+                                                            נזק גוף לעובד
+                                                        </Typography>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleFieldChange('bodilyInjuryEmployee', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.bodilyInjuryEmployee === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.bodilyInjuryEmployee === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.bodilyInjuryEmployee === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => handleFieldChange('bodilyInjuryEmployee', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.bodilyInjuryEmployee === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.bodilyInjuryEmployee === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.bodilyInjuryEmployee === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
                                                     </Box>
                                                 </Box>
                                             </Box>
