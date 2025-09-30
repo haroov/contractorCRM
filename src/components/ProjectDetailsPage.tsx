@@ -660,7 +660,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     isClosed: false,
                     status: 'future',
                     mainContractor: contractorId || '', // Use contractorId (ObjectId) not contractorName
-                    contractorName: contractorName
+                    contractorName: contractorName,
+                    // Initialize arrays to prevent map errors
+                    stakeholders: [],
+                    subcontractors: [],
+                    buildings: [],
+                    plotDetails: [],
+                    budgetEstimate: [],
+                    budgetAllocation: [],
+                    supervisorReports: [],
+                    policyDocuments: [],
+                    insuranceSpecification: {
+                        propertyPledge: {
+                            pledgers: []
+                        }
+                    }
                 };
                 setProject(newProject);
 
@@ -689,6 +703,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 console.log('🔄 Found root-level fields, moving to nested structure for UI compatibility');
                                 const processedProjectData = {
                                     ...projectData,
+                                    // Initialize arrays to prevent map errors
+                                    stakeholders: projectData.stakeholders || [],
+                                    subcontractors: projectData.subcontractors || [],
+                                    buildings: projectData.buildings || [],
+                                    plotDetails: projectData.plotDetails || [],
+                                    budgetEstimate: projectData.budgetEstimate || [],
+                                    budgetAllocation: projectData.budgetAllocation || [],
+                                    supervisorReports: projectData.supervisorReports || [],
+                                    policyDocuments: projectData.policyDocuments || [],
+                                    insuranceSpecification: {
+                                        ...projectData.insuranceSpecification,
+                                        propertyPledge: {
+                                            ...projectData.insuranceSpecification?.propertyPledge,
+                                            pledgers: projectData.insuranceSpecification?.propertyPledge?.pledgers || []
+                                        }
+                                    },
                                     engineeringQuestionnaire: {
                                         ...projectData.engineeringQuestionnaire,
                                         buildingPlan: {
@@ -734,22 +764,41 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 };
                                 setProject(updatedProjectData);
                             } else {
-                                setProject(projectData);
+                                // Initialize arrays to prevent map errors
+                                const projectDataWithArrays = {
+                                    ...projectData,
+                                    stakeholders: projectData.stakeholders || [],
+                                    subcontractors: projectData.subcontractors || [],
+                                    buildings: projectData.buildings || [],
+                                    plotDetails: projectData.plotDetails || [],
+                                    budgetEstimate: projectData.budgetEstimate || [],
+                                    budgetAllocation: projectData.budgetAllocation || [],
+                                    supervisorReports: projectData.supervisorReports || [],
+                                    policyDocuments: projectData.policyDocuments || [],
+                                    insuranceSpecification: {
+                                        ...projectData.insuranceSpecification,
+                                        propertyPledge: {
+                                            ...projectData.insuranceSpecification?.propertyPledge,
+                                            pledgers: projectData.insuranceSpecification?.propertyPledge?.pledgers || []
+                                        }
+                                    }
+                                };
+                                setProject(projectDataWithArrays);
 
                                 // Update exists fields automatically based on file presence
                                 const updatedProjectData = {
-                                    ...projectData,
+                                    ...projectDataWithArrays,
                                     engineeringQuestionnaire: {
-                                        ...projectData.engineeringQuestionnaire,
+                                        ...projectDataWithArrays.engineeringQuestionnaire,
                                         buildingPlan: {
-                                            ...projectData.engineeringQuestionnaire?.buildingPlan,
+                                            ...projectDataWithArrays.engineeringQuestionnaire?.buildingPlan,
                                             buildingPermit: {
-                                                ...projectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
-                                                exists: !!projectData.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file
+                                                ...projectDataWithArrays.engineeringQuestionnaire?.buildingPlan?.buildingPermit,
+                                                exists: !!projectDataWithArrays.engineeringQuestionnaire?.buildingPlan?.buildingPermit?.file
                                             },
                                             excavationPermit: {
-                                                ...projectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
-                                                exists: !!projectData.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file
+                                                ...projectDataWithArrays.engineeringQuestionnaire?.buildingPlan?.excavationPermit,
+                                                exists: !!projectDataWithArrays.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.file
                                             }
                                         }
                                     }
