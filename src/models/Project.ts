@@ -129,6 +129,26 @@ export interface Project extends Document {
         adherenceLevel?: string; // מידת העמידה בהערכות לוחות הזמנים
     };
 
+    // Insurance fields - שדות ביטוח
+    insuranceSpecification?: {
+        file?: string; // העלאת קובץ מפרט יועץ הביטוח
+        thumbnailUrl?: string; // תמונה מוקטנת
+        fileCreationDate?: string; // תאריך יצירת המסמך
+        propertyPledge?: {
+            pledgers?: string[]; // רשימת משעבדים
+        };
+    };
+    insuranceContractClause?: {
+        file?: string; // העלאת קובץ סעיף הביטוח בחוזה
+        thumbnailUrl?: string; // תמונה מוקטנת
+        fileCreationDate?: string; // תאריך יצירת המסמך
+    };
+    proposalForm?: {
+        file?: string; // העלאת קובץ טופס הצעה
+        thumbnailUrl?: string; // תמונה מוקטנת
+        fileCreationDate?: string; // תאריך יצירת המסמך
+    };
+
     createdAt: Date;
     updatedAt: Date;
 }
@@ -260,6 +280,26 @@ const ProjectSchema = new Schema<Project>({
         file: { type: String },
         detailLevel: { type: String, enum: ['רבעוני', 'חודשי', 'דו חודשי', 'שבועי', 'דו שבועי', 'יומי'] },
         adherenceLevel: { type: String }
+    },
+
+    // Insurance fields - שדות ביטוח
+    insuranceSpecification: {
+        file: { type: String },
+        thumbnailUrl: { type: String },
+        fileCreationDate: { type: String },
+        propertyPledge: {
+            pledgers: [{ type: String }]
+        }
+    },
+    insuranceContractClause: {
+        file: { type: String },
+        thumbnailUrl: { type: String },
+        fileCreationDate: { type: String }
+    },
+    proposalForm: {
+        file: { type: String },
+        thumbnailUrl: { type: String },
+        fileCreationDate: { type: String }
     }
 }, {
     timestamps: true,
