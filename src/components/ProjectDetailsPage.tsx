@@ -9632,43 +9632,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 }));
 
                                                                                 // Delete files from blob storage
-                                                                                if (currentFileUrl) {
+                                                                                if (currentFileUrl || currentThumbnailUrl) {
                                                                                     try {
-                                                                                        console.log('🗑️ Deleting file from blob:', currentFileUrl);
-                                                                                        const deleteResponse = await fetch('/api/upload/delete', {
+                                                                                        console.log('🗑️ Deleting files from blob:', { currentFileUrl, currentThumbnailUrl });
+                                                                                        const deleteResponse = await fetch('/api/project-files/delete-project-file', {
                                                                                             method: 'DELETE',
                                                                                             headers: {
                                                                                                 'Content-Type': 'application/json',
                                                                                             },
-                                                                                            body: JSON.stringify({ url: currentFileUrl })
+                                                                                            body: JSON.stringify({ 
+                                                                                                fileUrl: currentFileUrl,
+                                                                                                thumbnailUrl: currentThumbnailUrl
+                                                                                            })
                                                                                         });
                                                                                         if (deleteResponse.ok) {
-                                                                                            console.log('✅ File deleted from blob successfully');
+                                                                                            const result = await deleteResponse.json();
+                                                                                            console.log('✅ Files deleted from blob successfully:', result);
                                                                                         } else {
-                                                                                            console.error('❌ Failed to delete file from blob');
+                                                                                            console.error('❌ Failed to delete files from blob');
                                                                                         }
                                                                                     } catch (error) {
-                                                                                        console.error('❌ Error deleting file from blob:', error);
-                                                                                    }
-                                                                                }
-
-                                                                                if (currentThumbnailUrl) {
-                                                                                    try {
-                                                                                        console.log('🗑️ Deleting thumbnail from blob:', currentThumbnailUrl);
-                                                                                        const deleteResponse = await fetch('/api/upload/delete', {
-                                                                                            method: 'DELETE',
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                            },
-                                                                                            body: JSON.stringify({ url: currentThumbnailUrl })
-                                                                                        });
-                                                                                        if (deleteResponse.ok) {
-                                                                                            console.log('✅ Thumbnail deleted from blob successfully');
-                                                                                        } else {
-                                                                                            console.error('❌ Failed to delete thumbnail from blob');
-                                                                                        }
-                                                                                    } catch (error) {
-                                                                                        console.error('❌ Error deleting thumbnail from blob:', error);
+                                                                                        console.error('❌ Error deleting files from blob:', error);
                                                                                     }
                                                                                 }
                                                                             } catch (error) {
