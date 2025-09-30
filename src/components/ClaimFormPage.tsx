@@ -508,7 +508,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Location and Address Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={4}>
                                                 <TextField
                                                     fullWidth
                                                     label="מקום האירוע"
@@ -537,7 +537,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
+                                            <Grid item xs={12} sm={8}>
                                                 <TextField
                                                     fullWidth
                                                     label="כתובת האירוע"
