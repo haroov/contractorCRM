@@ -599,7 +599,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Witnesses Section */}
                                         <Box sx={{ mb: 3 }}>
-                                            <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי עדי ראייה
                                             </Typography>
                                             
