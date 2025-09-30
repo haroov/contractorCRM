@@ -503,66 +503,67 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         </Grid>
 
                                         {/* Location and Address Fields */}
-                                        <Grid container spacing={2} sx={{ mb: 3 }}>
-                                            <Grid item xs={12} sm={4}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="מקום האירוע"
-                                                    value={formData.eventLocation}
-                                                    onChange={(e) => handleFieldChange('eventLocation', e.target.value)}
-                                                    variant="outlined"
-                                                    placeholder="הזן מקום האירוע"
-                                                    sx={{
-                                                        '& .MuiOutlinedInput-root': {
-                                                            '& fieldset': {
-                                                                borderColor: '#d0d0d0'
-                                                            },
-                                                            '&:hover fieldset': {
-                                                                borderColor: '#6b47c1'
-                                                            },
-                                                            '&.Mui-focused fieldset': {
-                                                                borderColor: '#6b47c1'
-                                                            }
+                                        <Box sx={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2,
+                                            mb: 3
+                                        }}>
+                                            <TextField
+                                                fullWidth
+                                                label="מקום האירוע"
+                                                value={formData.eventLocation}
+                                                onChange={(e) => handleFieldChange('eventLocation', e.target.value)}
+                                                variant="outlined"
+                                                placeholder="הזן מקום האירוע"
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
                                                         },
-                                                        '& .MuiInputLabel-root': {
-                                                            color: '#666666',
-                                                            '&.Mui-focused': {
-                                                                color: '#6b47c1'
-                                                            }
-                                                        }
-                                                    }}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={8}>
-                                                <TextField
-                                                    fullWidth
-                                                    label="כתובת האירוע"
-                                                    value={formData.eventAddress}
-                                                    onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
-                                                    variant="outlined"
-                                                    placeholder="הזן כתובת האירוע"
-                                                    sx={{
-                                                        '& .MuiOutlinedInput-root': {
-                                                            '& fieldset': {
-                                                                borderColor: '#d0d0d0'
-                                                            },
-                                                            '&:hover fieldset': {
-                                                                borderColor: '#6b47c1'
-                                                            },
-                                                            '&.Mui-focused fieldset': {
-                                                                borderColor: '#6b47c1'
-                                                            }
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
                                                         },
-                                                        '& .MuiInputLabel-root': {
-                                                            color: '#666666',
-                                                            '&.Mui-focused': {
-                                                                color: '#6b47c1'
-                                                            }
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
                                                         }
-                                                    }}
-                                                />
-                                            </Grid>
-                                        </Grid>
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <TextField
+                                                fullWidth
+                                                label="כתובת האירוע"
+                                                value={formData.eventAddress}
+                                                onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
+                                                variant="outlined"
+                                                placeholder="הזן כתובת האירוע"
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
