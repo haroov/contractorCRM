@@ -12,20 +12,51 @@ import {
     Alert,
     CircularProgress,
     Avatar,
-    IconButton
+    IconButton,
+    FormControl,
+    FormLabel,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    Grid,
+    IconButton as MuiIconButton
 } from '@mui/material';
 import {
     Save as SaveIcon,
     Close as CloseIcon,
     ArrowBack as ArrowBackIcon,
     MoreVert as MoreVertIcon,
-    AccountCircle as AccountCircleIcon
+    AccountCircle as AccountCircleIcon,
+    Add as AddIcon,
+    Delete as DeleteIcon
 } from '@mui/icons-material';
+
+interface Witness {
+    fullName: string;
+    phone: string;
+    email: string;
+    notes: string;
+}
+
+interface AdditionalResponsible {
+    fullName: string;
+    phone: string;
+    email: string;
+    notes: string;
+}
 
 interface ClaimFormData {
     projectId: string;
     projectName: string;
+    eventDate: string;
+    eventTime: string;
+    eventLocation: string;
+    eventAddress: string;
     description: string;
+    hasWitnesses: boolean;
+    witnesses: Witness[];
+    hasAdditionalResponsible: boolean;
+    additionalResponsible: AdditionalResponsible[];
     status: string;
     parties: string;
     procedures: string;
@@ -55,7 +86,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
         projectName: searchParams.get('projectName') || '',
+        eventDate: '',
+        eventTime: '',
+        eventLocation: '',
+        eventAddress: '',
         description: '',
+        hasWitnesses: false,
+        witnesses: [],
+        hasAdditionalResponsible: false,
+        additionalResponsible: [],
         status: 'open',
         parties: '',
         procedures: '',
@@ -95,7 +134,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     setFormData({
                         projectId: data.claim.projectId || '',
                         projectName: data.claim.projectName || '',
+                        eventDate: data.claim.eventDate || '',
+                        eventTime: data.claim.eventTime || '',
+                        eventLocation: data.claim.eventLocation || '',
+                        eventAddress: data.claim.eventAddress || '',
                         description: data.claim.description || '',
+                        hasWitnesses: data.claim.hasWitnesses || false,
+                        witnesses: data.claim.witnesses || [],
+                        hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
+                        additionalResponsible: data.claim.additionalResponsible || [],
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
                         procedures: data.claim.procedures || '',
@@ -123,10 +170,62 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         setActiveTab(newValue);
     };
 
-    const handleFieldChange = (field: keyof ClaimFormData, value: string) => {
+    const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean) => {
         setFormData(prev => ({
             ...prev,
             [field]: value,
+            updatedAt: new Date()
+        }));
+    };
+
+    const addWitness = () => {
+        setFormData(prev => ({
+            ...prev,
+            witnesses: [...prev.witnesses, { fullName: '', phone: '', email: '', notes: '' }],
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeWitness = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            witnesses: prev.witnesses.filter((_, i) => i !== index),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateWitness = (index: number, field: keyof Witness, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            witnesses: prev.witnesses.map((witness, i) => 
+                i === index ? { ...witness, [field]: value } : witness
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const addAdditionalResponsible = () => {
+        setFormData(prev => ({
+            ...prev,
+            additionalResponsible: [...prev.additionalResponsible, { fullName: '', phone: '', email: '', notes: '' }],
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeAdditionalResponsible = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            additionalResponsible: prev.additionalResponsible.filter((_, i) => i !== index),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateAdditionalResponsible = (index: number, field: keyof AdditionalResponsible, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            additionalResponsible: prev.additionalResponsible.map((person, i) => 
+                i === index ? { ...person, [field]: value } : person
+            ),
             updatedAt: new Date()
         }));
     };
@@ -336,16 +435,145 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
                                             פרטי התביעה
                                         </Typography>
+                                        
+                                        {/* Date and Time Fields */}
+                                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    type="date"
+                                                    label="תאריך האירוע"
+                                                    value={formData.eventDate}
+                                                    onChange={(e) => handleFieldChange('eventDate', e.target.value)}
+                                                    variant="outlined"
+                                                    InputLabelProps={{ shrink: true }}
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    type="time"
+                                                    label="שעת האירוע"
+                                                    value={formData.eventTime}
+                                                    onChange={(e) => handleFieldChange('eventTime', e.target.value)}
+                                                    variant="outlined"
+                                                    InputLabelProps={{ shrink: true }}
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </Grid>
+
+                                        {/* Location and Address Fields */}
+                                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="מקום האירוע"
+                                                    value={formData.eventLocation}
+                                                    onChange={(e) => handleFieldChange('eventLocation', e.target.value)}
+                                                    variant="outlined"
+                                                    placeholder="הזן מקום האירוע"
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <TextField
+                                                    fullWidth
+                                                    label="כתובת האירוע"
+                                                    value={formData.eventAddress}
+                                                    onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
+                                                    variant="outlined"
+                                                    placeholder="הזן כתובת האירוע"
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </Grid>
+
+                                        {/* Event Description */}
                                         <TextField
                                             fullWidth
                                             multiline
-                                            rows={12}
-                                            label="תאור האירוע"
+                                            rows={6}
+                                            label="תיאור מפורט"
                                             value={formData.description}
                                             onChange={(e) => handleFieldChange('description', e.target.value)}
                                             variant="outlined"
                                             placeholder="תאר את האירוע בפירוט..."
                                             sx={{
+                                                mb: 3,
                                                 '& .MuiOutlinedInput-root': {
                                                     '& fieldset': {
                                                         borderColor: '#d0d0d0'
@@ -365,6 +593,206 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 }
                                             }}
                                         />
+
+                                        {/* Witnesses Section */}
+                                        <Box sx={{ mb: 3 }}>
+                                            <FormControl component="fieldset" sx={{ mb: 2 }}>
+                                                <FormLabel component="legend" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
+                                                    האם יש עדי ראייה?
+                                                </FormLabel>
+                                                <RadioGroup
+                                                    row
+                                                    value={formData.hasWitnesses}
+                                                    onChange={(e) => handleFieldChange('hasWitnesses', e.target.value === 'true')}
+                                                >
+                                                    <FormControlLabel value={false} control={<Radio sx={{ color: '#6b47c1' }} />} label="לא" />
+                                                    <FormControlLabel value={true} control={<Radio sx={{ color: '#6b47c1' }} />} label="כן" />
+                                                </RadioGroup>
+                                            </FormControl>
+
+                                            {formData.hasWitnesses && (
+                                                <Box>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                        <Typography variant="subtitle1" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
+                                                            פרטי עדי ראייה
+                                                        </Typography>
+                                                        <Button
+                                                            variant="outlined"
+                                                            startIcon={<AddIcon />}
+                                                            onClick={addWitness}
+                                                            sx={{
+                                                                color: '#6b47c1',
+                                                                borderColor: '#6b47c1',
+                                                                '&:hover': {
+                                                                    borderColor: '#5a3aa1',
+                                                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            הוסף עד
+                                                        </Button>
+                                                    </Box>
+                                                    {formData.witnesses.map((witness, index) => (
+                                                        <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0' }}>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                                <Typography variant="subtitle2" sx={{ color: '#6b47c1' }}>
+                                                                    עד {index + 1}
+                                                                </Typography>
+                                                                <MuiIconButton
+                                                                    onClick={() => removeWitness(index)}
+                                                                    sx={{ color: '#f44336' }}
+                                                                >
+                                                                    <DeleteIcon />
+                                                                </MuiIconButton>
+                                                            </Box>
+                                                            <Grid container spacing={2}>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם מלא"
+                                                                        value={witness.fullName}
+                                                                        onChange={(e) => updateWitness(index, 'fullName', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="טלפון נייד"
+                                                                        value={witness.phone}
+                                                                        onChange={(e) => updateWitness(index, 'phone', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="אימייל"
+                                                                        type="email"
+                                                                        value={witness.email}
+                                                                        onChange={(e) => updateWitness(index, 'email', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="הערות"
+                                                                        value={witness.notes}
+                                                                        onChange={(e) => updateWitness(index, 'notes', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Paper>
+                                                    ))}
+                                                </Box>
+                                            )}
+                                        </Box>
+
+                                        {/* Additional Responsible Section */}
+                                        <Box sx={{ mb: 3 }}>
+                                            <FormControl component="fieldset" sx={{ mb: 2 }}>
+                                                <FormLabel component="legend" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
+                                                    האם יש גורם נוסף אפשרי שאחראי לאירוע?
+                                                </FormLabel>
+                                                <RadioGroup
+                                                    row
+                                                    value={formData.hasAdditionalResponsible}
+                                                    onChange={(e) => handleFieldChange('hasAdditionalResponsible', e.target.value === 'true')}
+                                                >
+                                                    <FormControlLabel value={false} control={<Radio sx={{ color: '#6b47c1' }} />} label="לא" />
+                                                    <FormControlLabel value={true} control={<Radio sx={{ color: '#6b47c1' }} />} label="כן" />
+                                                </RadioGroup>
+                                            </FormControl>
+
+                                            {formData.hasAdditionalResponsible && (
+                                                <Box>
+                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                        <Typography variant="subtitle1" sx={{ color: '#6b47c1', fontWeight: 'bold' }}>
+                                                            פרטי גורם נוסף
+                                                        </Typography>
+                                                        <Button
+                                                            variant="outlined"
+                                                            startIcon={<AddIcon />}
+                                                            onClick={addAdditionalResponsible}
+                                                            sx={{
+                                                                color: '#6b47c1',
+                                                                borderColor: '#6b47c1',
+                                                                '&:hover': {
+                                                                    borderColor: '#5a3aa1',
+                                                                    backgroundColor: 'rgba(107, 71, 193, 0.04)'
+                                                                }
+                                                            }}
+                                                        >
+                                                            הוסף גורם
+                                                        </Button>
+                                                    </Box>
+                                                    {formData.additionalResponsible.map((person, index) => (
+                                                        <Paper key={index} elevation={1} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0' }}>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                                <Typography variant="subtitle2" sx={{ color: '#6b47c1' }}>
+                                                                    גורם {index + 1}
+                                                                </Typography>
+                                                                <MuiIconButton
+                                                                    onClick={() => removeAdditionalResponsible(index)}
+                                                                    sx={{ color: '#f44336' }}
+                                                                >
+                                                                    <DeleteIcon />
+                                                                </MuiIconButton>
+                                                            </Box>
+                                                            <Grid container spacing={2}>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם מלא"
+                                                                        value={person.fullName}
+                                                                        onChange={(e) => updateAdditionalResponsible(index, 'fullName', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="טלפון נייד"
+                                                                        value={person.phone}
+                                                                        onChange={(e) => updateAdditionalResponsible(index, 'phone', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="אימייל"
+                                                                        type="email"
+                                                                        value={person.email}
+                                                                        onChange={(e) => updateAdditionalResponsible(index, 'email', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="הערות"
+                                                                        value={person.notes}
+                                                                        onChange={(e) => updateAdditionalResponsible(index, 'notes', e.target.value)}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Paper>
+                                                    ))}
+                                                </Box>
+                                            )}
+                                        </Box>
                                     </Box>
                                 )}
 
