@@ -9269,19 +9269,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 {/* שורה 1 - מפרט הביטוח */}
                                 <Box sx={{ mb: 4 }}>
                                     <FileUpload
-                                        label="מפרט הביטוח"
+                                        label="מפרט יועץ הביטוח"
                                         value={fileUploadState.insuranceSpecification?.url || project?.insuranceSpecification?.file || ''}
                                         thumbnailUrl={fileUploadState.insuranceSpecification?.thumbnailUrl || project?.insuranceSpecification?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
-                                        aiIcon={
-                                            <AutoAwesomeIcon
-                                                sx={{
-                                                    color: '#6b47c1',
-                                                    fontSize: '24px',
-                                                    filter: 'drop-shadow(0 0 4px rgba(107, 70, 193, 0.3))'
-                                                }}
-                                            />
-                                        }
                                         showCreationDate={true}
                                         creationDateValue={fileUploadState.insuranceSpecification?.creationDate || project?.insuranceSpecification?.fileCreationDate || ''}
                                         onCreationDateChange={async (date) => {
