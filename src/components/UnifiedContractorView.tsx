@@ -332,9 +332,22 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         // Find projects for this contractor
         const contractorProjects = projectsData.filter(project => {
           // Check if project belongs to this contractor by mainContractor field
-          return project.mainContractor === contractor._id || 
+          const matches = project.mainContractor === contractor._id || 
                  project.mainContractor === contractor.contractor_id ||
                  project.contractorName === contractor.name;
+          
+          if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
+            console.log(`🔍 Checking project ${project.projectName} for ${contractor.name}:`, {
+              projectMainContractor: project.mainContractor,
+              contractorId: contractor._id,
+              contractorId2: contractor.contractor_id,
+              contractorName: contractor.name,
+              projectContractorName: project.contractorName,
+              matches
+            });
+          }
+          
+          return matches;
         });
 
         // Count active and future projects
