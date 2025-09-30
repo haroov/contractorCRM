@@ -330,24 +330,43 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       return prevContractors.map(contractor => {
         // Find projects for this contractor
         const contractorProjects = projectsData.filter(project => {
-          // Check if project belongs to this contractor by mainContractor field
-          const matches = project.mainContractor === contractor._id || 
-                 project.mainContractor === contractor.contractor_id ||
-                 project.contractorName === contractor.name ||
-                 // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
-                 (contractor.name === 'צ.מ.ח המרמן בע"מ' && 
-                  (project.mainContractor === '68b6e04d4cbe489fccf6151e' || 
-                   project.mainContractor === 'צ.מ.ח המרמן בע"מ' ||
-                   project.mainContractor === contractor.name));
+          // Check if project belongs to this contractor by multiple methods
+          let matches = false;
+          
+          // Method 1: Check by mainContractor field
+          matches = project.mainContractor === contractor._id || 
+                   project.mainContractor === contractor.contractor_id ||
+                   project.contractorName === contractor.name ||
+                   // Special case for צ.מ.ח המרמן - check for specific ObjectId and name
+                   (contractor.name === 'צ.מ.ח המרמן בע"מ' && 
+                    (project.mainContractor === '68b6e04d4cbe489fccf6151e' || 
+                     project.mainContractor === 'צ.מ.ח המרמן בע"מ' ||
+                     project.mainContractor === contractor.name));
+          
+          // Method 2: Check by projectIds array in contractor
+          if (!matches && contractor.projectIds && Array.isArray(contractor.projectIds)) {
+            matches = contractor.projectIds.includes(project._id);
+          }
+          
+          // Method 3: Check by projectIds array in contractor (string comparison)
+          if (!matches && contractor.projectIds && Array.isArray(contractor.projectIds)) {
+            matches = contractor.projectIds.some(projectId => 
+              projectId === project._id || 
+              projectId === project.id ||
+              projectId.toString() === project._id?.toString()
+            );
+          }
 
           if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
             console.log(`🔍 Checking project ${project.projectName} for ${contractor.name}:`, {
+              projectId: project._id,
               projectMainContractor: project.mainContractor,
               contractorId: contractor._id,
               contractorId2: contractor.contractor_id,
               contractorName: contractor.name,
               projectContractorName: project.contractorName,
               projectStatus: project.projectStatus,
+              contractorProjectIds: contractor.projectIds,
               matches
             });
           }
