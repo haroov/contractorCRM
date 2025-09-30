@@ -923,6 +923,21 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     thumbnailUrl: project.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.thumbnailUrl || '',
                     creationDate: project.engineeringQuestionnaire?.buildingPlan?.excavationPermit?.fileCreationDate || ''
                 },
+                insuranceSpecification: {
+                    url: project.insuranceSpecification?.file || '',
+                    thumbnailUrl: project.insuranceSpecification?.thumbnailUrl || '',
+                    creationDate: project.insuranceSpecification?.fileCreationDate || ''
+                },
+                insuranceContractClause: {
+                    url: project.insuranceContractClause?.file || '',
+                    thumbnailUrl: project.insuranceContractClause?.thumbnailUrl || '',
+                    creationDate: project.insuranceContractClause?.fileCreationDate || ''
+                },
+                proposalForm: {
+                    url: project.proposalForm?.file || '',
+                    thumbnailUrl: project.proposalForm?.thumbnailUrl || '',
+                    creationDate: project.proposalForm?.fileCreationDate || ''
+                },
             }));
         }
     }, [project]);
@@ -1282,6 +1297,123 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         ...prev,
                         excavationPermit: {
                             ...prev.excavationPermit,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceSpecification.file' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceSpecification file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceSpecification: {
+                            ...prev.insuranceSpecification,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceSpecification.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceSpecification thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceSpecification: {
+                            ...prev.insuranceSpecification,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceSpecification.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceSpecification creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceSpecification: {
+                            ...prev.insuranceSpecification,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceContractClause.file' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceContractClause file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceContractClause: {
+                            ...prev.insuranceContractClause,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceContractClause.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceContractClause thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceContractClause: {
+                            ...prev.insuranceContractClause,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'insuranceContractClause.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with insuranceContractClause creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        insuranceContractClause: {
+                            ...prev.insuranceContractClause,
+                            creationDate: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'proposalForm.file' && value) {
+                console.log('🔄 Updating fileUploadState with proposalForm file URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        proposalForm: {
+                            ...prev.proposalForm,
+                            url: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'proposalForm.thumbnailUrl' && value) {
+                console.log('🔄 Updating fileUploadState with proposalForm thumbnail URL:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        proposalForm: {
+                            ...prev.proposalForm,
+                            thumbnailUrl: value
+                        }
+                    };
+                    console.log('🔄 New fileUploadState:', newState);
+                    return newState;
+                });
+            } else if (fieldPath === 'proposalForm.fileCreationDate' && value) {
+                console.log('🔄 Updating fileUploadState with proposalForm creation date:', value);
+                setFileUploadState(prev => {
+                    const newState = {
+                        ...prev,
+                        proposalForm: {
+                            ...prev.proposalForm,
                             creationDate: value
                         }
                     };
@@ -9286,6 +9418,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('insuranceSpecification.fileCreationDate', date);
                                         }}
                                         onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔍 Insurance specification onChange called with:', { url, thumbnailUrl });
+
                                             setFileUploadState(prev => ({
                                                 ...prev,
                                                 insuranceSpecification: {
@@ -9297,6 +9431,78 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('insuranceSpecification.file', url);
                                             if (thumbnailUrl) {
                                                 handleNestedFieldChange('insuranceSpecification.thumbnailUrl', thumbnailUrl);
+                                            }
+
+                                            // Save to database immediately if we have a project ID
+                                            if (url && (project?._id || project?.id)) {
+                                                console.log('🔍 Saving insurance specification to database...');
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'insuranceSpecification.file': url,
+                                                        'insuranceSpecification.thumbnailUrl': thumbnailUrl || '',
+                                                        'insuranceSpecification.fileCreationDate': new Date().toISOString().split('T')[0]
+                                                    };
+
+                                                    console.log('🔍 Saving insurance specification to database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Insurance specification saved successfully:', result);
+
+                                                    // Update project state after successful save
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        insuranceSpecification: {
+                                                            ...prev?.insuranceSpecification,
+                                                            file: url,
+                                                            thumbnailUrl: thumbnailUrl || '',
+                                                            fileCreationDate: new Date().toISOString().split('T')[0]
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error saving insurance specification:', error);
+                                                }
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Insurance specification onDelete called');
+
+                                            // Clear local state
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceSpecification: {
+                                                    ...prev.insuranceSpecification,
+                                                    url: '',
+                                                    thumbnailUrl: ''
+                                                }
+                                            }));
+
+                                            // Delete from database
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'insuranceSpecification.file': null,
+                                                        'insuranceSpecification.thumbnailUrl': null,
+                                                        'insuranceSpecification.fileCreationDate': null
+                                                    };
+
+                                                    console.log('🗑️ Deleting insurance specification from database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Insurance specification deleted successfully:', result);
+
+                                                    // Update project state after successful deletion
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        insuranceSpecification: {
+                                                            ...prev?.insuranceSpecification,
+                                                            file: null,
+                                                            thumbnailUrl: null,
+                                                            fileCreationDate: null
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error deleting insurance specification:', error);
+                                                }
                                             }
                                         }}
                                         disabled={mode === 'view' || !canEdit}
@@ -9323,6 +9529,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('insuranceContractClause.fileCreationDate', date);
                                         }}
                                         onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔍 Insurance contract clause onChange called with:', { url, thumbnailUrl });
+
                                             setFileUploadState(prev => ({
                                                 ...prev,
                                                 insuranceContractClause: {
@@ -9334,6 +9542,78 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('insuranceContractClause.file', url);
                                             if (thumbnailUrl) {
                                                 handleNestedFieldChange('insuranceContractClause.thumbnailUrl', thumbnailUrl);
+                                            }
+
+                                            // Save to database immediately if we have a project ID
+                                            if (url && (project?._id || project?.id)) {
+                                                console.log('🔍 Saving insurance contract clause to database...');
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'insuranceContractClause.file': url,
+                                                        'insuranceContractClause.thumbnailUrl': thumbnailUrl || '',
+                                                        'insuranceContractClause.fileCreationDate': new Date().toISOString().split('T')[0]
+                                                    };
+
+                                                    console.log('🔍 Saving insurance contract clause to database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Insurance contract clause saved successfully:', result);
+
+                                                    // Update project state after successful save
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        insuranceContractClause: {
+                                                            ...prev?.insuranceContractClause,
+                                                            file: url,
+                                                            thumbnailUrl: thumbnailUrl || '',
+                                                            fileCreationDate: new Date().toISOString().split('T')[0]
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error saving insurance contract clause:', error);
+                                                }
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Insurance contract clause onDelete called');
+
+                                            // Clear local state
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                insuranceContractClause: {
+                                                    ...prev.insuranceContractClause,
+                                                    url: '',
+                                                    thumbnailUrl: ''
+                                                }
+                                            }));
+
+                                            // Delete from database
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'insuranceContractClause.file': null,
+                                                        'insuranceContractClause.thumbnailUrl': null,
+                                                        'insuranceContractClause.fileCreationDate': null
+                                                    };
+
+                                                    console.log('🗑️ Deleting insurance contract clause from database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Insurance contract clause deleted successfully:', result);
+
+                                                    // Update project state after successful deletion
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        insuranceContractClause: {
+                                                            ...prev?.insuranceContractClause,
+                                                            file: null,
+                                                            thumbnailUrl: null,
+                                                            fileCreationDate: null
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error deleting insurance contract clause:', error);
+                                                }
                                             }
                                         }}
                                         disabled={mode === 'view' || !canEdit}
@@ -9360,6 +9640,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             handleNestedFieldChange('proposalForm.fileCreationDate', date);
                                         }}
                                         onChange={async (url, thumbnailUrl) => {
+                                            console.log('🔍 Proposal form onChange called with:', { url, thumbnailUrl });
+
                                             setFileUploadState(prev => ({
                                                 ...prev,
                                                 proposalForm: {
@@ -9372,209 +9654,83 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             if (thumbnailUrl) {
                                                 handleNestedFieldChange('proposalForm.thumbnailUrl', thumbnailUrl);
                                             }
+
+                                            // Save to database immediately if we have a project ID
+                                            if (url && (project?._id || project?.id)) {
+                                                console.log('🔍 Saving proposal form to database...');
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'proposalForm.file': url,
+                                                        'proposalForm.thumbnailUrl': thumbnailUrl || '',
+                                                        'proposalForm.fileCreationDate': new Date().toISOString().split('T')[0]
+                                                    };
+
+                                                    console.log('🔍 Saving proposal form to database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Proposal form saved successfully:', result);
+
+                                                    // Update project state after successful save
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        proposalForm: {
+                                                            ...prev?.proposalForm,
+                                                            file: url,
+                                                            thumbnailUrl: thumbnailUrl || '',
+                                                            fileCreationDate: new Date().toISOString().split('T')[0]
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error saving proposal form:', error);
+                                                }
+                                            }
+                                        }}
+                                        onDelete={async () => {
+                                            console.log('🗑️ Proposal form onDelete called');
+
+                                            // Clear local state
+                                            setFileUploadState(prev => ({
+                                                ...prev,
+                                                proposalForm: {
+                                                    ...prev.proposalForm,
+                                                    url: '',
+                                                    thumbnailUrl: ''
+                                                }
+                                            }));
+
+                                            // Delete from database
+                                            if (project?._id || project?.id) {
+                                                try {
+                                                    const { projectsAPI } = await import('../services/api');
+                                                    const updateData = {
+                                                        'proposalForm.file': null,
+                                                        'proposalForm.thumbnailUrl': null,
+                                                        'proposalForm.fileCreationDate': null
+                                                    };
+
+                                                    console.log('🗑️ Deleting proposal form from database:', updateData);
+                                                    const result = await projectsAPI.update(project._id || project.id, updateData);
+                                                    console.log('✅ Proposal form deleted successfully:', result);
+
+                                                    // Update project state after successful deletion
+                                                    setProject(prev => ({
+                                                        ...prev,
+                                                        proposalForm: {
+                                                            ...prev?.proposalForm,
+                                                            file: null,
+                                                            thumbnailUrl: null,
+                                                            fileCreationDate: null
+                                                        }
+                                                    }));
+                                                } catch (error) {
+                                                    console.error('❌ Error deleting proposal form:', error);
+                                                }
+                                            }
                                         }}
                                         disabled={mode === 'view' || !canEdit}
                                     />
                                 </Box>
 
-                                {/* שורה 4 - טבלת מסמכי הפוליסה */}
-                                <Box sx={{ mb: 4 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                width: 32,
-                                                height: 32,
-                                                borderRadius: '50%',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                                '&:hover': {
-                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                                },
-                                                '&:focus-within': {
-                                                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
-                                                    outline: '2px solid rgba(139, 92, 246, 0.3)',
-                                                    outlineOffset: '2px',
-                                                }
-                                            }}
-                                            tabIndex={0}
-                                        >
-                                            <AutoAwesomeIcon
-                                                sx={{
-                                                    color: '#8B5CF6',
-                                                    filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))'
-                                                }}
-                                            />
-                                        </Box>
-                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', ml: 0.5 }}>
-                                            מסמכי הפוליסה
-                                        </Typography>
-                                    </Box>
-                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
-                                        <Table size="small">
-                                            <TableHead>
-                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>קובץ</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '12%' }}>תאריך תוקף</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '28%' }}>מספר פוליסה</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>מבטח</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '5%' }}></TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {(project?.policyDocuments && project.policyDocuments.length > 0 ? project.policyDocuments : [{ documentType: 'פוליסה', file: '', validUntil: '', policyNumber: '', insurer: '' }]).map((document, index) => {
-                                                    const isFirstRow = index === 0;
-                                                    return (
-                                                        <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
-                                                                <Autocomplete
-                                                                    freeSolo
-                                                                    options={['פוליסה', 'תוספת', 'כתב כיסוי']}
-                                                                    value={document.documentType || ''}
-                                                                    onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newValue || '');
-                                                                    }}
-                                                                    onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.documentType`, newInputValue);
-                                                                    }}
-                                                                    renderInput={(params) => (
-                                                                        <TextField
-                                                                            {...params}
-                                                                            size="small"
-                                                                            placeholder="סוג המסמך"
-                                                                            variant="outlined"
-                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                        />
-                                                                    )}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '15%' }}>
-                                                                <FileUpload
-                                                                    label=""
-                                                                    value={document.file || ''}
-                                                                    thumbnailUrl={document.thumbnailUrl || ''}
-                                                                    projectId={project?._id || project?.id}
-                                                                    onChange={async (url, thumbnailUrl) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.file`, url);
-                                                                        if (thumbnailUrl) {
-                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, thumbnailUrl);
-                                                                        }
-                                                                    }}
-                                                                    onDelete={async () => {
-                                                                        if (window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?')) {
-                                                                            handleNestedFieldChange(`policyDocuments.${index}.file`, '');
-                                                                            handleNestedFieldChange(`policyDocuments.${index}.thumbnailUrl`, '');
-                                                                        }
-                                                                    }}
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    showCreationDate={false}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '12%' }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    size="small"
-                                                                    type="date"
-                                                                    value={document.validUntil || ''}
-                                                                    onChange={(e) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.validUntil`, e.target.value);
-                                                                    }}
-                                                                    placeholder="תאריך תוקף"
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '28%' }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    size="small"
-                                                                    value={document.policyNumber || ''}
-                                                                    onChange={(e) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.policyNumber`, e.target.value);
-                                                                    }}
-                                                                    placeholder="מספר פוליסה"
-                                                                    variant="outlined"
-                                                                    sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '20%' }}>
-                                                                <Autocomplete
-                                                                    freeSolo
-                                                                    options={['הראל', 'כלל', 'הפניקס', 'מנורה', 'מגדל', 'איילון', 'הכשרה', 'AIG', 'ליברה', 'שירביט', 'שומרה', 'ווישור', 'אנקור', 'סקוריטס']}
-                                                                    value={document.insurer || ''}
-                                                                    onChange={(event, newValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newValue || '');
-                                                                    }}
-                                                                    onInputChange={(event, newInputValue) => {
-                                                                        handleNestedFieldChange(`policyDocuments.${index}.insurer`, newInputValue);
-                                                                    }}
-                                                                    renderInput={(params) => (
-                                                                        <TextField
-                                                                            {...params}
-                                                                            size="small"
-                                                                            placeholder="מבטח"
-                                                                            variant="outlined"
-                                                                            sx={{ '& .MuiOutlinedInput-root': { height: 40 } }}
-                                                                        />
-                                                                    )}
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell sx={{ padding: 1, width: '5%' }}>
-                                                                {!isFirstRow && (
-                                                                    <IconButton
-                                                                        onClick={() => {
-                                                                            if (window.confirm('האם אתה בטוח שברצונך למחוק את המסמך?')) {
-                                                                                const currentDocuments = project?.policyDocuments || [];
-                                                                                const newDocuments = currentDocuments.filter((_, i) => i !== index);
-                                                                                handleNestedFieldChange('policyDocuments', newDocuments);
-                                                                            }
-                                                                        }}
-                                                                        title="מחיקה"
-                                                                        sx={{
-                                                                            '& img': {
-                                                                                filter: 'brightness(0) saturate(0)',
-                                                                                width: '16px',
-                                                                                height: '16px'
-                                                                            },
-                                                                            '&:hover, &:focus': {
-                                                                                backgroundColor: '#f44336',
-                                                                                borderRadius: '50%'
-                                                                            },
-                                                                            '&:hover img, &:focus img': {
-                                                                                filter: 'brightness(0) invert(1)'
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        <img src="/assets/icon-trash.svg" alt="מחיקה" />
-                                                                    </IconButton>
-                                                                )}
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    );
-                                                })}
-                                                <TableRow>
-                                                    <TableCell colSpan={6} sx={{ padding: 1, textAlign: 'center' }}>
-                                                        <Button
-                                                            variant="outlined"
-                                                            onClick={() => {
-                                                                const newDocument = { documentType: '', file: '', validUntil: '', policyNumber: '', insurer: '' };
-                                                                const currentDocuments = project?.policyDocuments || [];
-                                                                handleNestedFieldChange('policyDocuments', [...currentDocuments, newDocument]);
-                                                            }}
-                                                            sx={{ mr: 1 }}
-                                                        >
-                                                            + הוספה
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                </Box>
 
                                 {/* סקשן מפרט הביטוח */}
                                 <Box sx={{ mb: 4 }}>
