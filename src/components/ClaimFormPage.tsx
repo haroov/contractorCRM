@@ -773,13 +773,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -876,27 +876,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1961,42 +1961,56 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Typography>
                                                             <Grid container spacing={2} sx={{ mb: 2 }}>
                                                                 <Grid item xs={12} sm={6}>
-                                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                        <Typography variant="body2" sx={{ minWidth: '60px' }}>
-                                                                            טיפול רפואי:
+                                                                    <Box sx={{ 
+                                                                        display: 'flex', 
+                                                                        alignItems: 'center', 
+                                                                        justifyContent: 'space-between',
+                                                                        p: 1.5,
+                                                                        backgroundColor: '#f5f5f5',
+                                                                        borderRadius: 1,
+                                                                        border: '1px solid #e0e0e0'
+                                                                    }}>
+                                                                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                                                            טיפול רפואי
                                                                         </Typography>
-                                                                        <Box
-                                                                            sx={{
-                                                                                width: 50,
-                                                                                height: 24,
-                                                                                borderRadius: 12,
-                                                                                backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : '#ccc',
-                                                                                cursor: 'pointer',
-                                                                                position: 'relative',
-                                                                                transition: 'background-color 0.3s',
-                                                                                '&:hover': {
-                                                                                    backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#999'
-                                                                                }
-                                                                            }}
-                                                                            onClick={() => updateInjuredEmployeeMedical(index, 'received', !employee.medicalTreatment.received)}
-                                                                        >
+                                                                        <Box sx={{ display: 'flex', gap: 0.5 }}>
                                                                             <Box
                                                                                 sx={{
-                                                                                    width: 20,
-                                                                                    height: 20,
-                                                                                    borderRadius: '50%',
-                                                                                    backgroundColor: 'white',
-                                                                                    position: 'absolute',
-                                                                                    top: 2,
-                                                                                    left: employee.medicalTreatment.received ? 28 : 2,
-                                                                                    transition: 'left 0.3s',
-                                                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                                                    px: 2,
+                                                                                    py: 0.5,
+                                                                                    borderRadius: 1,
+                                                                                    cursor: 'pointer',
+                                                                                    backgroundColor: !employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                    color: !employee.medicalTreatment.received ? 'white' : '#666',
+                                                                                    border: '1px solid #6b47c1',
+                                                                                    transition: 'all 0.2s',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: !employee.medicalTreatment.received ? '#5a3aa1' : '#f0f0f0'
+                                                                                    }
                                                                                 }}
-                                                                            />
+                                                                                onClick={() => updateInjuredEmployeeMedical(index, 'received', false)}
+                                                                            >
+                                                                                לא
+                                                                            </Box>
+                                                                            <Box
+                                                                                sx={{
+                                                                                    px: 2,
+                                                                                    py: 0.5,
+                                                                                    borderRadius: 1,
+                                                                                    cursor: 'pointer',
+                                                                                    backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                    color: employee.medicalTreatment.received ? 'white' : '#666',
+                                                                                    border: '1px solid #6b47c1',
+                                                                                    transition: 'all 0.2s',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#f0f0f0'
+                                                                                    }
+                                                                                }}
+                                                                                onClick={() => updateInjuredEmployeeMedical(index, 'received', true)}
+                                                                            >
+                                                                                כן
+                                                                            </Box>
                                                                         </Box>
-                                                                        <Typography variant="body2" sx={{ color: employee.medicalTreatment.received ? '#6b47c1' : '#666' }}>
-                                                                            {employee.medicalTreatment.received ? 'כן' : 'לא'}
-                                                                        </Typography>
                                                                     </Box>
                                                                 </Grid>
                                                             </Grid>
