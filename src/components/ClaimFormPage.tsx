@@ -484,12 +484,34 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         };
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
-                i === employeeIndex ? {
-                    ...employee,
-                    medicalTreatment: {
-                        ...employee.medicalTreatment,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === employeeIndex ? { 
+                    ...employee, 
+                    medicalTreatment: { 
+                        ...employee.medicalTreatment, 
                         medicalDocuments: [...(employee.medicalTreatment.medicalDocuments || []), newDocument]
+                    }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const initializeMedicalDocuments = (employeeIndex: number) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === employeeIndex ? { 
+                    ...employee, 
+                    medicalTreatment: { 
+                        ...employee.medicalTreatment, 
+                        medicalDocuments: employee.medicalTreatment.medicalDocuments && employee.medicalTreatment.medicalDocuments.length > 0 
+                            ? employee.medicalTreatment.medicalDocuments 
+                            : [{
+                                documentName: '',
+                                medicalInstitution: '',
+                                validUntil: ''
+                            }]
                     }
                 } : employee
             ),
@@ -2084,7 +2106,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             </Button>
                                                                             <Button
                                                                                 variant="text"
-                                                                                onClick={() => updateInjuredEmployeeMedical(index, 'received', true)}
+                                                                                onClick={() => {
+                                                                                    updateInjuredEmployeeMedical(index, 'received', true);
+                                                                                    if (!employee.medicalTreatment.medicalDocuments || employee.medicalTreatment.medicalDocuments.length === 0) {
+                                                                                        initializeMedicalDocuments(index);
+                                                                                    }
+                                                                                }}
                                                                                 sx={{
                                                                                     borderRadius: '4px 0 0 4px',
                                                                                     border: '1px solid #d1d5db',
@@ -2188,18 +2215,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         />
                                                                                     </TableCell>
                                                                                     <TableCell>
-                                                                                        <MuiIconButton
-                                                                                            onClick={() => removeMedicalDocument(index, docIndex)}
-                                                                                            sx={{
-                                                                                                color: '#f44336',
-                                                                                                '&:hover': {
-                                                                                                    backgroundColor: '#ffebee',
-                                                                                                    color: '#d32f2f'
-                                                                                                }
-                                                                                            }}
-                                                                                        >
-                                                                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                                        </MuiIconButton>
+                                                                                        {docIndex > 0 && (
+                                                                                            <MuiIconButton
+                                                                                                onClick={() => removeMedicalDocument(index, docIndex)}
+                                                                                                sx={{
+                                                                                                    color: '#f44336',
+                                                                                                    '&:hover': {
+                                                                                                        backgroundColor: '#ffebee',
+                                                                                                        color: '#d32f2f'
+                                                                                                    }
+                                                                                                }}
+                                                                                            >
+                                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                            </MuiIconButton>
+                                                                                        )}
                                                                                     </TableCell>
                                                                                 </TableRow>
                                                                             ))}
@@ -2215,7 +2244,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         '&:hover': { bgcolor: '#5a3aa1' }
                                                                     }}
                                                                 >
-                                                                    הוסף מסמך רפואי
+                                                                    + הוספה
                                                                 </Button>
                                                             </Box>
                                                         )}
