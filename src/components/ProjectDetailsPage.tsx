@@ -9565,7 +9565,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 const { projectsAPI } = await import('../services/api');
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
-                                                                                
+
                                                                                 // Preserve existing document data and only update file-related fields
                                                                                 updatedDocuments[index] = {
                                                                                     ...updatedDocuments[index],
@@ -9615,7 +9615,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 const { projectsAPI } = await import('../services/api');
                                                                                 const currentDocuments = project?.policyDocuments || [];
                                                                                 const updatedDocuments = [...currentDocuments];
-                                                                                
+
                                                                                 // Preserve existing document data and only clear file-related fields
                                                                                 updatedDocuments[index] = {
                                                                                     ...updatedDocuments[index],
@@ -9646,7 +9646,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                             headers: {
                                                                                                 'Content-Type': 'application/json',
                                                                                             },
-                                                                                            body: JSON.stringify({ 
+                                                                                            body: JSON.stringify({
                                                                                                 fileUrl: currentFileUrl,
                                                                                                 thumbnailUrl: currentThumbnailUrl
                                                                                             })
@@ -12230,9 +12230,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 return true;
                                                             })
                                                             .map((claim, index) => (
-                                                                <TableRow 
-                                                                    key={claim._id || index} 
-                                                                    sx={{ 
+                                                                <TableRow
+                                                                    key={claim._id || index}
+                                                                    sx={{
                                                                         '&:hover': { backgroundColor: '#f5f5f5' },
                                                                         cursor: 'pointer'
                                                                     }}
@@ -12273,8 +12273,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     width: '32px',
                                                                                     height: '32px',
                                                                                     '&:hover': {
-                                                                                        backgroundColor: '#ffebee',
-                                                                                        color: '#d32f2f',
+                                                                                        backgroundColor: '#d32f2f',
+                                                                                        color: 'white',
                                                                                         '& img': {
                                                                                             filter: 'brightness(0) invert(1)'
                                                                                         }
