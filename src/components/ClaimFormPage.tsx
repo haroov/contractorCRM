@@ -2120,7 +2120,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
                                                         </Grid>
 
-                                                        <Box sx={{ mt: 3 }}>
+                                                        <Box sx={{ mt: 4 }}>
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                 פרטי בא כח
                                                             </Typography>
@@ -2280,7 +2280,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
                                                         )}
 
-                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, mt: 4, color: 'text.secondary' }}>
                                                             מהות הנזק
                                                         </Typography>
                                                         <TextField
