@@ -55,6 +55,14 @@ interface AdditionalResponsible {
     notes: string;
 }
 
+interface MedicalDocument {
+    documentName: string;
+    medicalInstitution: string;
+    fileUrl?: string;
+    thumbnailUrl?: string;
+    validUntil?: string;
+}
+
 interface InjuredEmployee {
     fullName: string;
     idNumber: string;
@@ -76,8 +84,7 @@ interface InjuredEmployee {
     injuryDescription: string;
     medicalTreatment: {
         received: boolean;
-        hospitalName?: string;
-        medicalReports?: string[];
+        medicalDocuments?: MedicalDocument[];
     };
     nationalInsuranceReport: {
         reported: boolean;
@@ -402,9 +409,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             startDate: '',
             lastSalary: 0,
             injuryDescription: '',
-            medicalTreatment: {
-                received: false
-            },
+                medicalTreatment: {
+                    received: false,
+                    medicalDocuments: []
+                },
             nationalInsuranceReport: {
                 reported: false
             },
@@ -458,10 +466,67 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeMedical = (index: number, field: keyof InjuredEmployee['medicalTreatment'], value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
-                i === index ? {
-                    ...employee,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { 
+                    ...employee, 
                     medicalTreatment: { ...employee.medicalTreatment, [field]: value }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const addMedicalDocument = (employeeIndex: number) => {
+        const newDocument: MedicalDocument = {
+            documentName: '',
+            medicalInstitution: '',
+            validUntil: ''
+        };
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === employeeIndex ? { 
+                    ...employee, 
+                    medicalTreatment: { 
+                        ...employee.medicalTreatment, 
+                        medicalDocuments: [...(employee.medicalTreatment.medicalDocuments || []), newDocument]
+                    }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeMedicalDocument = (employeeIndex: number, documentIndex: number) => {
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את המסמך הרפואי?')) {
+            setFormData(prev => ({
+                ...prev,
+                injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                    i === employeeIndex ? { 
+                        ...employee, 
+                        medicalTreatment: { 
+                            ...employee.medicalTreatment, 
+                            medicalDocuments: employee.medicalTreatment.medicalDocuments?.filter((_, docIndex) => docIndex !== documentIndex) || []
+                        }
+                    } : employee
+                ),
+                updatedAt: new Date()
+            }));
+        }
+    };
+
+    const updateMedicalDocument = (employeeIndex: number, documentIndex: number, field: keyof MedicalDocument, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === employeeIndex ? { 
+                    ...employee, 
+                    medicalTreatment: { 
+                        ...employee.medicalTreatment, 
+                        medicalDocuments: employee.medicalTreatment.medicalDocuments?.map((doc, docIndex) => 
+                            docIndex === documentIndex ? { ...doc, [field]: value } : doc
+                        ) || []
+                    }
                 } : employee
             ),
             updatedAt: new Date()
@@ -2040,37 +2105,114 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     </Box>
                                                                 </Box>
                                                                 {employee.medicalTreatment.received && (
-                                                                    <Box sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: 1
-                                                                    }}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="שם בית החולים/מרפאה"
-                                                                            value={employee.medicalTreatment.hospitalName || ''}
-                                                                            onChange={(e) => updateInjuredEmployeeMedical(index, 'hospitalName', e.target.value)}
-                                                                            variant="outlined"
-                                                                            size="small"
+                                                                    <Box sx={{ width: '100%' }}>
+                                                                        <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                            <Table size="small">
+                                                                                <TableHead>
+                                                                                    <TableRow>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מוסד רפואי</TableCell>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                                                    </TableRow>
+                                                                                </TableHead>
+                                                                                <TableBody>
+                                                                                    {(employee.medicalTreatment.medicalDocuments || []).map((document, docIndex) => (
+                                                                                        <TableRow key={docIndex}>
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    size="small"
+                                                                                                    value={document.documentName}
+                                                                                                    onChange={(e) => updateMedicalDocument(index, docIndex, 'documentName', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    sx={{
+                                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                        },
+                                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                    }}
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    size="small"
+                                                                                                    value={document.medicalInstitution}
+                                                                                                    onChange={(e) => updateMedicalDocument(index, docIndex, 'medicalInstitution', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    sx={{
+                                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                        },
+                                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                    }}
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <FileUpload
+                                                                                                    label="מסמך רפואי"
+                                                                                                    value={document.fileUrl || ''}
+                                                                                                    thumbnailUrl={document.thumbnailUrl || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateMedicalDocument(index, docIndex, 'fileUrl', url);
+                                                                                                        updateMedicalDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    projectId={formData.projectId}
+                                                                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    size="small"
+                                                                                                    type="date"
+                                                                                                    value={document.validUntil || ''}
+                                                                                                    onChange={(e) => updateMedicalDocument(index, docIndex, 'validUntil', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                    sx={{
+                                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                        },
+                                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                    }}
+                                                                                                />
+                                                                                            </TableCell>
+                                                                                            <TableCell>
+                                                                                                <MuiIconButton
+                                                                                                    onClick={() => removeMedicalDocument(index, docIndex)}
+                                                                                                    sx={{
+                                                                                                        color: '#f44336',
+                                                                                                        '&:hover': {
+                                                                                                            backgroundColor: '#ffebee',
+                                                                                                            color: '#d32f2f'
+                                                                                                        }
+                                                                                                    }}
+                                                                                                >
+                                                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                                </MuiIconButton>
+                                                                                            </TableCell>
+                                                                                        </TableRow>
+                                                                                    ))}
+                                                                                </TableBody>
+                                                                            </Table>
+                                                                        </TableContainer>
+                                                                        <Button
+                                                                            variant="contained"
+                                                                            startIcon={<AddIcon />}
+                                                                            onClick={() => addMedicalDocument(index)}
                                                                             sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                bgcolor: '#6b47c1',
+                                                                                '&:hover': { bgcolor: '#5a3aa1' }
                                                                             }}
-                                                                        />
-                                                                        <FileUpload
-                                                                            label="דו״חות רפואיים"
-                                                                            value={employee.medicalTreatment.medicalReports?.[0] || ''}
-                                                                            thumbnailUrl={employee.medicalTreatment.medicalReports?.[0] ? `${employee.medicalTreatment.medicalReports[0]}_thumb` : ''}
-                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                const reports = url ? [url] : [];
-                                                                                updateInjuredEmployeeMedical(index, 'medicalReports', reports);
-                                                                            }}
-                                                                            projectId={formData.projectId}
-                                                                            accept=".pdf,.jpg,.jpeg,.png"
-                                                                        />
+                                                                        >
+                                                                            הוסף מסמך רפואי
+                                                                        </Button>
                                                                     </Box>
                                                                 )}
                                                                 {!employee.medicalTreatment.received && <Box></Box>}
