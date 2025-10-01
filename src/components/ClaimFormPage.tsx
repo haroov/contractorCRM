@@ -302,7 +302,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         witnesses: data.claim.witnesses || [],
                         hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
                         additionalResponsible: data.claim.additionalResponsible || [],
-                        injuredEmployees: data.claim.injuredEmployees || [],
+                        injuredEmployees: (data.claim.injuredEmployees || []).map((employee: any) => ({
+                            ...employee,
+                            representative: employee.representative || {
+                                represented: false
+                            }
+                        })),
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
                         procedures: data.claim.procedures || '',
