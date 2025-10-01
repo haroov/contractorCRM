@@ -10,23 +10,23 @@ router.post('/', async (req, res) => {
         const claimsCollection = db.collection('claims');
         const projectsCollection = db.collection('projects');
         const { ObjectId } = require('mongodb');
-        
+
         const claimData = {
             ...req.body,
             createdAt: new Date(),
             updatedAt: new Date()
         };
-        
+
         console.log('🔍 Processed claim data:', claimData);
-        
+
         const result = await claimsCollection.insertOne(claimData);
-        
+
         // Add claim ID to project's claimsIdArray
         if (req.body.projectId) {
             try {
                 // First, get the current project to check if claimsIdArray exists
                 const project = await projectsCollection.findOne({ _id: new ObjectId(req.body.projectId) });
-                
+
                 if (project) {
                     // If claimsIdArray doesn't exist or is not an array, initialize it
                     let claimsIdArray = [];
@@ -38,13 +38,13 @@ router.post('/', async (req, res) => {
                             claimsIdArray = [project.claimsIdArray];
                         }
                     }
-                    
+
                     // Add the new claim ID if it's not already in the array
                     const claimIdString = result.insertedId.toString();
                     if (!claimsIdArray.includes(claimIdString)) {
                         claimsIdArray.push(claimIdString);
                     }
-                    
+
                     // Update the project with the claimsIdArray
                     await projectsCollection.updateOne(
                         { _id: new ObjectId(req.body.projectId) },
@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
                 // Don't fail the main request if project update fails
             }
         }
-        
+
         res.status(201).json({
             success: true,
             message: 'Claim created successfully',
@@ -65,10 +65,10 @@ router.post('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating claim:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Failed to create claim', 
-            error: error.message 
+            message: 'Failed to create claim',
+            error: error.message
         });
     }
 });
@@ -78,20 +78,20 @@ router.get('/project/:projectId', async (req, res) => {
     try {
         const db = await getDb();
         const claimsCollection = db.collection('claims');
-        
+
         const { projectId } = req.params;
         const claims = await claimsCollection.find({ projectId }).toArray();
-        
+
         res.json({
             success: true,
             claims: claims
         });
     } catch (error) {
         console.error('Error fetching claims:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Failed to fetch claims', 
-            error: error.message 
+            message: 'Failed to fetch claims',
+            error: error.message
         });
     }
 });
@@ -102,27 +102,27 @@ router.get('/:claimId', async (req, res) => {
         const db = await getDb();
         const claimsCollection = db.collection('claims');
         const { ObjectId } = require('mongodb');
-        
+
         const { claimId } = req.params;
         const claim = await claimsCollection.findOne({ _id: new ObjectId(claimId) });
-        
+
         if (!claim) {
             return res.status(404).json({
                 success: false,
                 message: 'Claim not found'
             });
         }
-        
+
         res.json({
             success: true,
             claim: claim
         });
     } catch (error) {
         console.error('Error fetching claim:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Failed to fetch claim', 
-            error: error.message 
+            message: 'Failed to fetch claim',
+            error: error.message
         });
     }
 });
@@ -135,37 +135,37 @@ router.put('/:claimId', async (req, res) => {
         const db = await getDb();
         const claimsCollection = db.collection('claims');
         const { ObjectId } = require('mongodb');
-        
+
         const { claimId } = req.params;
         const updateData = {
             ...req.body,
             updatedAt: new Date()
         };
-        
+
         console.log('🔍 Processed update data:', updateData);
-        
+
         const result = await claimsCollection.updateOne(
             { _id: new ObjectId(claimId) },
             { $set: updateData }
         );
-        
+
         if (result.matchedCount === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Claim not found'
             });
         }
-        
+
         res.json({
             success: true,
             message: 'Claim updated successfully'
         });
     } catch (error) {
         console.error('Error updating claim:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Failed to update claim', 
-            error: error.message 
+            message: 'Failed to update claim',
+            error: error.message
         });
     }
 });
@@ -177,9 +177,9 @@ router.delete('/:claimId', async (req, res) => {
         const claimsCollection = db.collection('claims');
         const projectsCollection = db.collection('projects');
         const { ObjectId } = require('mongodb');
-        
+
         const { claimId } = req.params;
-        
+
         // First, get the claim to find its projectId
         const claim = await claimsCollection.findOne({ _id: new ObjectId(claimId) });
         if (!claim) {
@@ -188,17 +188,17 @@ router.delete('/:claimId', async (req, res) => {
                 message: 'Claim not found'
             });
         }
-        
+
         // Delete the claim
         const result = await claimsCollection.deleteOne({ _id: new ObjectId(claimId) });
-        
+
         if (result.deletedCount === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Claim not found'
             });
         }
-        
+
         // Remove claim ID from project's claimsIdArray
         if (claim.projectId) {
             try {
@@ -210,10 +210,10 @@ router.delete('/:claimId', async (req, res) => {
                     } else if (typeof project.claimsIdArray === 'string' && project.claimsIdArray.trim() !== '') {
                         claimsIdArray = [project.claimsIdArray];
                     }
-                    
+
                     // Remove the deleted claim ID
                     const updatedClaimsId = claimsIdArray.filter((id) => id !== claimId);
-                    
+
                     // Update the project
                     await projectsCollection.updateOne(
                         { _id: new ObjectId(claim.projectId) },
@@ -226,17 +226,17 @@ router.delete('/:claimId', async (req, res) => {
                 // Don't fail the main request if project update fails
             }
         }
-        
+
         res.json({
             success: true,
             message: 'Claim deleted successfully'
         });
     } catch (error) {
         console.error('Error deleting claim:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
-            message: 'Failed to delete claim', 
-            error: error.message 
+            message: 'Failed to delete claim',
+            error: error.message
         });
     }
 });

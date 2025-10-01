@@ -12218,7 +12218,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תיאור</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>סטטוס</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך יצירה</TableCell>
-                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>פעולות</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -12230,7 +12230,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 return true;
                                                             })
                                                             .map((claim, index) => (
-                                                                <TableRow key={claim._id || index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                                                <TableRow 
+                                                                    key={claim._id || index} 
+                                                                    sx={{ 
+                                                                        '&:hover': { backgroundColor: '#f5f5f5' },
+                                                                        cursor: 'pointer'
+                                                                    }}
+                                                                    onClick={() => {
+                                                                        const claimUrl = `/claim-form?projectId=${project?._id || project?.id}&projectName=${encodeURIComponent(project?.projectName || '')}&claimId=${claim._id}&mode=edit`;
+                                                                        navigate(claimUrl);
+                                                                    }}
+                                                                >
                                                                     <TableCell sx={{ textAlign: 'right' }}>{claim.description || 'ללא תיאור'}</TableCell>
                                                                     <TableCell sx={{ textAlign: 'right' }}>
                                                                         <Box sx={{
@@ -12253,9 +12263,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                                                                             <IconButton
                                                                                 size="small"
-                                                                                onClick={() => {
-                                                                                    const claimUrl = `/claim-form?projectId=${project?._id || project?.id}&projectName=${encodeURIComponent(project?.projectName || '')}&claimId=${claim._id}&mode=edit`;
-                                                                                    navigate(claimUrl);
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation(); // Prevent row click
+                                                                                    handleDeleteClaim(claim._id);
                                                                                 }}
                                                                                 sx={{
                                                                                     color: '#666666',
@@ -12263,24 +12273,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     width: '32px',
                                                                                     height: '32px',
                                                                                     '&:hover': {
-                                                                                        backgroundColor: '#6b47c1',
-                                                                                        color: 'white'
-                                                                                    }
-                                                                                }}
-                                                                            >
-                                                                                <EditIcon fontSize="small" />
-                                                                            </IconButton>
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={() => handleDeleteClaim(claim._id)}
-                                                                                sx={{
-                                                                                    color: '#666666',
-                                                                                    borderRadius: '50%',
-                                                                                    width: '32px',
-                                                                                    height: '32px',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: '#d32f2f',
-                                                                                        color: 'white',
+                                                                                        backgroundColor: '#ffebee',
+                                                                                        color: '#d32f2f',
                                                                                         '& img': {
                                                                                             filter: 'brightness(0) invert(1)'
                                                                                         }
