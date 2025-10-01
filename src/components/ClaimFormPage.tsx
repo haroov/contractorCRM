@@ -138,7 +138,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             setIsEditMode(true);
             loadClaim(claimId);
         }
-        
+
         // If we have a claimId but no mode, it might be from a redirect after save
         if (claimId && !mode) {
             setIsEditMode(true);
@@ -229,7 +229,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateWitness = (index: number, field: keyof Witness, value: string) => {
         setFormData(prev => ({
             ...prev,
-            witnesses: prev.witnesses.map((witness, i) => 
+            witnesses: prev.witnesses.map((witness, i) =>
                 i === index ? { ...witness, [field]: value } : witness
             ),
             updatedAt: new Date()
@@ -257,7 +257,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateAdditionalResponsible = (index: number, field: keyof AdditionalResponsible, value: string) => {
         setFormData(prev => ({
             ...prev,
-            additionalResponsible: prev.additionalResponsible.map((person, i) => 
+            additionalResponsible: prev.additionalResponsible.map((person, i) =>
                 i === index ? { ...person, [field]: value } : person
             ),
             updatedAt: new Date()
@@ -269,6 +269,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             setSnackbar({
                 open: true,
                 message: 'נא למלא את תאור האירוע',
+                severity: 'error'
+            });
+            return;
+        }
+        
+        if (!formData.eventDate.trim()) {
+            setSnackbar({
+                open: true,
+                message: 'נא למלא את תאריך האירוע',
                 severity: 'error'
             });
             return;
@@ -295,13 +304,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             if (response.ok) {
                 const responseData = await response.json();
                 console.log('🔍 Save response:', responseData);
-                
+
                 setSnackbar({
                     open: true,
                     message: isEditMode ? 'התביעה עודכנה בהצלחה' : 'התביעה נשמרה בהצלחה',
                     severity: 'success'
                 });
-                
+
                 // If this was a new claim creation, redirect to edit mode with the claim ID
                 if (!isEditMode && responseData.claimId) {
                     console.log('🔍 Redirecting to edit mode with claim ID:', responseData.claimId);
@@ -411,7 +420,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             p: 2
                         }}>
                             <Typography variant="h6" sx={{ fontWeight: 500, color: 'black', wordBreak: 'break-word', maxWidth: '60%' }}>
-                                {formData.projectName} - תביעה {isEditMode ? '(עריכה)' : '(חדשה)'}
+                                {formData.projectName} - תביעה {isEditMode ? (formData.eventDate ? `(${new Date(formData.eventDate).toLocaleDateString('he-IL')})` : '(עריכה)') : '(חדשה)'}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Button
@@ -467,7 +476,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             }}
                         >
                             <Tab label="כללי" />
-                            <Tab label="צדדים" />
+                            <Tab label="נזק" />
                             <Tab label="הליכים" />
                             <Tab label="סיכום" />
                         </Tabs>
@@ -493,11 +502,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
                                                     variant="outlined"
+                                                    required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
                                                         '& .MuiOutlinedInput-root': {
                                                             '& fieldset': {
-                                                                borderColor: '#d0d0d0'
+                                                                borderColor: '#6b47c1'
                                                             },
                                                             '&:hover fieldset': {
                                                                 borderColor: '#6b47c1'
@@ -507,7 +517,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             }
                                                         },
                                                         '& .MuiInputLabel-root': {
-                                                            color: '#666666',
+                                                            color: '#6b47c1',
                                                             '&.Mui-focused': {
                                                                 color: '#6b47c1'
                                                             }
@@ -647,7 +657,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 ראשי נזק
                                             </Typography>
-                                            
+
                                             <Box sx={{
                                                 display: 'grid',
                                                 gridTemplateColumns: '1fr 1fr',
@@ -970,7 +980,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                 פרטי עדי ראייה
                                             </Typography>
-                                            
+
                                             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                                                 <Table>
                                                     <TableHead>
@@ -1081,7 +1091,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
                                                                     <MuiIconButton
                                                                         onClick={() => removeWitness(index)}
-                                                                        sx={{ 
+                                                                        sx={{
                                                                             color: '#f44336',
                                                                             '&:hover': {
                                                                                 backgroundColor: '#ffebee',
@@ -1094,7 +1104,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </TableCell>
                                                             </TableRow>
                                                         ))}
-                                                        
+
                                                         {/* Add button row */}
                                                         <TableRow>
                                                             <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
@@ -1309,7 +1319,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
                                                                             <MuiIconButton
                                                                                 onClick={() => removeAdditionalResponsible(index)}
-                                                                                sx={{ 
+                                                                                sx={{
                                                                                     color: '#f44336',
                                                                                     '&:hover': {
                                                                                         backgroundColor: '#ffebee',
@@ -1322,7 +1332,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         </TableCell>
                                                                     </TableRow>
                                                                 ))}
-                                                                
+
                                                                 {/* Add button row */}
                                                                 <TableRow>
                                                                     <TableCell colSpan={5} sx={{ textAlign: 'center', py: 2 }}>
