@@ -124,6 +124,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         const projectName = searchParams.get('projectName');
         const claimId = searchParams.get('claimId');
         const mode = searchParams.get('mode');
+        const tab = searchParams.get('tab');
 
         if (projectId && projectName) {
             setFormData(prev => ({
@@ -138,11 +139,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             setIsEditMode(true);
             loadClaim(claimId);
         }
-
+        
         // If we have a claimId but no mode, it might be from a redirect after save
         if (claimId && !mode) {
             setIsEditMode(true);
             loadClaim(claimId);
+        }
+
+        // Set active tab from URL parameter
+        if (tab) {
+            const tabIndex = parseInt(tab);
+            if (tabIndex >= 0 && tabIndex <= 3) {
+                setActiveTab(tabIndex);
+            }
         }
     }, [searchParams]);
 
@@ -198,6 +207,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
+        
+        // Save active tab to URL parameters
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('tab', newValue.toString());
+        navigate(`?${newSearchParams.toString()}`, { replace: true });
     };
 
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
@@ -498,13 +512,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -601,27 +615,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
