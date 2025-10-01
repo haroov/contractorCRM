@@ -623,7 +623,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 gridTemplateColumns: '1fr 1fr',
                                                 gap: 2
                                             }}>
-                                                {/* Property Damage to Insured */}
+                                                {/* Row 1 - Property Damage to Insured */}
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'flex-start',
@@ -699,7 +699,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
 
-                                                {/* Property Damage to Third Party */}
+                                                {/* Row 1 - Empty Column */}
+                                                <Box></Box>
+
+                                                {/* Row 2 - Property Damage to Third Party */}
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'flex-start',
@@ -775,7 +778,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
 
-                                                {/* Bodily Injury to Third Party */}
+                                                {/* Row 2 - Bodily Injury to Third Party */}
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'flex-start',
@@ -851,7 +854,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
 
-                                                {/* Bodily Injury to Employee */}
+                                                {/* Row 3 - Bodily Injury to Employee */}
                                                 <Box sx={{
                                                     display: 'flex',
                                                     alignItems: 'flex-start',
@@ -926,6 +929,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         </Box>
                                                     </Box>
                                                 </Box>
+
+                                                {/* Row 3 - Empty Column */}
+                                                <Box></Box>
                                             </Box>
                                         </Box>
 
