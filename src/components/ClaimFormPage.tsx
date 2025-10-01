@@ -773,13 +773,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -876,27 +876,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1959,61 +1959,87 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                 טיפול רפואי
                                                             </Typography>
-                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <Box sx={{ 
-                                                                        display: 'flex', 
-                                                                        alignItems: 'center', 
+                                                            <Box sx={{
+                                                                display: 'grid',
+                                                                gridTemplateColumns: '1fr 1fr',
+                                                                gap: 2
+                                                            }}>
+                                                                <Box sx={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'flex-start',
+                                                                    justifyContent: 'flex-end'
+                                                                }}>
+                                                                    <Box sx={{
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderRadius: '4px',
+                                                                        backgroundColor: 'white',
+                                                                        minHeight: '56px',
+                                                                        padding: '0 14px',
+                                                                        direction: 'rtl',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
                                                                         justifyContent: 'space-between',
-                                                                        p: 1.5,
-                                                                        backgroundColor: '#f5f5f5',
-                                                                        borderRadius: 1,
-                                                                        border: '1px solid #e0e0e0'
+                                                                        width: '100%'
                                                                     }}>
-                                                                        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                                                                        <Typography sx={{
+                                                                            fontSize: '1rem',
+                                                                            color: 'text.secondary',
+                                                                            marginRight: '10px'
+                                                                        }}>
                                                                             טיפול רפואי
                                                                         </Typography>
-                                                                        <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                                            <Box
-                                                                                sx={{
-                                                                                    px: 2,
-                                                                                    py: 0.5,
-                                                                                    borderRadius: 1,
-                                                                                    cursor: 'pointer',
-                                                                                    backgroundColor: !employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                    color: !employee.medicalTreatment.received ? 'white' : '#666',
-                                                                                    border: '1px solid #6b47c1',
-                                                                                    transition: 'all 0.2s',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !employee.medicalTreatment.received ? '#5a3aa1' : '#f0f0f0'
-                                                                                    }
-                                                                                }}
+                                                                        <Box sx={{
+                                                                            display: 'flex',
+                                                                            gap: 0,
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'flex-start',
+                                                                            marginLeft: '10px'
+                                                                        }}>
+                                                                            <Button
+                                                                                variant="text"
                                                                                 onClick={() => updateInjuredEmployeeMedical(index, 'received', false)}
+                                                                                sx={{
+                                                                                    borderRadius: '0 4px 4px 0',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderLeft: 'none',
+                                                                                    backgroundColor: !employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                    color: !employee.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: !employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem',
+                                                                                    marginRight: '0px'
+                                                                                }}
                                                                             >
                                                                                 לא
-                                                                            </Box>
-                                                                            <Box
-                                                                                sx={{
-                                                                                    px: 2,
-                                                                                    py: 0.5,
-                                                                                    borderRadius: 1,
-                                                                                    cursor: 'pointer',
-                                                                                    backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                    color: employee.medicalTreatment.received ? 'white' : '#666',
-                                                                                    border: '1px solid #6b47c1',
-                                                                                    transition: 'all 0.2s',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#f0f0f0'
-                                                                                    }
-                                                                                }}
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant="text"
                                                                                 onClick={() => updateInjuredEmployeeMedical(index, 'received', true)}
+                                                                                sx={{
+                                                                                    borderRadius: '4px 0 0 4px',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                    color: employee.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem'
+                                                                                }}
                                                                             >
                                                                                 כן
-                                                                            </Box>
+                                                                            </Button>
                                                                         </Box>
                                                                     </Box>
-                                                                </Grid>
-                                                            </Grid>
+                                                                </Box>
+                                                                <Box></Box>
+                                                            </Box>
                                                             {employee.medicalTreatment.received && (
                                                                 <Grid container spacing={2}>
                                                                     <Grid item xs={12} sm={6}>
