@@ -25,7 +25,10 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    Select,
+    MenuItem,
+    InputLabel
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -136,6 +139,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         message: '',
         severity: 'success' as 'success' | 'error' | 'warning' | 'info'
     });
+    const [subcontractors, setSubcontractors] = useState<any[]>([]);
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -197,7 +201,26 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 setActiveTab(tabIndex);
             }
         }
+
+        // Load subcontractors if we have a project ID
+        if (projectId) {
+            loadSubcontractors(projectId);
+        }
     }, [searchParams]);
+
+    const loadSubcontractors = async (projectId: string) => {
+        try {
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.project && data.project.subcontractors) {
+                    setSubcontractors(data.project.subcontractors);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading subcontractors:', error);
+        }
+    };
 
     const loadClaim = async (claimId: string) => {
         console.log('🔍 Loading claim with ID:', claimId);
@@ -409,14 +432,44 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport', field: string, value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
-                i === index ? {
-                    ...employee,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { 
+                    ...employee, 
                     [reportType]: { ...employee[reportType], [field]: value }
                 } : employee
             ),
             updatedAt: new Date()
         }));
+    };
+
+    const validateIsraeliID = (id: string): boolean => {
+        // Remove any non-numeric characters
+        const cleanId = id.replace(/\D/g, '');
+        
+        // Check if it's 9 digits
+        if (cleanId.length !== 9) return false;
+        
+        // Israeli ID validation algorithm
+        let sum = 0;
+        for (let i = 0; i < 8; i++) {
+            let digit = parseInt(cleanId[i]);
+            if (i % 2 === 1) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit = Math.floor(digit / 10) + (digit % 10);
+                }
+            }
+            sum += digit;
+        }
+        
+        const checkDigit = (10 - (sum % 10)) % 10;
+        return checkDigit === parseInt(cleanId[8]);
+    };
+
+    const handleIDChange = (index: number, value: string) => {
+        // Only allow numeric input
+        const numericValue = value.replace(/\D/g, '');
+        updateInjuredEmployee(index, 'idNumber', numericValue);
     };
 
     const handleSave = async () => {
@@ -653,13 +706,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -756,27 +809,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1530,8 +1583,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 {formData.injuredEmployees.map((employee, index) => (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                            <Typography variant="h6" sx={{ color: '#6b47c1' }}>
-                                                                פרטי העובד {index + 1}
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                פרטי העובד
                                                             </Typography>
                                                             <MuiIconButton
                                                                 onClick={() => removeInjuredEmployee(index)}
@@ -1569,8 +1622,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     fullWidth
                                                                     label="מספר תעודת זהות"
                                                                     value={employee.idNumber}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'idNumber', e.target.value)}
+                                                                    onChange={(e) => handleIDChange(index, e.target.value)}
                                                                     variant="outlined"
+                                                                    inputProps={{ maxLength: 9 }}
+                                                                    error={employee.idNumber.length > 0 && employee.idNumber.length < 9 ? true : false}
+                                                                    helperText={employee.idNumber.length > 0 && employee.idNumber.length < 9 ? 'תעודת זהות חייבת להכיל 9 ספרות' : ''}
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -1632,7 +1688,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
                                                             <Grid item xs={12} sm={6}>
                                                                 <FormControl component="fieldset">
-                                                                    <FormLabel component="legend">הועסק אצל המבוטח או דרך קבלן משנה</FormLabel>
+                                                                    <FormLabel component="legend" sx={{ color: '#666666' }}>הועסק אצל המבוטח או דרך קבלן משנה</FormLabel>
                                                                     <RadioGroup
                                                                         value={employee.employmentType}
                                                                         onChange={(e) => updateInjuredEmployee(index, 'employmentType', e.target.value)}
@@ -1644,14 +1700,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </FormControl>
                                                             </Grid>
                                                             {employee.employmentType === 'subcontractor' && (
-                                                                <>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="שם קבלן המשנה"
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <FormControl fullWidth variant="outlined">
+                                                                        <InputLabel>שם קבלן המשנה</InputLabel>
+                                                                        <Select
                                                                             value={employee.subcontractorName || ''}
                                                                             onChange={(e) => updateInjuredEmployee(index, 'subcontractorName', e.target.value)}
-                                                                            variant="outlined"
+                                                                            label="שם קבלן המשנה"
                                                                             sx={{
                                                                                 '& .MuiOutlinedInput-root': {
                                                                                     '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -1659,23 +1714,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 },
                                                                                 '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
                                                                             }}
-                                                                        />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <Button
-                                                                            variant="outlined"
-                                                                            component="label"
-                                                                            sx={{
-                                                                                borderColor: '#6b47c1',
-                                                                                color: '#6b47c1',
-                                                                                '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
-                                                                            }}
                                                                         >
-                                                                            העלה קובץ הסכם
-                                                                            <input type="file" hidden />
-                                                                        </Button>
-                                                                    </Grid>
-                                                                </>
+                                                                            {subcontractors.map((subcontractor, subIndex) => (
+                                                                                <MenuItem key={subIndex} value={subcontractor.companyName || subcontractor.name}>
+                                                                                    {subcontractor.companyName || subcontractor.name}
+                                                                                </MenuItem>
+                                                                            ))}
+                                                                        </Select>
+                                                                    </FormControl>
+                                                                </Grid>
                                                             )}
                                                         </Grid>
 
@@ -1876,7 +1923,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                 דיווחים
                                                             </Typography>
-                                                            
+
                                                             <Grid container spacing={2}>
                                                                 <Grid item xs={12} sm={4}>
                                                                     <Typography variant="body2" sx={{ mb: 1 }}>מוסד לביטוח לאומי</Typography>
