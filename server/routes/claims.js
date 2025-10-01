@@ -21,21 +21,21 @@ router.post('/', async (req, res) => {
         
         const result = await claimsCollection.insertOne(claimData);
         
-        // Add claim ID to project's claimsId array
+        // Add claim ID to project's claimsIdArray
         if (req.body.projectId) {
             try {
-                // First, get the current project to check if claimsId exists
+                // First, get the current project to check if claimsIdArray exists
                 const project = await projectsCollection.findOne({ _id: new ObjectId(req.body.projectId) });
                 
                 if (project) {
-                    // If claimsId doesn't exist or is not an array, initialize it
+                    // If claimsIdArray doesn't exist or is not an array, initialize it
                     let claimsIdArray = [];
-                    if (project.claimsId) {
-                        if (Array.isArray(project.claimsId)) {
-                            claimsIdArray = project.claimsId;
-                        } else if (typeof project.claimsId === 'string' && project.claimsId.trim() !== '') {
+                    if (project.claimsIdArray) {
+                        if (Array.isArray(project.claimsIdArray)) {
+                            claimsIdArray = project.claimsIdArray;
+                        } else if (typeof project.claimsIdArray === 'string' && project.claimsIdArray.trim() !== '') {
                             // Convert string to array if it's not empty
-                            claimsIdArray = [project.claimsId];
+                            claimsIdArray = [project.claimsIdArray];
                         }
                     }
                     
@@ -45,10 +45,10 @@ router.post('/', async (req, res) => {
                         claimsIdArray.push(claimIdString);
                     }
                     
-                    // Update the project with the claimsId array
+                    // Update the project with the claimsIdArray
                     await projectsCollection.updateOne(
                         { _id: new ObjectId(req.body.projectId) },
-                        { $set: { claimsId: claimsIdArray } }
+                        { $set: { claimsIdArray: claimsIdArray } }
                     );
                     console.log('✅ Added claim ID to project:', req.body.projectId, 'Claims array:', claimsIdArray);
                 }
@@ -199,16 +199,16 @@ router.delete('/:claimId', async (req, res) => {
             });
         }
         
-        // Remove claim ID from project's claimsId array
+        // Remove claim ID from project's claimsIdArray
         if (claim.projectId) {
             try {
                 const project = await projectsCollection.findOne({ _id: new ObjectId(claim.projectId) });
-                if (project && project.claimsId) {
+                if (project && project.claimsIdArray) {
                     let claimsIdArray = [];
-                    if (Array.isArray(project.claimsId)) {
-                        claimsIdArray = project.claimsId;
-                    } else if (typeof project.claimsId === 'string' && project.claimsId.trim() !== '') {
-                        claimsIdArray = [project.claimsId];
+                    if (Array.isArray(project.claimsIdArray)) {
+                        claimsIdArray = project.claimsIdArray;
+                    } else if (typeof project.claimsIdArray === 'string' && project.claimsIdArray.trim() !== '') {
+                        claimsIdArray = [project.claimsIdArray];
                     }
                     
                     // Remove the deleted claim ID
@@ -217,7 +217,7 @@ router.delete('/:claimId', async (req, res) => {
                     // Update the project
                     await projectsCollection.updateOne(
                         { _id: new ObjectId(claim.projectId) },
-                        { $set: { claimsId: updatedClaimsId } }
+                        { $set: { claimsIdArray: updatedClaimsId } }
                     );
                     console.log('✅ Removed claim ID from project:', claim.projectId, 'Updated claims array:', updatedClaimsId);
                 }
