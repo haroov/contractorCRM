@@ -289,6 +289,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             const url = isEditMode && claimId ? `https://contractorcrm-api.onrender.com/api/claims/${claimId}` : 'https://contractorcrm-api.onrender.com/api/claims';
             const method = isEditMode && claimId ? 'PUT' : 'POST';
 
+            console.log('🔍 handleSave - isEditMode:', isEditMode, 'claimId:', claimId);
             console.log('🔍 Sending claim data:', formData);
             console.log('🔍 URL:', url);
             console.log('🔍 Method:', method);
@@ -319,6 +320,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     currentUrl.searchParams.set('mode', 'edit');
                     window.history.replaceState({}, '', currentUrl.toString());
                     setIsEditMode(true);
+                } else if (isEditMode) {
+                    console.log('🔍 Successfully updated existing claim:', claimId);
                 }
             } else {
                 throw new Error('Failed to save claim');
