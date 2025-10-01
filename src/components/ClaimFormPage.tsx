@@ -2038,17 +2038,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         </Box>
                                                                     </Box>
                                                                 </Box>
-                                                                <Box></Box>
-                                                            </Box>
-                                                            {employee.medicalTreatment.received && (
-                                                                <Grid container spacing={2}>
-                                                                    <Grid item xs={12} sm={6}>
+                                                                {employee.medicalTreatment.received && (
+                                                                    <Box sx={{
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: 1
+                                                                    }}>
                                                                         <TextField
                                                                             fullWidth
                                                                             label="שם בית החולים/מרפאה"
                                                                             value={employee.medicalTreatment.hospitalName || ''}
                                                                             onChange={(e) => updateInjuredEmployeeMedical(index, 'hospitalName', e.target.value)}
                                                                             variant="outlined"
+                                                                            size="small"
                                                                             sx={{
                                                                                 '& .MuiOutlinedInput-root': {
                                                                                     '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -2057,23 +2059,25 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
                                                                             }}
                                                                         />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
                                                                         <Button
                                                                             variant="outlined"
                                                                             component="label"
+                                                                            size="small"
                                                                             sx={{
                                                                                 borderColor: '#6b47c1',
                                                                                 color: '#6b47c1',
+                                                                                minWidth: '40px',
+                                                                                height: '40px',
                                                                                 '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
                                                                             }}
                                                                         >
-                                                                            העלה דו״חות רפואיים
+                                                                            📁
                                                                             <input type="file" multiple hidden />
                                                                         </Button>
-                                                                    </Grid>
-                                                                </Grid>
-                                                            )}
+                                                                    </Box>
+                                                                )}
+                                                                {!employee.medicalTreatment.received && <Box></Box>}
+                                                            </Box>
                                                         </Box>
 
                                                         <Box sx={{ mt: 3 }}>
