@@ -1965,7 +1965,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         display: 'flex', 
                                                                         alignItems: 'center', 
                                                                         justifyContent: 'space-between',
-                                                                        width: '100%'
+                                                                        width: '100%',
+                                                                        p: 1.5,
+                                                                        border: '1px solid #e0e0e0',
+                                                                        borderRadius: 1,
+                                                                        backgroundColor: '#fafafa'
                                                                     }}>
                                                                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                                                                             טיפול רפואי
