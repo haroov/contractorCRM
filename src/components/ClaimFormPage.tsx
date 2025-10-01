@@ -522,11 +522,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const removeMedicalDocument = async (employeeIndex: number, documentIndex: number) => {
         const employee = formData.injuredEmployees[employeeIndex];
         const document = employee.medicalTreatment.medicalDocuments?.[documentIndex];
-        
+
         if (!document) return;
-        
+
         const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך הרפואי "${document.documentName || 'ללא שם'}"?`;
-        
+
         if (window.confirm(confirmMessage)) {
             try {
                 // Delete file from Blob storage if it exists
@@ -539,7 +539,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             },
                             body: JSON.stringify({ fileUrl: document.fileUrl })
                         });
-                        
+
                         if (!response.ok) {
                             console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                         }
@@ -547,29 +547,29 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         console.warn('Error deleting file from Blob storage:', error);
                     }
                 }
-                
+
                 // Remove document from state
                 setFormData(prev => ({
                     ...prev,
-                    injuredEmployees: prev.injuredEmployees.map((emp, i) => 
-                        i === employeeIndex ? { 
-                            ...emp, 
-                            medicalTreatment: { 
-                                ...emp.medicalTreatment, 
+                    injuredEmployees: prev.injuredEmployees.map((emp, i) =>
+                        i === employeeIndex ? {
+                            ...emp,
+                            medicalTreatment: {
+                                ...emp.medicalTreatment,
                                 medicalDocuments: emp.medicalTreatment.medicalDocuments?.filter((_, docIdx) => docIdx !== documentIndex) || []
                             }
                         } : emp
                     ),
                     updatedAt: new Date()
                 }));
-                
+
                 // Show success message
                 setSnackbar({
                     open: true,
                     message: 'המסמך הרפואי נמחק בהצלחה',
                     severity: 'success'
                 });
-                
+
             } catch (error) {
                 console.error('Error deleting medical document:', error);
                 setSnackbar({
@@ -2235,6 +2235,30 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             onChange={(url, thumbnailUrl) => {
                                                                                                 updateMedicalDocument(index, docIndex, 'fileUrl', url);
                                                                                                 updateMedicalDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
+                                                                                            }}
+                                                                                            onDelete={async () => {
+                                                                                                // Delete file from Blob storage
+                                                                                                if (document.fileUrl) {
+                                                                                                    try {
+                                                                                                        const response = await fetch('/api/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                        });
+                                                                                                        
+                                                                                                        if (!response.ok) {
+                                                                                                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                    }
+                                                                                                }
+                                                                                                
+                                                                                                // Clear the file URLs in the document
+                                                                                                updateMedicalDocument(index, docIndex, 'fileUrl', '');
+                                                                                                updateMedicalDocument(index, docIndex, 'thumbnailUrl', '');
                                                                                             }}
                                                                                             projectId={formData.projectId}
                                                                                             accept=".pdf,.jpg,.jpeg,.png"

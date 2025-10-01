@@ -241,7 +241,7 @@ router.post('/delete-file', async (req, res) => {
     try {
       await del(fileUrl);
       console.log(`✅ Deleted file from Vercel Blob: ${fileUrl}`);
-      
+
       res.json({
         success: true,
         message: 'File deleted successfully from Blob storage',
