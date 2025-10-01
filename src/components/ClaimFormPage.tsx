@@ -217,11 +217,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     };
 
     const removeWitness = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            witnesses: prev.witnesses.filter((_, i) => i !== index),
-            updatedAt: new Date()
-        }));
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את העד?')) {
+            setFormData(prev => ({
+                ...prev,
+                witnesses: prev.witnesses.filter((_, i) => i !== index),
+                updatedAt: new Date()
+            }));
+        }
     };
 
     const updateWitness = (index: number, field: keyof Witness, value: string) => {
@@ -243,11 +245,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     };
 
     const removeAdditionalResponsible = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            additionalResponsible: prev.additionalResponsible.filter((_, i) => i !== index),
-            updatedAt: new Date()
-        }));
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את הגורם הנוסף?')) {
+            setFormData(prev => ({
+                ...prev,
+                additionalResponsible: prev.additionalResponsible.filter((_, i) => i !== index),
+                updatedAt: new Date()
+            }));
+        }
     };
 
     const updateAdditionalResponsible = (index: number, field: keyof AdditionalResponsible, value: string) => {
@@ -1077,7 +1081,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
                                                                     <MuiIconButton
                                                                         onClick={() => removeWitness(index)}
-                                                                        sx={{ color: '#f44336' }}
+                                                                        sx={{ 
+                                                                            color: '#f44336',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#ffebee',
+                                                                                color: '#d32f2f'
+                                                                            }
+                                                                        }}
                                                                     >
                                                                         <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                     </MuiIconButton>
@@ -1299,9 +1309,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         <TableCell sx={{ textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
                                                                             <MuiIconButton
                                                                                 onClick={() => removeAdditionalResponsible(index)}
-                                                                                sx={{ color: '#f44336' }}
+                                                                                sx={{ 
+                                                                                    color: '#f44336',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: '#ffebee',
+                                                                                        color: '#d32f2f'
+                                                                                    }
+                                                                                }}
                                                                             >
-                                                                                <DeleteIcon />
+                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                             </MuiIconButton>
                                                                         </TableCell>
                                                                     </TableRow>
