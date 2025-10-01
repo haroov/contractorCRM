@@ -316,7 +316,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateAdditionalResponsible = (index: number, field: keyof AdditionalResponsible, value: string) => {
         setFormData(prev => ({
             ...prev,
-            additionalResponsible: prev.additionalResponsible.map((person, i) => 
+            additionalResponsible: prev.additionalResponsible.map((person, i) =>
                 i === index ? { ...person, [field]: value } : person
             ),
             updatedAt: new Date()
@@ -373,7 +373,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployee = (index: number, field: keyof InjuredEmployee, value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
                 i === index ? { ...employee, [field]: value } : employee
             ),
             updatedAt: new Date()
@@ -383,9 +383,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeManager = (index: number, field: keyof InjuredEmployee['directManager'], value: string) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === index ? { 
-                    ...employee, 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === index ? {
+                    ...employee,
                     directManager: { ...employee.directManager, [field]: value }
                 } : employee
             ),
@@ -396,9 +396,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeMedical = (index: number, field: keyof InjuredEmployee['medicalTreatment'], value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === index ? { 
-                    ...employee, 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === index ? {
+                    ...employee,
                     medicalTreatment: { ...employee.medicalTreatment, [field]: value }
                 } : employee
             ),
@@ -409,9 +409,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport', field: string, value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === index ? { 
-                    ...employee, 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === index ? {
+                    ...employee,
                     [reportType]: { ...employee[reportType], [field]: value }
                 } : employee
             ),
@@ -1526,7 +1526,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                     חבות מעבידים
                                                 </Typography>
-                                                
+
                                                 {formData.injuredEmployees.map((employee, index) => (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -1535,7 +1535,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Typography>
                                                             <MuiIconButton
                                                                 onClick={() => removeInjuredEmployee(index)}
-                                                                sx={{ 
+                                                                sx={{
                                                                     color: '#f44336',
                                                                     '&:hover': {
                                                                         backgroundColor: '#d32f2f',
@@ -1546,10 +1546,281 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                             </MuiIconButton>
                                                         </Box>
-                                                        
-                                                        <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                                                            פרטי העובד יוצגו כאן...
+
+                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם הנפגע"
+                                                                    value={employee.fullName}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'fullName', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מספר תעודת זהות"
+                                                                    value={employee.idNumber}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'idNumber', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="date"
+                                                                    label="תאריך לידה"
+                                                                    value={employee.birthDate}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'birthDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="כתובת מגורים"
+                                                                    value={employee.address}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'address', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="תפקיד העובד באתר"
+                                                                    value={employee.jobTitle}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'jobTitle', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <FormControl component="fieldset">
+                                                                    <FormLabel component="legend">הועסק אצל המבוטח או דרך קבלן משנה</FormLabel>
+                                                                    <RadioGroup
+                                                                        value={employee.employmentType}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'employmentType', e.target.value)}
+                                                                        row
+                                                                    >
+                                                                        <FormControlLabel value="direct" control={<Radio />} label="מבוטח" />
+                                                                        <FormControlLabel value="subcontractor" control={<Radio />} label="קבלן משנה" />
+                                                                    </RadioGroup>
+                                                                </FormControl>
+                                                            </Grid>
+                                                            {employee.employmentType === 'subcontractor' && (
+                                                                <>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="שם קבלן המשנה"
+                                                                            value={employee.subcontractorName || ''}
+                                                                            onChange={(e) => updateInjuredEmployee(index, 'subcontractorName', e.target.value)}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <Button
+                                                                            variant="outlined"
+                                                                            component="label"
+                                                                            sx={{
+                                                                                borderColor: '#6b47c1',
+                                                                                color: '#6b47c1',
+                                                                                '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                            }}
+                                                                        >
+                                                                            העלה קובץ הסכם
+                                                                            <input type="file" hidden />
+                                                                        </Button>
+                                                                    </Grid>
+                                                                </>
+                                                            )}
+                                                        </Grid>
+
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                            פרטי המנהל הישיר
                                                         </Typography>
+                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם מלא"
+                                                                    value={employee.directManager.fullName}
+                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'fullName', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="טלפון נייד"
+                                                                    value={employee.directManager.phone}
+                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'phone', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="אימייל"
+                                                                    value={employee.directManager.email}
+                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'email', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="תפקיד"
+                                                                    value={employee.directManager.position}
+                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'position', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+
+                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="date"
+                                                                    label="תאריך תחילת עבודה"
+                                                                    value={employee.startDate}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'startDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="date"
+                                                                    label="תאריך חזרה לעבודה"
+                                                                    value={employee.returnToWorkDate || ''}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'returnToWorkDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="number"
+                                                                    label="גובה המשכורת האחרונה (ש״ח)"
+                                                                    value={employee.lastSalary}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'lastSalary', parseFloat(e.target.value) || 0)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+
+                                                        <TextField
+                                                            fullWidth
+                                                            multiline
+                                                            rows={3}
+                                                            label="מהות הנזק או הפגיעה"
+                                                            value={employee.injuryDescription}
+                                                            onChange={(e) => updateInjuredEmployee(index, 'injuryDescription', e.target.value)}
+                                                            variant="outlined"
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
                                                     </Paper>
                                                 ))}
 
