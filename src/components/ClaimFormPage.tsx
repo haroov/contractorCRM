@@ -138,14 +138,23 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             setIsEditMode(true);
             loadClaim(claimId);
         }
+        
+        // If we have a claimId but no mode, it might be from a redirect after save
+        if (claimId && !mode) {
+            setIsEditMode(true);
+            loadClaim(claimId);
+        }
     }, [searchParams]);
 
     const loadClaim = async (claimId: string) => {
+        console.log('🔍 Loading claim with ID:', claimId);
         setLoading(true);
         try {
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/${claimId}`);
+            console.log('🔍 Load claim response status:', response.status);
             if (response.ok) {
                 const data = await response.json();
+                console.log('🔍 Loaded claim data:', data);
                 if (data.success && data.claim) {
                     setFormData({
                         projectId: data.claim.projectId || '',
@@ -280,11 +289,24 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             });
 
             if (response.ok) {
+                const responseData = await response.json();
+                console.log('🔍 Save response:', responseData);
+                
                 setSnackbar({
                     open: true,
                     message: isEditMode ? 'התביעה עודכנה בהצלחה' : 'התביעה נשמרה בהצלחה',
                     severity: 'success'
                 });
+                
+                // If this was a new claim creation, redirect to edit mode with the claim ID
+                if (!isEditMode && responseData.claimId) {
+                    console.log('🔍 Redirecting to edit mode with claim ID:', responseData.claimId);
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('claimId', responseData.claimId);
+                    currentUrl.searchParams.set('mode', 'edit');
+                    window.history.replaceState({}, '', currentUrl.toString());
+                    setIsEditMode(true);
+                }
             } else {
                 throw new Error('Failed to save claim');
             }
