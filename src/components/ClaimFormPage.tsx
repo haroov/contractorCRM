@@ -773,13 +773,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -876,27 +876,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1965,11 +1965,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         display: 'flex', 
                                                                         alignItems: 'center', 
                                                                         justifyContent: 'space-between',
-                                                                        width: '100%',
                                                                         p: 1.5,
-                                                                        border: '1px solid #e0e0e0',
+                                                                        backgroundColor: '#f5f5f5',
                                                                         borderRadius: 1,
-                                                                        backgroundColor: '#fafafa'
+                                                                        border: '1px solid #e0e0e0'
                                                                     }}>
                                                                         <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                                                                             טיפול רפואי
