@@ -225,4 +225,47 @@ router.get('/certificate/:contractorId/:certificateType', async (req, res) => {
   }
 });
 
+// Delete file endpoint (general purpose)
+router.post('/delete-file', async (req, res) => {
+  try {
+    const { fileUrl } = req.body;
+
+    if (!fileUrl) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required field: fileUrl'
+      });
+    }
+
+    // Delete file from Vercel Blob
+    try {
+      await del(fileUrl);
+      console.log(`✅ Deleted file from Vercel Blob: ${fileUrl}`);
+      
+      res.json({
+        success: true,
+        message: 'File deleted successfully from Blob storage',
+        data: {
+          deletedUrl: fileUrl
+        }
+      });
+    } catch (blobError) {
+      console.error('❌ Error deleting file from Vercel Blob:', blobError);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete file from Blob storage',
+        details: blobError.message
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Error in delete-file endpoint:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete file',
+      details: error.message
+    });
+  }
+});
+
 module.exports = router;

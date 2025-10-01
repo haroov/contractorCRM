@@ -484,11 +484,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         };
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === employeeIndex ? { 
-                    ...employee, 
-                    medicalTreatment: { 
-                        ...employee.medicalTreatment, 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === employeeIndex ? {
+                    ...employee,
+                    medicalTreatment: {
+                        ...employee.medicalTreatment,
                         medicalDocuments: [...(employee.medicalTreatment.medicalDocuments || []), newDocument]
                     }
                 } : employee
@@ -500,13 +500,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const initializeMedicalDocuments = (employeeIndex: number) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === employeeIndex ? { 
-                    ...employee, 
-                    medicalTreatment: { 
-                        ...employee.medicalTreatment, 
-                        medicalDocuments: employee.medicalTreatment.medicalDocuments && employee.medicalTreatment.medicalDocuments.length > 0 
-                            ? employee.medicalTreatment.medicalDocuments 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === employeeIndex ? {
+                    ...employee,
+                    medicalTreatment: {
+                        ...employee.medicalTreatment,
+                        medicalDocuments: employee.medicalTreatment.medicalDocuments && employee.medicalTreatment.medicalDocuments.length > 0
+                            ? employee.medicalTreatment.medicalDocuments
                             : [{
                                 documentName: '',
                                 medicalInstitution: '',
@@ -519,21 +519,65 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         }));
     };
 
-    const removeMedicalDocument = (employeeIndex: number, documentIndex: number) => {
-        if (window.confirm('האם אתה בטוח שברצונך למחוק את המסמך הרפואי?')) {
-            setFormData(prev => ({
-                ...prev,
-                injuredEmployees: prev.injuredEmployees.map((employee, i) =>
-                    i === employeeIndex ? {
-                        ...employee,
-                        medicalTreatment: {
-                            ...employee.medicalTreatment,
-                            medicalDocuments: employee.medicalTreatment.medicalDocuments?.filter((_, docIndex) => docIndex !== documentIndex) || []
+    const removeMedicalDocument = async (employeeIndex: number, documentIndex: number) => {
+        const employee = formData.injuredEmployees[employeeIndex];
+        const document = employee.medicalTreatment.medicalDocuments?.[documentIndex];
+        
+        if (!document) return;
+        
+        const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך הרפואי "${document.documentName || 'ללא שם'}"?`;
+        
+        if (window.confirm(confirmMessage)) {
+            try {
+                // Delete file from Blob storage if it exists
+                if (document.fileUrl) {
+                    try {
+                        const response = await fetch('/api/delete-file', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                        });
+                        
+                        if (!response.ok) {
+                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                         }
-                    } : employee
-                ),
-                updatedAt: new Date()
-            }));
+                    } catch (error) {
+                        console.warn('Error deleting file from Blob storage:', error);
+                    }
+                }
+                
+                // Remove document from state
+                setFormData(prev => ({
+                    ...prev,
+                    injuredEmployees: prev.injuredEmployees.map((emp, i) => 
+                        i === employeeIndex ? { 
+                            ...emp, 
+                            medicalTreatment: { 
+                                ...emp.medicalTreatment, 
+                                medicalDocuments: emp.medicalTreatment.medicalDocuments?.filter((_, docIdx) => docIdx !== documentIndex) || []
+                            }
+                        } : emp
+                    ),
+                    updatedAt: new Date()
+                }));
+                
+                // Show success message
+                setSnackbar({
+                    open: true,
+                    message: 'המסמך הרפואי נמחק בהצלחה',
+                    severity: 'success'
+                });
+                
+            } catch (error) {
+                console.error('Error deleting medical document:', error);
+                setSnackbar({
+                    open: true,
+                    message: 'שגיאה במחיקת המסמך הרפואי',
+                    severity: 'error'
+                });
+            }
         }
     };
 
@@ -2215,20 +2259,18 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         />
                                                                                     </TableCell>
                                                                                     <TableCell>
-                                                                                        {docIndex > 0 && (
-                                                                                            <MuiIconButton
-                                                                                                onClick={() => removeMedicalDocument(index, docIndex)}
-                                                                                                sx={{
-                                                                                                    color: '#f44336',
-                                                                                                    '&:hover': {
-                                                                                                        backgroundColor: '#ffebee',
-                                                                                                        color: '#d32f2f'
-                                                                                                    }
-                                                                                                }}
-                                                                                            >
-                                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                                            </MuiIconButton>
-                                                                                        )}
+                                                                                        <MuiIconButton
+                                                                                            onClick={() => removeMedicalDocument(index, docIndex)}
+                                                                                            sx={{
+                                                                                                color: '#f44336',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: '#ffebee',
+                                                                                                    color: '#d32f2f'
+                                                                                                }
+                                                                                            }}
+                                                                                        >
+                                                                                            <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                        </MuiIconButton>
                                                                                     </TableCell>
                                                                                 </TableRow>
                                                                             ))}
