@@ -541,7 +541,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             },
                             body: JSON.stringify({ fileUrl: document.fileUrl })
                         });
-
+                        
                         if (!response.ok) {
                             console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                             throw new Error('Failed to delete file from storage');
@@ -549,6 +549,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     } catch (error) {
                         console.warn('Error deleting file from Blob storage:', error);
                         throw error;
+                    }
+                }
+                
+                // Delete thumbnail from Blob storage if it exists
+                if (document.thumbnailUrl) {
+                    try {
+                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                        });
+                        
+                        if (!thumbnailResponse.ok) {
+                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                            // Don't throw error for thumbnail deletion failure
+                        }
+                    } catch (error) {
+                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                        // Don't throw error for thumbnail deletion failure
                     }
                 }
 
@@ -909,13 +930,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1012,27 +1033,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2243,9 +2264,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             onDelete={async () => {
                                                                                                 // Show confirmation dialog
                                                                                                 const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
-                                                                                                
+
                                                                                                 const confirmed = window.confirm(confirmMessage);
-                                                                                                
+
                                                                                                 if (!confirmed) {
                                                                                                     throw new Error('User cancelled deletion'); // Throw error to prevent UI clearing
                                                                                                 }
@@ -2260,7 +2281,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                             },
                                                                                                             body: JSON.stringify({ fileUrl: document.fileUrl })
                                                                                                         });
-
+                                                                                                        
                                                                                                         if (!response.ok) {
                                                                                                             console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                                                                                                             throw new Error('Failed to delete file from storage');
@@ -2268,6 +2289,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                     } catch (error) {
                                                                                                         console.warn('Error deleting file from Blob storage:', error);
                                                                                                         throw error;
+                                                                                                    }
+                                                                                                }
+                                                                                                
+                                                                                                // Delete thumbnail from Blob storage
+                                                                                                if (document.thumbnailUrl) {
+                                                                                                    try {
+                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                        });
+                                                                                                        
+                                                                                                        if (!thumbnailResponse.ok) {
+                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                                                                                                            // Don't throw error for thumbnail deletion failure
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                        // Don't throw error for thumbnail deletion failure
                                                                                                     }
                                                                                                 }
 
