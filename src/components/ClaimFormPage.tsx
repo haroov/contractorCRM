@@ -522,12 +522,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const removeMedicalDocument = async (employeeIndex: number, documentIndex: number) => {
         const employee = formData.injuredEmployees[employeeIndex];
         const document = employee.medicalTreatment.medicalDocuments?.[documentIndex];
-        
+
         if (!document) return;
-        
+
         const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך הרפואי "${document.documentName || 'ללא שם'}"?`;
         
-        if (window.confirm(confirmMessage)) {
+        console.log('🔍 Row delete - Showing confirmation dialog:', confirmMessage);
+        const confirmed = window.confirm(confirmMessage);
+        console.log('🔍 Row delete - User confirmed:', confirmed);
+        
+        if (confirmed) {
             try {
                 // Delete file from Blob storage if it exists
                 if (document.fileUrl) {
@@ -539,7 +543,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             },
                             body: JSON.stringify({ fileUrl: document.fileUrl })
                         });
-                        
+
                         if (!response.ok) {
                             console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                             throw new Error('Failed to delete file from storage');
@@ -549,29 +553,29 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         throw error;
                     }
                 }
-                
+
                 // Remove document from state
                 setFormData(prev => ({
                     ...prev,
-                    injuredEmployees: prev.injuredEmployees.map((emp, i) => 
-                        i === employeeIndex ? { 
-                            ...emp, 
-                            medicalTreatment: { 
-                                ...emp.medicalTreatment, 
+                    injuredEmployees: prev.injuredEmployees.map((emp, i) =>
+                        i === employeeIndex ? {
+                            ...emp,
+                            medicalTreatment: {
+                                ...emp.medicalTreatment,
                                 medicalDocuments: emp.medicalTreatment.medicalDocuments?.filter((_, docIdx) => docIdx !== documentIndex) || []
                             }
                         } : emp
                     ),
                     updatedAt: new Date()
                 }));
-                
+
                 // Show success message
                 setSnackbar({
                     open: true,
                     message: 'המסמך הרפואי נמחק בהצלחה',
                     severity: 'success'
                 });
-                
+
             } catch (error) {
                 console.error('Error deleting medical document:', error);
                 setSnackbar({
@@ -907,13 +911,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1010,27 +1014,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2242,10 +2246,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 // Show confirmation dialog
                                                                                                 const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
                                                                                                 
-                                                                                                if (!window.confirm(confirmMessage)) {
+                                                                                                console.log('🔍 Showing confirmation dialog:', confirmMessage);
+                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                console.log('🔍 User confirmed:', confirmed);
+                                                                                                
+                                                                                                if (!confirmed) {
+                                                                                                    console.log('🔍 User cancelled deletion');
                                                                                                     return; // User cancelled
                                                                                                 }
                                                                                                 
+                                                                                                console.log('🔍 User confirmed deletion, proceeding...');
+
                                                                                                 // Delete file from Blob storage
                                                                                                 if (document.fileUrl) {
                                                                                                     try {
@@ -2256,7 +2267,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                             },
                                                                                                             body: JSON.stringify({ fileUrl: document.fileUrl })
                                                                                                         });
-                                                                                                        
+
                                                                                                         if (!response.ok) {
                                                                                                             console.warn('Failed to delete file from Blob storage:', document.fileUrl);
                                                                                                             throw new Error('Failed to delete file from storage');
@@ -2266,11 +2277,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                         throw error;
                                                                                                     }
                                                                                                 }
-                                                                                                
+
                                                                                                 // Clear the file URLs in the document
                                                                                                 updateMedicalDocument(index, docIndex, 'fileUrl', '');
                                                                                                 updateMedicalDocument(index, docIndex, 'thumbnailUrl', '');
-                                                                                                
+
                                                                                                 // Show success message
                                                                                                 setSnackbar({
                                                                                                     open: true,
