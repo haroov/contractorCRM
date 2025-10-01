@@ -531,6 +531,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         return emailRegex.test(email);
     };
 
+    const formatNumber = (value: number): string => {
+        return value.toLocaleString('he-IL');
+    };
+
+    const parseFormattedNumber = (value: string): number => {
+        return parseFloat(value.replace(/,/g, '')) || 0;
+    };
+
     const handleSave = async () => {
         if (!formData.description.trim()) {
             setSnackbar({
@@ -765,13 +773,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -868,27 +876,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1838,10 +1846,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Grid item xs={12} sm={6}>
                                                                 <TextField
                                                                     fullWidth
-                                                                    type="number"
                                                                     label="גובה המשכורת האחרונה (ש״ח)"
-                                                                    value={employee.lastSalary}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'lastSalary', parseFloat(e.target.value) || 0)}
+                                                                    value={formatNumber(employee.lastSalary)}
+                                                                    onChange={(e) => updateInjuredEmployee(index, 'lastSalary', parseFormattedNumber(e.target.value))}
                                                                     variant="outlined"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
