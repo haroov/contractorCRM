@@ -498,13 +498,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -601,27 +601,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1366,38 +1366,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
-                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
-                                            צדדים מעורבים
-                                        </Typography>
-                                        <TextField
-                                            fullWidth
-                                            multiline
-                                            rows={12}
-                                            label="פרטי הצדדים המעורבים"
-                                            value={formData.parties}
-                                            onChange={(e) => handleFieldChange('parties', e.target.value)}
-                                            variant="outlined"
-                                            placeholder="פרט את הצדדים המעורבים בתביעה..."
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
-                                                    },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
+                                        {/* Damage tab content - currently empty */}
                                     </Box>
                                 )}
 
