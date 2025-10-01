@@ -51,6 +51,48 @@ interface AdditionalResponsible {
     notes: string;
 }
 
+interface InjuredEmployee {
+    fullName: string;
+    idNumber: string;
+    birthDate: string;
+    address: string;
+    jobTitle: string;
+    employmentType: 'direct' | 'subcontractor';
+    subcontractorName?: string;
+    subcontractorAgreement?: string;
+    directManager: {
+        fullName: string;
+        phone: string;
+        email: string;
+        position: string;
+    };
+    startDate: string;
+    returnToWorkDate?: string;
+    lastSalary: number;
+    injuryDescription: string;
+    medicalTreatment: {
+        received: boolean;
+        hospitalName?: string;
+        medicalReports?: string[];
+    };
+    nationalInsuranceReport: {
+        reported: boolean;
+        reportDate?: string;
+        reportFile?: string;
+    };
+    laborMinistryReport: {
+        reported: boolean;
+        reportDate?: string;
+        reportFile?: string;
+    };
+    policeReport: {
+        reported: boolean;
+        reportDate?: string;
+        reportFile?: string;
+        stationName?: string;
+    };
+}
+
 interface ClaimFormData {
     projectId: string;
     projectName: string;
@@ -68,6 +110,7 @@ interface ClaimFormData {
     witnesses: Witness[];
     hasAdditionalResponsible: boolean;
     additionalResponsible: AdditionalResponsible[];
+    injuredEmployees: InjuredEmployee[];
     status: string;
     parties: string;
     procedures: string;
@@ -111,6 +154,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         witnesses: [],
         hasAdditionalResponsible: false,
         additionalResponsible: [],
+        injuredEmployees: [],
         status: 'open',
         parties: '',
         procedures: '',
@@ -139,7 +183,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             setIsEditMode(true);
             loadClaim(claimId);
         }
-        
+
         // If we have a claimId but no mode, it might be from a redirect after save
         if (claimId && !mode) {
             setIsEditMode(true);
@@ -182,6 +226,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         witnesses: data.claim.witnesses || [],
                         hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
                         additionalResponsible: data.claim.additionalResponsible || [],
+                        injuredEmployees: data.claim.injuredEmployees || [],
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
                         procedures: data.claim.procedures || '',
@@ -207,7 +252,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
-        
+
         // Save active tab to URL parameters
         const newSearchParams = new URLSearchParams(searchParams);
         newSearchParams.set('tab', newValue.toString());
@@ -271,8 +316,104 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateAdditionalResponsible = (index: number, field: keyof AdditionalResponsible, value: string) => {
         setFormData(prev => ({
             ...prev,
-            additionalResponsible: prev.additionalResponsible.map((person, i) =>
+            additionalResponsible: prev.additionalResponsible.map((person, i) => 
                 i === index ? { ...person, [field]: value } : person
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const addInjuredEmployee = () => {
+        const newEmployee: InjuredEmployee = {
+            fullName: '',
+            idNumber: '',
+            birthDate: '',
+            address: '',
+            jobTitle: '',
+            employmentType: 'direct',
+            directManager: {
+                fullName: '',
+                phone: '',
+                email: '',
+                position: ''
+            },
+            startDate: '',
+            lastSalary: 0,
+            injuryDescription: '',
+            medicalTreatment: {
+                received: false
+            },
+            nationalInsuranceReport: {
+                reported: false
+            },
+            laborMinistryReport: {
+                reported: false
+            },
+            policeReport: {
+                reported: false
+            }
+        };
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: [...prev.injuredEmployees, newEmployee],
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeInjuredEmployee = (index: number) => {
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את פרטי העובד?')) {
+            setFormData(prev => ({
+                ...prev,
+                injuredEmployees: prev.injuredEmployees.filter((_, i) => i !== index),
+                updatedAt: new Date()
+            }));
+        }
+    };
+
+    const updateInjuredEmployee = (index: number, field: keyof InjuredEmployee, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { ...employee, [field]: value } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateInjuredEmployeeManager = (index: number, field: keyof InjuredEmployee['directManager'], value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { 
+                    ...employee, 
+                    directManager: { ...employee.directManager, [field]: value }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateInjuredEmployeeMedical = (index: number, field: keyof InjuredEmployee['medicalTreatment'], value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { 
+                    ...employee, 
+                    medicalTreatment: { ...employee.medicalTreatment, [field]: value }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport', field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
+                i === index ? { 
+                    ...employee, 
+                    [reportType]: { ...employee[reportType], [field]: value }
+                } : employee
             ),
             updatedAt: new Date()
         }));
@@ -1380,7 +1521,51 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
-                                        {/* Damage tab content - currently empty */}
+                                        {formData.bodilyInjuryEmployee === true && (
+                                            <Box>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                    חבות מעבידים
+                                                </Typography>
+                                                
+                                                {formData.injuredEmployees.map((employee, index) => (
+                                                    <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                            <Typography variant="h6" sx={{ color: '#6b47c1' }}>
+                                                                פרטי העובד {index + 1}
+                                                            </Typography>
+                                                            <MuiIconButton
+                                                                onClick={() => removeInjuredEmployee(index)}
+                                                                sx={{ 
+                                                                    color: '#f44336',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#d32f2f',
+                                                                        color: 'white'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                            </MuiIconButton>
+                                                        </Box>
+                                                        
+                                                        <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                                                            פרטי העובד יוצגו כאן...
+                                                        </Typography>
+                                                    </Paper>
+                                                ))}
+
+                                                <Button
+                                                    variant="contained"
+                                                    startIcon={<AddIcon />}
+                                                    onClick={addInjuredEmployee}
+                                                    sx={{
+                                                        bgcolor: '#6b47c1',
+                                                        '&:hover': { bgcolor: '#5a3aa1' }
+                                                    }}
+                                                >
+                                                    הוסף עובד נפגע
+                                                </Button>
+                                            </Box>
+                                        )}
                                     </Box>
                                 )}
 
