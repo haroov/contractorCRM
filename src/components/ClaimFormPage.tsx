@@ -526,10 +526,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         if (!document) return;
 
         const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך הרפואי "${document.documentName || 'ללא שם'}"?`;
-        
-        console.log('🔍 Row delete - Showing confirmation dialog:', confirmMessage);
+
         const confirmed = window.confirm(confirmMessage);
-        console.log('🔍 Row delete - User confirmed:', confirmed);
         
         if (confirmed) {
             try {
@@ -2245,17 +2243,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             onDelete={async () => {
                                                                                                 // Show confirmation dialog
                                                                                                 const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
-                                                                                                
-                                                                                                console.log('🔍 Showing confirmation dialog:', confirmMessage);
+
                                                                                                 const confirmed = window.confirm(confirmMessage);
-                                                                                                console.log('🔍 User confirmed:', confirmed);
                                                                                                 
                                                                                                 if (!confirmed) {
-                                                                                                    console.log('🔍 User cancelled deletion');
                                                                                                     return; // User cancelled
                                                                                                 }
-                                                                                                
-                                                                                                console.log('🔍 User confirmed deletion, proceeding...');
 
                                                                                                 // Delete file from Blob storage
                                                                                                 if (document.fileUrl) {
