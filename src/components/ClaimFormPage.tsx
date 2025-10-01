@@ -60,10 +60,10 @@ interface ClaimFormData {
     eventAddress: string;
     description: string;
     // Main Damages
-    propertyDamageInsured: boolean;
-    propertyDamageThirdParty: boolean;
-    bodilyInjuryThirdParty: boolean;
-    bodilyInjuryEmployee: boolean;
+    propertyDamageInsured: boolean | null;
+    propertyDamageThirdParty: boolean | null;
+    bodilyInjuryThirdParty: boolean | null;
+    bodilyInjuryEmployee: boolean | null;
     hasWitnesses: boolean;
     witnesses: Witness[];
     hasAdditionalResponsible: boolean;
@@ -103,10 +103,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         eventAddress: '',
         description: '',
         // Main Damages
-        propertyDamageInsured: false,
-        propertyDamageThirdParty: false,
-        bodilyInjuryThirdParty: false,
-        bodilyInjuryEmployee: false,
+        propertyDamageInsured: null,
+        propertyDamageThirdParty: null,
+        bodilyInjuryThirdParty: null,
+        bodilyInjuryEmployee: null,
         hasWitnesses: false,
         witnesses: [],
         hasAdditionalResponsible: false,
@@ -156,10 +156,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         eventAddress: data.claim.eventAddress || '',
                         description: data.claim.description || '',
                         // Main Damages
-                        propertyDamageInsured: data.claim.propertyDamageInsured || false,
-                        propertyDamageThirdParty: data.claim.propertyDamageThirdParty || false,
-                        bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty || false,
-                        bodilyInjuryEmployee: data.claim.bodilyInjuryEmployee || false,
+                        propertyDamageInsured: data.claim.propertyDamageInsured !== undefined ? data.claim.propertyDamageInsured : null,
+                        propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
+                        bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
+                        bodilyInjuryEmployee: data.claim.bodilyInjuryEmployee !== undefined ? data.claim.bodilyInjuryEmployee : null,
                         hasWitnesses: data.claim.hasWitnesses || false,
                         witnesses: data.claim.witnesses || [],
                         hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
@@ -191,7 +191,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         setActiveTab(newValue);
     };
 
-    const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean) => {
+    const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => ({
             ...prev,
             [field]: value,
