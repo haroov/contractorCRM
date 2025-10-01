@@ -214,15 +214,32 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log('🔍 Project data:', data);
+                console.log('🔍 Full API response:', data);
+                console.log('🔍 Response structure:', {
+                    hasSuccess: 'success' in data,
+                    hasProject: 'project' in data,
+                    successValue: data.success,
+                    projectKeys: data.project ? Object.keys(data.project) : 'no project'
+                });
+                
                 if (data.success && data.project) {
                     console.log('🔍 Project subcontractors:', data.project.subcontractors);
+                    console.log('🔍 Subcontractors type:', typeof data.project.subcontractors);
+                    console.log('🔍 Is array:', Array.isArray(data.project.subcontractors));
+                    
                     if (data.project.subcontractors && Array.isArray(data.project.subcontractors)) {
+                        console.log('🔍 Setting subcontractors:', data.project.subcontractors);
                         setSubcontractors(data.project.subcontractors);
                     } else {
                         console.log('🔍 No subcontractors found or not an array');
+                        console.log('🔍 Available project fields:', Object.keys(data.project));
                         setSubcontractors([]);
                     }
+                } else {
+                    console.log('🔍 API response format issue:', {
+                        success: data.success,
+                        hasProject: !!data.project
+                    });
                 }
             } else {
                 console.error('🔍 Failed to load project:', response.status, response.statusText);
@@ -455,10 +472,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const validateIsraeliID = (id: string): boolean => {
         // Remove any non-numeric characters
         const cleanId = id.replace(/\D/g, '');
-        
+
         // Check if it's 9 digits
         if (cleanId.length !== 9) return false;
-        
+
         // Israeli ID validation algorithm
         let sum = 0;
         for (let i = 0; i < 8; i++) {
@@ -471,10 +488,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             }
             sum += digit;
         }
-        
+
         const checkDigit = (10 - (sum % 10)) % 10;
         const isValid = checkDigit === parseInt(cleanId[8]);
-        
+
         console.log('🔍 ID Validation:', {
             id: cleanId,
             sum: sum,
@@ -482,7 +499,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             lastDigit: parseInt(cleanId[8]),
             isValid: isValid
         });
-        
+
         return isValid;
     };
 

@@ -447,7 +447,7 @@ app.use('/api/contractors', (req, res, next) => {
     console.log('🔑 System admin access to contractors API');
     return next(); // Allow system admin access
   }
-  
+
   // Check if it's a contact user
   const contactUserHeader = req.headers['x-contact-user'];
   if (contactUserHeader) {
@@ -1375,17 +1375,17 @@ app.put('/api/projects/:id', async (req, res) => {
     console.log('🔧 PUT /api/projects/:id called with ID:', req.params.id);
     console.log('🔧 Request body keys:', Object.keys(req.body));
     console.log('🔧 Full request body:', JSON.stringify(req.body, null, 2));
-    
+
     const db = client.db('contractor-crm');
-    
+
     // Separate fields to set and fields to unset
     const fieldsToSet = {};
     const fieldsToUnset = {};
-    
+
     // Process each field in the request body
     for (const [key, value] of Object.entries(req.body)) {
       console.log('🔍 Processing field:', key, 'with value:', value);
-      
+
       if (value === null) {
         // If value is null, we want to unset (delete) the field
         fieldsToUnset[key] = "";
@@ -1395,7 +1395,7 @@ app.put('/api/projects/:id', async (req, res) => {
         console.log('🔍 Nested field detected:', key);
         fieldsToSet[key] = value;
         console.log('🔍 Added to fieldsToSet:', key, '=', value);
-        
+
         // Special handling for array fields like 'garmoshka.0.file' - but we want to treat garmoshka as object
         if (key.match(/^(\w+)\.\d+\./) && key.startsWith('garmoshka.0.')) {
           // For garmoshka, treat it as an object, not an array
@@ -1404,7 +1404,7 @@ app.put('/api/projects/:id', async (req, res) => {
             fieldsToSet['garmoshka'] = {};
           }
           fieldsToSet['garmoshka'][fieldName] = value;
-          
+
           // Remove the dot notation version since we're handling it as an object
           delete fieldsToSet[key];
           console.log('🔍 Converted garmoshka field to object structure');
@@ -1415,13 +1415,13 @@ app.put('/api/projects/:id', async (req, res) => {
         fieldsToSet[key] = value;
       }
     }
-    
+
     // Add updatedAt to fields to set
     fieldsToSet.updatedAt = new Date();
-    
+
     console.log('🔧 Fields to set:', JSON.stringify(fieldsToSet, null, 2));
     console.log('🔧 Fields to unset:', JSON.stringify(fieldsToUnset, null, 2));
-    
+
     // Build the update operation
     const updateOperation = {};
     if (Object.keys(fieldsToSet).length > 0) {
@@ -1430,18 +1430,18 @@ app.put('/api/projects/:id', async (req, res) => {
     if (Object.keys(fieldsToUnset).length > 0) {
       updateOperation.$unset = fieldsToUnset;
     }
-    
+
     console.log('🔧 Final update operation:', JSON.stringify(updateOperation, null, 2));
-    
+
     console.log('🔍 About to execute updateOne with:');
     console.log('🔍 - Filter: { _id: new ObjectId("' + req.params.id + '") }');
     console.log('🔍 - Update operation:', JSON.stringify(updateOperation, null, 2));
-    
+
     const result = await db.collection('projects').updateOne(
       { _id: new ObjectId(req.params.id) },
       updateOperation
     );
-    
+
     console.log('✅ Updated project:', req.params.id, 'Modified count:', result.modifiedCount);
     console.log('🔍 Full result object:', JSON.stringify(result, null, 2));
 
@@ -1521,7 +1521,7 @@ function calculateProjectStatus(startDate, durationMonths, isClosed) {
 async function updateContractorStats(db, contractorId) {
   try {
     console.log('🔄 updateContractorStats called with contractorId:', contractorId, 'type:', typeof contractorId);
-    
+
     // Validate contractorId before using it
     if (!contractorId) {
       console.log('❌ No contractorId provided to updateContractorStats');
@@ -3479,7 +3479,7 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
     console.log('🔧 Contact user:', req.session.contactUser);
     console.log('🔧 Request body keys:', Object.keys(req.body));
     console.log('🔧 Full request body:', JSON.stringify(req.body, null, 2));
-    
+
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
 
