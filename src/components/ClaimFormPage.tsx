@@ -1838,18 +1838,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
                                                                 פרטי העובד
                                                             </Typography>
-                                                            <MuiIconButton
-                                                                onClick={() => removeInjuredEmployee(index)}
-                                                                sx={{
-                                                                    color: '#f44336',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#d32f2f',
-                                                                        color: 'white'
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                            </MuiIconButton>
+                                                            {!(index === 0 && formData.bodilyInjuryToEmployee === true) && (
+                                                                <MuiIconButton
+                                                                    onClick={() => removeInjuredEmployee(index)}
+                                                                    sx={{
+                                                                        color: '#f44336',
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#d32f2f',
+                                                                            color: 'white'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                </MuiIconButton>
+                                                            )}
                                                         </Box>
 
                                                         <Grid container spacing={2} sx={{ mb: 2 }}>
