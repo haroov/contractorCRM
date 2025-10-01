@@ -1928,6 +1928,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
                                                         </Grid>
 
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                            מהות הנזק
+                                                        </Typography>
                                                         <TextField
                                                             fullWidth
                                                             multiline
