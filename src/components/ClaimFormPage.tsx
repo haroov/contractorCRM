@@ -2292,6 +2292,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             onChange={(e) => updateInjuredEmployee(index, 'injuryDescription', e.target.value)}
                                                             variant="outlined"
                                                             sx={{
+                                                                mb: 3,
                                                                 '& .MuiOutlinedInput-root': {
                                                                     '&:hover fieldset': { borderColor: '#6b47c1' },
                                                                     '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
