@@ -210,8 +210,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const loadSubcontractors = async (projectId: string) => {
         try {
+            const apiUrl = `https://contractorcrm-api.onrender.com/api/projects/${projectId}`;
             console.log('🔍 Loading subcontractors for project:', projectId);
-            const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
+            console.log('🔍 API URL:', apiUrl);
+            const response = await fetch(apiUrl);
             if (response.ok) {
                 const data = await response.json();
                 console.log('🔍 Full API response:', data);
@@ -221,25 +223,34 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     successValue: data.success,
                     projectKeys: data.project ? Object.keys(data.project) : 'no project'
                 });
-                
+
+                // Handle both new format (wrapped) and old format (direct)
+                let projectData = null;
                 if (data.success && data.project) {
-                    console.log('🔍 Project subcontractors:', data.project.subcontractors);
-                    console.log('🔍 Subcontractors type:', typeof data.project.subcontractors);
-                    console.log('🔍 Is array:', Array.isArray(data.project.subcontractors));
+                    projectData = data.project;
+                    console.log('🔍 Using new API format (wrapped)');
+                } else if (data._id || data.projectName) {
+                    projectData = data;
+                    console.log('🔍 Using old API format (direct)');
+                } else {
+                    console.log('🔍 Unknown API response format');
+                }
+
+                if (projectData) {
+                    console.log('🔍 Project subcontractors:', projectData.subcontractors);
+                    console.log('🔍 Subcontractors type:', typeof projectData.subcontractors);
+                    console.log('🔍 Is array:', Array.isArray(projectData.subcontractors));
                     
-                    if (data.project.subcontractors && Array.isArray(data.project.subcontractors)) {
-                        console.log('🔍 Setting subcontractors:', data.project.subcontractors);
-                        setSubcontractors(data.project.subcontractors);
+                    if (projectData.subcontractors && Array.isArray(projectData.subcontractors)) {
+                        console.log('🔍 Setting subcontractors:', projectData.subcontractors);
+                        setSubcontractors(projectData.subcontractors);
                     } else {
                         console.log('🔍 No subcontractors found or not an array');
-                        console.log('🔍 Available project fields:', Object.keys(data.project));
+                        console.log('🔍 Available project fields:', Object.keys(projectData));
                         setSubcontractors([]);
                     }
                 } else {
-                    console.log('🔍 API response format issue:', {
-                        success: data.success,
-                        hasProject: !!data.project
-                    });
+                    console.log('🔍 No project data found in response');
                 }
             } else {
                 console.error('🔍 Failed to load project:', response.status, response.statusText);
