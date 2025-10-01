@@ -267,6 +267,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             const url = isEditMode && claimId ? `https://contractorcrm-api.onrender.com/api/claims/${claimId}` : 'https://contractorcrm-api.onrender.com/api/claims';
             const method = isEditMode && claimId ? 'PUT' : 'POST';
 
+            console.log('🔍 Sending claim data:', formData);
+            console.log('🔍 URL:', url);
+            console.log('🔍 Method:', method);
+
             const response = await fetch(url, {
                 method: method,
                 headers: {

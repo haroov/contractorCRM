@@ -5,6 +5,7 @@ const { getDb } = require('../lib/mongo');
 // Route to create a new claim
 router.post('/', async (req, res) => {
     try {
+        console.log('🔍 Received claim data:', req.body);
         const db = await getDb();
         const claimsCollection = db.collection('claims');
         const projectsCollection = db.collection('projects');
@@ -15,6 +16,8 @@ router.post('/', async (req, res) => {
             createdAt: new Date(),
             updatedAt: new Date()
         };
+        
+        console.log('🔍 Processed claim data:', claimData);
         
         const result = await claimsCollection.insertOne(claimData);
         
@@ -127,6 +130,8 @@ router.get('/:claimId', async (req, res) => {
 // Route to update a claim
 router.put('/:claimId', async (req, res) => {
     try {
+        console.log('🔍 Updating claim:', req.params.claimId);
+        console.log('🔍 Received update data:', req.body);
         const db = await getDb();
         const claimsCollection = db.collection('claims');
         const { ObjectId } = require('mongodb');
@@ -136,6 +141,8 @@ router.put('/:claimId', async (req, res) => {
             ...req.body,
             updatedAt: new Date()
         };
+        
+        console.log('🔍 Processed update data:', updateData);
         
         const result = await claimsCollection.updateOne(
             { _id: new ObjectId(claimId) },
