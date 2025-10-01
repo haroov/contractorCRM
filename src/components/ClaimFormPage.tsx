@@ -455,10 +455,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const validateIsraeliID = (id: string): boolean => {
         // Remove any non-numeric characters
         const cleanId = id.replace(/\D/g, '');
-
+        
         // Check if it's 9 digits
         if (cleanId.length !== 9) return false;
-
+        
         // Israeli ID validation algorithm
         let sum = 0;
         for (let i = 0; i < 8; i++) {
@@ -471,9 +471,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             }
             sum += digit;
         }
-
+        
         const checkDigit = (10 - (sum % 10)) % 10;
-        return checkDigit === parseInt(cleanId[8]);
+        const isValid = checkDigit === parseInt(cleanId[8]);
+        
+        console.log('🔍 ID Validation:', {
+            id: cleanId,
+            sum: sum,
+            checkDigit: checkDigit,
+            lastDigit: parseInt(cleanId[8]),
+            isValid: isValid
+        });
+        
+        return isValid;
     };
 
     const handleIDChange = (index: number, value: string) => {
@@ -1637,11 +1647,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     inputProps={{ maxLength: 9 }}
                                                                     error={employee.idNumber.length > 0 && (employee.idNumber.length < 9 || !validateIsraeliID(employee.idNumber))}
                                                                     helperText={
-                                                                        employee.idNumber.length > 0 && employee.idNumber.length < 9 
-                                                                            ? 'תעודת זהות חייבת להכיל 9 ספרות' 
+                                                                        employee.idNumber.length > 0 && employee.idNumber.length < 9
+                                                                            ? 'תעודת זהות חייבת להכיל 9 ספרות'
                                                                             : employee.idNumber.length === 9 && !validateIsraeliID(employee.idNumber)
-                                                                            ? 'מספר תעודת זהות לא תקין'
-                                                                            : ''
+                                                                                ? 'מספר תעודת זהות לא תקין'
+                                                                                : ''
                                                                     }
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {

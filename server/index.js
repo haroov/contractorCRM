@@ -1260,7 +1260,11 @@ app.get('/api/projects/:id', async (req, res) => {
     const projectWithStatus = { ...project, status };
 
     console.log('✅ Fetched project:', projectWithStatus.projectName);
-    res.json(projectWithStatus);
+    console.log('🔍 Project subcontractors:', projectWithStatus.subcontractors);
+    res.json({
+      success: true,
+      project: projectWithStatus
+    });
   } catch (error) {
     console.error('❌ Error fetching project by ID:', error);
     res.status(500).json({ error: 'Failed to fetch project' });
