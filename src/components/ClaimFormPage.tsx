@@ -78,6 +78,13 @@ interface InjuredEmployee {
         email: string;
         position: string;
     };
+    representative: {
+        represented: boolean;
+        name?: string;
+        address?: string;
+        phone?: string;
+        email?: string;
+    };
     startDate: string;
     returnToWorkDate?: string;
     lastSalary: number;
@@ -406,6 +413,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 email: '',
                 position: ''
             },
+            representative: {
+                represented: false
+            },
             startDate: '',
             lastSalary: 0,
             injuryDescription: '',
@@ -457,6 +467,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 i === index ? {
                     ...employee,
                     directManager: { ...employee.directManager, [field]: value }
+                } : employee
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateInjuredEmployeeRepresentative = (index: number, field: keyof InjuredEmployee['representative'], value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === index ? {
+                    ...employee,
+                    representative: { ...employee.representative, [field]: value }
                 } : employee
             ),
             updatedAt: new Date()
@@ -930,13 +953,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1033,27 +1056,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2091,6 +2114,147 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 />
                                                             </Grid>
                                                         </Grid>
+
+                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                            פרטי בא כח
+                                                        </Typography>
+                                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, alignItems: 'center', mb: 2 }}>
+                                                            <Box sx={{
+                                                                backgroundColor: '#f8f9fa',
+                                                                border: '1px solid #e0e0e0',
+                                                                borderRadius: 1,
+                                                                p: 2,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: 2
+                                                            }}>
+                                                                <Typography sx={{ fontWeight: 'bold', minWidth: 'fit-content' }}>
+                                                                    מיוצג על ידי בא כח
+                                                                </Typography>
+                                                                <Box sx={{
+                                                                    display: 'flex',
+                                                                    gap: 0,
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'flex-start',
+                                                                    marginLeft: '10px'
+                                                                }}>
+                                                                    <Button
+                                                                        variant="text"
+                                                                        onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', false)}
+                                                                        sx={{
+                                                                            borderRadius: '0 4px 4px 0',
+                                                                            border: '1px solid #d1d5db',
+                                                                            borderLeft: 'none',
+                                                                            backgroundColor: !employee.representative.represented ? '#6b47c1' : 'transparent',
+                                                                            color: !employee.representative.represented ? 'white' : '#6b47c1',
+                                                                            '&:hover': {
+                                                                                backgroundColor: !employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
+                                                                            },
+                                                                            minWidth: '50px',
+                                                                            height: '32px',
+                                                                            textTransform: 'none',
+                                                                            fontSize: '0.875rem',
+                                                                            marginRight: '0px'
+                                                                        }}
+                                                                    >
+                                                                        לא
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="text"
+                                                                        onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', true)}
+                                                                        sx={{
+                                                                            borderRadius: '4px 0 0 4px',
+                                                                            border: '1px solid #d1d5db',
+                                                                            backgroundColor: employee.representative.represented ? '#6b47c1' : 'transparent',
+                                                                            color: employee.representative.represented ? 'white' : '#6b47c1',
+                                                                            '&:hover': {
+                                                                                backgroundColor: employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
+                                                                            },
+                                                                            minWidth: '50px',
+                                                                            height: '32px',
+                                                                            textTransform: 'none',
+                                                                            fontSize: '0.875rem'
+                                                                        }}
+                                                                    >
+                                                                        כן
+                                                                    </Button>
+                                                                </Box>
+                                                            </Box>
+                                                            <Box></Box>
+                                                        </Box>
+
+                                                        {employee.representative.represented && (
+                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם המייצג"
+                                                                        value={employee.representative.name || ''}
+                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'name', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="כתובת"
+                                                                        value={employee.representative.address || ''}
+                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'address', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="טלפון"
+                                                                        value={employee.representative.phone || ''}
+                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'phone', e.target.value)}
+                                                                        variant="outlined"
+                                                                        error={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone)}
+                                                                        helperText={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone) ? 'מספר טלפון לא תקין' : ''}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="אימייל"
+                                                                        value={employee.representative.email || ''}
+                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'email', e.target.value)}
+                                                                        variant="outlined"
+                                                                        error={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email)}
+                                                                        helperText={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email) ? 'כתובת אימייל לא תקינה' : ''}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        )}
 
                                                         <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                             מהות הנזק
