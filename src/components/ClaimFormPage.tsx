@@ -273,7 +273,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             });
             return;
         }
-        
+
         if (!formData.eventDate.trim()) {
             setSnackbar({
                 open: true,
@@ -507,7 +507,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     sx={{
                                                         '& .MuiOutlinedInput-root': {
                                                             '& fieldset': {
-                                                                borderColor: '#6b47c1'
+                                                                borderColor: '#d0d0d0'
                                                             },
                                                             '&:hover fieldset': {
                                                                 borderColor: '#6b47c1'
@@ -517,7 +517,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             }
                                                         },
                                                         '& .MuiInputLabel-root': {
-                                                            color: '#6b47c1',
+                                                            color: '#666666',
                                                             '&.Mui-focused': {
                                                                 color: '#6b47c1'
                                                             }
