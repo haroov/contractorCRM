@@ -1821,6 +1821,195 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
                                                             }}
                                                         />
+
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                טיפול רפואי
+                                                            </Typography>
+                                                            <FormControl component="fieldset" sx={{ mb: 2 }}>
+                                                                <RadioGroup
+                                                                    value={employee.medicalTreatment.received}
+                                                                    onChange={(e) => updateInjuredEmployeeMedical(index, 'received', e.target.value === 'true')}
+                                                                    row
+                                                                >
+                                                                    <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                    <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                </RadioGroup>
+                                                            </FormControl>
+                                                            {employee.medicalTreatment.received && (
+                                                                <Grid container spacing={2}>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="שם בית החולים/מרפאה"
+                                                                            value={employee.medicalTreatment.hospitalName || ''}
+                                                                            onChange={(e) => updateInjuredEmployeeMedical(index, 'hospitalName', e.target.value)}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <Button
+                                                                            variant="outlined"
+                                                                            component="label"
+                                                                            sx={{
+                                                                                borderColor: '#6b47c1',
+                                                                                color: '#6b47c1',
+                                                                                '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                            }}
+                                                                        >
+                                                                            העלה דו״חות רפואיים
+                                                                            <input type="file" multiple hidden />
+                                                                        </Button>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            )}
+                                                        </Box>
+
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                דיווחים
+                                                            </Typography>
+                                                            
+                                                            <Grid container spacing={2}>
+                                                                <Grid item xs={12} sm={4}>
+                                                                    <Typography variant="body2" sx={{ mb: 1 }}>מוסד לביטוח לאומי</Typography>
+                                                                    <FormControl component="fieldset">
+                                                                        <RadioGroup
+                                                                            value={employee.nationalInsuranceReport.reported}
+                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', e.target.value === 'true')}
+                                                                            row
+                                                                        >
+                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                        </RadioGroup>
+                                                                    </FormControl>
+                                                                    {employee.nationalInsuranceReport.reported && (
+                                                                        <Box sx={{ mt: 1 }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                type="date"
+                                                                                label="תאריך דיווח"
+                                                                                value={employee.nationalInsuranceReport.reportDate || ''}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportDate', e.target.value)}
+                                                                                variant="outlined"
+                                                                                InputLabelProps={{ shrink: true }}
+                                                                                sx={{ mb: 1 }}
+                                                                            />
+                                                                            <Button
+                                                                                variant="outlined"
+                                                                                component="label"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    borderColor: '#6b47c1',
+                                                                                    color: '#6b47c1',
+                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                }}
+                                                                            >
+                                                                                העלה אישור דיווח
+                                                                                <input type="file" hidden />
+                                                                            </Button>
+                                                                        </Box>
+                                                                    )}
+                                                                </Grid>
+
+                                                                <Grid item xs={12} sm={4}>
+                                                                    <Typography variant="body2" sx={{ mb: 1 }}>משרד העבודה</Typography>
+                                                                    <FormControl component="fieldset">
+                                                                        <RadioGroup
+                                                                            value={employee.laborMinistryReport.reported}
+                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', e.target.value === 'true')}
+                                                                            row
+                                                                        >
+                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                        </RadioGroup>
+                                                                    </FormControl>
+                                                                    {employee.laborMinistryReport.reported && (
+                                                                        <Box sx={{ mt: 1 }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                type="date"
+                                                                                label="תאריך דיווח"
+                                                                                value={employee.laborMinistryReport.reportDate || ''}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportDate', e.target.value)}
+                                                                                variant="outlined"
+                                                                                InputLabelProps={{ shrink: true }}
+                                                                                sx={{ mb: 1 }}
+                                                                            />
+                                                                            <Button
+                                                                                variant="outlined"
+                                                                                component="label"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    borderColor: '#6b47c1',
+                                                                                    color: '#6b47c1',
+                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                }}
+                                                                            >
+                                                                                העלה אישור דיווח
+                                                                                <input type="file" hidden />
+                                                                            </Button>
+                                                                        </Box>
+                                                                    )}
+                                                                </Grid>
+
+                                                                <Grid item xs={12} sm={4}>
+                                                                    <Typography variant="body2" sx={{ mb: 1 }}>משטרה</Typography>
+                                                                    <FormControl component="fieldset">
+                                                                        <RadioGroup
+                                                                            value={employee.policeReport.reported}
+                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reported', e.target.value === 'true')}
+                                                                            row
+                                                                        >
+                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                        </RadioGroup>
+                                                                    </FormControl>
+                                                                    {employee.policeReport.reported && (
+                                                                        <Box sx={{ mt: 1 }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                label="שם התחנה"
+                                                                                value={employee.policeReport.stationName || ''}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'stationName', e.target.value)}
+                                                                                variant="outlined"
+                                                                                sx={{ mb: 1 }}
+                                                                            />
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                type="date"
+                                                                                label="תאריך דיווח"
+                                                                                value={employee.policeReport.reportDate || ''}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reportDate', e.target.value)}
+                                                                                variant="outlined"
+                                                                                InputLabelProps={{ shrink: true }}
+                                                                                sx={{ mb: 1 }}
+                                                                            />
+                                                                            <Button
+                                                                                variant="outlined"
+                                                                                component="label"
+                                                                                size="small"
+                                                                                sx={{
+                                                                                    borderColor: '#6b47c1',
+                                                                                    color: '#6b47c1',
+                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                }}
+                                                                            >
+                                                                                העלה אישור דיווח
+                                                                                <input type="file" hidden />
+                                                                            </Button>
+                                                                        </Box>
+                                                                    )}
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Box>
                                                     </Paper>
                                                 ))}
 
