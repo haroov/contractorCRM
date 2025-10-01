@@ -39,6 +39,7 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
+import FileUpload from './FileUpload';
 
 interface Witness {
     fullName: string;
@@ -773,13 +774,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -876,27 +877,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2059,27 +2060,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
                                                                             }}
                                                                         />
-                                                                        <Box
-                                                                            sx={{
-                                                                                width: 56,
-                                                                                height: 56,
-                                                                                backgroundColor: '#f5f5f5',
-                                                                                borderRadius: 1,
-                                                                                display: 'flex',
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'center',
-                                                                                cursor: 'pointer',
-                                                                                border: '1px solid #d0d0d0',
-                                                                                '&:hover': {
-                                                                                    backgroundColor: '#e0e0e0',
-                                                                                    borderColor: '#6b47c1'
-                                                                                }
+                                                                        <FileUpload
+                                                                            label="דו״חות רפואיים"
+                                                                            value={employee.medicalTreatment.medicalReports?.[0] || ''}
+                                                                            thumbnailUrl={employee.medicalTreatment.medicalReports?.[0] ? `${employee.medicalTreatment.medicalReports[0]}_thumb` : ''}
+                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                const reports = url ? [url] : [];
+                                                                                updateInjuredEmployeeMedical(index, 'medicalReports', reports);
                                                                             }}
-                                                                            component="label"
-                                                                        >
-                                                                            <input type="file" multiple hidden />
-                                                                            <Box sx={{ fontSize: '24px', color: '#666' }}>📁</Box>
-                                                                        </Box>
+                                                                            projectId={formData.projectId}
+                                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                                        />
                                                                     </Box>
                                                                 )}
                                                                 {!employee.medicalTreatment.received && <Box></Box>}
