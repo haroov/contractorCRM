@@ -210,12 +210,22 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const loadSubcontractors = async (projectId: string) => {
         try {
+            console.log('🔍 Loading subcontractors for project:', projectId);
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
             if (response.ok) {
                 const data = await response.json();
-                if (data.success && data.project && data.project.subcontractors) {
-                    setSubcontractors(data.project.subcontractors);
+                console.log('🔍 Project data:', data);
+                if (data.success && data.project) {
+                    console.log('🔍 Project subcontractors:', data.project.subcontractors);
+                    if (data.project.subcontractors && Array.isArray(data.project.subcontractors)) {
+                        setSubcontractors(data.project.subcontractors);
+                    } else {
+                        console.log('🔍 No subcontractors found or not an array');
+                        setSubcontractors([]);
+                    }
                 }
+            } else {
+                console.error('🔍 Failed to load project:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Error loading subcontractors:', error);
@@ -432,9 +442,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport', field: string, value: any) => {
         setFormData(prev => ({
             ...prev,
-            injuredEmployees: prev.injuredEmployees.map((employee, i) => 
-                i === index ? { 
-                    ...employee, 
+            injuredEmployees: prev.injuredEmployees.map((employee, i) =>
+                i === index ? {
+                    ...employee,
                     [reportType]: { ...employee[reportType], [field]: value }
                 } : employee
             ),
@@ -445,10 +455,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const validateIsraeliID = (id: string): boolean => {
         // Remove any non-numeric characters
         const cleanId = id.replace(/\D/g, '');
-        
+
         // Check if it's 9 digits
         if (cleanId.length !== 9) return false;
-        
+
         // Israeli ID validation algorithm
         let sum = 0;
         for (let i = 0; i < 8; i++) {
@@ -461,7 +471,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             }
             sum += digit;
         }
-        
+
         const checkDigit = (10 - (sum % 10)) % 10;
         return checkDigit === parseInt(cleanId[8]);
     };
@@ -706,13 +716,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -809,27 +819,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -1625,8 +1635,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     onChange={(e) => handleIDChange(index, e.target.value)}
                                                                     variant="outlined"
                                                                     inputProps={{ maxLength: 9 }}
-                                                                    error={employee.idNumber.length > 0 && employee.idNumber.length < 9 ? true : false}
-                                                                    helperText={employee.idNumber.length > 0 && employee.idNumber.length < 9 ? 'תעודת זהות חייבת להכיל 9 ספרות' : ''}
+                                                                    error={employee.idNumber.length > 0 && (employee.idNumber.length < 9 || !validateIsraeliID(employee.idNumber))}
+                                                                    helperText={
+                                                                        employee.idNumber.length > 0 && employee.idNumber.length < 9 
+                                                                            ? 'תעודת זהות חייבת להכיל 9 ספרות' 
+                                                                            : employee.idNumber.length === 9 && !validateIsraeliID(employee.idNumber)
+                                                                            ? 'מספר תעודת זהות לא תקין'
+                                                                            : ''
+                                                                    }
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -1715,11 +1731,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
                                                                             }}
                                                                         >
-                                                                            {subcontractors.map((subcontractor, subIndex) => (
-                                                                                <MenuItem key={subIndex} value={subcontractor.companyName || subcontractor.name}>
-                                                                                    {subcontractor.companyName || subcontractor.name}
+                                                                            {subcontractors.length === 0 ? (
+                                                                                <MenuItem disabled>
+                                                                                    אין קבלני משנה זמינים
                                                                                 </MenuItem>
-                                                                            ))}
+                                                                            ) : (
+                                                                                subcontractors.map((subcontractor, subIndex) => (
+                                                                                    <MenuItem key={subIndex} value={subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}>
+                                                                                        {subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}
+                                                                                    </MenuItem>
+                                                                                ))
+                                                                            )}
                                                                         </Select>
                                                                     </FormControl>
                                                                 </Grid>
