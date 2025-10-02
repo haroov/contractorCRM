@@ -2037,7 +2037,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             {/* Show rest of content only when expanded */}
                                                             {expandedEmployees[index] !== false && (
                                                                 <>
-                                                                    <Grid item xs={12} sm={6}>
+                                                                    <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                                        <Grid item xs={12} sm={6}>
                                                                             <TextField
                                                                                 fullWidth
                                                                                 type="date"
