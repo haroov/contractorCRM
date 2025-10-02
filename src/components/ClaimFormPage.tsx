@@ -3289,53 +3289,73 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 alignItems: 'flex-start',
                                                                                 justifyContent: 'flex-end'
                                                                             }}>
-                                                                                <Box sx={{ width: '100%' }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        חברת ביטוח
+                                                                                    </Typography>
                                                                                     <Box sx={{
                                                                                         display: 'flex',
+                                                                                        gap: 0,
                                                                                         alignItems: 'center',
-                                                                                        justifyContent: 'flex-end',
-                                                                                        mb: 1
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
                                                                                     }}>
-                                                                                        <Typography variant="body2" sx={{ mr: 2, color: '#666' }}>
-                                                                                            חברת ביטוח
-                                                                                        </Typography>
-                                                                                        <Box sx={{ display: 'flex' }}>
-                                                                                            <Button
-                                                                                                variant="text"
-                                                                                                onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', false)}
-                                                                                                sx={{
-                                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                                    border: '1px solid #d1d5db',
-                                                                                                    borderLeft: 'none',
-                                                                                                    backgroundColor: !employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                                    color: !employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                                    minWidth: '40px',
-                                                                                                    height: '32px',
-                                                                                                    textTransform: 'none',
-                                                                                                    fontSize: '0.875rem',
-                                                                                                    marginRight: '0px'
-                                                                                                }}
-                                                                                            >
-                                                                                                לא
-                                                                                            </Button>
-                                                                                            <Button
-                                                                                                variant="text"
-                                                                                                onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', true)}
-                                                                                                sx={{
-                                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                                    border: '1px solid #d1d5db',
-                                                                                                    backgroundColor: employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                                    color: employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                                    minWidth: '40px',
-                                                                                                    height: '32px',
-                                                                                                    textTransform: 'none',
-                                                                                                    fontSize: '0.875rem',
-                                                                                                    marginRight: '0px'
-                                                                                                }}
-                                                                                            >
-                                                                                                כן
-                                                                                            </Button>
-                                                                                        </Box>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !employee.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '40px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: employee.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '40px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
                                                                                     </Box>
                                                                                 </Box>
                                                                             </Box>
