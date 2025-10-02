@@ -303,9 +303,50 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
                         additionalResponsible: data.claim.additionalResponsible || [],
                         injuredEmployees: (data.claim.injuredEmployees || []).map((employee: any) => ({
-                            ...employee,
+                            fullName: employee.fullName || '',
+                            idNumber: employee.idNumber || '',
+                            birthDate: employee.birthDate || '',
+                            address: employee.address || '',
+                            jobTitle: employee.jobTitle || '',
+                            employmentType: employee.employmentType || 'direct',
+                            subcontractorName: employee.subcontractorName || '',
+                            subcontractorAgreement: employee.subcontractorAgreement || '',
+                            directManager: {
+                                fullName: employee.directManager?.fullName || '',
+                                phone: employee.directManager?.phone || '',
+                                email: employee.directManager?.email || '',
+                                position: employee.directManager?.position || ''
+                            },
+                            startDate: employee.startDate || '',
+                            returnToWorkDate: employee.returnToWorkDate || '',
+                            lastSalary: employee.lastSalary || 0,
+                            injuryDescription: employee.injuryDescription || '',
+                            medicalTreatment: {
+                                received: employee.medicalTreatment?.received || false,
+                                medicalDocuments: employee.medicalTreatment?.medicalDocuments || []
+                            },
+                            nationalInsuranceReport: {
+                                reported: employee.nationalInsuranceReport?.reported || false,
+                                reportDate: employee.nationalInsuranceReport?.reportDate || '',
+                                reportFile: employee.nationalInsuranceReport?.reportFile || ''
+                            },
+                            laborMinistryReport: {
+                                reported: employee.laborMinistryReport?.reported || false,
+                                reportDate: employee.laborMinistryReport?.reportDate || '',
+                                reportFile: employee.laborMinistryReport?.reportFile || ''
+                            },
+                            policeReport: {
+                                reported: employee.policeReport?.reported || false,
+                                reportDate: employee.policeReport?.reportDate || '',
+                                stationName: employee.policeReport?.stationName || '',
+                                reportFile: employee.policeReport?.reportFile || ''
+                            },
                             representative: employee.representative || {
-                                represented: false
+                                represented: false,
+                                name: '',
+                                address: '',
+                                phone: '',
+                                email: ''
                             }
                         })),
                         status: data.claim.status || 'open',
@@ -1888,7 +1929,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     חבות מעבידים
                                                 </Typography>
 
-                                                {formData.injuredEmployees.map((employee, index) => (
+                                                {(formData.injuredEmployees || []).map((employee, index) => {
+                                                    // Safety check to ensure employee object exists and has required properties
+                                                    if (!employee) {
+                                                        console.warn('Employee object is undefined at index:', index);
+                                                        return null;
+                                                    }
+                                                    
+                                                    return (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
@@ -2767,7 +2815,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
                                                         </Box>
                                                     </Paper>
-                                                ))}
+                                                    );
+                                                })}
 
                                                 <Button
                                                     variant="contained"
