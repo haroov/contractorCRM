@@ -1937,7 +1937,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         console.warn('Employee object is undefined at index:', index);
                                                         return null;
                                                     }
-                                                    
+
                                                     console.log(`🔍 Rendering employee ${index}:`, employee);
                                                     console.log(`🔍 Employee fullName:`, employee.fullName);
 
@@ -2664,20 +2664,29 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </TableCell>
                                                                                     </TableRow>
                                                                                 ))}
+                                                                                <TableRow>
+                                                                                    <TableCell colSpan={5} sx={{ textAlign: 'center', border: 'none', py: 2 }}>
+                                                                                        <Button
+                                                                                            variant="outlined"
+                                                                                            onClick={() => addMedicalDocument(index)}
+                                                                                            sx={{
+                                                                                                borderColor: '#6b47c1',
+                                                                                                color: '#6b47c1',
+                                                                                                backgroundColor: 'white',
+                                                                                                '&:hover': { 
+                                                                                                    borderColor: '#5a3aa1',
+                                                                                                    color: '#5a3aa1',
+                                                                                                    backgroundColor: '#f3f0ff'
+                                                                                                }
+                                                                                            }}
+                                                                                        >
+                                                                                            הוספה
+                                                                                        </Button>
+                                                                                    </TableCell>
+                                                                                </TableRow>
                                                                             </TableBody>
                                                                         </Table>
                                                                     </TableContainer>
-                                                                    <Button
-                                                                        variant="contained"
-                                                                        startIcon={<AddIcon />}
-                                                                        onClick={() => addMedicalDocument(index)}
-                                                                        sx={{
-                                                                            bgcolor: '#6b47c1',
-                                                                            '&:hover': { bgcolor: '#5a3aa1' }
-                                                                        }}
-                                                                    >
-                                                                        + הוספה
-                                                                    </Button>
                                                                 </Box>
                                                             )}
 
