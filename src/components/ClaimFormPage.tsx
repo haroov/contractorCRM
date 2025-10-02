@@ -827,7 +827,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const toggleEmployeeExpansion = (index: number) => {
         setExpandedEmployees(prev => ({
             ...prev,
-            [index]: !prev[index]
+            [index]: prev[index] === true ? false : true
         }));
     };
 
@@ -2026,8 +2026,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         }}
                                                                     >
                                                                         <img 
-                                                                            src={expandedEmployees[index] ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"} 
-                                                                            alt={expandedEmployees[index] ? "סגור" : "פתח"} 
+                                                                            src={expandedEmployees[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"} 
+                                                                            alt={expandedEmployees[index] === true ? "סגור" : "פתח"} 
                                                                             style={{ width: '16px', height: '16px' }} 
                                                                         />
                                                                     </MuiIconButton>
@@ -2049,7 +2049,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Box>
 
                                                             {/* Always show first row (name, ID, birth date, address) - This should always be visible */}
-                                                            <Grid container spacing={2} sx={{ mb: expandedEmployees[index] === false ? 0 : 2 }}>
+                                                            <Grid container spacing={2} sx={{ mb: expandedEmployees[index] === true ? 2 : 0 }}>
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
                                                                         fullWidth
@@ -2128,7 +2128,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Grid>
 
                                                             {/* Show rest of content only when expanded */}
-                                                            {expandedEmployees[index] !== false && (
+                                                            {expandedEmployees[index] === true && (
                                                                 <>
                                                                     <Grid container spacing={2} sx={{ mb: 2 }}>
                                                                         <Grid item xs={12} sm={6}>
