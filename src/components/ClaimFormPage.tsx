@@ -341,11 +341,67 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     };
 
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value,
-            updatedAt: new Date()
-        }));
+        setFormData(prev => {
+            const newData = {
+                ...prev,
+                [field]: value,
+                updatedAt: new Date()
+            };
+
+            // If bodily injury to employee is set to true and no employees exist, add the first one
+            if (field === 'bodilyInjuryEmployee' && value === true && prev.injuredEmployees.length === 0) {
+                const newEmployee: InjuredEmployee = {
+                    name: '',
+                    idNumber: '',
+                    dateOfBirth: '',
+                    address: '',
+                    jobTitle: '',
+                    employmentType: 'direct',
+                    subcontractorName: '',
+                    subcontractorAgreement: '',
+                    manager: {
+                        name: '',
+                        phone: '',
+                        email: '',
+                        role: ''
+                    },
+                    startDate: '',
+                    returnToWorkDate: '',
+                    lastSalary: '',
+                    injuryDescription: '',
+                    medicalTreatment: {
+                        received: false,
+                        medicalDocuments: []
+                    },
+                    nationalInsuranceReport: {
+                        reported: false,
+                        reportDate: '',
+                        confirmationFile: ''
+                    },
+                    laborMinistryReport: {
+                        reported: false,
+                        reportDate: '',
+                        confirmationFile: ''
+                    },
+                    policeReport: {
+                        reported: false,
+                        reportDate: '',
+                        stationName: '',
+                        confirmationFile: ''
+                    },
+                    representative: {
+                        represented: false,
+                        name: '',
+                        address: '',
+                        phone: '',
+                        email: ''
+                    }
+                };
+                newData.injuredEmployees = [newEmployee];
+            }
+
+            return newData;
+        });
     };
 
     const addWitness = () => {
@@ -1838,7 +1894,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
                                                                 פרטי העובד
                                                             </Typography>
-                                                            {!(index === 0 && formData.bodilyInjuryToEmployee === true) && (
+                                                            {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
                                                                 <MuiIconButton
                                                                     onClick={() => removeInjuredEmployee(index)}
                                                                     sx={{
@@ -2722,7 +2778,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         '&:hover': { bgcolor: '#5a3aa1' }
                                                     }}
                                                 >
-                                                    הוסף עובד נפגע
+                                                    + הוספה
                                                 </Button>
                                             </Box>
                                         )}
