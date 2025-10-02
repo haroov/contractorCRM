@@ -134,7 +134,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             params.set('project_id', 'new');
         } else {
             params.set('project_id', project._id || project.id || '');
-            // Store project data in sessionStorage for the project page to access
+            // Store project data in sessionStorage for the project page to access (for both edit and view modes)
             sessionStorage.setItem('project_data', JSON.stringify(project));
         }
 

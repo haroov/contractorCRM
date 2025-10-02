@@ -694,7 +694,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         console.log('Loading project from server:', projectId);
                         const { projectsAPI } = await import('../services/api');
                         const projectData = await projectsAPI.getById(projectId);
-                        if (projectData) {
+                        console.log('🔍 Raw project data from server:', projectData);
+                        if (projectData && projectData.projectName) {
                             console.log('✅ Project loaded from server:', projectData);
                             console.log('✅ Project name:', projectData.projectName);
                             console.log('✅ Project city:', projectData.city);
@@ -835,7 +836,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 });
                             }
                         } else {
-                            console.error('❌ Project not found on server');
+                            console.error('❌ Project not found on server or has empty data');
                             // Fallback to sessionStorage
                             const storedData = sessionStorage.getItem('project_data');
                             if (storedData) {
