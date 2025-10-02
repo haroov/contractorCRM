@@ -391,24 +391,25 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
             // If bodily injury to employee is set to true and no employees exist, add the first one
             if (field === 'bodilyInjuryEmployee' && value === true && prev.injuredEmployees.length === 0) {
+                console.log('🔍 Auto-creating first injured employee');
                 const newEmployee: InjuredEmployee = {
-                    name: '',
+                    fullName: '',
                     idNumber: '',
-                    dateOfBirth: '',
+                    birthDate: '',
                     address: '',
                     jobTitle: '',
                     employmentType: 'direct',
                     subcontractorName: '',
                     subcontractorAgreement: '',
-                    manager: {
-                        name: '',
+                    directManager: {
+                        fullName: '',
                         phone: '',
                         email: '',
-                        role: ''
+                        position: ''
                     },
                     startDate: '',
                     returnToWorkDate: '',
-                    lastSalary: '',
+                    lastSalary: 0,
                     injuryDescription: '',
                     medicalTreatment: {
                         received: false,
@@ -417,18 +418,18 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     nationalInsuranceReport: {
                         reported: false,
                         reportDate: '',
-                        confirmationFile: ''
+                        reportFile: ''
                     },
                     laborMinistryReport: {
                         reported: false,
                         reportDate: '',
-                        confirmationFile: ''
+                        reportFile: ''
                     },
                     policeReport: {
                         reported: false,
                         reportDate: '',
                         stationName: '',
-                        confirmationFile: ''
+                        reportFile: ''
                     },
                     representative: {
                         represented: false,
@@ -438,6 +439,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         email: ''
                     }
                 };
+                console.log('🔍 Created new employee object:', newEmployee);
                 newData.injuredEmployees = [newEmployee];
             }
 
@@ -1936,391 +1938,235 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         return null;
                                                     }
                                                     
-                                                    return (
-                                                    <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
-                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                פרטי העובד
-                                                            </Typography>
-                                                            {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
-                                                                <MuiIconButton
-                                                                    onClick={() => removeInjuredEmployee(index)}
-                                                                    sx={{
-                                                                        color: '#f44336',
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#d32f2f',
-                                                                            color: 'white'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                </MuiIconButton>
-                                                            )}
-                                                        </Box>
+                                                    console.log(`🔍 Rendering employee ${index}:`, employee);
+                                                    console.log(`🔍 Employee fullName:`, employee.fullName);
 
-                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="שם הנפגע"
-                                                                    value={employee.fullName}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'fullName', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="מספר תעודת זהות"
-                                                                    value={employee.idNumber}
-                                                                    onChange={(e) => handleIDChange(index, e.target.value)}
-                                                                    variant="outlined"
-                                                                    inputProps={{ maxLength: 9 }}
-                                                                    error={employee.idNumber.length > 0 && (employee.idNumber.length < 9 || !validateIsraeliID(employee.idNumber))}
-                                                                    helperText={
-                                                                        employee.idNumber.length > 0 && employee.idNumber.length < 9
-                                                                            ? 'תעודת זהות חייבת להכיל 9 ספרות'
-                                                                            : employee.idNumber.length === 9 && !validateIsraeliID(employee.idNumber)
-                                                                                ? 'מספר תעודת זהות לא תקין'
-                                                                                : ''
-                                                                    }
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    type="date"
-                                                                    label="תאריך לידה"
-                                                                    value={employee.birthDate}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'birthDate', e.target.value)}
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="כתובת מגורים"
-                                                                    value={employee.address}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'address', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="תפקיד העובד באתר"
-                                                                    value={employee.jobTitle}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'jobTitle', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <FormControl component="fieldset">
-                                                                    <FormLabel component="legend" sx={{ color: '#666666' }}>הועסק אצל המבוטח או דרך קבלן משנה</FormLabel>
-                                                                    <RadioGroup
-                                                                        value={employee.employmentType}
-                                                                        onChange={(e) => updateInjuredEmployee(index, 'employmentType', e.target.value)}
-                                                                        row
+                                                    return (
+                                                        <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                    פרטי העובד
+                                                                </Typography>
+                                                                {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
+                                                                    <MuiIconButton
+                                                                        onClick={() => removeInjuredEmployee(index)}
+                                                                        sx={{
+                                                                            color: '#f44336',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#d32f2f',
+                                                                                color: 'white'
+                                                                            }
+                                                                        }}
                                                                     >
-                                                                        <FormControlLabel value="direct" control={<Radio />} label="מבוטח" />
-                                                                        <FormControlLabel value="subcontractor" control={<Radio />} label="קבלן משנה" />
-                                                                    </RadioGroup>
-                                                                </FormControl>
-                                                            </Grid>
-                                                            {employee.employmentType === 'subcontractor' && (
+                                                                        <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                    </MuiIconButton>
+                                                                )}
+                                                            </Box>
+
+                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
                                                                 <Grid item xs={12} sm={6}>
-                                                                    <FormControl fullWidth variant="outlined">
-                                                                        <InputLabel>שם קבלן המשנה</InputLabel>
-                                                                        <Select
-                                                                            value={employee.subcontractorName || ''}
-                                                                            onChange={(e) => updateInjuredEmployee(index, 'subcontractorName', e.target.value)}
-                                                                            label="שם קבלן המשנה"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם הנפגע"
+                                                                        value={employee.fullName}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'fullName', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="מספר תעודת זהות"
+                                                                        value={employee.idNumber}
+                                                                        onChange={(e) => handleIDChange(index, e.target.value)}
+                                                                        variant="outlined"
+                                                                        inputProps={{ maxLength: 9 }}
+                                                                        error={employee.idNumber.length > 0 && (employee.idNumber.length < 9 || !validateIsraeliID(employee.idNumber))}
+                                                                        helperText={
+                                                                            employee.idNumber.length > 0 && employee.idNumber.length < 9
+                                                                                ? 'תעודת זהות חייבת להכיל 9 ספרות'
+                                                                                : employee.idNumber.length === 9 && !validateIsraeliID(employee.idNumber)
+                                                                                    ? 'מספר תעודת זהות לא תקין'
+                                                                                    : ''
+                                                                        }
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="date"
+                                                                        label="תאריך לידה"
+                                                                        value={employee.birthDate}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'birthDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{ shrink: true }}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="כתובת מגורים"
+                                                                        value={employee.address}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'address', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="תפקיד העובד באתר"
+                                                                        value={employee.jobTitle}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'jobTitle', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <FormControl component="fieldset">
+                                                                        <FormLabel component="legend" sx={{ color: '#666666' }}>הועסק אצל המבוטח או דרך קבלן משנה</FormLabel>
+                                                                        <RadioGroup
+                                                                            value={employee.employmentType}
+                                                                            onChange={(e) => updateInjuredEmployee(index, 'employmentType', e.target.value)}
+                                                                            row
                                                                         >
-                                                                            {subcontractors.length === 0 ? (
-                                                                                <MenuItem disabled>
-                                                                                    אין קבלני משנה זמינים
-                                                                                </MenuItem>
-                                                                            ) : (
-                                                                                subcontractors.map((subcontractor, subIndex) => (
-                                                                                    <MenuItem key={subIndex} value={subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}>
-                                                                                        {subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}
-                                                                                    </MenuItem>
-                                                                                ))
-                                                                            )}
-                                                                        </Select>
+                                                                            <FormControlLabel value="direct" control={<Radio />} label="מבוטח" />
+                                                                            <FormControlLabel value="subcontractor" control={<Radio />} label="קבלן משנה" />
+                                                                        </RadioGroup>
                                                                     </FormControl>
                                                                 </Grid>
-                                                            )}
-                                                        </Grid>
+                                                                {employee.employmentType === 'subcontractor' && (
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <FormControl fullWidth variant="outlined">
+                                                                            <InputLabel>שם קבלן המשנה</InputLabel>
+                                                                            <Select
+                                                                                value={employee.subcontractorName || ''}
+                                                                                onChange={(e) => updateInjuredEmployee(index, 'subcontractorName', e.target.value)}
+                                                                                label="שם קבלן המשנה"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                    },
+                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                }}
+                                                                            >
+                                                                                {subcontractors.length === 0 ? (
+                                                                                    <MenuItem disabled>
+                                                                                        אין קבלני משנה זמינים
+                                                                                    </MenuItem>
+                                                                                ) : (
+                                                                                    subcontractors.map((subcontractor, subIndex) => (
+                                                                                        <MenuItem key={subIndex} value={subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}>
+                                                                                            {subcontractor.companyName || subcontractor.name || subcontractor.subcontractorName}
+                                                                                        </MenuItem>
+                                                                                    ))
+                                                                                )}
+                                                                            </Select>
+                                                                        </FormControl>
+                                                                    </Grid>
+                                                                )}
+                                                            </Grid>
 
-                                                        {/* Work Dates and Salary */}
-                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    type="date"
-                                                                    label="תאריך תחילת עבודה"
-                                                                    value={employee.startDate}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'startDate', e.target.value)}
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
+                                                            {/* Work Dates and Salary */}
+                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="date"
+                                                                        label="תאריך תחילת עבודה"
+                                                                        value={employee.startDate}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'startDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{ shrink: true }}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="date"
+                                                                        label="תאריך חזרה לעבודה"
+                                                                        value={employee.returnToWorkDate || ''}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'returnToWorkDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{ shrink: true }}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="גובה המשכורת האחרונה (ש״ח)"
+                                                                        value={formatNumber(employee.lastSalary)}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'lastSalary', parseFormattedNumber(e.target.value))}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
                                                             </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    type="date"
-                                                                    label="תאריך חזרה לעבודה"
-                                                                    value={employee.returnToWorkDate || ''}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'returnToWorkDate', e.target.value)}
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="גובה המשכורת האחרונה (ש״ח)"
-                                                                    value={formatNumber(employee.lastSalary)}
-                                                                    onChange={(e) => updateInjuredEmployee(index, 'lastSalary', parseFormattedNumber(e.target.value))}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
 
-                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                            פרטי המנהל הישיר
-                                                        </Typography>
-                                                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="שם מלא"
-                                                                    value={employee.directManager.fullName}
-                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'fullName', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="טלפון נייד"
-                                                                    value={employee.directManager.phone}
-                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'phone', e.target.value)}
-                                                                    variant="outlined"
-                                                                    error={employee.directManager.phone.length > 0 && !validateIsraeliMobile(employee.directManager.phone)}
-                                                                    helperText={employee.directManager.phone.length > 0 && !validateIsraeliMobile(employee.directManager.phone) ? 'מספר טלפון לא תקין' : ''}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="אימייל"
-                                                                    value={employee.directManager.email}
-                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'email', e.target.value)}
-                                                                    variant="outlined"
-                                                                    error={employee.directManager.email.length > 0 && !validateEmail(employee.directManager.email)}
-                                                                    helperText={employee.directManager.email.length > 0 && !validateEmail(employee.directManager.email) ? 'כתובת אימייל לא תקינה' : ''}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                            <Grid item xs={12} sm={6}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="תפקיד"
-                                                                    value={employee.directManager.position}
-                                                                    onChange={(e) => updateInjuredEmployeeManager(index, 'position', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-
-                                                        <Box sx={{ mt: 4 }}>
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                פרטי בא כח
+                                                                פרטי המנהל הישיר
                                                             </Typography>
-                                                            <Box sx={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: '1fr 1fr',
-                                                                gap: 2
-                                                            }}>
-                                                                <Box sx={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'flex-start',
-                                                                    justifyContent: 'flex-end'
-                                                                }}>
-                                                                    <Box sx={{
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderRadius: '4px',
-                                                                        backgroundColor: 'white',
-                                                                        minHeight: '56px',
-                                                                        padding: '0 14px',
-                                                                        direction: 'rtl',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        width: '100%'
-                                                                    }}>
-                                                                        <Typography sx={{
-                                                                            fontSize: '1rem',
-                                                                            color: 'text.secondary',
-                                                                            marginRight: '10px'
-                                                                        }}>
-                                                                            מיוצג על ידי בא כח
-                                                                        </Typography>
-                                                                        <Box sx={{
-                                                                            display: 'flex',
-                                                                            gap: 0,
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'flex-start',
-                                                                            marginLeft: '10px'
-                                                                        }}>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', false)}
-                                                                                sx={{
-                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    borderLeft: 'none',
-                                                                                    backgroundColor: !employee.representative.represented ? '#6b47c1' : 'transparent',
-                                                                                    color: !employee.representative.represented ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                לא
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', true)}
-                                                                                sx={{
-                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    backgroundColor: employee.representative.represented ? '#6b47c1' : 'transparent',
-                                                                                    color: employee.representative.represented ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem'
-                                                                                }}
-                                                                            >
-                                                                                כן
-                                                                            </Button>
-                                                                        </Box>
-                                                                    </Box>
-                                                                </Box>
-                                                                <Box></Box>
-                                                            </Box>
-                                                        </Box>
-
-                                                        {employee.representative.represented && (
-                                                            <Grid container spacing={3} sx={{ mb: 2, mt: 2 }}>
+                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
                                                                         fullWidth
-                                                                        label="שם המייצג"
-                                                                        value={employee.representative.name || ''}
-                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'name', e.target.value)}
+                                                                        label="שם מלא"
+                                                                        value={employee.directManager.fullName}
+                                                                        onChange={(e) => updateInjuredEmployeeManager(index, 'fullName', e.target.value)}
                                                                         variant="outlined"
                                                                         sx={{
                                                                             '& .MuiOutlinedInput-root': {
@@ -2334,28 +2180,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
                                                                         fullWidth
-                                                                        label="כתובת"
-                                                                        value={employee.representative.address || ''}
-                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'address', e.target.value)}
+                                                                        label="טלפון נייד"
+                                                                        value={employee.directManager.phone}
+                                                                        onChange={(e) => updateInjuredEmployeeManager(index, 'phone', e.target.value)}
                                                                         variant="outlined"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': {
-                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                            },
-                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                        }}
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="טלפון"
-                                                                        value={employee.representative.phone || ''}
-                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'phone', e.target.value)}
-                                                                        variant="outlined"
-                                                                        error={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone)}
-                                                                        helperText={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone) ? 'מספר טלפון לא תקין' : ''}
+                                                                        error={employee.directManager.phone.length > 0 && !validateIsraeliMobile(employee.directManager.phone)}
+                                                                        helperText={employee.directManager.phone.length > 0 && !validateIsraeliMobile(employee.directManager.phone) ? 'מספר טלפון לא תקין' : ''}
                                                                         sx={{
                                                                             '& .MuiOutlinedInput-root': {
                                                                                 '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -2369,11 +2199,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     <TextField
                                                                         fullWidth
                                                                         label="אימייל"
-                                                                        value={employee.representative.email || ''}
-                                                                        onChange={(e) => updateInjuredEmployeeRepresentative(index, 'email', e.target.value)}
+                                                                        value={employee.directManager.email}
+                                                                        onChange={(e) => updateInjuredEmployeeManager(index, 'email', e.target.value)}
                                                                         variant="outlined"
-                                                                        error={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email)}
-                                                                        helperText={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email) ? 'כתובת אימייל לא תקינה' : ''}
+                                                                        error={employee.directManager.email.length > 0 && !validateEmail(employee.directManager.email)}
+                                                                        helperText={employee.directManager.email.length > 0 && !validateEmail(employee.directManager.email) ? 'כתובת אימייל לא תקינה' : ''}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="תפקיד"
+                                                                        value={employee.directManager.position}
+                                                                        onChange={(e) => updateInjuredEmployeeManager(index, 'position', e.target.value)}
+                                                                        variant="outlined"
                                                                         sx={{
                                                                             '& .MuiOutlinedInput-root': {
                                                                                 '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -2384,437 +2230,596 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     />
                                                                 </Grid>
                                                             </Grid>
-                                                        )}
 
-                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, mt: 4, color: 'text.secondary' }}>
-                                                            מהות הנזק
-                                                        </Typography>
-                                                        <TextField
-                                                            fullWidth
-                                                            multiline
-                                                            rows={3}
-                                                            label="מהות הנזק או הפגיעה"
-                                                            value={employee.injuryDescription}
-                                                            onChange={(e) => updateInjuredEmployee(index, 'injuryDescription', e.target.value)}
-                                                            variant="outlined"
-                                                            sx={{
-                                                                mb: 3,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                טיפול רפואי
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: '1fr 1fr',
-                                                                gap: 2
-                                                            }}>
+                                                            <Box sx={{ mt: 4 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                    פרטי בא כח
+                                                                </Typography>
                                                                 <Box sx={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'flex-start',
-                                                                    justifyContent: 'flex-end'
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '1fr 1fr',
+                                                                    gap: 2
                                                                 }}>
                                                                     <Box sx={{
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderRadius: '4px',
-                                                                        backgroundColor: 'white',
-                                                                        minHeight: '56px',
-                                                                        padding: '0 14px',
-                                                                        direction: 'rtl',
                                                                         display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        width: '100%'
+                                                                        alignItems: 'flex-start',
+                                                                        justifyContent: 'flex-end'
                                                                     }}>
-                                                                        <Typography sx={{
-                                                                            fontSize: '1rem',
-                                                                            color: 'text.secondary',
-                                                                            marginRight: '10px'
-                                                                        }}>
-                                                                            טיפול רפואי
-                                                                        </Typography>
                                                                         <Box sx={{
+                                                                            border: '1px solid #d1d5db',
+                                                                            borderRadius: '4px',
+                                                                            backgroundColor: 'white',
+                                                                            minHeight: '56px',
+                                                                            padding: '0 14px',
+                                                                            direction: 'rtl',
                                                                             display: 'flex',
-                                                                            gap: 0,
                                                                             alignItems: 'center',
-                                                                            justifyContent: 'flex-start',
-                                                                            marginLeft: '10px'
+                                                                            justifyContent: 'space-between',
+                                                                            width: '100%'
                                                                         }}>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateInjuredEmployeeMedical(index, 'received', false)}
-                                                                                sx={{
-                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    borderLeft: 'none',
-                                                                                    backgroundColor: !employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                    color: !employee.medicalTreatment.received ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                לא
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => {
-                                                                                    updateInjuredEmployeeMedical(index, 'received', true);
-                                                                                    if (!employee.medicalTreatment.medicalDocuments || employee.medicalTreatment.medicalDocuments.length === 0) {
-                                                                                        initializeMedicalDocuments(index);
-                                                                                    }
-                                                                                }}
-                                                                                sx={{
-                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                    color: employee.medicalTreatment.received ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem'
-                                                                                }}
-                                                                            >
-                                                                                כן
-                                                                            </Button>
+                                                                            <Typography sx={{
+                                                                                fontSize: '1rem',
+                                                                                color: 'text.secondary',
+                                                                                marginRight: '10px'
+                                                                            }}>
+                                                                                מיוצג על ידי בא כח
+                                                                            </Typography>
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                gap: 0,
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'flex-start',
+                                                                                marginLeft: '10px'
+                                                                            }}>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', false)}
+                                                                                    sx={{
+                                                                                        borderRadius: '0 4px 4px 0',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        borderLeft: 'none',
+                                                                                        backgroundColor: !employee.representative.represented ? '#6b47c1' : 'transparent',
+                                                                                        color: !employee.representative.represented ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: !employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem',
+                                                                                        marginRight: '0px'
+                                                                                    }}
+                                                                                >
+                                                                                    לא
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateInjuredEmployeeRepresentative(index, 'represented', true)}
+                                                                                    sx={{
+                                                                                        borderRadius: '4px 0 0 4px',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        backgroundColor: employee.representative.represented ? '#6b47c1' : 'transparent',
+                                                                                        color: employee.representative.represented ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: employee.representative.represented ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem'
+                                                                                    }}
+                                                                                >
+                                                                                    כן
+                                                                                </Button>
+                                                                            </Box>
                                                                         </Box>
                                                                     </Box>
+                                                                    <Box></Box>
                                                                 </Box>
-                                                                <Box></Box>
                                                             </Box>
-                                                        </Box>
 
-                                                        {employee.medicalTreatment.received && (
-                                                            <Box sx={{ width: '100%', mt: 2 }}>
-                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                                                    <Table size="small">
-                                                                        <TableHead>
-                                                                            <TableRow>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מוסד רפואי</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
-                                                                            </TableRow>
-                                                                        </TableHead>
-                                                                        <TableBody>
-                                                                            {(employee.medicalTreatment.medicalDocuments || []).map((document, docIndex) => (
-                                                                                <TableRow key={docIndex}>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.documentName}
-                                                                                            onChange={(e) => updateMedicalDocument(index, docIndex, 'documentName', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            sx={{
-                                                                                                '& .MuiOutlinedInput-root': {
-                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                },
-                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                            }}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.medicalInstitution}
-                                                                                            onChange={(e) => updateMedicalDocument(index, docIndex, 'medicalInstitution', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            sx={{
-                                                                                                '& .MuiOutlinedInput-root': {
-                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                },
-                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                            }}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <FileUpload
-                                                                                            label="מסמך רפואי"
-                                                                                            value={document.fileUrl || ''}
-                                                                                            thumbnailUrl={document.thumbnailUrl || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateMedicalDocument(index, docIndex, 'fileUrl', url);
-                                                                                                updateMedicalDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
+                                                            {employee.representative.represented && (
+                                                                <Grid container spacing={3} sx={{ mb: 2, mt: 2 }}>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="שם המייצג"
+                                                                            value={employee.representative.name || ''}
+                                                                            onChange={(e) => updateInjuredEmployeeRepresentative(index, 'name', e.target.value)}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="כתובת"
+                                                                            value={employee.representative.address || ''}
+                                                                            onChange={(e) => updateInjuredEmployeeRepresentative(index, 'address', e.target.value)}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="טלפון"
+                                                                            value={employee.representative.phone || ''}
+                                                                            onChange={(e) => updateInjuredEmployeeRepresentative(index, 'phone', e.target.value)}
+                                                                            variant="outlined"
+                                                                            error={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone)}
+                                                                            helperText={employee.representative.phone && employee.representative.phone.length > 0 && !validateIsraeliMobile(employee.representative.phone) ? 'מספר טלפון לא תקין' : ''}
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="אימייל"
+                                                                            value={employee.representative.email || ''}
+                                                                            onChange={(e) => updateInjuredEmployeeRepresentative(index, 'email', e.target.value)}
+                                                                            variant="outlined"
+                                                                            error={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email)}
+                                                                            helperText={employee.representative.email && employee.representative.email.length > 0 && !validateEmail(employee.representative.email) ? 'כתובת אימייל לא תקינה' : ''}
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                </Grid>
+                                                            )}
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, mt: 4, color: 'text.secondary' }}>
+                                                                מהות הנזק
+                                                            </Typography>
+                                                            <TextField
+                                                                fullWidth
+                                                                multiline
+                                                                rows={3}
+                                                                label="מהות הנזק או הפגיעה"
+                                                                value={employee.injuryDescription}
+                                                                onChange={(e) => updateInjuredEmployee(index, 'injuryDescription', e.target.value)}
+                                                                variant="outlined"
+                                                                sx={{
+                                                                    mb: 3,
+                                                                    '& .MuiOutlinedInput-root': {
+                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                    },
+                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                }}
+                                                            />
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion'); // Throw error to prevent UI clearing
-                                                                                                }
+                                                            <Box sx={{ mt: 3 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                    טיפול רפואי
+                                                                </Typography>
+                                                                <Box sx={{
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '1fr 1fr',
+                                                                    gap: 2
+                                                                }}>
+                                                                    <Box sx={{
+                                                                        display: 'flex',
+                                                                        alignItems: 'flex-start',
+                                                                        justifyContent: 'flex-end'
+                                                                    }}>
+                                                                        <Box sx={{
+                                                                            border: '1px solid #d1d5db',
+                                                                            borderRadius: '4px',
+                                                                            backgroundColor: 'white',
+                                                                            minHeight: '56px',
+                                                                            padding: '0 14px',
+                                                                            direction: 'rtl',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'space-between',
+                                                                            width: '100%'
+                                                                        }}>
+                                                                            <Typography sx={{
+                                                                                fontSize: '1rem',
+                                                                                color: 'text.secondary',
+                                                                                marginRight: '10px'
+                                                                            }}>
+                                                                                טיפול רפואי
+                                                                            </Typography>
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                gap: 0,
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'flex-start',
+                                                                                marginLeft: '10px'
+                                                                            }}>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateInjuredEmployeeMedical(index, 'received', false)}
+                                                                                    sx={{
+                                                                                        borderRadius: '0 4px 4px 0',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        borderLeft: 'none',
+                                                                                        backgroundColor: !employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                        color: !employee.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: !employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem',
+                                                                                        marginRight: '0px'
+                                                                                    }}
+                                                                                >
+                                                                                    לא
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => {
+                                                                                        updateInjuredEmployeeMedical(index, 'received', true);
+                                                                                        if (!employee.medicalTreatment.medicalDocuments || employee.medicalTreatment.medicalDocuments.length === 0) {
+                                                                                            initializeMedicalDocuments(index);
+                                                                                        }
+                                                                                    }}
+                                                                                    sx={{
+                                                                                        borderRadius: '4px 0 0 4px',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        backgroundColor: employee.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                        color: employee.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: employee.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem'
+                                                                                    }}
+                                                                                >
+                                                                                    כן
+                                                                                </Button>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    </Box>
+                                                                    <Box></Box>
+                                                                </Box>
+                                                            </Box>
 
-                                                                                                // Delete file from Blob storage
-                                                                                                if (document.fileUrl) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
-                                                                                                        });
+                                                            {employee.medicalTreatment.received && (
+                                                                <Box sx={{ width: '100%', mt: 2 }}>
+                                                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                        <Table size="small">
+                                                                            <TableHead>
+                                                                                <TableRow>
+                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
+                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מוסד רפואי</TableCell>
+                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
+                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                                                </TableRow>
+                                                                            </TableHead>
+                                                                            <TableBody>
+                                                                                {(employee.medicalTreatment.medicalDocuments || []).map((document, docIndex) => (
+                                                                                    <TableRow key={docIndex}>
+                                                                                        <TableCell>
+                                                                                            <TextField
+                                                                                                fullWidth
+                                                                                                size="small"
+                                                                                                value={document.documentName}
+                                                                                                onChange={(e) => updateMedicalDocument(index, docIndex, 'documentName', e.target.value)}
+                                                                                                variant="outlined"
+                                                                                                sx={{
+                                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                    },
+                                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                }}
+                                                                                            />
+                                                                                        </TableCell>
+                                                                                        <TableCell>
+                                                                                            <TextField
+                                                                                                fullWidth
+                                                                                                size="small"
+                                                                                                value={document.medicalInstitution}
+                                                                                                onChange={(e) => updateMedicalDocument(index, docIndex, 'medicalInstitution', e.target.value)}
+                                                                                                variant="outlined"
+                                                                                                sx={{
+                                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                    },
+                                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                }}
+                                                                                            />
+                                                                                        </TableCell>
+                                                                                        <TableCell>
+                                                                                            <FileUpload
+                                                                                                label="מסמך רפואי"
+                                                                                                value={document.fileUrl || ''}
+                                                                                                thumbnailUrl={document.thumbnailUrl || ''}
+                                                                                                onChange={(url, thumbnailUrl) => {
+                                                                                                    updateMedicalDocument(index, docIndex, 'fileUrl', url);
+                                                                                                    updateMedicalDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
+                                                                                                }}
+                                                                                                onDelete={async () => {
+                                                                                                    // Show confirmation dialog
+                                                                                                    const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
 
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
-                                                                                                            throw new Error('Failed to delete file from storage');
-                                                                                                        }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
+                                                                                                    const confirmed = window.confirm(confirmMessage);
+
+                                                                                                    if (!confirmed) {
+                                                                                                        throw new Error('User cancelled deletion'); // Throw error to prevent UI clearing
                                                                                                     }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (document.thumbnailUrl) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
-                                                                                                        });
+                                                                                                    // Delete file from Blob storage
+                                                                                                    if (document.fileUrl) {
+                                                                                                        try {
+                                                                                                            const response = await fetch('/api/upload/delete-file', {
+                                                                                                                method: 'POST',
+                                                                                                                headers: {
+                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                },
+                                                                                                                body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                            });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                                                                                                            if (!response.ok) {
+                                                                                                                console.warn('Failed to delete file from Blob storage:', document.fileUrl);
+                                                                                                                throw new Error('Failed to delete file from storage');
+                                                                                                            }
+                                                                                                        } catch (error) {
+                                                                                                            console.warn('Error deleting file from Blob storage:', error);
+                                                                                                            throw error;
+                                                                                                        }
+                                                                                                    }
+
+                                                                                                    // Delete thumbnail from Blob storage
+                                                                                                    if (document.thumbnailUrl) {
+                                                                                                        try {
+                                                                                                            const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                method: 'POST',
+                                                                                                                headers: {
+                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                },
+                                                                                                                body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                            });
+
+                                                                                                            if (!thumbnailResponse.ok) {
+                                                                                                                console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                                                                                                                // Don't throw error for thumbnail deletion failure
+                                                                                                            }
+                                                                                                        } catch (error) {
+                                                                                                            console.warn('Error deleting thumbnail from Blob storage:', error);
                                                                                                             // Don't throw error for thumbnail deletion failure
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                        // Don't throw error for thumbnail deletion failure
                                                                                                     }
-                                                                                                }
 
-                                                                                                // Clear the file URLs in the document
-                                                                                                updateMedicalDocument(index, docIndex, 'fileUrl', '');
-                                                                                                updateMedicalDocument(index, docIndex, 'thumbnailUrl', '');
+                                                                                                    // Clear the file URLs in the document
+                                                                                                    updateMedicalDocument(index, docIndex, 'fileUrl', '');
+                                                                                                    updateMedicalDocument(index, docIndex, 'thumbnailUrl', '');
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            projectId={formData.projectId}
-                                                                                            accept=".pdf,.jpg,.jpeg,.png"
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            type="date"
-                                                                                            value={document.validUntil || ''}
-                                                                                            onChange={(e) => updateMedicalDocument(index, docIndex, 'validUntil', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                            sx={{
-                                                                                                '& .MuiOutlinedInput-root': {
-                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                },
-                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                            }}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        {docIndex > 0 && (
-                                                                                            <MuiIconButton
-                                                                                                onClick={() => removeMedicalDocument(index, docIndex)}
-                                                                                                sx={{
-                                                                                                    color: '#f44336',
-                                                                                                    '&:hover': {
-                                                                                                        backgroundColor: '#ffebee',
-                                                                                                        color: '#d32f2f'
-                                                                                                    }
+                                                                                                    // Show success message
+                                                                                                    setSnackbar({
+                                                                                                        open: true,
+                                                                                                        message: 'הקובץ נמחק בהצלחה',
+                                                                                                        severity: 'success'
+                                                                                                    });
                                                                                                 }}
-                                                                                            >
-                                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                                            </MuiIconButton>
-                                                                                        )}
-                                                                                    </TableCell>
-                                                                                </TableRow>
-                                                                            ))}
-                                                                        </TableBody>
-                                                                    </Table>
-                                                                </TableContainer>
-                                                                <Button
-                                                                    variant="contained"
-                                                                    startIcon={<AddIcon />}
-                                                                    onClick={() => addMedicalDocument(index)}
-                                                                    sx={{
-                                                                        bgcolor: '#6b47c1',
-                                                                        '&:hover': { bgcolor: '#5a3aa1' }
-                                                                    }}
-                                                                >
-                                                                    + הוספה
-                                                                </Button>
+                                                                                                projectId={formData.projectId}
+                                                                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                                                            />
+                                                                                        </TableCell>
+                                                                                        <TableCell>
+                                                                                            <TextField
+                                                                                                fullWidth
+                                                                                                size="small"
+                                                                                                type="date"
+                                                                                                value={document.validUntil || ''}
+                                                                                                onChange={(e) => updateMedicalDocument(index, docIndex, 'validUntil', e.target.value)}
+                                                                                                variant="outlined"
+                                                                                                InputLabelProps={{ shrink: true }}
+                                                                                                sx={{
+                                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                    },
+                                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                }}
+                                                                                            />
+                                                                                        </TableCell>
+                                                                                        <TableCell>
+                                                                                            {docIndex > 0 && (
+                                                                                                <MuiIconButton
+                                                                                                    onClick={() => removeMedicalDocument(index, docIndex)}
+                                                                                                    sx={{
+                                                                                                        color: '#f44336',
+                                                                                                        '&:hover': {
+                                                                                                            backgroundColor: '#ffebee',
+                                                                                                            color: '#d32f2f'
+                                                                                                        }
+                                                                                                    }}
+                                                                                                >
+                                                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                                </MuiIconButton>
+                                                                                            )}
+                                                                                        </TableCell>
+                                                                                    </TableRow>
+                                                                                ))}
+                                                                            </TableBody>
+                                                                        </Table>
+                                                                    </TableContainer>
+                                                                    <Button
+                                                                        variant="contained"
+                                                                        startIcon={<AddIcon />}
+                                                                        onClick={() => addMedicalDocument(index)}
+                                                                        sx={{
+                                                                            bgcolor: '#6b47c1',
+                                                                            '&:hover': { bgcolor: '#5a3aa1' }
+                                                                        }}
+                                                                    >
+                                                                        + הוספה
+                                                                    </Button>
+                                                                </Box>
+                                                            )}
+
+                                                            <Box sx={{ mt: 3 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                    דיווחים
+                                                                </Typography>
+
+                                                                <Grid container spacing={2}>
+                                                                    <Grid item xs={12} sm={4}>
+                                                                        <Typography variant="body2" sx={{ mb: 1 }}>מוסד לביטוח לאומי</Typography>
+                                                                        <FormControl component="fieldset">
+                                                                            <RadioGroup
+                                                                                value={employee.nationalInsuranceReport.reported}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', e.target.value === 'true')}
+                                                                                row
+                                                                            >
+                                                                                <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                                <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                            </RadioGroup>
+                                                                        </FormControl>
+                                                                        {employee.nationalInsuranceReport.reported && (
+                                                                            <Box sx={{ mt: 1 }}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    type="date"
+                                                                                    label="תאריך דיווח"
+                                                                                    value={employee.nationalInsuranceReport.reportDate || ''}
+                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportDate', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                    sx={{ mb: 1 }}
+                                                                                />
+                                                                                <Button
+                                                                                    variant="outlined"
+                                                                                    component="label"
+                                                                                    size="small"
+                                                                                    sx={{
+                                                                                        borderColor: '#6b47c1',
+                                                                                        color: '#6b47c1',
+                                                                                        '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                    }}
+                                                                                >
+                                                                                    העלה אישור דיווח
+                                                                                    <input type="file" hidden />
+                                                                                </Button>
+                                                                            </Box>
+                                                                        )}
+                                                                    </Grid>
+
+                                                                    <Grid item xs={12} sm={4}>
+                                                                        <Typography variant="body2" sx={{ mb: 1 }}>משרד העבודה</Typography>
+                                                                        <FormControl component="fieldset">
+                                                                            <RadioGroup
+                                                                                value={employee.laborMinistryReport.reported}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', e.target.value === 'true')}
+                                                                                row
+                                                                            >
+                                                                                <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                                <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                            </RadioGroup>
+                                                                        </FormControl>
+                                                                        {employee.laborMinistryReport.reported && (
+                                                                            <Box sx={{ mt: 1 }}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    type="date"
+                                                                                    label="תאריך דיווח"
+                                                                                    value={employee.laborMinistryReport.reportDate || ''}
+                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportDate', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                    sx={{ mb: 1 }}
+                                                                                />
+                                                                                <Button
+                                                                                    variant="outlined"
+                                                                                    component="label"
+                                                                                    size="small"
+                                                                                    sx={{
+                                                                                        borderColor: '#6b47c1',
+                                                                                        color: '#6b47c1',
+                                                                                        '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                    }}
+                                                                                >
+                                                                                    העלה אישור דיווח
+                                                                                    <input type="file" hidden />
+                                                                                </Button>
+                                                                            </Box>
+                                                                        )}
+                                                                    </Grid>
+
+                                                                    <Grid item xs={12} sm={4}>
+                                                                        <Typography variant="body2" sx={{ mb: 1 }}>משטרה</Typography>
+                                                                        <FormControl component="fieldset">
+                                                                            <RadioGroup
+                                                                                value={employee.policeReport.reported}
+                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reported', e.target.value === 'true')}
+                                                                                row
+                                                                            >
+                                                                                <FormControlLabel value={false} control={<Radio />} label="לא" />
+                                                                                <FormControlLabel value={true} control={<Radio />} label="כן" />
+                                                                            </RadioGroup>
+                                                                        </FormControl>
+                                                                        {employee.policeReport.reported && (
+                                                                            <Box sx={{ mt: 1 }}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="שם התחנה"
+                                                                                    value={employee.policeReport.stationName || ''}
+                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'stationName', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    sx={{ mb: 1 }}
+                                                                                />
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    type="date"
+                                                                                    label="תאריך דיווח"
+                                                                                    value={employee.policeReport.reportDate || ''}
+                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reportDate', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                    sx={{ mb: 1 }}
+                                                                                />
+                                                                                <Button
+                                                                                    variant="outlined"
+                                                                                    component="label"
+                                                                                    size="small"
+                                                                                    sx={{
+                                                                                        borderColor: '#6b47c1',
+                                                                                        color: '#6b47c1',
+                                                                                        '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
+                                                                                    }}
+                                                                                >
+                                                                                    העלה אישור דיווח
+                                                                                    <input type="file" hidden />
+                                                                                </Button>
+                                                                            </Box>
+                                                                        )}
+                                                                    </Grid>
+                                                                </Grid>
                                                             </Box>
-                                                        )}
-
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                דיווחים
-                                                            </Typography>
-
-                                                            <Grid container spacing={2}>
-                                                                <Grid item xs={12} sm={4}>
-                                                                    <Typography variant="body2" sx={{ mb: 1 }}>מוסד לביטוח לאומי</Typography>
-                                                                    <FormControl component="fieldset">
-                                                                        <RadioGroup
-                                                                            value={employee.nationalInsuranceReport.reported}
-                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', e.target.value === 'true')}
-                                                                            row
-                                                                        >
-                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                        </RadioGroup>
-                                                                    </FormControl>
-                                                                    {employee.nationalInsuranceReport.reported && (
-                                                                        <Box sx={{ mt: 1 }}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                type="date"
-                                                                                label="תאריך דיווח"
-                                                                                value={employee.nationalInsuranceReport.reportDate || ''}
-                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportDate', e.target.value)}
-                                                                                variant="outlined"
-                                                                                InputLabelProps={{ shrink: true }}
-                                                                                sx={{ mb: 1 }}
-                                                                            />
-                                                                            <Button
-                                                                                variant="outlined"
-                                                                                component="label"
-                                                                                size="small"
-                                                                                sx={{
-                                                                                    borderColor: '#6b47c1',
-                                                                                    color: '#6b47c1',
-                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
-                                                                                }}
-                                                                            >
-                                                                                העלה אישור דיווח
-                                                                                <input type="file" hidden />
-                                                                            </Button>
-                                                                        </Box>
-                                                                    )}
-                                                                </Grid>
-
-                                                                <Grid item xs={12} sm={4}>
-                                                                    <Typography variant="body2" sx={{ mb: 1 }}>משרד העבודה</Typography>
-                                                                    <FormControl component="fieldset">
-                                                                        <RadioGroup
-                                                                            value={employee.laborMinistryReport.reported}
-                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', e.target.value === 'true')}
-                                                                            row
-                                                                        >
-                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                        </RadioGroup>
-                                                                    </FormControl>
-                                                                    {employee.laborMinistryReport.reported && (
-                                                                        <Box sx={{ mt: 1 }}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                type="date"
-                                                                                label="תאריך דיווח"
-                                                                                value={employee.laborMinistryReport.reportDate || ''}
-                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportDate', e.target.value)}
-                                                                                variant="outlined"
-                                                                                InputLabelProps={{ shrink: true }}
-                                                                                sx={{ mb: 1 }}
-                                                                            />
-                                                                            <Button
-                                                                                variant="outlined"
-                                                                                component="label"
-                                                                                size="small"
-                                                                                sx={{
-                                                                                    borderColor: '#6b47c1',
-                                                                                    color: '#6b47c1',
-                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
-                                                                                }}
-                                                                            >
-                                                                                העלה אישור דיווח
-                                                                                <input type="file" hidden />
-                                                                            </Button>
-                                                                        </Box>
-                                                                    )}
-                                                                </Grid>
-
-                                                                <Grid item xs={12} sm={4}>
-                                                                    <Typography variant="body2" sx={{ mb: 1 }}>משטרה</Typography>
-                                                                    <FormControl component="fieldset">
-                                                                        <RadioGroup
-                                                                            value={employee.policeReport.reported}
-                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reported', e.target.value === 'true')}
-                                                                            row
-                                                                        >
-                                                                            <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                            <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                        </RadioGroup>
-                                                                    </FormControl>
-                                                                    {employee.policeReport.reported && (
-                                                                        <Box sx={{ mt: 1 }}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                label="שם התחנה"
-                                                                                value={employee.policeReport.stationName || ''}
-                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'stationName', e.target.value)}
-                                                                                variant="outlined"
-                                                                                sx={{ mb: 1 }}
-                                                                            />
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                type="date"
-                                                                                label="תאריך דיווח"
-                                                                                value={employee.policeReport.reportDate || ''}
-                                                                                onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reportDate', e.target.value)}
-                                                                                variant="outlined"
-                                                                                InputLabelProps={{ shrink: true }}
-                                                                                sx={{ mb: 1 }}
-                                                                            />
-                                                                            <Button
-                                                                                variant="outlined"
-                                                                                component="label"
-                                                                                size="small"
-                                                                                sx={{
-                                                                                    borderColor: '#6b47c1',
-                                                                                    color: '#6b47c1',
-                                                                                    '&:hover': { borderColor: '#5a3aa1', backgroundColor: '#f3f0ff' }
-                                                                                }}
-                                                                            >
-                                                                                העלה אישור דיווח
-                                                                                <input type="file" hidden />
-                                                                            </Button>
-                                                                        </Box>
-                                                                    )}
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Box>
-                                                    </Paper>
+                                                        </Paper>
                                                     );
                                                 })}
 
