@@ -696,6 +696,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const projectData = await projectsAPI.getById(projectId);
                         if (projectData) {
                             console.log('✅ Project loaded from server:', projectData);
+                            console.log('✅ Project name:', projectData.projectName);
+                            console.log('✅ Project city:', projectData.city);
+                            console.log('✅ Project description:', projectData.description);
+                            console.log('✅ Project start date:', projectData.startDate);
                             console.log('✅ Stakeholders loaded from server:', projectData.stakeholders);
 
                             // If key fields exist at root level, move them to nested structure for UI compatibility
@@ -742,6 +746,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     }
                                 };
                                 console.log('🔄 Processed project data with nested fields:', processedProjectData);
+                                console.log('🔄 Setting project state with processed data');
                                 setProject(processedProjectData);
 
                                 // Update exists fields automatically based on file presence
@@ -783,6 +788,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         }
                                     }
                                 };
+                                console.log('🔄 Setting project state with arrays data');
                                 setProject(projectDataWithArrays);
 
                                 // Update exists fields automatically based on file presence
@@ -966,7 +972,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
             console.log('🔍 Loading claims for project:', projectId);
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/project/${projectId}`);
             console.log('🔍 Claims API response status:', response.status);
-            
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('✅ Loaded claims data:', data);
@@ -1059,7 +1065,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
         console.log('🔍 Project object:', project);
         console.log('🔍 Project ID:', project?._id || project?.id);
         console.log('🔍 Project name:', project?.projectName);
-        
+
         // Navigate to claim form in the same window
         const projectId = project?._id || project?.id;
         if (projectId) {
@@ -1948,6 +1954,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     useEffect(() => {
         if (project && (project._id || project.id)) {
             loadClaims();
+        }
+    }, [project]);
+
+    // Debug project state changes
+    useEffect(() => {
+        if (project) {
+            console.log('🔍 Project state updated:', project);
+            console.log('🔍 Project name in state:', project.projectName);
+            console.log('🔍 Project city in state:', project.city);
+            console.log('🔍 Project description in state:', project.description);
+            console.log('🔍 Project start date in state:', project.startDate);
         }
     }, [project]);
 
