@@ -2727,22 +2727,92 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                             דיווחים
                                                                         </Typography>
+                                                                        <Box sx={{
+                                                                            display: 'grid',
+                                                                            gridTemplateColumns: '1fr 1fr',
+                                                                            gap: 2
+                                                                        }}>
+                                                                            {/* National Insurance Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        מוסד לביטוח לאומי
+                                                                                    </Typography>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        gap: 0,
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
+                                                                                    }}>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !employee.nationalInsuranceReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !employee.nationalInsuranceReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !employee.nationalInsuranceReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: employee.nationalInsuranceReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: employee.nationalInsuranceReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: employee.nationalInsuranceReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
 
-                                                                        <Grid container spacing={2}>
-                                                                            <Grid item xs={12} sm={4}>
-                                                                                <Typography variant="body2" sx={{ mb: 1 }}>מוסד לביטוח לאומי</Typography>
-                                                                                <FormControl component="fieldset">
-                                                                                    <RadioGroup
-                                                                                        value={employee.nationalInsuranceReport.reported}
-                                                                                        onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reported', e.target.value === 'true')}
-                                                                                        row
-                                                                                    >
-                                                                                        <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                                        <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                                    </RadioGroup>
-                                                                                </FormControl>
+                                                                            {/* National Insurance Report Details */}
+                                                                            <Box>
                                                                                 {employee.nationalInsuranceReport.reported && (
-                                                                                    <Box sx={{ mt: 1 }}>
+                                                                                    <Box>
                                                                                         <TextField
                                                                                             fullWidth
                                                                                             type="date"
@@ -2768,22 +2838,89 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </Button>
                                                                                     </Box>
                                                                                 )}
-                                                                            </Grid>
+                                                                            </Box>
 
-                                                                            <Grid item xs={12} sm={4}>
-                                                                                <Typography variant="body2" sx={{ mb: 1 }}>משרד העבודה</Typography>
-                                                                                <FormControl component="fieldset">
-                                                                                    <RadioGroup
-                                                                                        value={employee.laborMinistryReport.reported}
-                                                                                        onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', e.target.value === 'true')}
-                                                                                        row
-                                                                                    >
-                                                                                        <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                                        <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                                    </RadioGroup>
-                                                                                </FormControl>
+                                                                            {/* Labor Ministry Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        משרד העבודה
+                                                                                    </Typography>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        gap: 0,
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
+                                                                                    }}>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !employee.laborMinistryReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !employee.laborMinistryReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !employee.laborMinistryReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: employee.laborMinistryReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: employee.laborMinistryReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: employee.laborMinistryReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {/* Labor Ministry Report Details */}
+                                                                            <Box>
                                                                                 {employee.laborMinistryReport.reported && (
-                                                                                    <Box sx={{ mt: 1 }}>
+                                                                                    <Box>
                                                                                         <TextField
                                                                                             fullWidth
                                                                                             type="date"
@@ -2809,22 +2946,89 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </Button>
                                                                                     </Box>
                                                                                 )}
-                                                                            </Grid>
+                                                                            </Box>
 
-                                                                            <Grid item xs={12} sm={4}>
-                                                                                <Typography variant="body2" sx={{ mb: 1 }}>משטרה</Typography>
-                                                                                <FormControl component="fieldset">
-                                                                                    <RadioGroup
-                                                                                        value={employee.policeReport.reported}
-                                                                                        onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reported', e.target.value === 'true')}
-                                                                                        row
-                                                                                    >
-                                                                                        <FormControlLabel value={false} control={<Radio />} label="לא" />
-                                                                                        <FormControlLabel value={true} control={<Radio />} label="כן" />
-                                                                                    </RadioGroup>
-                                                                                </FormControl>
+                                                                            {/* Police Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        משטרה
+                                                                                    </Typography>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        gap: 0,
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
+                                                                                    }}>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'policeReport', 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !employee.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !employee.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !employee.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateInjuredEmployeeReport(index, 'policeReport', 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: employee.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: employee.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: employee.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {/* Police Report Details */}
+                                                                            <Box>
                                                                                 {employee.policeReport.reported && (
-                                                                                    <Box sx={{ mt: 1 }}>
+                                                                                    <Box>
                                                                                         <TextField
                                                                                             fullWidth
                                                                                             label="שם התחנה"
@@ -2858,8 +3062,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </Button>
                                                                                     </Box>
                                                                                 )}
-                                                                            </Grid>
-                                                                        </Grid>
+                                                                            </Box>
+                                                                        </Box>
                                                                     </Box>
                                                                 </>
                                                             )}
