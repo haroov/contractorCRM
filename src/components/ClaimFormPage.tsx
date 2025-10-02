@@ -138,6 +138,7 @@ interface ClaimFormData {
     hasAdditionalResponsible: boolean;
     additionalResponsible: AdditionalResponsible[];
     injuredEmployees: InjuredEmployee[];
+    policyDocuments: any[];
     status: string;
     parties: string;
     procedures: string;
@@ -184,6 +185,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         hasAdditionalResponsible: false,
         additionalResponsible: [],
         injuredEmployees: [],
+        policyDocuments: [],
         status: 'open',
         parties: '',
         procedures: '',
@@ -205,6 +207,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 projectId,
                 projectName: decodeURIComponent(projectName)
             }));
+            // Load project data including policy documents
+            loadProjectData(projectId);
         }
 
         // If we have a claimId and mode is edit, load the existing claim
@@ -375,6 +379,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         createdAt: data.claim.createdAt ? new Date(data.claim.createdAt) : new Date(),
                         updatedAt: data.claim.updatedAt ? new Date(data.claim.updatedAt) : new Date()
                     });
+                    // Load project data including policy documents
+                    if (data.claim.projectId) {
+                        await loadProjectData(data.claim.projectId);
+                    }
                 }
             } else {
                 throw new Error('Failed to load claim');
@@ -388,6 +396,24 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadProjectData = async (projectId: string) => {
+        try {
+            const response = await fetch(`https://contractorcrm-api.onrender.com/api/projects/${projectId}`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('🔍 Loaded project data:', data);
+                if (data.success && data.project) {
+                    setFormData(prev => ({
+                        ...prev,
+                        policyDocuments: data.project.policyDocuments || []
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error('Error loading project data:', error);
         }
     };
 
@@ -3365,7 +3391,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 {employee.insuranceCompanyReport.reported && (
                                                                                     <Box>
                                                                                         <Grid container spacing={2}>
-                                                                                            <Grid item xs={12} sm={4}>
+                                                                                            <Grid item xs={12} sm={3}>
                                                                                                 <TextField
                                                                                                     fullWidth
                                                                                                     type="date"
@@ -3376,7 +3402,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                     InputLabelProps={{ shrink: true }}
                                                                                                 />
                                                                                             </Grid>
-                                                                                            <Grid item xs={12} sm={5}>
+                                                                                            <Grid item xs={12} sm={6}>
                                                                                                 <FormControl fullWidth variant="outlined">
                                                                                                     <InputLabel>מספר פוליסה</InputLabel>
                                                                                                     <Select
