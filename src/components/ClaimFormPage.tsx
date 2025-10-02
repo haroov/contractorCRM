@@ -120,6 +120,52 @@ interface InjuredEmployee {
     };
 }
 
+interface ThirdPartyVictim {
+    fullName: string;
+    idNumber: string;
+    phone: string;
+    email: string;
+    age?: number;
+    address: string;
+    workplaceAddress?: string;
+    profession?: string;
+    injuryDescription?: string;
+    propertyDamageDescription?: string;
+    additionalDamageNotes?: string;
+    damageExtent?: string;
+    medicalTreatment: {
+        received: boolean;
+        hospitalName?: string;
+        medicalDocuments: {
+            documentName: string;
+            institution: string;
+            fileUrl: string;
+            thumbnailUrl: string;
+            validityDate: string;
+        }[];
+    };
+    policeReport: {
+        reported: boolean;
+        reportDate?: string;
+        reportFile?: string;
+        reportFileThumbnail?: string;
+        stationName?: string;
+    };
+    insuredNegligence: {
+        contributed: boolean;
+        details?: string;
+    };
+    additionalFactors: {
+        present: boolean;
+        details?: string;
+    };
+    attachedDocuments: {
+        documentName: string;
+        fileUrl: string;
+        thumbnailUrl: string;
+    }[];
+}
+
 interface ClaimFormData {
     projectId: string;
     projectName: string;
@@ -138,6 +184,7 @@ interface ClaimFormData {
     hasAdditionalResponsible: boolean;
     additionalResponsible: AdditionalResponsible[];
     injuredEmployees: InjuredEmployee[];
+    thirdPartyVictims: ThirdPartyVictim[];
     policyDocuments: any[];
     status: string;
     parties: string;
@@ -185,6 +232,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         hasAdditionalResponsible: false,
         additionalResponsible: [],
         injuredEmployees: [],
+        thirdPartyVictims: [],
         policyDocuments: [],
         status: 'open',
         parties: '',
@@ -371,6 +419,41 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 phone: '',
                                 email: ''
                             }
+                        })),
+                        thirdPartyVictims: (data.claim.thirdPartyVictims || []).map((victim: any) => ({
+                            fullName: victim.fullName || '',
+                            idNumber: victim.idNumber || '',
+                            phone: victim.phone || '',
+                            email: victim.email || '',
+                            age: victim.age || undefined,
+                            address: victim.address || '',
+                            workplaceAddress: victim.workplaceAddress || '',
+                            profession: victim.profession || '',
+                            injuryDescription: victim.injuryDescription || '',
+                            propertyDamageDescription: victim.propertyDamageDescription || '',
+                            additionalDamageNotes: victim.additionalDamageNotes || '',
+                            damageExtent: victim.damageExtent || '',
+                            medicalTreatment: {
+                                received: victim.medicalTreatment?.received || false,
+                                hospitalName: victim.medicalTreatment?.hospitalName || '',
+                                medicalDocuments: victim.medicalTreatment?.medicalDocuments || []
+                            },
+                            policeReport: {
+                                reported: victim.policeReport?.reported || false,
+                                reportDate: victim.policeReport?.reportDate || '',
+                                reportFile: victim.policeReport?.reportFile || '',
+                                reportFileThumbnail: victim.policeReport?.reportFileThumbnail || '',
+                                stationName: victim.policeReport?.stationName || ''
+                            },
+                            insuredNegligence: {
+                                contributed: victim.insuredNegligence?.contributed || false,
+                                details: victim.insuredNegligence?.details || ''
+                            },
+                            additionalFactors: {
+                                present: victim.additionalFactors?.present || false,
+                                details: victim.additionalFactors?.details || ''
+                            },
+                            attachedDocuments: victim.attachedDocuments || []
                         })),
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
@@ -828,6 +911,210 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         setExpandedEmployees(prev => ({
             ...prev,
             [index]: prev[index] === true ? false : true
+        }));
+    };
+
+    const addThirdPartyVictim = () => {
+        const newVictim: ThirdPartyVictim = {
+            fullName: '',
+            idNumber: '',
+            phone: '',
+            email: '',
+            address: '',
+            medicalTreatment: {
+                received: false,
+                medicalDocuments: []
+            },
+            policeReport: {
+                reported: false
+            },
+            insuredNegligence: {
+                contributed: false
+            },
+            additionalFactors: {
+                present: false
+            },
+            attachedDocuments: []
+        };
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: [...prev.thirdPartyVictims, newVictim],
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeThirdPartyVictim = (index: number) => {
+        if (window.confirm('האם אתה בטוח שברצונך למחוק את פרטי הניזוק?')) {
+            setFormData(prev => ({
+                ...prev,
+                thirdPartyVictims: prev.thirdPartyVictims.filter((_, i) => i !== index),
+                updatedAt: new Date()
+            }));
+        }
+    };
+
+    const updateThirdPartyVictim = (index: number, field: keyof ThirdPartyVictim, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? { ...victim, [field]: value } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimMedical = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    medicalTreatment: { ...victim.medicalTreatment, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimPolice = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    policeReport: { ...victim.policeReport, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimNegligence = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    insuredNegligence: { ...victim.insuredNegligence, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimFactors = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    additionalFactors: { ...victim.additionalFactors, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const addThirdPartyMedicalDocument = (victimIndex: number) => {
+        const newDocument = {
+            documentName: '',
+            institution: '',
+            fileUrl: '',
+            thumbnailUrl: '',
+            validityDate: ''
+        };
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    medicalTreatment: {
+                        ...victim.medicalTreatment,
+                        medicalDocuments: [...victim.medicalTreatment.medicalDocuments, newDocument]
+                    }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeThirdPartyMedicalDocument = (victimIndex: number, docIndex: number) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    medicalTreatment: {
+                        ...victim.medicalTreatment,
+                        medicalDocuments: victim.medicalTreatment.medicalDocuments.filter((_, j) => j !== docIndex)
+                    }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyMedicalDocument = (victimIndex: number, docIndex: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    medicalTreatment: {
+                        ...victim.medicalTreatment,
+                        medicalDocuments: victim.medicalTreatment.medicalDocuments.map((doc, j) =>
+                            j === docIndex ? { ...doc, [field]: value } : doc
+                        )
+                    }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const addThirdPartyAttachedDocument = (victimIndex: number) => {
+        const newDocument = {
+            documentName: '',
+            fileUrl: '',
+            thumbnailUrl: ''
+        };
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    attachedDocuments: [...victim.attachedDocuments, newDocument]
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const removeThirdPartyAttachedDocument = (victimIndex: number, docIndex: number) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    attachedDocuments: victim.attachedDocuments.filter((_, j) => j !== docIndex)
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyAttachedDocument = (victimIndex: number, docIndex: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === victimIndex ? {
+                    ...victim,
+                    attachedDocuments: victim.attachedDocuments.map((doc, j) =>
+                        j === docIndex ? { ...doc, [field]: value } : doc
+                    )
+                } : victim
+            ),
+            updatedAt: new Date()
         }));
     };
 
