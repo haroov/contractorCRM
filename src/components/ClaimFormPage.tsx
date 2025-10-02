@@ -112,6 +112,12 @@ interface InjuredEmployee {
         reportFileThumbnail?: string;
         stationName?: string;
     };
+    insuranceCompanyReport: {
+        reported: boolean;
+        reportDate?: string;
+        policyNumber?: string;
+        claimNumber?: string;
+    };
 }
 
 interface ClaimFormData {
@@ -348,6 +354,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 reportFile: employee.policeReport?.reportFile || '',
                                 reportFileThumbnail: employee.policeReport?.reportFileThumbnail || ''
                             },
+                            insuranceCompanyReport: {
+                                reported: employee.insuranceCompanyReport?.reported || false,
+                                reportDate: employee.insuranceCompanyReport?.reportDate || '',
+                                policyNumber: employee.insuranceCompanyReport?.policyNumber || '',
+                                claimNumber: employee.insuranceCompanyReport?.claimNumber || ''
+                            },
                             representative: employee.representative || {
                                 represented: false,
                                 name: '',
@@ -440,6 +452,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                stationName: '',
                                reportFile: '',
                                reportFileThumbnail: ''
+                           },
+                           insuranceCompanyReport: {
+                               reported: false,
+                               reportDate: '',
+                               policyNumber: '',
+                               claimNumber: ''
                            },
                     representative: {
                         represented: false,
@@ -545,6 +563,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             },
             policeReport: {
                 reported: false
+            },
+            insuranceCompanyReport: {
+                reported: false,
+                reportDate: '',
+                policyNumber: '',
+                claimNumber: ''
             }
         };
         setFormData(prev => ({
@@ -761,7 +785,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         }));
     };
 
-    const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport', field: string, value: any) => {
+    const updateInjuredEmployeeReport = (index: number, reportType: 'nationalInsuranceReport' | 'laborMinistryReport' | 'policeReport' | 'insuranceCompanyReport', field: string, value: any) => {
         setFormData(prev => ({
             ...prev,
             injuredEmployees: prev.injuredEmployees.map((employee, i) =>
@@ -3253,6 +3277,109 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 });
                                                                                             }}
                                                                                         />
+                                                                                            </Grid>
+                                                                                        </Grid>
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Box>
+
+                                                                            {/* Insurance Company Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{ width: '100%' }}>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-end',
+                                                                                        mb: 1
+                                                                                    }}>
+                                                                                        <Typography variant="body2" sx={{ mr: 2, color: '#666' }}>
+                                                                                            חברת ביטוח
+                                                                                        </Typography>
+                                                                                        <Box sx={{ display: 'flex' }}>
+                                                                                            <Button
+                                                                                                variant="text"
+                                                                                                onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', false)}
+                                                                                                sx={{
+                                                                                                    borderRadius: '0 4px 4px 0',
+                                                                                                    border: '1px solid #d1d5db',
+                                                                                                    borderLeft: 'none',
+                                                                                                    backgroundColor: !employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                    color: !employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                    minWidth: '40px',
+                                                                                                    height: '32px',
+                                                                                                    textTransform: 'none',
+                                                                                                    fontSize: '0.875rem',
+                                                                                                    marginRight: '0px'
+                                                                                                }}
+                                                                                            >
+                                                                                                לא
+                                                                                            </Button>
+                                                                                            <Button
+                                                                                                variant="text"
+                                                                                                onClick={() => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reported', true)}
+                                                                                                sx={{
+                                                                                                    borderRadius: '4px 0 0 4px',
+                                                                                                    border: '1px solid #d1d5db',
+                                                                                                    backgroundColor: employee.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                    color: employee.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                    minWidth: '40px',
+                                                                                                    height: '32px',
+                                                                                                    textTransform: 'none',
+                                                                                                    fontSize: '0.875rem',
+                                                                                                    marginRight: '0px'
+                                                                                                }}
+                                                                                            >
+                                                                                                כן
+                                                                                            </Button>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {/* Insurance Company Report Details */}
+                                                                            <Box>
+                                                                                {employee.insuranceCompanyReport.reported && (
+                                                                                    <Box>
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={employee.insuranceCompanyReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <FormControl fullWidth variant="outlined">
+                                                                                                    <InputLabel>מספר פוליסה</InputLabel>
+                                                                                                    <Select
+                                                                                                        value={employee.insuranceCompanyReport.policyNumber || ''}
+                                                                                                        onChange={(e) => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'policyNumber', e.target.value)}
+                                                                                                        label="מספר פוליסה"
+                                                                                                    >
+                                                                                                        {formData.insurancePolicies?.map((policy, policyIndex) => (
+                                                                                                            <MenuItem key={policyIndex} value={policy.policyNumber}>
+                                                                                                                {policy.policyNumber} - {policy.insuranceCompany}
+                                                                                                            </MenuItem>
+                                                                                                        ))}
+                                                                                                    </Select>
+                                                                                                </FormControl>
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    label="מספר תביעה בחברת הביטוח"
+                                                                                                    value={employee.insuranceCompanyReport.claimNumber || ''}
+                                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'claimNumber', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
