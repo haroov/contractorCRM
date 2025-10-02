@@ -955,22 +955,30 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const loadClaims = async () => {
-        if (!project?._id && !project?.id) return;
+        if (!project?._id && !project?.id) {
+            console.log('❌ No project ID available for loading claims');
+            return;
+        }
 
         setLoadingClaims(true);
         try {
             const projectId = project._id || project.id;
-            console.log('Loading claims for project:', projectId);
+            console.log('🔍 Loading claims for project:', projectId);
             const response = await fetch(`https://contractorcrm-api.onrender.com/api/claims/project/${projectId}`);
+            console.log('🔍 Claims API response status:', response.status);
+            
             if (response.ok) {
                 const data = await response.json();
-                console.log('Loaded claims:', data.claims);
+                console.log('✅ Loaded claims data:', data);
+                console.log('✅ Claims array:', data.claims);
                 setClaims(data.claims || []);
             } else {
-                console.error('Failed to load claims:', response.status, response.statusText);
+                console.error('❌ Failed to load claims:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('❌ Error response:', errorText);
             }
         } catch (error) {
-            console.error('Error loading claims:', error);
+            console.error('❌ Error loading claims:', error);
         } finally {
             setLoadingClaims(false);
         }
@@ -1047,11 +1055,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleOpenClaimDialog = () => {
+        console.log('🔍 Add Claim button clicked');
+        console.log('🔍 Project object:', project);
+        console.log('🔍 Project ID:', project?._id || project?.id);
+        console.log('🔍 Project name:', project?.projectName);
+        
         // Navigate to claim form in the same window
         const projectId = project?._id || project?.id;
         if (projectId) {
             const claimUrl = `/claim-form?projectId=${projectId}&projectName=${encodeURIComponent(project?.projectName || '')}`;
+            console.log('🔍 Navigating to claim URL:', claimUrl);
             navigate(claimUrl);
+        } else {
+            console.error('❌ No project ID available for creating claim');
         }
     };
 
