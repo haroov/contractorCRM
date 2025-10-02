@@ -2822,17 +2822,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             <Box>
                                                                                 {employee.nationalInsuranceReport.reported && (
                                                                                     <Box>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            type="date"
-                                                                                            label="תאריך דיווח"
-                                                                                            value={employee.nationalInsuranceReport.reportDate || ''}
-                                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportDate', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                            sx={{ mb: 1 }}
-                                                                                        />
-                                                                                        <FileUpload
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={employee.nationalInsuranceReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <FileUpload
                                                                                             label="אישור דיווח"
                                                                                             value={employee.nationalInsuranceReport.reportFile || ''}
                                                                                             thumbnailUrl={employee.nationalInsuranceReport.reportFileThumbnail || ''}
@@ -2902,6 +2905,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 });
                                                                                             }}
                                                                                         />
+                                                                                            </Grid>
+                                                                                        </Grid>
                                                                                     </Box>
                                                                                 )}
                                                                             </Box>
@@ -2987,17 +2992,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             <Box>
                                                                                 {employee.laborMinistryReport.reported && (
                                                                                     <Box>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            type="date"
-                                                                                            label="תאריך דיווח"
-                                                                                            value={employee.laborMinistryReport.reportDate || ''}
-                                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportDate', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                            sx={{ mb: 1 }}
-                                                                                        />
-                                                                                        <FileUpload
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={employee.laborMinistryReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <FileUpload
                                                                                             label="אישור דיווח"
                                                                                             value={employee.laborMinistryReport.reportFile || ''}
                                                                                             thumbnailUrl={employee.laborMinistryReport.reportFileThumbnail || ''}
@@ -3067,6 +3075,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 });
                                                                                             }}
                                                                                         />
+                                                                                            </Grid>
+                                                                                        </Grid>
                                                                                     </Box>
                                                                                 )}
                                                                             </Box>
@@ -3158,19 +3168,22 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             value={employee.policeReport.stationName || ''}
                                                                                             onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'stationName', e.target.value)}
                                                                                             variant="outlined"
-                                                                                            sx={{ mb: 1 }}
+                                                                                            sx={{ mb: 2 }}
                                                                                         />
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            type="date"
-                                                                                            label="תאריך דיווח"
-                                                                                            value={employee.policeReport.reportDate || ''}
-                                                                                            onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reportDate', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                            sx={{ mb: 1 }}
-                                                                                        />
-                                                                                        <FileUpload
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={employee.policeReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateInjuredEmployeeReport(index, 'policeReport', 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <FileUpload
                                                                                             label="אישור דיווח"
                                                                                             value={employee.policeReport.reportFile || ''}
                                                                                             thumbnailUrl={employee.policeReport.reportFileThumbnail || ''}
@@ -3240,6 +3253,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 });
                                                                                             }}
                                                                                         />
+                                                                                            </Grid>
+                                                                                        </Grid>
                                                                                     </Box>
                                                                                 )}
                                                                             </Box>
