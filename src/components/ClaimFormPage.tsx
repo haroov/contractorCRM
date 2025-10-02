@@ -1989,7 +1989,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </Box>
                                                             </Box>
 
-                                                            {/* Always show first row (name and ID) - This should always be visible */}
+                                                            {/* Always show first row (name, ID, birth date, address) - This should always be visible */}
                                                             <Grid container spacing={2} sx={{ mb: expandedEmployees[index] === false ? 0 : 2 }}>
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
@@ -2032,46 +2032,46 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         }}
                                                                     />
                                                                 </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="date"
+                                                                        label="תאריך לידה"
+                                                                        value={employee.birthDate}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'birthDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{ shrink: true }}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="כתובת מגורים"
+                                                                        value={employee.address}
+                                                                        onChange={(e) => updateInjuredEmployee(index, 'address', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
                                                             </Grid>
 
                                                             {/* Show rest of content only when expanded */}
                                                             {expandedEmployees[index] !== false && (
                                                                 <>
                                                                     <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                                        <Grid item xs={12} sm={6}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                type="date"
-                                                                                label="תאריך לידה"
-                                                                                value={employee.birthDate}
-                                                                                onChange={(e) => updateInjuredEmployee(index, 'birthDate', e.target.value)}
-                                                                                variant="outlined"
-                                                                                InputLabelProps={{ shrink: true }}
-                                                                                sx={{
-                                                                                    '& .MuiOutlinedInput-root': {
-                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                    },
-                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                }}
-                                                                            />
-                                                                        </Grid>
-                                                                        <Grid item xs={12} sm={6}>
-                                                                            <TextField
-                                                                                fullWidth
-                                                                                label="כתובת מגורים"
-                                                                                value={employee.address}
-                                                                                onChange={(e) => updateInjuredEmployee(index, 'address', e.target.value)}
-                                                                                variant="outlined"
-                                                                                sx={{
-                                                                                    '& .MuiOutlinedInput-root': {
-                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                    },
-                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                }}
-                                                                            />
-                                                                        </Grid>
                                                                         <Grid item xs={12} sm={6}>
                                                                             <TextField
                                                                                 fullWidth
