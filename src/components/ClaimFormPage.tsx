@@ -1989,8 +1989,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </Box>
                                                             </Box>
 
-                                                            {/* Always show first row (name and ID) */}
-                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
+                                                            {/* Always show first row (name and ID) - This should always be visible */}
+                                                            <Grid container spacing={2} sx={{ mb: expandedEmployees[index] === false ? 0 : 2 }}>
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
                                                                         fullWidth
