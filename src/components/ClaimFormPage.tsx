@@ -3365,7 +3365,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 {employee.insuranceCompanyReport.reported && (
                                                                                     <Box>
                                                                                         <Grid container spacing={2}>
-                                                                                            <Grid item xs={12} sm={6}>
+                                                                                            <Grid item xs={12} sm={4}>
                                                                                                 <TextField
                                                                                                     fullWidth
                                                                                                     type="date"
@@ -3376,7 +3376,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                     InputLabelProps={{ shrink: true }}
                                                                                                 />
                                                                                             </Grid>
-                                                                                            <Grid item xs={12} sm={6}>
+                                                                                            <Grid item xs={12} sm={5}>
                                                                                                 <FormControl fullWidth variant="outlined">
                                                                                                     <InputLabel>מספר פוליסה</InputLabel>
                                                                                                     <Select
@@ -3384,15 +3384,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                         onChange={(e) => updateInjuredEmployeeReport(index, 'insuranceCompanyReport', 'policyNumber', e.target.value)}
                                                                                                         label="מספר פוליסה"
                                                                                                     >
-                                                                                                        {formData.insurancePolicies?.map((policy, policyIndex) => (
+                                                                                                        {formData.policyDocuments?.filter(doc => doc.documentType === 'פוליסה').map((policy, policyIndex) => (
                                                                                                             <MenuItem key={policyIndex} value={policy.policyNumber}>
-                                                                                                                {policy.policyNumber} - {policy.insuranceCompany}
+                                                                                                                {policy.policyNumber} - {policy.insurer}
                                                                                                             </MenuItem>
                                                                                                         ))}
                                                                                                     </Select>
                                                                                                 </FormControl>
                                                                                             </Grid>
-                                                                                            <Grid item xs={12}>
+                                                                                            <Grid item xs={12} sm={3}>
                                                                                                 <TextField
                                                                                                     fullWidth
                                                                                                     label="מספר תביעה בחברת הביטוח"
