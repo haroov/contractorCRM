@@ -155,6 +155,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         severity: 'success' as 'success' | 'error' | 'warning' | 'info'
     });
     const [subcontractors, setSubcontractors] = useState<any[]>([]);
+    const [expandedEmployees, setExpandedEmployees] = useState<{ [key: number]: boolean }>({});
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -761,6 +762,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 } : employee
             ),
             updatedAt: new Date()
+        }));
+    };
+
+    const toggleEmployeeExpansion = (index: number) => {
+        setExpandedEmployees(prev => ({
+            ...prev,
+            [index]: !prev[index]
         }));
     };
 
@@ -1944,9 +1952,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     return (
                                                         <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                    פרטי העובד
-                                                                </Typography>
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                    <MuiIconButton
+                                                                        onClick={() => toggleEmployeeExpansion(index)}
+                                                                        sx={{
+                                                                            color: '#6b47c1',
+                                                                            padding: '4px',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#f3f0ff'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img 
+                                                                            src={expandedEmployees[index] ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"} 
+                                                                            alt={expandedEmployees[index] ? "סגור" : "פתח"} 
+                                                                            style={{ width: '16px', height: '16px' }} 
+                                                                        />
+                                                                    </MuiIconButton>
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                        פרטי העובד
+                                                                    </Typography>
+                                                                </Box>
                                                                 {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
                                                                     <MuiIconButton
                                                                         onClick={() => removeInjuredEmployee(index)}
@@ -1963,6 +1989,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 )}
                                                             </Box>
 
+                                                            {expandedEmployees[index] !== false && (
+                                                            <>
                                                             <Grid container spacing={2} sx={{ mb: 2 }}>
                                                                 <Grid item xs={12} sm={6}>
                                                                     <TextField
@@ -2673,7 +2701,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 borderColor: '#6b47c1',
                                                                                                 color: '#6b47c1',
                                                                                                 backgroundColor: 'white',
-                                                                                                '&:hover': { 
+                                                                                                '&:hover': {
                                                                                                     borderColor: '#5a3aa1',
                                                                                                     color: '#5a3aa1',
                                                                                                     backgroundColor: '#f3f0ff'
@@ -2828,6 +2856,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     </Grid>
                                                                 </Grid>
                                                             </Box>
+                                                            </>
+                                                            )}
                                                         </Paper>
                                                     );
                                                 })}
