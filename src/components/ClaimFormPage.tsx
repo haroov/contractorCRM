@@ -2378,29 +2378,213 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
-                                        {/* Force show third party section */}
-                                        <Typography variant="h4" sx={{ color: 'red', mb: 3, fontSize: '32px', fontWeight: 'bold', textAlign: 'center' }}>
-                                            🔍 טאב נזק - נטען בהצלחה!
-                                        </Typography>
 
-                                        {/* Always show third party section for testing */}
-                                        <Box sx={{ mt: 4, p: 3, border: '3px solid red', backgroundColor: '#ffeeee' }}>
-                                            <Typography variant="h5" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
-                                                אחריות חוקית כלפי צד שלישי (בדיקה)
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ mb: 2 }}>
-                                                זהו סקשן בדיקה - אם אתה רואה את זה, הקוד החדש עובד!
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ mb: 2 }}>
-                                                bodilyInjuryThirdParty: {formData.bodilyInjuryThirdParty ? 'true' : 'false'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ mb: 2 }}>
-                                                propertyDamageThirdParty: {formData.propertyDamageThirdParty ? 'true' : 'false'}
-                                            </Typography>
-                                            <Typography variant="body1" sx={{ mb: 2 }}>
-                                                thirdPartyVictims length: {formData.thirdPartyVictims.length}
-                                            </Typography>
-                                        </Box>
+                                        {/* Legal Liability to Third Party Section */}
+                                        {(formData.bodilyInjuryThirdParty === true || formData.propertyDamageThirdParty === true) && (
+                                            <Box>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                    אחריות חוקית כלפי צד שלישי
+                                                </Typography>
+
+                                                {(formData.thirdPartyVictims.length > 0 ? formData.thirdPartyVictims : [{
+                                                    fullName: '',
+                                                    idNumber: '',
+                                                    phone: '',
+                                                    email: '',
+                                                    age: undefined,
+                                                    address: '',
+                                                    workplaceAddress: '',
+                                                    profession: '',
+                                                    injuryDescription: '',
+                                                    propertyDamageDescription: '',
+                                                    additionalDamageNotes: '',
+                                                    damageExtent: '',
+                                                    medicalTreatment: {
+                                                        received: false,
+                                                        hospitalName: '',
+                                                        medicalDocuments: []
+                                                    },
+                                                    policeReport: {
+                                                        reported: false,
+                                                        reportDate: '',
+                                                        reportFile: '',
+                                                        reportFileThumbnail: '',
+                                                        stationName: ''
+                                                    },
+                                                    insuredNegligence: {
+                                                        contributed: false,
+                                                        details: ''
+                                                    },
+                                                    additionalFactors: {
+                                                        present: false,
+                                                        details: ''
+                                                    },
+                                                    attachedDocuments: []
+                                                }]).map((victim, index) => (
+                                                    <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                פרטי הניזוק {index + 1}
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                <MuiIconButton
+                                                                    onClick={() => removeThirdPartyVictim(index)}
+                                                                    sx={{ 
+                                                                        color: '#f44336',
+                                                                        '&:hover': { 
+                                                                            backgroundColor: '#ffebee',
+                                                                            color: '#d32f2f'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                </MuiIconButton>
+                                                            </Box>
+                                                        </Box>
+
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם מלא"
+                                                                    value={victim.fullName || ''}
+                                                                    onChange={(e) => {
+                                                                        // If this is a temporary victim (not in state), add it to state first
+                                                                        if (formData.thirdPartyVictims.length === 0) {
+                                                                            const newVictim: ThirdPartyVictim = {
+                                                                                fullName: e.target.value,
+                                                                                idNumber: '',
+                                                                                phone: '',
+                                                                                email: '',
+                                                                                age: undefined,
+                                                                                address: '',
+                                                                                workplaceAddress: '',
+                                                                                profession: '',
+                                                                                injuryDescription: '',
+                                                                                propertyDamageDescription: '',
+                                                                                additionalDamageNotes: '',
+                                                                                damageExtent: '',
+                                                                                medicalTreatment: {
+                                                                                    received: false,
+                                                                                    hospitalName: '',
+                                                                                    medicalDocuments: []
+                                                                                },
+                                                                                policeReport: {
+                                                                                    reported: false,
+                                                                                    reportDate: '',
+                                                                                    reportFile: '',
+                                                                                    reportFileThumbnail: '',
+                                                                                    stationName: ''
+                                                                                },
+                                                                                insuredNegligence: {
+                                                                                    contributed: false,
+                                                                                    details: ''
+                                                                                },
+                                                                                additionalFactors: {
+                                                                                    present: false,
+                                                                                    details: ''
+                                                                                },
+                                                                                attachedDocuments: []
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                thirdPartyVictims: [newVictim]
+                                                                            }));
+                                                                        } else {
+                                                                            updateThirdPartyVictim(index, 'fullName', e.target.value);
+                                                                        }
+                                                                    }}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מספר תעודת זהות"
+                                                                    value={victim.idNumber || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'idNumber', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="טלפון נייד"
+                                                                    value={victim.phone || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'phone', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="אימייל"
+                                                                    value={victim.email || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'email', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="כתובת"
+                                                                    value={victim.address || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'address', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Paper>
+                                                ))}
+
+                                                <Button
+                                                    variant="contained"
+                                                    startIcon={<AddIcon />}
+                                                    onClick={addThirdPartyVictim}
+                                                    sx={{
+                                                        bgcolor: '#6b47c1',
+                                                        '&:hover': { bgcolor: '#5a3aa1' }
+                                                    }}
+                                                >
+                                                    הוספת ניזוק נוסף
+                                                </Button>
+                                            </Box>
+                                        )}
 
                                         {formData.bodilyInjuryEmployee === true && (
                                             <Box>
