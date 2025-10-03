@@ -2323,15 +2323,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 }]).map((victim, index) => (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                                            <Typography variant="h6" sx={{ color: '#6b47c1' }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
                                                                 פרטי הניזוק {index + 1}
                                                             </Typography>
                                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                                 <MuiIconButton
                                                                     onClick={() => removeThirdPartyVictim(index)}
-                                                                    sx={{ 
+                                                                    sx={{
                                                                         color: '#f44336',
-                                                                        '&:hover': { 
+                                                                        '&:hover': {
                                                                             backgroundColor: '#ffebee',
                                                                             color: '#d32f2f'
                                                                         }
