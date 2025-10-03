@@ -543,31 +543,31 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         received: false,
                         medicalDocuments: []
                     },
-                           nationalInsuranceReport: {
-                               reported: false,
-                               reportDate: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           laborMinistryReport: {
-                               reported: false,
-                               reportDate: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           policeReport: {
-                               reported: false,
-                               reportDate: '',
-                               stationName: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           insuranceCompanyReport: {
-                               reported: false,
-                               reportDate: '',
-                               policyNumber: '',
-                               claimNumber: ''
-                           },
+                    nationalInsuranceReport: {
+                        reported: false,
+                        reportDate: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    laborMinistryReport: {
+                        reported: false,
+                        reportDate: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    policeReport: {
+                        reported: false,
+                        reportDate: '',
+                        stationName: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    insuranceCompanyReport: {
+                        reported: false,
+                        reportDate: '',
+                        policyNumber: '',
+                        claimNumber: ''
+                    },
                     representative: {
                         represented: false,
                         name: '',
@@ -2279,6 +2279,213 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
+                                        {/* Legal Liability to Third Party Section */}
+                                        {(formData.bodilyInjuryThirdParty === true || formData.propertyDamageThirdParty === true) && (
+                                            <Box sx={{ mt: 4 }}>
+                                                <Typography variant="h5" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
+                                                    אחריות חוקית כלפי צד שלישי
+                                                </Typography>
+
+                                                {(formData.thirdPartyVictims.length > 0 ? formData.thirdPartyVictims : [{
+                                                    fullName: '',
+                                                    idNumber: '',
+                                                    phone: '',
+                                                    email: '',
+                                                    age: undefined,
+                                                    address: '',
+                                                    workplaceAddress: '',
+                                                    profession: '',
+                                                    injuryDescription: '',
+                                                    propertyDamageDescription: '',
+                                                    additionalDamageNotes: '',
+                                                    damageExtent: '',
+                                                    medicalTreatment: {
+                                                        received: false,
+                                                        hospitalName: '',
+                                                        medicalDocuments: []
+                                                    },
+                                                    policeReport: {
+                                                        reported: false,
+                                                        reportDate: '',
+                                                        reportFile: '',
+                                                        reportFileThumbnail: '',
+                                                        stationName: ''
+                                                    },
+                                                    insuredNegligence: {
+                                                        contributed: false,
+                                                        details: ''
+                                                    },
+                                                    additionalFactors: {
+                                                        present: false,
+                                                        details: ''
+                                                    },
+                                                    attachedDocuments: []
+                                                }]).map((victim, index) => (
+                                                    <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                                            <Typography variant="h6" sx={{ color: '#6b47c1' }}>
+                                                                פרטי הניזוק {index + 1}
+                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                <MuiIconButton
+                                                                    onClick={() => removeThirdPartyVictim(index)}
+                                                                    sx={{ 
+                                                                        color: '#f44336',
+                                                                        '&:hover': { 
+                                                                            backgroundColor: '#ffebee',
+                                                                            color: '#d32f2f'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                </MuiIconButton>
+                                                            </Box>
+                                                        </Box>
+
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם מלא"
+                                                                    value={victim.fullName || ''}
+                                                                    onChange={(e) => {
+                                                                        // If this is a temporary victim (not in state), add it to state first
+                                                                        if (formData.thirdPartyVictims.length === 0) {
+                                                                            const newVictim: ThirdPartyVictim = {
+                                                                                fullName: e.target.value,
+                                                                                idNumber: '',
+                                                                                phone: '',
+                                                                                email: '',
+                                                                                age: undefined,
+                                                                                address: '',
+                                                                                workplaceAddress: '',
+                                                                                profession: '',
+                                                                                injuryDescription: '',
+                                                                                propertyDamageDescription: '',
+                                                                                additionalDamageNotes: '',
+                                                                                damageExtent: '',
+                                                                                medicalTreatment: {
+                                                                                    received: false,
+                                                                                    hospitalName: '',
+                                                                                    medicalDocuments: []
+                                                                                },
+                                                                                policeReport: {
+                                                                                    reported: false,
+                                                                                    reportDate: '',
+                                                                                    reportFile: '',
+                                                                                    reportFileThumbnail: '',
+                                                                                    stationName: ''
+                                                                                },
+                                                                                insuredNegligence: {
+                                                                                    contributed: false,
+                                                                                    details: ''
+                                                                                },
+                                                                                additionalFactors: {
+                                                                                    present: false,
+                                                                                    details: ''
+                                                                                },
+                                                                                attachedDocuments: []
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                thirdPartyVictims: [newVictim]
+                                                                            }));
+                                                                        } else {
+                                                                            updateThirdPartyVictim(index, 'fullName', e.target.value);
+                                                                        }
+                                                                    }}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מספר תעודת זהות"
+                                                                    value={victim.idNumber || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'idNumber', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="טלפון נייד"
+                                                                    value={victim.phone || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'phone', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="אימייל"
+                                                                    value={victim.email || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'email', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="כתובת"
+                                                                    value={victim.address || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'address', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Paper>
+                                                ))}
+
+                                                <Button
+                                                    variant="contained"
+                                                    startIcon={<AddIcon />}
+                                                    onClick={addThirdPartyVictim}
+                                                    sx={{
+                                                        bgcolor: '#6b47c1',
+                                                        '&:hover': { bgcolor: '#5a3aa1' }
+                                                    }}
+                                                >
+                                                    הוספת ניזוק נוסף
+                                                </Button>
+                                            </Box>
+                                        )}
+
                                         {formData.bodilyInjuryEmployee === true && (
                                             <Box>
                                                 <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
@@ -2312,10 +2519,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <img 
-                                                                            src={expandedEmployees[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"} 
-                                                                            alt={expandedEmployees[index] === true ? "סגור" : "פתח"} 
-                                                                            style={{ width: '16px', height: '16px' }} 
+                                                                        <img
+                                                                            src={expandedEmployees[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"}
+                                                                            alt={expandedEmployees[index] === true ? "סגור" : "פתח"}
+                                                                            style={{ width: '16px', height: '16px' }}
                                                                         />
                                                                     </MuiIconButton>
                                                                     {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
@@ -3173,75 +3380,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.nationalInsuranceReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.nationalInsuranceReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח לביטוח לאומי"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.nationalInsuranceReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.nationalInsuranceReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח לביטוח לאומי"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.nationalInsuranceReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.nationalInsuranceReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.nationalInsuranceReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.nationalInsuranceReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.nationalInsuranceReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.nationalInsuranceReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.nationalInsuranceReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.nationalInsuranceReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
@@ -3343,75 +3550,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.laborMinistryReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.laborMinistryReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשרד העבודה"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.laborMinistryReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.laborMinistryReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשרד העבודה"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.laborMinistryReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.laborMinistryReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.laborMinistryReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.laborMinistryReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.laborMinistryReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.laborMinistryReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.laborMinistryReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.laborMinistryReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
@@ -3521,75 +3728,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.policeReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.policeReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.policeReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.policeReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.policeReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.policeReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.policeReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.policeReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.policeReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.policeReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.policeReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.policeReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.policeReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.policeReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.policeReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.policeReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
