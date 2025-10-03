@@ -203,6 +203,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState(0);
+
+    // Debug - this should always show
+    console.log('🔍 ClaimFormPage loaded - activeTab:', activeTab);
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -347,6 +350,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 const data = await response.json();
                 console.log('🔍 Loaded claim data:', data);
                 if (data.success && data.claim) {
+                    // Load project data first
+                    let policyDocuments = [];
+                    if (data.claim.projectId) {
+                        policyDocuments = await loadProjectData(data.claim.projectId);
+                    }
+
                     setFormData({
                         projectId: data.claim.projectId || '',
                         projectName: data.claim.projectName || '',
@@ -420,41 +429,90 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 email: ''
                             }
                         })),
-                        thirdPartyVictims: (data.claim.thirdPartyVictims || []).map((victim: any) => ({
-                            fullName: victim.fullName || '',
-                            idNumber: victim.idNumber || '',
-                            phone: victim.phone || '',
-                            email: victim.email || '',
-                            age: victim.age || undefined,
-                            address: victim.address || '',
-                            workplaceAddress: victim.workplaceAddress || '',
-                            profession: victim.profession || '',
-                            injuryDescription: victim.injuryDescription || '',
-                            propertyDamageDescription: victim.propertyDamageDescription || '',
-                            additionalDamageNotes: victim.additionalDamageNotes || '',
-                            damageExtent: victim.damageExtent || '',
-                            medicalTreatment: {
-                                received: victim.medicalTreatment?.received || false,
-                                hospitalName: victim.medicalTreatment?.hospitalName || '',
-                                medicalDocuments: victim.medicalTreatment?.medicalDocuments || []
-                            },
-                            policeReport: {
-                                reported: victim.policeReport?.reported || false,
-                                reportDate: victim.policeReport?.reportDate || '',
-                                reportFile: victim.policeReport?.reportFile || '',
-                                reportFileThumbnail: victim.policeReport?.reportFileThumbnail || '',
-                                stationName: victim.policeReport?.stationName || ''
-                            },
-                            insuredNegligence: {
-                                contributed: victim.insuredNegligence?.contributed || false,
-                                details: victim.insuredNegligence?.details || ''
-                            },
-                            additionalFactors: {
-                                present: victim.additionalFactors?.present || false,
-                                details: victim.additionalFactors?.details || ''
-                            },
-                            attachedDocuments: victim.attachedDocuments || []
-                        })),
+                        thirdPartyVictims: (() => {
+                            let victims = (data.claim.thirdPartyVictims || []).map((victim: any) => ({
+                                fullName: victim.fullName || '',
+                                idNumber: victim.idNumber || '',
+                                phone: victim.phone || '',
+                                email: victim.email || '',
+                                age: victim.age || undefined,
+                                address: victim.address || '',
+                                workplaceAddress: victim.workplaceAddress || '',
+                                profession: victim.profession || '',
+                                injuryDescription: victim.injuryDescription || '',
+                                propertyDamageDescription: victim.propertyDamageDescription || '',
+                                additionalDamageNotes: victim.additionalDamageNotes || '',
+                                damageExtent: victim.damageExtent || '',
+                                medicalTreatment: {
+                                    received: victim.medicalTreatment?.received || false,
+                                    hospitalName: victim.medicalTreatment?.hospitalName || '',
+                                    medicalDocuments: victim.medicalTreatment?.medicalDocuments || []
+                                },
+                                policeReport: {
+                                    reported: victim.policeReport?.reported || false,
+                                    reportDate: victim.policeReport?.reportDate || '',
+                                    reportFile: victim.policeReport?.reportFile || '',
+                                    reportFileThumbnail: victim.policeReport?.reportFileThumbnail || '',
+                                    stationName: victim.policeReport?.stationName || ''
+                                },
+                                insuredNegligence: {
+                                    contributed: victim.insuredNegligence?.contributed || false,
+                                    details: victim.insuredNegligence?.details || ''
+                                },
+                                additionalFactors: {
+                                    present: victim.additionalFactors?.present || false,
+                                    details: victim.additionalFactors?.details || ''
+                                },
+                                attachedDocuments: victim.attachedDocuments || []
+                            }));
+
+                            // Auto-create third party victim if needed
+                            console.log('🔍 Debug - bodilyInjuryThirdParty:', data.claim.bodilyInjuryThirdParty, 'propertyDamageThirdParty:', data.claim.propertyDamageThirdParty, 'victims.length:', victims.length);
+                            if ((data.claim.bodilyInjuryThirdParty === true || data.claim.propertyDamageThirdParty === true) &&
+                                victims.length === 0) {
+                                console.log('🔍 Auto-creating third party victim after loading claim');
+                                const newVictim: ThirdPartyVictim = {
+                                    fullName: '',
+                                    idNumber: '',
+                                    phone: '',
+                                    email: '',
+                                    age: undefined,
+                                    address: '',
+                                    workplaceAddress: '',
+                                    profession: '',
+                                    injuryDescription: '',
+                                    propertyDamageDescription: '',
+                                    additionalDamageNotes: '',
+                                    damageExtent: '',
+                                    medicalTreatment: {
+                                        received: false,
+                                        hospitalName: '',
+                                        medicalDocuments: []
+                                    },
+                                    policeReport: {
+                                        reported: false,
+                                        reportDate: '',
+                                        reportFile: '',
+                                        reportFileThumbnail: '',
+                                        stationName: ''
+                                    },
+                                    insuredNegligence: {
+                                        contributed: false,
+                                        details: ''
+                                    },
+                                    additionalFactors: {
+                                        present: false,
+                                        details: ''
+                                    },
+                                    attachedDocuments: []
+                                };
+                                victims = [newVictim];
+                                console.log('🔍 Created victim, new victims.length:', victims.length);
+                            }
+
+                            return victims;
+                        })(),
+                        policyDocuments: policyDocuments,
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
                         procedures: data.claim.procedures || '',
@@ -462,10 +520,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         createdAt: data.claim.createdAt ? new Date(data.claim.createdAt) : new Date(),
                         updatedAt: data.claim.updatedAt ? new Date(data.claim.updatedAt) : new Date()
                     });
-                    // Load project data including policy documents
-                    if (data.claim.projectId) {
-                        await loadProjectData(data.claim.projectId);
-                    }
                 }
             } else {
                 throw new Error('Failed to load claim');
@@ -489,15 +543,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 const data = await response.json();
                 console.log('🔍 Loaded project data:', data);
                 if (data.success && data.project) {
-                    setFormData(prev => ({
-                        ...prev,
-                        policyDocuments: data.project.policyDocuments || []
-                    }));
+                    return data.project.policyDocuments || [];
                 }
             }
         } catch (error) {
             console.error('Error loading project data:', error);
         }
+        return [];
     };
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -516,6 +568,51 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 [field]: value,
                 updatedAt: new Date()
             };
+
+            // If bodilyInjuryThirdParty or propertyDamageThirdParty is set to true and thirdPartyVictims is empty, add one victim
+            // BUT only if this is a user action, not during initial load
+            if ((field === 'bodilyInjuryThirdParty' || field === 'propertyDamageThirdParty') &&
+                value === true &&
+                prev.thirdPartyVictims.length === 0 &&
+                !isLoading) { // Only auto-create during user interaction, not during load
+                console.log('🔍 Auto-creating first third party victim via user interaction');
+                const newVictim: ThirdPartyVictim = {
+                    fullName: '',
+                    idNumber: '',
+                    phone: '',
+                    email: '',
+                    age: undefined,
+                    address: '',
+                    workplaceAddress: '',
+                    profession: '',
+                    injuryDescription: '',
+                    propertyDamageDescription: '',
+                    additionalDamageNotes: '',
+                    damageExtent: '',
+                    medicalTreatment: {
+                        received: false,
+                        hospitalName: '',
+                        medicalDocuments: []
+                    },
+                    policeReport: {
+                        reported: false,
+                        reportDate: '',
+                        reportFile: '',
+                        reportFileThumbnail: '',
+                        stationName: ''
+                    },
+                    insuredNegligence: {
+                        contributed: false,
+                        details: ''
+                    },
+                    additionalFactors: {
+                        present: false,
+                        details: ''
+                    },
+                    attachedDocuments: []
+                };
+                newData.thirdPartyVictims = [newVictim];
+            }
 
             // If bodily injury to employee is set to true and no employees exist, add the first one
             if (field === 'bodilyInjuryEmployee' && value === true && prev.injuredEmployees.length === 0) {
@@ -543,31 +640,31 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         received: false,
                         medicalDocuments: []
                     },
-                           nationalInsuranceReport: {
-                               reported: false,
-                               reportDate: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           laborMinistryReport: {
-                               reported: false,
-                               reportDate: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           policeReport: {
-                               reported: false,
-                               reportDate: '',
-                               stationName: '',
-                               reportFile: '',
-                               reportFileThumbnail: ''
-                           },
-                           insuranceCompanyReport: {
-                               reported: false,
-                               reportDate: '',
-                               policyNumber: '',
-                               claimNumber: ''
-                           },
+                    nationalInsuranceReport: {
+                        reported: false,
+                        reportDate: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    laborMinistryReport: {
+                        reported: false,
+                        reportDate: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    policeReport: {
+                        reported: false,
+                        reportDate: '',
+                        stationName: '',
+                        reportFile: '',
+                        reportFileThumbnail: ''
+                    },
+                    insuranceCompanyReport: {
+                        reported: false,
+                        reportDate: '',
+                        policyNumber: '',
+                        claimNumber: ''
+                    },
                     representative: {
                         represented: false,
                         name: '',
@@ -1406,6 +1503,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             </Box>
                         ) : (
                             <>
+                                {console.log('🔍 Tab Debug - activeTab:', activeTab, 'typeof activeTab:', typeof activeTab)}
+                                {console.log('🔍 All tabs check - activeTab === 0:', activeTab === 0, 'activeTab === 1:', activeTab === 1, 'activeTab === 2:', activeTab === 2, 'activeTab === 3:', activeTab === 3)}
                                 {activeTab === 0 && (
                                     <Box>
                                         {/* Date and Time Fields */}
@@ -2279,6 +2378,30 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
+                                        {/* Force show third party section */}
+                                        <Typography variant="h4" sx={{ color: 'red', mb: 3, fontSize: '32px', fontWeight: 'bold', textAlign: 'center' }}>
+                                            🔍 טאב נזק - נטען בהצלחה!
+                                        </Typography>
+
+                                        {/* Always show third party section for testing */}
+                                        <Box sx={{ mt: 4, p: 3, border: '3px solid red', backgroundColor: '#ffeeee' }}>
+                                            <Typography variant="h5" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
+                                                אחריות חוקית כלפי צד שלישי (בדיקה)
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                                זהו סקשן בדיקה - אם אתה רואה את זה, הקוד החדש עובד!
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                                bodilyInjuryThirdParty: {formData.bodilyInjuryThirdParty ? 'true' : 'false'}
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                                propertyDamageThirdParty: {formData.propertyDamageThirdParty ? 'true' : 'false'}
+                                            </Typography>
+                                            <Typography variant="body1" sx={{ mb: 2 }}>
+                                                thirdPartyVictims length: {formData.thirdPartyVictims.length}
+                                            </Typography>
+                                        </Box>
+
                                         {formData.bodilyInjuryEmployee === true && (
                                             <Box>
                                                 <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
@@ -2312,10 +2435,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <img 
-                                                                            src={expandedEmployees[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"} 
-                                                                            alt={expandedEmployees[index] === true ? "סגור" : "פתח"} 
-                                                                            style={{ width: '16px', height: '16px' }} 
+                                                                        <img
+                                                                            src={expandedEmployees[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"}
+                                                                            alt={expandedEmployees[index] === true ? "סגור" : "פתח"}
+                                                                            style={{ width: '16px', height: '16px' }}
                                                                         />
                                                                     </MuiIconButton>
                                                                     {!(index === 0 && formData.bodilyInjuryEmployee === true) && (
@@ -3173,75 +3296,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.nationalInsuranceReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.nationalInsuranceReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח לביטוח לאומי"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.nationalInsuranceReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.nationalInsuranceReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח לביטוח לאומי"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.nationalInsuranceReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.nationalInsuranceReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.nationalInsuranceReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.nationalInsuranceReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.nationalInsuranceReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.nationalInsuranceReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.nationalInsuranceReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.nationalInsuranceReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.nationalInsuranceReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'nationalInsuranceReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
@@ -3343,75 +3466,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.laborMinistryReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.laborMinistryReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשרד העבודה"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.laborMinistryReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.laborMinistryReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשרד העבודה"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.laborMinistryReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.laborMinistryReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.laborMinistryReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.laborMinistryReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.laborMinistryReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.laborMinistryReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.laborMinistryReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.laborMinistryReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.laborMinistryReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'laborMinistryReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
@@ -3521,75 +3644,75 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
                                                                                                 <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={employee.policeReport.reportFile || ''}
-                                                                                            thumbnailUrl={employee.policeReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', url);
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={employee.policeReport.reportFile || ''}
+                                                                                                    thumbnailUrl={employee.policeReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', url);
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
 
-                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                        const confirmed = window.confirm(confirmMessage);
 
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (employee.policeReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.policeReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', employee.policeReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (employee.policeReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: employee.policeReport.reportFileThumbnail })
-                                                                                                        });
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (employee.policeReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.policeReport.reportFile })
+                                                                                                                });
 
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', employee.policeReport.reportFileThumbnail);
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', employee.policeReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
                                                                                                         }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
 
-                                                                                                // Clear the file URLs
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', '');
-                                                                                                updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', '');
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (employee.policeReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: employee.policeReport.reportFileThumbnail })
+                                                                                                                });
 
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                        />
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', employee.policeReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFile', '');
+                                                                                                        updateInjuredEmployeeReport(index, 'policeReport', 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                />
                                                                                             </Grid>
                                                                                         </Grid>
                                                                                     </Box>
@@ -3739,6 +3862,911 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 </Button>
                                             </Box>
                                         )}
+                                    </Box>
+                                )}
+
+                                {/* Legal Liability to Third Party Section */}
+                                {console.log('🔍 Render Debug - bodilyInjuryThirdParty:', formData.bodilyInjuryThirdParty, 'propertyDamageThirdParty:', formData.propertyDamageThirdParty, 'thirdPartyVictims.length:', formData.thirdPartyVictims.length)}
+                                {(formData.bodilyInjuryThirdParty === true || formData.propertyDamageThirdParty === true) && (
+                                    <Box sx={{ mt: 4 }}>
+                                        <Typography variant="h5" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
+                                            אחריות חוקית כלפי צד שלישי
+                                        </Typography>
+
+                                        {/* Simple approach - always show at least one victim form */}
+                                        {(formData.thirdPartyVictims.length > 0 ? formData.thirdPartyVictims : [{
+                                            fullName: '',
+                                            idNumber: '',
+                                            phone: '',
+                                            email: '',
+                                            age: undefined,
+                                            address: '',
+                                            workplaceAddress: '',
+                                            profession: '',
+                                            injuryDescription: '',
+                                            propertyDamageDescription: '',
+                                            additionalDamageNotes: '',
+                                            damageExtent: '',
+                                            medicalTreatment: {
+                                                received: false,
+                                                hospitalName: '',
+                                                medicalDocuments: []
+                                            },
+                                            policeReport: {
+                                                reported: false,
+                                                reportDate: '',
+                                                reportFile: '',
+                                                reportFileThumbnail: '',
+                                                stationName: ''
+                                            },
+                                            insuredNegligence: {
+                                                contributed: false,
+                                                details: ''
+                                            },
+                                            additionalFactors: {
+                                                present: false,
+                                                details: ''
+                                            },
+                                            attachedDocuments: []
+                                        }]).map((victim, index) => (
+                                            <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                                    <Typography variant="h6" sx={{ color: '#6b47c1' }}>
+                                                        פרטי הניזוק {index + 1}
+                                                    </Typography>
+                                                    <MuiIconButton
+                                                        onClick={() => removeThirdPartyVictim(index)}
+                                                        sx={{
+                                                            color: '#f44336',
+                                                            '&:hover': {
+                                                                backgroundColor: '#d32f2f',
+                                                                color: 'white'
+                                                            }
+                                                        }}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </MuiIconButton>
+                                                </Box>
+
+                                                {/* Basic Victim Information */}
+                                                <Grid container spacing={2} sx={{ mb: 3 }}>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="שם מלא"
+                                                            value={victim.fullName}
+                                                            onChange={(e) => {
+                                                                // If this is a temporary victim (not in state), add it to state first
+                                                                if (formData.thirdPartyVictims.length === 0) {
+                                                                    const newVictim: ThirdPartyVictim = {
+                                                                        fullName: e.target.value,
+                                                                        idNumber: '',
+                                                                        phone: '',
+                                                                        email: '',
+                                                                        age: undefined,
+                                                                        address: '',
+                                                                        workplaceAddress: '',
+                                                                        profession: '',
+                                                                        injuryDescription: '',
+                                                                        propertyDamageDescription: '',
+                                                                        additionalDamageNotes: '',
+                                                                        damageExtent: '',
+                                                                        medicalTreatment: {
+                                                                            received: false,
+                                                                            hospitalName: '',
+                                                                            medicalDocuments: []
+                                                                        },
+                                                                        policeReport: {
+                                                                            reported: false,
+                                                                            reportDate: '',
+                                                                            reportFile: '',
+                                                                            reportFileThumbnail: '',
+                                                                            stationName: ''
+                                                                        },
+                                                                        insuredNegligence: {
+                                                                            contributed: false,
+                                                                            details: ''
+                                                                        },
+                                                                        additionalFactors: {
+                                                                            present: false,
+                                                                            details: ''
+                                                                        },
+                                                                        attachedDocuments: []
+                                                                    };
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        thirdPartyVictims: [newVictim]
+                                                                    }));
+                                                                } else {
+                                                                    updateThirdPartyVictim(index, 'fullName', e.target.value);
+                                                                }
+                                                            }}
+                                                            variant="outlined"
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מספר תעודת זהות"
+                                                            value={victim.idNumber}
+                                                            onChange={(e) => updateThirdPartyVictim(index, 'idNumber', e.target.value)}
+                                                            variant="outlined"
+                                                            error={victim.idNumber !== '' && !validateIsraeliID(victim.idNumber)}
+                                                            helperText={victim.idNumber !== '' && !validateIsraeliID(victim.idNumber) ? 'מספר תעודת זהות לא תקין' : ''}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="טלפון נייד"
+                                                            value={victim.phone}
+                                                            onChange={(e) => updateThirdPartyVictim(index, 'phone', e.target.value)}
+                                                            variant="outlined"
+                                                            error={victim.phone !== '' && !validateIsraeliMobile(victim.phone)}
+                                                            helperText={victim.phone !== '' && !validateIsraeliMobile(victim.phone) ? 'מספר טלפון לא תקין' : ''}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="אימייל"
+                                                            value={victim.email}
+                                                            onChange={(e) => updateThirdPartyVictim(index, 'email', e.target.value)}
+                                                            variant="outlined"
+                                                            error={victim.email !== '' && !validateEmail(victim.email)}
+                                                            helperText={victim.email !== '' && !validateEmail(victim.email) ? 'כתובת אימייל לא תקינה' : ''}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            label="כתובת"
+                                                            value={victim.address}
+                                                            onChange={(e) => updateThirdPartyVictim(index, 'address', e.target.value)}
+                                                            variant="outlined"
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+
+                                                {/* Bodily Injury Specific Fields */}
+                                                {formData.bodilyInjuryThirdParty === true && (
+                                                    <>
+                                                        <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                            פרטים נוספים - נזק גוף
+                                                        </Typography>
+                                                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="number"
+                                                                    label="גיל"
+                                                                    value={victim.age || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'age', parseInt(e.target.value) || undefined)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="כתובת מקום עבודה"
+                                                                    value={victim.workplaceAddress || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'workplaceAddress', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מקצוע/עיסוק"
+                                                                    value={victim.profession || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    multiline
+                                                                    rows={3}
+                                                                    label="מהות הפגיעה שנגרמה"
+                                                                    value={victim.injuryDescription || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'injuryDescription', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </>
+                                                )}
+
+                                                {/* Property Damage Specific Fields */}
+                                                {formData.propertyDamageThirdParty === true && (
+                                                    <>
+                                                        <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                            פרטים נוספים - נזק רכוש
+                                                        </Typography>
+                                                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    multiline
+                                                                    rows={3}
+                                                                    label="תיאור הנזק לרכוש צד שלישי"
+                                                                    value={victim.propertyDamageDescription || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'propertyDamageDescription', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    multiline
+                                                                    rows={3}
+                                                                    label="הערות נוספות לגבי הנזק"
+                                                                    value={victim.additionalDamageNotes || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'additionalDamageNotes', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    multiline
+                                                                    rows={3}
+                                                                    label="מידת הנזק והיקפו"
+                                                                    value={victim.damageExtent || ''}
+                                                                    onChange={(e) => updateThirdPartyVictim(index, 'damageExtent', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </>
+                                                )}
+
+                                                {/* Medical Treatment Section (for bodily injury) */}
+                                                {formData.bodilyInjuryThirdParty === true && (
+                                                    <>
+                                                        <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                            טיפול רפואי
+                                                        </Typography>
+                                                        <Box sx={{
+                                                            border: '1px solid #d1d5db',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 'white',
+                                                            minHeight: '56px',
+                                                            padding: '0 14px',
+                                                            direction: 'rtl',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            width: '100%',
+                                                            mb: 2
+                                                        }}>
+                                                            <Typography sx={{
+                                                                fontSize: '1rem',
+                                                                color: 'text.secondary',
+                                                                marginRight: '10px'
+                                                            }}>
+                                                                טיפול רפואי
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                gap: 0,
+                                                                alignItems: 'center',
+                                                                justifyContent: 'flex-start',
+                                                                marginLeft: '10px'
+                                                            }}>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updateThirdPartyVictimMedical(index, 'received', false)}
+                                                                    sx={{
+                                                                        borderRadius: '0 4px 4px 0',
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderLeft: 'none',
+                                                                        backgroundColor: !victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                        color: !victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: !victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '40px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem',
+                                                                        marginRight: '0px'
+                                                                    }}
+                                                                >
+                                                                    לא
+                                                                </Button>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updateThirdPartyVictimMedical(index, 'received', true)}
+                                                                    sx={{
+                                                                        borderRadius: '4px 0 0 4px',
+                                                                        border: '1px solid #d1d5db',
+                                                                        backgroundColor: victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                        color: victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '40px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem',
+                                                                        marginRight: '0px'
+                                                                    }}
+                                                                >
+                                                                    כן
+                                                                </Button>
+                                                            </Box>
+                                                        </Box>
+
+                                                        {victim.medicalTreatment.received && (
+                                                            <Box sx={{ mb: 3 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם בית החולים/מרפאה"
+                                                                    value={victim.medicalTreatment.hospitalName || ''}
+                                                                    onChange={(e) => updateThirdPartyVictimMedical(index, 'hospitalName', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{ mb: 2 }}
+                                                                />
+
+                                                                {/* Medical Documents Table */}
+                                                                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 'bold' }}>
+                                                                    מסמכים רפואיים
+                                                                </Typography>
+                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                    <Table>
+                                                                        <TableHead>
+                                                                            <TableRow>
+                                                                                <TableCell>שם המסמך</TableCell>
+                                                                                <TableCell>מוסד רפואי</TableCell>
+                                                                                <TableCell>קובץ</TableCell>
+                                                                                <TableCell>תאריך תוקף</TableCell>
+                                                                                <TableCell>פעולות</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHead>
+                                                                        <TableBody>
+                                                                            {victim.medicalTreatment.medicalDocuments.map((doc, docIndex) => (
+                                                                                <TableRow key={docIndex}>
+                                                                                    <TableCell>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            size="small"
+                                                                                            value={doc.documentName}
+                                                                                            onChange={(e) => updateThirdPartyMedicalDocument(index, docIndex, 'documentName', e.target.value)}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            size="small"
+                                                                                            value={doc.institution}
+                                                                                            onChange={(e) => updateThirdPartyMedicalDocument(index, docIndex, 'institution', e.target.value)}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <FileUpload
+                                                                                            label=""
+                                                                                            value={doc.fileUrl}
+                                                                                            thumbnailUrl={doc.thumbnailUrl}
+                                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                                updateThirdPartyMedicalDocument(index, docIndex, 'fileUrl', url);
+                                                                                                updateThirdPartyMedicalDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
+                                                                                            }}
+                                                                                            onDelete={async () => {
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${doc.documentName}"?`;
+                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                if (!confirmed) {
+                                                                                                    throw new Error('User cancelled deletion');
+                                                                                                }
+                                                                                                if (doc.fileUrl) {
+                                                                                                    try {
+                                                                                                        await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                            body: JSON.stringify({ url: doc.fileUrl })
+                                                                                                        });
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                    }
+                                                                                                }
+                                                                                                if (doc.thumbnailUrl) {
+                                                                                                    try {
+                                                                                                        await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                            body: JSON.stringify({ url: doc.thumbnailUrl })
+                                                                                                        });
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                    }
+                                                                                                }
+                                                                                                updateThirdPartyMedicalDocument(index, docIndex, 'fileUrl', '');
+                                                                                                updateThirdPartyMedicalDocument(index, docIndex, 'thumbnailUrl', '');
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            size="small"
+                                                                                            type="date"
+                                                                                            value={doc.validityDate}
+                                                                                            onChange={(e) => updateThirdPartyMedicalDocument(index, docIndex, 'validityDate', e.target.value)}
+                                                                                            InputLabelProps={{ shrink: true }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        {docIndex > 0 && (
+                                                                                            <MuiIconButton
+                                                                                                onClick={() => removeThirdPartyMedicalDocument(index, docIndex)}
+                                                                                                sx={{ color: '#f44336' }}
+                                                                                            >
+                                                                                                <DeleteIcon />
+                                                                                            </MuiIconButton>
+                                                                                        )}
+                                                                                    </TableCell>
+                                                                                </TableRow>
+                                                                            ))}
+                                                                            <TableRow>
+                                                                                <TableCell colSpan={5} sx={{ textAlign: 'center' }}>
+                                                                                    <Button
+                                                                                        variant="outlined"
+                                                                                        onClick={() => addThirdPartyMedicalDocument(index)}
+                                                                                        sx={{
+                                                                                            borderColor: '#6b47c1',
+                                                                                            color: '#6b47c1',
+                                                                                            backgroundColor: 'white',
+                                                                                            '&:hover': {
+                                                                                                borderColor: '#5a3aa1',
+                                                                                                backgroundColor: '#f3f0ff'
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        הוספה
+                                                                                    </Button>
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </TableContainer>
+                                                            </Box>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                                {/* Police Report Section */}
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                    דיווח למשטרה
+                                                </Typography>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%',
+                                                    mb: 2
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        דיווח למשטרה
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimPolice(index, 'reported', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                color: !victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimPolice(index, 'reported', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                color: victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {victim.policeReport.reported && (
+                                                    <Box sx={{ mb: 3 }}>
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    type="date"
+                                                                    label="תאריך דיווח"
+                                                                    value={victim.policeReport.reportDate || ''}
+                                                                    onChange={(e) => updateThirdPartyVictimPolice(index, 'reportDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12} sm={6}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם התחנה"
+                                                                    value={victim.policeReport.stationName || ''}
+                                                                    onChange={(e) => updateThirdPartyVictimPolice(index, 'stationName', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <FileUpload
+                                                                    label="אישור דיווח"
+                                                                    value={victim.policeReport.reportFile || ''}
+                                                                    thumbnailUrl={victim.policeReport.reportFileThumbnail || ''}
+                                                                    onChange={(url, thumbnailUrl) => {
+                                                                        updateThirdPartyVictimPolice(index, 'reportFile', url);
+                                                                        updateThirdPartyVictimPolice(index, 'reportFileThumbnail', thumbnailUrl);
+                                                                    }}
+                                                                    onDelete={async () => {
+                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
+                                                                        const confirmed = window.confirm(confirmMessage);
+                                                                        if (!confirmed) {
+                                                                            throw new Error('User cancelled deletion');
+                                                                        }
+                                                                        if (victim.policeReport.reportFile) {
+                                                                            try {
+                                                                                await fetch('/api/upload/delete-file', {
+                                                                                    method: 'POST',
+                                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                                    body: JSON.stringify({ url: victim.policeReport.reportFile })
+                                                                                });
+                                                                            } catch (error) {
+                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                            }
+                                                                        }
+                                                                        if (victim.policeReport.reportFileThumbnail) {
+                                                                            try {
+                                                                                await fetch('/api/upload/delete-file', {
+                                                                                    method: 'POST',
+                                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                                    body: JSON.stringify({ url: victim.policeReport.reportFileThumbnail })
+                                                                                });
+                                                                            } catch (error) {
+                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                            }
+                                                                        }
+                                                                        updateThirdPartyVictimPolice(index, 'reportFile', '');
+                                                                        updateThirdPartyVictimPolice(index, 'reportFileThumbnail', '');
+                                                                    }}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Box>
+                                                )}
+
+                                                {/* Insured Negligence Section */}
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                    רשלנות המבוטח
+                                                </Typography>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%',
+                                                    mb: 2
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        האם הייתה רשלנות של המבוטח
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimNegligence(index, 'contributed', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: !victim.insuredNegligence.contributed ? '#6b47c1' : 'transparent',
+                                                                color: !victim.insuredNegligence.contributed ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: !victim.insuredNegligence.contributed ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimNegligence(index, 'contributed', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: victim.insuredNegligence.contributed ? '#6b47c1' : 'transparent',
+                                                                color: victim.insuredNegligence.contributed ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: victim.insuredNegligence.contributed ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {victim.insuredNegligence.contributed && (
+                                                    <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        rows={3}
+                                                        label="פירוט ההתרשלות האפשרית"
+                                                        value={victim.insuredNegligence.details || ''}
+                                                        onChange={(e) => updateThirdPartyVictimNegligence(index, 'details', e.target.value)}
+                                                        variant="outlined"
+                                                        sx={{ mb: 3 }}
+                                                    />
+                                                )}
+
+                                                {/* Additional Factors Section */}
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                    גורמים נוספים
+                                                </Typography>
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%',
+                                                    mb: 2
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        גורמים נוספים רלוונטיים
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimFactors(index, 'present', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: !victim.additionalFactors.present ? '#6b47c1' : 'transparent',
+                                                                color: !victim.additionalFactors.present ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: !victim.additionalFactors.present ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => updateThirdPartyVictimFactors(index, 'present', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: victim.additionalFactors.present ? '#6b47c1' : 'transparent',
+                                                                color: victim.additionalFactors.present ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: victim.additionalFactors.present ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '40px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {victim.additionalFactors.present && (
+                                                    <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        rows={3}
+                                                        label="פירוט גורמים נוספים מעורבים"
+                                                        value={victim.additionalFactors.details || ''}
+                                                        onChange={(e) => updateThirdPartyVictimFactors(index, 'details', e.target.value)}
+                                                        variant="outlined"
+                                                        sx={{ mb: 3 }}
+                                                    />
+                                                )}
+
+                                                {/* Attached Documents Section */}
+                                                <Typography variant="h6" sx={{ color: '#6b47c1', mb: 2, mt: 3 }}>
+                                                    מסמכים מצורפים
+                                                </Typography>
+                                                <TableContainer component={Paper} sx={{ mb: 3 }}>
+                                                    <Table>
+                                                        <TableHead>
+                                                            <TableRow>
+                                                                <TableCell>שם המסמך</TableCell>
+                                                                <TableCell>קובץ</TableCell>
+                                                                <TableCell>פעולות</TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {victim.attachedDocuments.map((doc, docIndex) => (
+                                                                <TableRow key={docIndex}>
+                                                                    <TableCell>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            size="small"
+                                                                            value={doc.documentName}
+                                                                            onChange={(e) => updateThirdPartyAttachedDocument(index, docIndex, 'documentName', e.target.value)}
+                                                                        />
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <FileUpload
+                                                                            label=""
+                                                                            value={doc.fileUrl}
+                                                                            thumbnailUrl={doc.thumbnailUrl}
+                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                updateThirdPartyAttachedDocument(index, docIndex, 'fileUrl', url);
+                                                                                updateThirdPartyAttachedDocument(index, docIndex, 'thumbnailUrl', thumbnailUrl);
+                                                                            }}
+                                                                            onDelete={async () => {
+                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${doc.documentName}"?`;
+                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                if (!confirmed) {
+                                                                                    throw new Error('User cancelled deletion');
+                                                                                }
+                                                                                if (doc.fileUrl) {
+                                                                                    try {
+                                                                                        await fetch('/api/upload/delete-file', {
+                                                                                            method: 'POST',
+                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                            body: JSON.stringify({ url: doc.fileUrl })
+                                                                                        });
+                                                                                    } catch (error) {
+                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                    }
+                                                                                }
+                                                                                if (doc.thumbnailUrl) {
+                                                                                    try {
+                                                                                        await fetch('/api/upload/delete-file', {
+                                                                                            method: 'POST',
+                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                            body: JSON.stringify({ url: doc.thumbnailUrl })
+                                                                                        });
+                                                                                    } catch (error) {
+                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                    }
+                                                                                }
+                                                                                updateThirdPartyAttachedDocument(index, docIndex, 'fileUrl', '');
+                                                                                updateThirdPartyAttachedDocument(index, docIndex, 'thumbnailUrl', '');
+                                                                            }}
+                                                                        />
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <MuiIconButton
+                                                                            onClick={() => removeThirdPartyAttachedDocument(index, docIndex)}
+                                                                            sx={{ color: '#f44336' }}
+                                                                        >
+                                                                            <DeleteIcon />
+                                                                        </MuiIconButton>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                            <TableRow>
+                                                                <TableCell colSpan={3} sx={{ textAlign: 'center' }}>
+                                                                    <Button
+                                                                        variant="outlined"
+                                                                        onClick={() => addThirdPartyAttachedDocument(index)}
+                                                                        sx={{
+                                                                            borderColor: '#6b47c1',
+                                                                            color: '#6b47c1',
+                                                                            backgroundColor: 'white',
+                                                                            '&:hover': {
+                                                                                borderColor: '#5a3aa1',
+                                                                                backgroundColor: '#f3f0ff'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        הוספה
+                                                                    </Button>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                            </Paper>
+                                        ))}
+
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<AddIcon />}
+                                            onClick={addThirdPartyVictim}
+                                            sx={{
+                                                bgcolor: '#6b47c1',
+                                                '&:hover': { bgcolor: '#5a3aa1' }
+                                            }}
+                                        >
+                                            הוספת ניזוק נוסף
+                                        </Button>
                                     </Box>
                                 )}
 
