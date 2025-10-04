@@ -3743,7 +3743,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Legal Liability to Third Party Section */}
                                         {(formData.bodilyInjuryThirdParty === true || formData.propertyDamageThirdParty === true) && (
                                             <Box sx={{ mt: 4 }}>
-                                                <Typography variant="h5" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
+                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                     אחריות חוקית כלפי צד שלישי
                                                 </Typography>
 
@@ -3785,22 +3785,24 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                                             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                פרטי הניזוק {index + 1}
+                                                                פרטי הניזוק
                                                             </Typography>
-                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                <MuiIconButton
-                                                                    onClick={() => removeThirdPartyVictim(index)}
-                                                                    sx={{
-                                                                        color: '#f44336',
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#ffebee',
-                                                                            color: '#d32f2f'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                </MuiIconButton>
-                                                            </Box>
+                                                            {index > 0 && (
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                    <MuiIconButton
+                                                                        onClick={() => removeThirdPartyVictim(index)}
+                                                                        sx={{ 
+                                                                            color: '#f44336',
+                                                                            '&:hover': { 
+                                                                                backgroundColor: '#ffebee',
+                                                                                color: '#d32f2f'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                    </MuiIconButton>
+                                                                </Box>
+                                                            )}
                                                         </Box>
 
                                                         <Grid container spacing={2}>
