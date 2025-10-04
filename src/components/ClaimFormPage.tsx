@@ -164,6 +164,13 @@ interface ThirdPartyVictim {
         fileUrl: string;
         thumbnailUrl: string;
     }[];
+    representative?: {
+        hasRepresentative: boolean;
+        name?: string;
+        address?: string;
+        phone?: string;
+        email?: string;
+    };
 }
 
 interface ClaimFormData {
@@ -3780,7 +3787,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         present: false,
                                                         details: ''
                                                     },
-                                                    attachedDocuments: []
+                                                    attachedDocuments: [],
+                                                    representative: {
+                                                        hasRepresentative: false,
+                                                        name: '',
+                                                        address: '',
+                                                        phone: '',
+                                                        email: ''
+                                                    }
                                                 }]).map((victim, index) => (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -3791,9 +3805,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                                     <MuiIconButton
                                                                         onClick={() => removeThirdPartyVictim(index)}
-                                                                        sx={{ 
+                                                                        sx={{
                                                                             color: '#f44336',
-                                                                            '&:hover': { 
+                                                                            '&:hover': {
                                                                                 backgroundColor: '#ffebee',
                                                                                 color: '#d32f2f'
                                                                             }
@@ -3847,7 +3861,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     present: false,
                                                                                     details: ''
                                                                                 },
-                                                                                attachedDocuments: []
+                                                                                attachedDocuments: [],
+                                                                                representative: {
+                                                                                    hasRepresentative: false,
+                                                                                    name: '',
+                                                                                    address: '',
+                                                                                    phone: '',
+                                                                                    email: ''
+                                                                                }
                                                                             };
                                                                             setFormData(prev => ({
                                                                                 ...prev,
@@ -3932,6 +3953,197 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 />
                                                             </Grid>
                                                         </Grid>
+
+                                                        {/* Representative Details Sub-section */}
+                                                        <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid #e0e0e0' }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                פרטי בא כח
+                                                            </Typography>
+
+                                                            {/* Representative Toggle */}
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'flex-start',
+                                                                justifyContent: 'flex-end',
+                                                                mb: 2
+                                                            }}>
+                                                                <Box sx={{
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderRadius: '4px',
+                                                                    backgroundColor: 'white',
+                                                                    minHeight: '56px',
+                                                                    padding: '0 14px',
+                                                                    direction: 'rtl',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'space-between',
+                                                                    width: '100%'
+                                                                }}>
+                                                                    <Typography sx={{
+                                                                        fontSize: '1rem',
+                                                                        color: 'text.secondary',
+                                                                        marginRight: '10px'
+                                                                    }}>
+                                                                        מיוצג על ידי בא כח
+                                                                    </Typography>
+                                                                    <Box sx={{
+                                                                        display: 'flex',
+                                                                        gap: 0,
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'flex-start',
+                                                                        marginLeft: '10px'
+                                                                    }}>
+                                                                        <Button
+                                                                            variant="text"
+                                                                            onClick={() => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    hasRepresentative: false
+                                                                                });
+                                                                            }}
+                                                                            sx={{
+                                                                                borderRadius: '0 4px 4px 0',
+                                                                                border: '1px solid #d1d5db',
+                                                                                borderLeft: 'none',
+                                                                                backgroundColor: !victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
+                                                                                color: !victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
+                                                                                '&:hover': {
+                                                                                    backgroundColor: !victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
+                                                                                },
+                                                                                minWidth: '50px',
+                                                                                height: '32px',
+                                                                                textTransform: 'none',
+                                                                                fontSize: '0.875rem',
+                                                                                marginRight: '0px'
+                                                                            }}
+                                                                        >
+                                                                            לא
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant="text"
+                                                                            onClick={() => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    hasRepresentative: true
+                                                                                });
+                                                                            }}
+                                                                            sx={{
+                                                                                borderRadius: '4px 0 0 4px',
+                                                                                border: '1px solid #d1d5db',
+                                                                                backgroundColor: victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
+                                                                                color: victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
+                                                                                '&:hover': {
+                                                                                    backgroundColor: victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
+                                                                                },
+                                                                                minWidth: '40px',
+                                                                                height: '32px',
+                                                                                textTransform: 'none',
+                                                                                fontSize: '0.875rem',
+                                                                                marginRight: '0px'
+                                                                            }}
+                                                                        >
+                                                                            כן
+                                                                        </Button>
+                                                                    </Box>
+                                                                </Box>
+                                                            </Box>
+
+                                                            {/* Representative Details Fields */}
+                                                            {victim.representative?.hasRepresentative && (
+                                                                <Grid container spacing={2}>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="שם המייצג"
+                                                                            value={victim.representative?.name || ''}
+                                                                            onChange={(e) => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    name: e.target.value
+                                                                                });
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="כתובת"
+                                                                            value={victim.representative?.address || ''}
+                                                                            onChange={(e) => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    address: e.target.value
+                                                                                });
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="טלפון"
+                                                                            value={victim.representative?.phone || ''}
+                                                                            onChange={(e) => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    phone: e.target.value
+                                                                                });
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="אימייל"
+                                                                            value={victim.representative?.email || ''}
+                                                                            onChange={(e) => {
+                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                updateThirdPartyVictim(index, 'representative', {
+                                                                                    ...currentVictim.representative,
+                                                                                    email: e.target.value
+                                                                                });
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                </Grid>
+                                                            )}
+                                                        </Box>
                                                     </Paper>
                                                 ))}
 
