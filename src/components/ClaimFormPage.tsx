@@ -37,9 +37,9 @@ import {
     MoreVert as MoreVertIcon,
     AccountCircle as AccountCircleIcon,
     Add as AddIcon,
-    Delete as DeleteIcon,
-    DeleteForever as DeleteForeverIcon
+    Delete as DeleteIcon
 } from '@mui/icons-material';
+import trashIcon from '../assets/icon-trash.svg';
 import FileUpload from './FileUpload';
 
 interface Witness {
@@ -5219,7 +5219,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             color="error"
                                                                                             size="small"
                                                                                         >
-                                                                                            <DeleteForeverIcon />
+                                                                                            <img 
+                                                                                                src={trashIcon} 
+                                                                                                alt="מחיקה" 
+                                                                                                style={{ width: '20px', height: '20px' }}
+                                                                                            />
                                                                                         </IconButton>
                                                                                     </TableCell>
                                                                                 </TableRow>
