@@ -135,6 +135,7 @@ interface ThirdPartyVictim {
     additionalDamageNotes?: string;
     damageExtent?: string;
     damageNature?: string;
+    damageAmount?: string;
     medicalTreatment: {
         received: boolean;
         hospitalName?: string;
@@ -444,6 +445,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             additionalDamageNotes: victim.additionalDamageNotes || '',
                             damageExtent: victim.damageExtent || '',
                             damageNature: victim.damageNature || '',
+                            damageAmount: victim.damageAmount || '',
                             medicalTreatment: {
                                 received: victim.medicalTreatment?.received || false,
                                 hospitalName: victim.medicalTreatment?.hospitalName || '',
@@ -3794,6 +3796,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     additionalDamageNotes: '',
                                                     damageExtent: '',
                                                     damageNature: '',
+                                                    damageAmount: '',
                                                     medicalTreatment: {
                                                         received: false,
                                                         hospitalName: '',
@@ -3870,6 +3873,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 additionalDamageNotes: '',
                                                                                 damageExtent: '',
                                                                                 damageNature: '',
+                                                                                damageAmount: '',
                                                                                 medicalTreatment: {
                                                                                     received: false,
                                                                                     hospitalName: '',
@@ -4257,6 +4261,44 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 }}
                                                             />
                                                         </Box>
+
+                                                        {/* Damage Amount Field - Only for property damage */}
+                                                        {(formData.propertyDamageThirdParty === true) && (
+                                                            <Box sx={{ mt: 3 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                    היקף הנזק (ש״ח)
+                                                                </Typography>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="היקף הנזק"
+                                                                    value={victim.damageAmount || ''}
+                                                                    onChange={(e) => {
+                                                                        // Format number with thousands separators
+                                                                        const value = e.target.value.replace(/[^\d]/g, '');
+                                                                        const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                                                        updateThirdPartyVictim(index, 'damageAmount', formattedValue);
+                                                                    }}
+                                                                    variant="outlined"
+                                                                    placeholder="1,000"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                    InputProps={{
+                                                                        endAdornment: (
+                                                                            <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
+                                                                                <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                                                                                    ₪
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        )
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        )}
 
                                                         {/* Medical Treatment Sub-section - Only for bodily injury */}
                                                         {(formData.bodilyInjuryThirdParty === true) && (
