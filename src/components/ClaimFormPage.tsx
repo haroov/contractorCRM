@@ -3816,12 +3816,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             </Box>
 
                                                                             {/* Attached Documents Section */}
-                                                                            <Box sx={{ mt: 3 }}>
-                                                                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                                    צרופות
-                                                                                </Typography>
-                                                                                <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
-                                                                                    <Table>
+                                                                            <Grid container spacing={2} sx={{ mt: 3 }}>
+                                                                                <Grid item xs={12}>
+                                                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                                        צרופות
+                                                                                    </Typography>
+                                                                                    <TableContainer component={Paper} sx={{ border: '1px solid #e0e0e0' }}>
+                                                                                        <Table>
                                                                                         <TableHead>
                                                                                             <TableRow>
                                                                                                 <TableCell>שם המסמך</TableCell>
@@ -4003,9 +4004,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                                 }
                                                                                                             }}
                                                                                                         >
-                                                                                                            <img 
-                                                                                                                src={trashIcon} 
-                                                                                                                alt="מחיקה" 
+                                                                                                            <img
+                                                                                                                src={trashIcon}
+                                                                                                                alt="מחיקה"
                                                                                                                 style={{ width: '20px', height: '20px' }}
                                                                                                             />
                                                                                                         </IconButton>
@@ -4052,7 +4053,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </TableBody>
                                                                                     </Table>
                                                                                 </TableContainer>
-                                                                            </Box>
+                                                                                </Grid>
+                                                                            </Grid>
                                                                         </Box>
                                                                     </Box>
                                                                 </>
