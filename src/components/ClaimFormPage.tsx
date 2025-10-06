@@ -519,8 +519,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-                ...prev,
-                [field]: value,
+            ...prev,
+            [field]: value,
                 updatedAt: new Date()
             };
 
@@ -1418,13 +1418,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1521,27 +1521,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -3960,9 +3960,18 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 פרטי בא כח
                                                             </Typography>
 
-                                                            {/* Representative Toggle in Grid */}
-                                                            <Grid container spacing={2} sx={{ mb: 2 }}>
-                                                                <Grid item xs={12} sm={6}>
+                                                            {/* Representative Toggle */}
+                                                            <Box sx={{
+                                                                display: 'grid',
+                                                                gridTemplateColumns: '1fr 1fr',
+                                                                gap: 2,
+                                                                mb: 2
+                                                            }}>
+                                                                <Box sx={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'flex-start',
+                                                                    justifyContent: 'flex-end'
+                                                                }}>
                                                                     <Box sx={{
                                                                         border: '1px solid #d1d5db',
                                                                         borderRadius: '4px',
@@ -4044,8 +4053,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             </Button>
                                                                         </Box>
                                                                     </Box>
-                                                                </Grid>
-                                                            </Grid>
+                                                                </Box>
+                                                            </Box>
 
                                                             {/* Representative Details Fields */}
                                                             {victim.representative?.hasRepresentative && (
