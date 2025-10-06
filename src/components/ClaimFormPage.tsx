@@ -4266,37 +4266,35 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         {(formData.propertyDamageThirdParty === true) && (
                                                             <Box sx={{ mt: 3 }}>
                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
-                                                                    היקף הנזק (ש״ח)
+                                                                    היקף הנזק
                                                                 </Typography>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="היקף הנזק"
-                                                                    value={victim.damageAmount || ''}
-                                                                    onChange={(e) => {
-                                                                        // Format number with thousands separators
-                                                                        const value = e.target.value.replace(/[^\d]/g, '');
-                                                                        const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                                                                        updateThirdPartyVictim(index, 'damageAmount', formattedValue);
-                                                                    }}
-                                                                    variant="outlined"
-                                                                    placeholder="1,000"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                    InputProps={{
-                                                                        endAdornment: (
-                                                                            <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
-                                                                                <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
-                                                                                    ₪
-                                                                                </Typography>
-                                                                            </Box>
-                                                                        )
-                                                                    }}
-                                                                />
+                                                                <Box sx={{
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '1fr 1fr',
+                                                                    gap: 2
+                                                                }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="היקף הנזק (₪)"
+                                                                        value={victim.damageAmount || ''}
+                                                                        onChange={(e) => {
+                                                                            // Format number with thousands separators
+                                                                            const value = e.target.value.replace(/[^\d]/g, '');
+                                                                            const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                                                            updateThirdPartyVictim(index, 'damageAmount', formattedValue);
+                                                                        }}
+                                                                        variant="outlined"
+                                                                        placeholder="1,000"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                    <Box></Box>
+                                                                </Box>
                                                             </Box>
                                                         )}
 
