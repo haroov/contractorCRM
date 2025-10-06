@@ -134,6 +134,7 @@ interface ThirdPartyVictim {
     propertyDamageDescription?: string;
     additionalDamageNotes?: string;
     damageExtent?: string;
+    damageNature?: string;
     medicalTreatment: {
         received: boolean;
         hospitalName?: string;
@@ -442,6 +443,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             propertyDamageDescription: victim.propertyDamageDescription || '',
                             additionalDamageNotes: victim.additionalDamageNotes || '',
                             damageExtent: victim.damageExtent || '',
+                            damageNature: victim.damageNature || '',
                             medicalTreatment: {
                                 received: victim.medicalTreatment?.received || false,
                                 hospitalName: victim.medicalTreatment?.hospitalName || '',
@@ -528,8 +530,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-            ...prev,
-            [field]: value,
+                ...prev,
+                [field]: value,
                 updatedAt: new Date()
             };
 
@@ -1441,13 +1443,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1544,27 +1546,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -3791,6 +3793,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     propertyDamageDescription: '',
                                                     additionalDamageNotes: '',
                                                     damageExtent: '',
+                                                    damageNature: '',
                                                     medicalTreatment: {
                                                         received: false,
                                                         hospitalName: '',
@@ -3866,6 +3869,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 propertyDamageDescription: '',
                                                                                 additionalDamageNotes: '',
                                                                                 damageExtent: '',
+                                                                                damageNature: '',
                                                                                 medicalTreatment: {
                                                                                     received: false,
                                                                                     hospitalName: '',
@@ -4229,6 +4233,29 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     </Grid>
                                                                 </Grid>
                                                             )}
+                                                        </Box>
+
+                                                        {/* Damage Nature Field */}
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                מהות הנזק
+                                                            </Typography>
+                                                            <TextField
+                                                                fullWidth
+                                                                multiline
+                                                                rows={4}
+                                                                placeholder="מהות הנזק או הפגיעה"
+                                                                value={victim.damageNature || ''}
+                                                                onChange={(e) => updateThirdPartyVictim(index, 'damageNature', e.target.value)}
+                                                                variant="outlined"
+                                                                sx={{
+                                                                    '& .MuiOutlinedInput-root': {
+                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                    },
+                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                }}
+                                                            />
                                                         </Box>
                                                     </Paper>
                                                 ))}
