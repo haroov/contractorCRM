@@ -172,6 +172,7 @@ interface ThirdPartyVictim {
     };
     attachedDocuments: {
         documentName: string;
+        description?: string;
         fileUrl: string;
         thumbnailUrl: string;
     }[];
@@ -5020,6 +5021,195 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </Box>
                                                             </Box>
                                                         )}
+
+                                                        {/* Attached Documents Sub-section */}
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                צרופות
+                                                            </Typography>
+                                                            <Box sx={{ width: '100%' }}>
+                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                    <Table size="small">
+                                                                        <TableHead>
+                                                                            <TableRow>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאור</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                                            </TableRow>
+                                                                        </TableHead>
+                                                                        <TableBody>
+                                                                            {(victim.attachedDocuments || []).map((document, docIndex) => (
+                                                                                <TableRow key={docIndex}>
+                                                                                    <TableCell>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            size="small"
+                                                                                            value={document.documentName}
+                                                                                            onChange={(e) => {
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], documentName: e.target.value };
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                                            }}
+                                                                                            variant="outlined"
+                                                                                            sx={{
+                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                },
+                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            size="small"
+                                                                                            value={document.description || ''}
+                                                                                            onChange={(e) => {
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], description: e.target.value };
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                                            }}
+                                                                                            variant="outlined"
+                                                                                            sx={{
+                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                },
+                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <FileUpload
+                                                                                            value={document.fileUrl || ''}
+                                                                                            thumbnailUrl={document.thumbnailUrl || ''}
+                                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments[docIndex] = { 
+                                                                                                    ...updatedDocuments[docIndex], 
+                                                                                                    fileUrl: url,
+                                                                                                    thumbnailUrl: thumbnailUrl
+                                                                                                };
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                                            }}
+                                                                                            onDelete={async () => {
+                                                                                                // Show confirmation dialog
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'המסמך'}"?`;
+
+                                                                                                const confirmed = window.confirm(confirmMessage);
+
+                                                                                                if (!confirmed) {
+                                                                                                    throw new Error('User cancelled deletion');
+                                                                                                }
+
+                                                                                                // Delete file from Blob storage
+                                                                                                if (document.fileUrl) {
+                                                                                                    try {
+                                                                                                        const response = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                        });
+
+                                                                                                        if (!response.ok) {
+                                                                                                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
+                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                        throw error;
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Delete thumbnail from Blob storage
+                                                                                                if (document.thumbnailUrl) {
+                                                                                                    try {
+                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                        });
+
+                                                                                                        if (!thumbnailResponse.ok) {
+                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Remove document from array
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments.splice(docIndex, 1);
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+
+                                                                                                // Show success message
+                                                                                                setSnackbar({
+                                                                                                    open: true,
+                                                                                                    message: 'הקובץ נמחק בהצלחה',
+                                                                                                    severity: 'success'
+                                                                                                });
+                                                                                            }}
+                                                                                            projectId={formData.projectId}
+                                                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        <IconButton
+                                                                                            onClick={() => {
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments.splice(docIndex, 1);
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                                            }}
+                                                                                            color="error"
+                                                                                            size="small"
+                                                                                        >
+                                                                                            <DeleteIcon />
+                                                                                        </IconButton>
+                                                                                    </TableCell>
+                                                                                </TableRow>
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </TableContainer>
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    startIcon={<AddIcon />}
+                                                                    onClick={() => {
+                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                        updatedDocuments.push({
+                                                                            documentName: '',
+                                                                            description: '',
+                                                                            fileUrl: '',
+                                                                            thumbnailUrl: ''
+                                                                        });
+                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                    }}
+                                                                    sx={{
+                                                                        borderColor: '#6b47c1',
+                                                                        color: '#6b47c1',
+                                                                        '&:hover': {
+                                                                            borderColor: '#5a3aa1',
+                                                                            backgroundColor: '#f3f4f6'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    הוספת מסמך
+                                                                </Button>
+                                                            </Box>
+                                                        </Box>
                                                     </Paper>
                                                 ))}
 
