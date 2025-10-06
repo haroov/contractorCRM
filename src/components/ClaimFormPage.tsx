@@ -129,6 +129,7 @@ interface ThirdPartyVictim {
     address: string;
     workplaceAddress?: string;
     profession?: string;
+    birthDate?: string;
     injuryDescription?: string;
     propertyDamageDescription?: string;
     additionalDamageNotes?: string;
@@ -3763,6 +3764,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     address: '',
                                                     workplaceAddress: '',
                                                     profession: '',
+                                                    birthDate: '',
                                                     injuryDescription: '',
                                                     propertyDamageDescription: '',
                                                     additionalDamageNotes: '',
@@ -3837,6 +3839,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 address: '',
                                                                                 workplaceAddress: '',
                                                                                 profession: '',
+                                                                                birthDate: '',
                                                                                 injuryDescription: '',
                                                                                 propertyDamageDescription: '',
                                                                                 additionalDamageNotes: '',
@@ -3953,6 +3956,48 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 />
                                                             </Grid>
                                                         </Grid>
+
+                                                        {/* Additional fields for bodily injury to third party */}
+                                                        {(formData.bodilyInjuryThirdParty === true) && (
+                                                            <Grid container spacing={2} sx={{ mt: 2 }}>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="תאריך לידה"
+                                                                        type="date"
+                                                                        value={victim.birthDate || ''}
+                                                                        onChange={(e) => updateThirdPartyVictim(index, 'birthDate', e.target.value)}
+                                                                        InputLabelProps={{
+                                                                            shrink: true,
+                                                                        }}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={6}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="מקצוע"
+                                                                        value={victim.profession || ''}
+                                                                        onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>
+                                                        )}
 
                                                         {/* Representative Details Sub-section */}
                                                         <Box sx={{ mt: 3 }}>
