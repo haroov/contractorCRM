@@ -5164,10 +5164,67 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             accept=".pdf,.jpg,.jpeg,.png"
                                                                                         />
                                                                                     </TableCell>
+                                                                                    <TableCell>
+                                                                                        <IconButton
+                                                                                            onClick={() => {
+                                                                                                // Show confirmation dialog
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
+
+                                                                                                const confirmed = window.confirm(confirmMessage);
+
+                                                                                                if (!confirmed) {
+                                                                                                    return;
+                                                                                                }
+
+                                                                                                // Delete file from Blob storage
+                                                                                                if (document.fileUrl) {
+                                                                                                    fetch('/api/upload/delete-file', {
+                                                                                                        method: 'POST',
+                                                                                                        headers: {
+                                                                                                            'Content-Type': 'application/json',
+                                                                                                        },
+                                                                                                        body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                    }).catch(error => {
+                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                    });
+                                                                                                }
+
+                                                                                                // Delete thumbnail from Blob storage
+                                                                                                if (document.thumbnailUrl) {
+                                                                                                    fetch('/api/upload/delete-file', {
+                                                                                                        method: 'POST',
+                                                                                                        headers: {
+                                                                                                            'Content-Type': 'application/json',
+                                                                                                        },
+                                                                                                        body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                    }).catch(error => {
+                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                    });
+                                                                                                }
+
+                                                                                                // Remove document from array
+                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                updatedDocuments.splice(docIndex, 1);
+                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+
+                                                                                                // Show success message
+                                                                                                setSnackbar({
+                                                                                                    open: true,
+                                                                                                    message: 'המסמך נמחק בהצלחה',
+                                                                                                    severity: 'success'
+                                                                                                });
+                                                                                            }}
+                                                                                            color="error"
+                                                                                            size="small"
+                                                                                        >
+                                                                                            <DeleteIcon />
+                                                                                        </IconButton>
+                                                                                    </TableCell>
                                                                                 </TableRow>
                                                                             ))}
                                                                             <TableRow>
-                                                                                <TableCell colSpan={3} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
+                                                                                <TableCell colSpan={4} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
                                                                                     <Button
                                                                                         variant="outlined"
                                                                                         startIcon={<AddIcon />}
