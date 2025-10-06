@@ -5218,10 +5218,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             }}
                                                                                             color="error"
                                                                                             size="small"
+                                                                                            sx={{
+                                                                                                '&:focus': {
+                                                                                                    backgroundColor: 'rgba(211, 47, 47, 0.12)'
+                                                                                                }
+                                                                                            }}
                                                                                         >
-                                                                                            <img 
-                                                                                                src={trashIcon} 
-                                                                                                alt="מחיקה" 
+                                                                                            <img
+                                                                                                src={trashIcon}
+                                                                                                alt="מחיקה"
                                                                                                 style={{ width: '20px', height: '20px' }}
                                                                                             />
                                                                                         </IconButton>
