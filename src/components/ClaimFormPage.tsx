@@ -3816,7 +3816,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             </Box>
 
                                                                             {/* Attached Documents Section */}
-                                                                            <Box sx={{ mt: 3 }}>
+                                                                            <Box sx={{ mt: 3, mx: -3, px: 3 }}>
                                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                                     צרופות
                                                                                 </Typography>
