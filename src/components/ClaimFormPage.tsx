@@ -437,6 +437,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             address: victim.address || '',
                             workplaceAddress: victim.workplaceAddress || '',
                             profession: victim.profession || '',
+                            birthDate: victim.birthDate || '',
                             injuryDescription: victim.injuryDescription || '',
                             propertyDamageDescription: victim.propertyDamageDescription || '',
                             additionalDamageNotes: victim.additionalDamageNotes || '',
@@ -461,7 +462,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 present: victim.additionalFactors?.present || false,
                                 details: victim.additionalFactors?.details || ''
                             },
-                            attachedDocuments: victim.attachedDocuments || []
+                            attachedDocuments: victim.attachedDocuments || [],
+                            representative: victim.representative || {
+                                hasRepresentative: false,
+                                name: '',
+                                address: '',
+                                phone: '',
+                                email: ''
+                            }
                         })),
                         status: data.claim.status || 'open',
                         parties: data.claim.parties || '',
@@ -1179,15 +1187,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const validateBirthDate = (birthDate: string): boolean => {
         if (!birthDate) return true; // Empty is valid (optional field)
-        
+
         const birth = new Date(birthDate);
         const today = new Date();
         const age = today.getFullYear() - birth.getFullYear();
         const monthDiff = today.getMonth() - birth.getMonth();
-        
+
         // Adjust age if birthday hasn't occurred this year
         const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate()) ? age - 1 : age;
-        
+
         return actualAge >= 16 && actualAge <= 100;
     };
 
