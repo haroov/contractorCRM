@@ -154,6 +154,14 @@ interface ThirdPartyVictim {
         reportFileThumbnail?: string;
         stationName?: string;
     };
+    insuranceCompanyReport: {
+        reported: boolean;
+        reportDate?: string;
+        reportFile?: string;
+        reportFileThumbnail?: string;
+        policyNumber?: string;
+        claimNumber?: string;
+    };
     insuredNegligence: {
         contributed: boolean;
         details?: string;
@@ -457,6 +465,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 reportFile: victim.policeReport?.reportFile || '',
                                 reportFileThumbnail: victim.policeReport?.reportFileThumbnail || '',
                                 stationName: victim.policeReport?.stationName || ''
+                            },
+                            insuranceCompanyReport: {
+                                reported: victim.insuranceCompanyReport?.reported || false,
+                                reportDate: victim.insuranceCompanyReport?.reportDate || '',
+                                reportFile: victim.insuranceCompanyReport?.reportFile || '',
+                                reportFileThumbnail: victim.insuranceCompanyReport?.reportFileThumbnail || '',
+                                policyNumber: victim.insuranceCompanyReport?.policyNumber || '',
+                                claimNumber: victim.insuranceCompanyReport?.claimNumber || ''
                             },
                             insuredNegligence: {
                                 contributed: victim.insuredNegligence?.contributed || false,
@@ -990,6 +1006,32 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                 i === index ? {
                     ...victim,
                     medicalTreatment: { ...victim.medicalTreatment, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimPoliceReport = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    policeReport: { ...victim.policeReport, [field]: value }
+                } : victim
+            ),
+            updatedAt: new Date()
+        }));
+    };
+
+    const updateThirdPartyVictimInsuranceReport = (index: number, field: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            thirdPartyVictims: prev.thirdPartyVictims.map((victim, i) =>
+                i === index ? {
+                    ...victim,
+                    insuranceCompanyReport: { ...victim.insuranceCompanyReport, [field]: value }
                 } : victim
             ),
             updatedAt: new Date()
@@ -3809,6 +3851,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         reportFileThumbnail: '',
                                                         stationName: ''
                                                     },
+                                                    insuranceCompanyReport: {
+                                                        reported: false,
+                                                        reportDate: '',
+                                                        reportFile: '',
+                                                        reportFileThumbnail: '',
+                                                        policyNumber: '',
+                                                        claimNumber: ''
+                                                    },
                                                     insuredNegligence: {
                                                         contributed: false,
                                                         details: ''
@@ -3885,6 +3935,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     reportFile: '',
                                                                                     reportFileThumbnail: '',
                                                                                     stationName: ''
+                                                                                },
+                                                                                insuranceCompanyReport: {
+                                                                                    reported: false,
+                                                                                    reportDate: '',
+                                                                                    reportFile: '',
+                                                                                    reportFileThumbnail: '',
+                                                                                    policyNumber: '',
+                                                                                    claimNumber: ''
                                                                                 },
                                                                                 insuredNegligence: {
                                                                                     contributed: false,
@@ -4647,6 +4705,170 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 )}
                                                             </>
                                                         )}
+
+                                                        {/* Reports Sub-section */}
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                דיווחים
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                display: 'grid',
+                                                                gridTemplateColumns: '1fr 1fr',
+                                                                gap: 2
+                                                            }}>
+                                                                {/* Police Report */}
+                                                                <Box sx={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'flex-start',
+                                                                    justifyContent: 'flex-end'
+                                                                }}>
+                                                                    <Box sx={{
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderRadius: '4px',
+                                                                        backgroundColor: 'white',
+                                                                        minHeight: '56px',
+                                                                        padding: '0 14px',
+                                                                        direction: 'rtl',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'space-between',
+                                                                        width: '100%'
+                                                                    }}>
+                                                                        <Typography sx={{
+                                                                            fontSize: '1rem',
+                                                                            color: 'text.secondary',
+                                                                            marginRight: '10px'
+                                                                        }}>
+                                                                            משטרה
+                                                                        </Typography>
+                                                                        <Box sx={{
+                                                                            display: 'flex',
+                                                                            gap: 0,
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'flex-start',
+                                                                            marginLeft: '10px'
+                                                                        }}>
+                                                                            <Button
+                                                                                variant="text"
+                                                                                onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', false)}
+                                                                                sx={{
+                                                                                    borderRadius: '0 4px 4px 0',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderLeft: 'none',
+                                                                                    backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                    color: !victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem',
+                                                                                    marginRight: '0px'
+                                                                                }}
+                                                                            >
+                                                                                לא
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant="text"
+                                                                                onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', true)}
+                                                                                sx={{
+                                                                                    borderRadius: '4px 0 0 4px',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                    color: victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem'
+                                                                                }}
+                                                                            >
+                                                                                כן
+                                                                            </Button>
+                                                                        </Box>
+                                                                    </Box>
+                                                                </Box>
+
+                                                                {/* Insurance Company Report */}
+                                                                <Box sx={{
+                                                                    display: 'flex',
+                                                                    alignItems: 'flex-start',
+                                                                    justifyContent: 'flex-end'
+                                                                }}>
+                                                                    <Box sx={{
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderRadius: '4px',
+                                                                        backgroundColor: 'white',
+                                                                        minHeight: '56px',
+                                                                        padding: '0 14px',
+                                                                        direction: 'rtl',
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        justifyContent: 'space-between',
+                                                                        width: '100%'
+                                                                    }}>
+                                                                        <Typography sx={{
+                                                                            fontSize: '1rem',
+                                                                            color: 'text.secondary',
+                                                                            marginRight: '10px'
+                                                                        }}>
+                                                                            חברת ביטוח
+                                                                        </Typography>
+                                                                        <Box sx={{
+                                                                            display: 'flex',
+                                                                            gap: 0,
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'flex-start',
+                                                                            marginLeft: '10px'
+                                                                        }}>
+                                                                            <Button
+                                                                                variant="text"
+                                                                                onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', false)}
+                                                                                sx={{
+                                                                                    borderRadius: '0 4px 4px 0',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderLeft: 'none',
+                                                                                    backgroundColor: !victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                    color: !victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: !victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem',
+                                                                                    marginRight: '0px'
+                                                                                }}
+                                                                            >
+                                                                                לא
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant="text"
+                                                                                onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', true)}
+                                                                                sx={{
+                                                                                    borderRadius: '4px 0 0 4px',
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    backgroundColor: victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                    color: victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                    '&:hover': {
+                                                                                        backgroundColor: victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                    },
+                                                                                    minWidth: '50px',
+                                                                                    height: '32px',
+                                                                                    textTransform: 'none',
+                                                                                    fontSize: '0.875rem'
+                                                                                }}
+                                                                            >
+                                                                                כן
+                                                                            </Button>
+                                                                        </Box>
+                                                                    </Box>
+                                                                </Box>
+                                                            </Box>
+                                                        </Box>
                                                     </Paper>
                                                 ))}
 
