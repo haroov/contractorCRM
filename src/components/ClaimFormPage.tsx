@@ -5090,8 +5090,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             onChange={(url, thumbnailUrl) => {
                                                                                                 const currentVictim = formData.thirdPartyVictims[index] || {};
                                                                                                 const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = { 
-                                                                                                    ...updatedDocuments[docIndex], 
+                                                                                                updatedDocuments[docIndex] = {
+                                                                                                    ...updatedDocuments[docIndex],
                                                                                                     fileUrl: url,
                                                                                                     thumbnailUrl: thumbnailUrl
                                                                                                 };
@@ -5164,50 +5164,40 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             accept=".pdf,.jpg,.jpeg,.png"
                                                                                         />
                                                                                     </TableCell>
-                                                                                    <TableCell>
-                                                                                        <IconButton
-                                                                                            onClick={() => {
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments.splice(docIndex, 1);
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                                            }}
-                                                                                            color="error"
-                                                                                            size="small"
-                                                                                        >
-                                                                                            <DeleteIcon />
-                                                                                        </IconButton>
-                                                                                    </TableCell>
                                                                                 </TableRow>
                                                                             ))}
+                                                                            <TableRow>
+                                                                                <TableCell colSpan={3} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
+                                                                                    <Button
+                                                                                        variant="outlined"
+                                                                                        startIcon={<AddIcon />}
+                                                                                        onClick={() => {
+                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                            const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                            updatedDocuments.push({
+                                                                                                documentName: '',
+                                                                                                description: '',
+                                                                                                fileUrl: '',
+                                                                                                thumbnailUrl: ''
+                                                                                            });
+                                                                                            updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+                                                                                        }}
+                                                                                        sx={{
+                                                                                            borderColor: '#6b47c1',
+                                                                                            color: '#6b47c1',
+                                                                                            '&:hover': {
+                                                                                                borderColor: '#5a3aa1',
+                                                                                                backgroundColor: '#f3f4f6'
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        הוספה
+                                                                                    </Button>
+                                                                                </TableCell>
+                                                                            </TableRow>
                                                                         </TableBody>
                                                                     </Table>
                                                                 </TableContainer>
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    startIcon={<AddIcon />}
-                                                                    onClick={() => {
-                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                        updatedDocuments.push({
-                                                                            documentName: '',
-                                                                            description: '',
-                                                                            fileUrl: '',
-                                                                            thumbnailUrl: ''
-                                                                        });
-                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                    }}
-                                                                    sx={{
-                                                                        borderColor: '#6b47c1',
-                                                                        color: '#6b47c1',
-                                                                        '&:hover': {
-                                                                            borderColor: '#5a3aa1',
-                                                                            backgroundColor: '#f3f4f6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    הוספת מסמך
-                                                                </Button>
                                                             </Box>
                                                         </Box>
                                                     </Paper>
