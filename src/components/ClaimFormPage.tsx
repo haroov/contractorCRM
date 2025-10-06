@@ -4706,11 +4706,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </>
                                                         )}
 
-                                                        {/* Reports Sub-section */}
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                דיווחים
-                                                            </Typography>
+                                                        {/* Reports Sub-section - Available for both bodily injury and property damage */}
+                                                        {((formData.bodilyInjuryThirdParty === true) || (formData.propertyDamageThirdParty === true)) && (
+                                                            <Box sx={{ mt: 3 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                    דיווחים
+                                                                </Typography>
                                                             <Box sx={{
                                                                 display: 'grid',
                                                                 gridTemplateColumns: '1fr 1fr',
@@ -4869,6 +4870,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </Box>
                                                             </Box>
                                                         </Box>
+                                                        )}
                                                     </Paper>
                                                 ))}
 
