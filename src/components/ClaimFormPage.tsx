@@ -3820,9 +3820,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                                     צרופות
                                                                                 </Typography>
-                                                                                <Box sx={{ width: '100%' }}>
-                                                                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                                                                        <Table size="small">
+                                                                                <TableContainer component={Paper} sx={{ mb: 2, overflow: 'auto', maxWidth: '100%' }}>
+                                                                                    <Table size="small">
                                                                                             <TableHead>
                                                                                                 <TableRow>
                                                                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
@@ -4055,7 +4054,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                         </TableBody>
                                                                                     </Table>
                                                                                 </TableContainer>
-                                                                                </Box>
                                                                             </Box>
                                                                         </Box>
                                                                     </Box>
