@@ -1177,6 +1177,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         return emailRegex.test(email);
     };
 
+    const validateBirthDate = (birthDate: string): boolean => {
+        if (!birthDate) return true; // Empty is valid (optional field)
+        
+        const birth = new Date(birthDate);
+        const today = new Date();
+        const age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        
+        // Adjust age if birthday hasn't occurred this year
+        const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate()) ? age - 1 : age;
+        
+        return actualAge >= 16 && actualAge <= 100;
+    };
+
     const formatNumber = (value: number): string => {
         return value.toLocaleString('he-IL');
     };
@@ -3898,6 +3912,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     value={victim.idNumber || ''}
                                                                     onChange={(e) => updateThirdPartyVictim(index, 'idNumber', e.target.value)}
                                                                     variant="outlined"
+                                                                    inputProps={{ maxLength: 9 }}
+                                                                    error={victim.idNumber && victim.idNumber.length > 0 && (victim.idNumber.length < 9 || !validateIsraeliID(victim.idNumber))}
+                                                                    helperText={
+                                                                        victim.idNumber && victim.idNumber.length > 0 && victim.idNumber.length < 9
+                                                                            ? 'תעודת זהות חייבת להכיל 9 ספרות'
+                                                                            : victim.idNumber && victim.idNumber.length === 9 && !validateIsraeliID(victim.idNumber)
+                                                                                ? 'מספר תעודת זהות לא תקין'
+                                                                                : ''
+                                                                    }
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -3914,6 +3937,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     value={victim.phone || ''}
                                                                     onChange={(e) => updateThirdPartyVictim(index, 'phone', e.target.value)}
                                                                     variant="outlined"
+                                                                    error={victim.phone && victim.phone.length > 0 && !validateIsraeliMobile(victim.phone)}
+                                                                    helperText={victim.phone && victim.phone.length > 0 && !validateIsraeliMobile(victim.phone) ? 'מספר טלפון לא תקין' : ''}
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -3930,6 +3955,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     value={victim.email || ''}
                                                                     onChange={(e) => updateThirdPartyVictim(index, 'email', e.target.value)}
                                                                     variant="outlined"
+                                                                    error={victim.email && victim.email.length > 0 && !validateEmail(victim.email)}
+                                                                    helperText={victim.email && victim.email.length > 0 && !validateEmail(victim.email) ? 'כתובת אימייל לא תקינה' : ''}
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             '&:hover fieldset': { borderColor: '#6b47c1' },
@@ -3955,49 +3982,49 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     }}
                                                                 />
                                                             </Grid>
+                                                            {(formData.bodilyInjuryThirdParty === true) && (
+                                                                <>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="תאריך לידה"
+                                                                            type="date"
+                                                                            value={victim.birthDate || ''}
+                                                                            onChange={(e) => updateThirdPartyVictim(index, 'birthDate', e.target.value)}
+                                                                            InputLabelProps={{
+                                                                                shrink: true,
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            error={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate)}
+                                                                            helperText={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate) ? 'הגיל חייב להיות בין 16 ל-100' : ''}
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={12} sm={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            label="מקצוע"
+                                                                            value={victim.profession || ''}
+                                                                            onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-root': {
+                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                },
+                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                            }}
+                                                                        />
+                                                                    </Grid>
+                                                                </>
+                                                            )}
                                                         </Grid>
-
-                                                        {/* Additional fields for bodily injury to third party */}
-                                                        {(formData.bodilyInjuryThirdParty === true) && (
-                                                            <Grid container spacing={2} sx={{ mt: 2 }}>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="תאריך לידה"
-                                                                        type="date"
-                                                                        value={victim.birthDate || ''}
-                                                                        onChange={(e) => updateThirdPartyVictim(index, 'birthDate', e.target.value)}
-                                                                        InputLabelProps={{
-                                                                            shrink: true,
-                                                                        }}
-                                                                        variant="outlined"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': {
-                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                            },
-                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                        }}
-                                                                    />
-                                                                </Grid>
-                                                                <Grid item xs={12} sm={6}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="מקצוע"
-                                                                        value={victim.profession || ''}
-                                                                        onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
-                                                                        variant="outlined"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': {
-                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                            },
-                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                        }}
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        )}
 
                                                         {/* Representative Details Sub-section */}
                                                         <Box sx={{ mt: 3 }}>
