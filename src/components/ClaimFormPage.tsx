@@ -37,7 +37,8 @@ import {
     MoreVert as MoreVertIcon,
     AccountCircle as AccountCircleIcon,
     Add as AddIcon,
-    Delete as DeleteIcon
+    Delete as DeleteIcon,
+    DeleteForever as DeleteForeverIcon
 } from '@mui/icons-material';
 import FileUpload from './FileUpload';
 
@@ -5218,7 +5219,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             color="error"
                                                                                             size="small"
                                                                                         >
-                                                                                            <DeleteIcon />
+                                                                                            <DeleteForeverIcon />
                                                                                         </IconButton>
                                                                                     </TableCell>
                                                                                 </TableRow>
