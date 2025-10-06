@@ -3672,7 +3672,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 '&:hover': {
                                                                                                     backgroundColor: !employee.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
                                                                                                 },
-                                                                                                minWidth: '40px',
+                                                                                                minWidth: '50px',
                                                                                                 height: '32px',
                                                                                                 textTransform: 'none',
                                                                                                 fontSize: '0.875rem',
@@ -3692,7 +3692,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 '&:hover': {
                                                                                                     backgroundColor: employee.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
                                                                                                 },
-                                                                                                minWidth: '40px',
+                                                                                                minWidth: '50px',
                                                                                                 height: '32px',
                                                                                                 textTransform: 'none',
                                                                                                 fontSize: '0.875rem',
