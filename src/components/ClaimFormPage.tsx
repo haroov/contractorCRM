@@ -4712,164 +4712,313 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
                                                                     דיווחים
                                                                 </Typography>
-                                                            <Box sx={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: '1fr 1fr',
-                                                                gap: 2
-                                                            }}>
-                                                                {/* Police Report */}
                                                                 <Box sx={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'flex-start',
-                                                                    justifyContent: 'flex-end'
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '1fr 1fr',
+                                                                    gap: 2
                                                                 }}>
+                                                                    {/* Police Report */}
                                                                     <Box sx={{
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderRadius: '4px',
-                                                                        backgroundColor: 'white',
-                                                                        minHeight: '56px',
-                                                                        padding: '0 14px',
-                                                                        direction: 'rtl',
                                                                         display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        width: '100%'
+                                                                        alignItems: 'flex-start',
+                                                                        justifyContent: 'flex-end'
                                                                     }}>
-                                                                        <Typography sx={{
-                                                                            fontSize: '1rem',
-                                                                            color: 'text.secondary',
-                                                                            marginRight: '10px'
-                                                                        }}>
-                                                                            משטרה
-                                                                        </Typography>
                                                                         <Box sx={{
+                                                                            border: '1px solid #d1d5db',
+                                                                            borderRadius: '4px',
+                                                                            backgroundColor: 'white',
+                                                                            minHeight: '56px',
+                                                                            padding: '0 14px',
+                                                                            direction: 'rtl',
                                                                             display: 'flex',
-                                                                            gap: 0,
                                                                             alignItems: 'center',
-                                                                            justifyContent: 'flex-start',
-                                                                            marginLeft: '10px'
+                                                                            justifyContent: 'space-between',
+                                                                            width: '100%'
                                                                         }}>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', false)}
-                                                                                sx={{
-                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    borderLeft: 'none',
-                                                                                    backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
-                                                                                    color: !victim.policeReport.reported ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                לא
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', true)}
-                                                                                sx={{
-                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
-                                                                                    color: victim.policeReport.reported ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem'
-                                                                                }}
-                                                                            >
-                                                                                כן
-                                                                            </Button>
+                                                                            <Typography sx={{
+                                                                                fontSize: '1rem',
+                                                                                color: 'text.secondary',
+                                                                                marginRight: '10px'
+                                                                            }}>
+                                                                                משטרה
+                                                                            </Typography>
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                gap: 0,
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'flex-start',
+                                                                                marginLeft: '10px'
+                                                                            }}>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', false)}
+                                                                                    sx={{
+                                                                                        borderRadius: '0 4px 4px 0',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        borderLeft: 'none',
+                                                                                        backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                        color: !victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem',
+                                                                                        marginRight: '0px'
+                                                                                    }}
+                                                                                >
+                                                                                    לא
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', true)}
+                                                                                    sx={{
+                                                                                        borderRadius: '4px 0 0 4px',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                        color: victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem'
+                                                                                    }}
+                                                                                >
+                                                                                    כן
+                                                                                </Button>
+                                                                            </Box>
                                                                         </Box>
+                                                                    </Box>
+
+                                                                    {/* Police Report Details */}
+                                                                    <Box>
+                                                                        {victim.policeReport.reported && (
+                                                                            <Box>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="שם התחנה"
+                                                                                    value={victim.policeReport.stationName || ''}
+                                                                                    onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'stationName', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    sx={{ mb: 2 }}
+                                                                                />
+                                                                                <Grid container spacing={2}>
+                                                                                    <Grid item xs={12} sm={6}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            type="date"
+                                                                                            label="תאריך דיווח"
+                                                                                            value={victim.policeReport.reportDate || ''}
+                                                                                            onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'reportDate', e.target.value)}
+                                                                                            variant="outlined"
+                                                                                            InputLabelProps={{ shrink: true }}
+                                                                                        />
+                                                                                    </Grid>
+                                                                                    <Grid item xs={12} sm={6}>
+                                                                                        <FileUpload
+                                                                                            label="אישור דיווח"
+                                                                                            value={victim.policeReport.reportFile || ''}
+                                                                                            thumbnailUrl={victim.policeReport.reportFileThumbnail || ''}
+                                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFile', url);
+                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', thumbnailUrl);
+                                                                                            }}
+                                                                                            onDelete={async () => {
+                                                                                                // Show confirmation dialog
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
+
+                                                                                                const confirmed = window.confirm(confirmMessage);
+
+                                                                                                if (!confirmed) {
+                                                                                                    throw new Error('User cancelled deletion');
+                                                                                                }
+
+                                                                                                // Delete file from Blob storage
+                                                                                                if (victim.policeReport.reportFile) {
+                                                                                                    try {
+                                                                                                        const response = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: victim.policeReport.reportFile })
+                                                                                                        });
+
+                                                                                                        if (!response.ok) {
+                                                                                                            console.warn('Failed to delete file from Blob storage:', victim.policeReport.reportFile);
+                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                        throw error;
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Delete thumbnail from Blob storage
+                                                                                                if (victim.policeReport.reportFileThumbnail) {
+                                                                                                    try {
+                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({ fileUrl: victim.policeReport.reportFileThumbnail })
+                                                                                                        });
+
+                                                                                                        if (!thumbnailResponse.ok) {
+                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', victim.policeReport.reportFileThumbnail);
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Clear the file URLs
+                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFile', '');
+                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', '');
+
+                                                                                                // Show success message
+                                                                                                setSnackbar({
+                                                                                                    open: true,
+                                                                                                    message: 'הקובץ נמחק בהצלחה',
+                                                                                                    severity: 'success'
+                                                                                                });
+                                                                                            }}
+                                                                                            projectId={formData.projectId}
+                                                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                                                        />
+                                                                                    </Grid>
+                                                                                </Grid>
+                                                                            </Box>
+                                                                        )}
                                                                     </Box>
                                                                 </Box>
 
-                                                                {/* Insurance Company Report */}
                                                                 <Box sx={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'flex-start',
-                                                                    justifyContent: 'flex-end'
+                                                                    display: 'grid',
+                                                                    gridTemplateColumns: '1fr 1fr',
+                                                                    gap: 2,
+                                                                    mt: 2
                                                                 }}>
+                                                                    {/* Insurance Company Report */}
                                                                     <Box sx={{
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderRadius: '4px',
-                                                                        backgroundColor: 'white',
-                                                                        minHeight: '56px',
-                                                                        padding: '0 14px',
-                                                                        direction: 'rtl',
                                                                         display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        width: '100%'
+                                                                        alignItems: 'flex-start',
+                                                                        justifyContent: 'flex-end'
                                                                     }}>
-                                                                        <Typography sx={{
-                                                                            fontSize: '1rem',
-                                                                            color: 'text.secondary',
-                                                                            marginRight: '10px'
-                                                                        }}>
-                                                                            חברת ביטוח
-                                                                        </Typography>
                                                                         <Box sx={{
+                                                                            border: '1px solid #d1d5db',
+                                                                            borderRadius: '4px',
+                                                                            backgroundColor: 'white',
+                                                                            minHeight: '56px',
+                                                                            padding: '0 14px',
+                                                                            direction: 'rtl',
                                                                             display: 'flex',
-                                                                            gap: 0,
                                                                             alignItems: 'center',
-                                                                            justifyContent: 'flex-start',
-                                                                            marginLeft: '10px'
+                                                                            justifyContent: 'space-between',
+                                                                            width: '100%'
                                                                         }}>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', false)}
-                                                                                sx={{
-                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    borderLeft: 'none',
-                                                                                    backgroundColor: !victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                    color: !victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                לא
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', true)}
-                                                                                sx={{
-                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    backgroundColor: victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                    color: victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem'
-                                                                                }}
-                                                                            >
-                                                                                כן
-                                                                            </Button>
+                                                                            <Typography sx={{
+                                                                                fontSize: '1rem',
+                                                                                color: 'text.secondary',
+                                                                                marginRight: '10px'
+                                                                            }}>
+                                                                                חברת ביטוח
+                                                                            </Typography>
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                gap: 0,
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'flex-start',
+                                                                                marginLeft: '10px'
+                                                                            }}>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', false)}
+                                                                                    sx={{
+                                                                                        borderRadius: '0 4px 4px 0',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        borderLeft: 'none',
+                                                                                        backgroundColor: !victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                        color: !victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: !victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem',
+                                                                                        marginRight: '0px'
+                                                                                    }}
+                                                                                >
+                                                                                    לא
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant="text"
+                                                                                    onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', true)}
+                                                                                    sx={{
+                                                                                        borderRadius: '4px 0 0 4px',
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        backgroundColor: victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                        color: victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                        '&:hover': {
+                                                                                            backgroundColor: victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                        },
+                                                                                        minWidth: '50px',
+                                                                                        height: '32px',
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem'
+                                                                                    }}
+                                                                                >
+                                                                                    כן
+                                                                                </Button>
+                                                                            </Box>
                                                                         </Box>
+                                                                    </Box>
+
+                                                                    {/* Insurance Company Report Details */}
+                                                                    <Box>
+                                                                        {victim.insuranceCompanyReport.reported && (
+                                                                            <Box>
+                                                                                <Grid container spacing={2}>
+                                                                                    <Grid item xs={12} sm={6}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            type="date"
+                                                                                            label="תאריך דיווח"
+                                                                                            value={victim.insuranceCompanyReport.reportDate || ''}
+                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'reportDate', e.target.value)}
+                                                                                            variant="outlined"
+                                                                                            InputLabelProps={{ shrink: true }}
+                                                                                        />
+                                                                                    </Grid>
+                                                                                    <Grid item xs={12} sm={6}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            label="מספר פוליסה"
+                                                                                            value={victim.insuranceCompanyReport.policyNumber || ''}
+                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'policyNumber', e.target.value)}
+                                                                                            variant="outlined"
+                                                                                        />
+                                                                                    </Grid>
+                                                                                    <Grid item xs={12}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            label="מספר תביעה בחברת הביטוח"
+                                                                                            value={victim.insuranceCompanyReport.claimNumber || ''}
+                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'claimNumber', e.target.value)}
+                                                                                            variant="outlined"
+                                                                                        />
+                                                                                    </Grid>
+                                                                                </Grid>
+                                                                            </Box>
+                                                                        )}
                                                                     </Box>
                                                                 </Box>
                                                             </Box>
-                                                        </Box>
                                                         )}
                                                     </Paper>
                                                 ))}
