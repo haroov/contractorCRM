@@ -7391,7 +7391,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Box>
 
                                                             {/* Item Fields */}
-                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
                                                                 {/* Description */}
                                                                 <TextField
                                                                     fullWidth
@@ -7426,24 +7426,24 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         shrink: true,
                                                                     }}
                                                                 />
-                                                            </Box>
 
-                                                            {/* Requested Amount */}
-                                                            <TextField
-                                                                fullWidth
-                                                                label="סכום מבוקש (₪)"
-                                                                placeholder="עלות תיקון או ערך הפריט שניזוק/נגנב"
-                                                                value={item.requestedAmount}
-                                                                onChange={(e) => {
-                                                                    const value = e.target.value.replace(/,/g, '');
-                                                                    const formattedValue = value ? Number(value).toLocaleString() : '';
-                                                                    const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                    const updatedItems = [...currentItems];
-                                                                    updatedItems[itemIndex] = { ...updatedItems[itemIndex], requestedAmount: formattedValue };
-                                                                    updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                }}
-                                                                variant="outlined"
-                                                            />
+                                                                {/* Requested Amount */}
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="סכום מבוקש (₪)"
+                                                                    placeholder="עלות תיקון או ערך הפריט שניזוק/נגנב"
+                                                                    value={item.requestedAmount}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value.replace(/,/g, '');
+                                                                        const formattedValue = value ? Number(value).toLocaleString() : '';
+                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                        const updatedItems = [...currentItems];
+                                                                        updatedItems[itemIndex] = { ...updatedItems[itemIndex], requestedAmount: formattedValue };
+                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                    }}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Box>
 
                                                             {/* Attachments Section */}
                                                             <Box>
