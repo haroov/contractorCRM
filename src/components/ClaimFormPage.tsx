@@ -5747,11 +5747,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 <Grid item xs={12}>
                                                     <TextField
                                                         fullWidth
-                                                        label="סכום משוער של הנזק שנגרם (בשקלים)"
-                                                        value={formData.propertyDamageInsuredDetails?.estimatedDamageAmount || ''}
-                                                        onChange={(e) => updatePropertyDamageDetails('estimatedDamageAmount', e.target.value)}
+                                                        label="סכום הנזק המשוער (₪)"
+                                                        value={formData.propertyDamageInsuredDetails?.estimatedDamageAmount ? 
+                                                            Number(formData.propertyDamageInsuredDetails.estimatedDamageAmount).toLocaleString() : ''}
+                                                        onChange={(e) => {
+                                                            const numericValue = e.target.value.replace(/,/g, '');
+                                                            updatePropertyDamageDetails('estimatedDamageAmount', numericValue);
+                                                        }}
                                                         variant="outlined"
-                                                        type="number"
+                                                        type="text"
                                                         sx={{
                                                             '& .MuiOutlinedInput-root': {
                                                                 '&:hover fieldset': { borderColor: '#6b47c1' },
