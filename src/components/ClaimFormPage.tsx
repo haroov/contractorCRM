@@ -7487,13 +7487,19 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     <TableCell sx={{ borderBottom: '1px solid #e0e0e0', textAlign: 'center' }}>
                                                                                         <MuiIconButton
                                                                                             onClick={() => {
-                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                                const updatedItems = [...currentItems];
-                                                                                                updatedItems[itemIndex] = {
-                                                                                                    ...updatedItems[itemIndex],
-                                                                                                    attachments: updatedItems[itemIndex].attachments?.filter((_, index) => index !== attachmentIndex) || []
-                                                                                                };
-                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                                // Show confirmation dialog
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הצרופה?`;
+                                                                                                const confirmed = window.confirm(confirmMessage);
+                                                                                                
+                                                                                                if (confirmed) {
+                                                                                                    const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                    const updatedItems = [...currentItems];
+                                                                                                    updatedItems[itemIndex] = {
+                                                                                                        ...updatedItems[itemIndex],
+                                                                                                        attachments: updatedItems[itemIndex].attachments?.filter((_, index) => index !== attachmentIndex) || []
+                                                                                                    };
+                                                                                                    updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                                }
                                                                                             }}
                                                                                             sx={{
                                                                                                 color: '#d32f2f',
@@ -7507,9 +7513,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     </TableCell>
                                                                                 </TableRow>
                                                                             ))}
-                                                                            {/* Add Attachment Button - Inside table, bottom center */}
+                                                                            {/* Add Attachment Button - Inside table, bottom right */}
                                                                             <TableRow>
-                                                                                <TableCell colSpan={5} sx={{ textAlign: 'center', borderBottom: 'none', py: 2 }}>
+                                                                                <TableCell colSpan={5} sx={{ textAlign: 'right', borderBottom: 'none', py: 2 }}>
                                                                                     <Button
                                                                                         variant="outlined"
                                                                                         size="small"
@@ -7539,7 +7545,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             }
                                                                                         }}
                                                                                     >
-                                                                                        + הוסף צרופה
+                                                                                        + הוספה
                                                                                     </Button>
                                                                                 </TableCell>
                                                                             </TableRow>
