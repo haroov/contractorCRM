@@ -5755,10 +5755,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Other fields - Separate Paper */}
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
-                                            <Grid container spacing={2}>
+                                            <Grid container spacing={3}>
+                                                {/* Column 1: Questions */}
+                                                <Grid item xs={12} md={6}>
+                                                    <Grid container spacing={2}>
 
-                                                {/* Is Sole Owner */}
-                                                <Grid item xs={12}>
+                                                        {/* Is Sole Owner */}
+                                                        <Grid item xs={12}>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                         <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
                                                             המבוטח הוא הבעלים היחיד של הרכוש שניזוק
@@ -5805,23 +5808,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                    {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="מי הבעלים או בעל זכויות נוסף"
-                                                            value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
-                                                            onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
-                                                            variant="outlined"
-                                                            sx={{
-                                                                mt: 2,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-                                                    )}
                                                 </Grid>
 
                                                 {/* Was Occupied */}
@@ -5872,25 +5858,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                    {formData.propertyDamageInsuredDetails?.wasOccupied === false && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="מתי היה מאויש לאחרונה"
-                                                            value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
-                                                            onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
-                                                            variant="outlined"
-                                                            type="date"
-                                                            InputLabelProps={{ shrink: true }}
-                                                            sx={{
-                                                                mt: 2,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-                                                    )}
                                                 </Grid>
 
                                                 {/* Previous Damage */}
@@ -5941,25 +5908,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                    {formData.propertyDamageInsuredDetails?.previousDamage === true && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="פרט על הנזק הקודם"
-                                                            value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
-                                                            onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
-                                                            variant="outlined"
-                                                            multiline
-                                                            rows={2}
-                                                            sx={{
-                                                                mt: 2,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-                                                    )}
                                                 </Grid>
 
                                                 {/* Previous Claim */}
@@ -6010,25 +5958,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                    {formData.propertyDamageInsuredDetails?.previousClaim === true && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="שם חברת הביטוח ופרטי התביעה הקודמת"
-                                                            value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
-                                                            onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
-                                                            variant="outlined"
-                                                            multiline
-                                                            rows={2}
-                                                            sx={{
-                                                                mt: 2,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-                                                    )}
                                                 </Grid>
 
                                                 {/* Additional Insurance */}
@@ -6079,25 +6008,121 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                    {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
-                                                        <TextField
-                                                            fullWidth
-                                                            label="מספר הפוליסה ושם חברת הביטוח הנוספת"
-                                                            value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
-                                                            onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
-                                                            variant="outlined"
-                                                            multiline
-                                                            rows={2}
-                                                            sx={{
-                                                                mt: 2,
-                                                                '& .MuiOutlinedInput-root': {
-                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                },
-                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                            }}
-                                                        />
-                                                    )}
+                                                </Grid>
+                                                    </Grid>
+                                                </Grid>
+
+                                                {/* Column 2: Conditional Fields */}
+                                                <Grid item xs={12} md={6}>
+                                                    <Grid container spacing={2}>
+                                                        {/* Conditional field for Is Sole Owner */}
+                                                        <Grid item xs={12}>
+                                                            {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מי הבעלים או בעל זכויות נוסף"
+                                                                    value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
+                                                                    variant="outlined"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Grid>
+
+                                                        {/* Conditional field for Was Occupied */}
+                                                        <Grid item xs={12}>
+                                                            {formData.propertyDamageInsuredDetails?.wasOccupied === false && (
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מתי היה מאויש לאחרונה"
+                                                                    value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    type="date"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Grid>
+
+                                                        {/* Conditional field for Previous Damage */}
+                                                        <Grid item xs={12}>
+                                                            {formData.propertyDamageInsuredDetails?.previousDamage === true && (
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="פרט על הנזק הקודם"
+                                                                    value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
+                                                                    variant="outlined"
+                                                                    multiline
+                                                                    rows={2}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Grid>
+
+                                                        {/* Conditional field for Previous Claim */}
+                                                        <Grid item xs={12}>
+                                                            {formData.propertyDamageInsuredDetails?.previousClaim === true && (
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם חברת הביטוח ופרטי התביעה הקודמת"
+                                                                    value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
+                                                                    variant="outlined"
+                                                                    multiline
+                                                                    rows={2}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Grid>
+
+                                                        {/* Conditional field for Additional Insurance */}
+                                                        <Grid item xs={12}>
+                                                            {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מספר הפוליסה ושם חברת הביטוח הנוספת"
+                                                                    value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
+                                                                    variant="outlined"
+                                                                    multiline
+                                                                    rows={2}
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        },
+                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Grid>
+                                                    </Grid>
                                                 </Grid>
                                             </Grid>
                                         </Paper>
