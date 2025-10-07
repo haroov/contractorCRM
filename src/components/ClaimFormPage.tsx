@@ -6555,7 +6555,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 {/* Additional Fire Damage Fields - Only show if fire damage is selected */}
                                 {formData.propertyDamageInsuredDetails?.damageTypes?.includes('נזקי אש') && (
                                     <Box>
-                                        <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 2 }}>
+                                        <Typography variant="body1" gutterBottom sx={{ color: '#6b47c1', mb: 2, fontWeight: 'bold' }}>
                                             נזקי אש
                                         </Typography>
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
@@ -6849,7 +6849,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 {/* Burglary Methods */}
                                                 <Box>
-                                                    <Typography variant="h6" gutterBottom sx={{ color: '#666666', mb: 2, fontWeight: 'bold' }}>
+                                                    <Typography variant="body1" gutterBottom sx={{ color: '#666666', mb: 2, fontWeight: 'bold' }}>
                                                         אופן ביצוע הפריצה/גניבה
                                                     </Typography>
                                                     <Paper sx={{ p: 2, border: '1px solid #e0e0e0' }}>
