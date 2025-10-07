@@ -6385,12 +6385,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         )}
                                                     </Box>
                                                 </Box>
-                                            </Box>
-                                        </Paper>
 
-                                        {/* Insurance Company Report - Additional Section */}
-                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 {/* Insurance Company Report */}
                                                 <Box sx={{
                                                     display: 'grid',
@@ -6405,9 +6400,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         justifyContent: 'flex-end'
                                                     }}>
                                                         <Box sx={{
+                                                            border: '1px solid #d1d5db',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 'white',
+                                                            minHeight: '56px',
+                                                            padding: '0 14px',
+                                                            direction: 'rtl',
                                                             display: 'flex',
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-end',
+                                                            justifyContent: 'space-between',
                                                             width: '100%'
                                                         }}>
                                                             <Typography sx={{
@@ -6479,9 +6480,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         onChange={(e) => updatePropertyDamageDetails('insuranceCompanyPolicyNumber', e.target.value)}
                                                                         label="מספר פוליסה בחברת הביטוח"
                                                                     >
-                                                                        {formData.policyDocuments?.map((policy, index) => (
+                                                                        {formData.policyDocuments?.filter(policy => policy.documentType === 'פוליסה').map((policy, index) => (
                                                                             <MenuItem key={index} value={policy.policyNumber}>
-                                                                                {policy.policyNumber} - {policy.insuranceCompany}
+                                                                                {policy.insuranceCompany} - {policy.policyNumber}
                                                                             </MenuItem>
                                                                         ))}
                                                                     </Select>
