@@ -1,13 +1,8 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  googleId: {
-    type: String,
-    required: false,
-    unique: false, // Changed to false to allow multiple null values
-    sparse: true,
-    default: undefined // Set default to undefined instead of null
-  },
+  // googleId field removed temporarily to avoid index conflicts
+  // Will be added back when index is fixed
   email: {
     type: String,
     required: true,
