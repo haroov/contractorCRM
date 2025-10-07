@@ -5728,6 +5728,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Grid>
 
+                                                {/* Add spacing between damage types and other fields */}
+                                                <br />
+
                                                 {/* Estimated Damage Amount */}
                                                 <Grid item xs={12}>
                                                     <TextField
@@ -5746,6 +5749,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         }}
                                                     />
                                                 </Grid>
+
+                                                {/* Add spacing between fields */}
+                                                <br />
 
                                                 {/* Is Sole Owner */}
                                                 <Grid item xs={12}>
@@ -5813,6 +5819,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         />
                                                     )}
                                                 </Grid>
+
+                                                {/* Add spacing between fields */}
+                                                <br />
 
                                                 {/* Was Occupied */}
                                                 <Grid item xs={12}>
@@ -5883,6 +5892,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     )}
                                                 </Grid>
 
+                                                {/* Add spacing between fields */}
+                                                <br />
+
                                                 {/* Previous Damage */}
                                                 <Grid item xs={12}>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -5952,6 +5964,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     )}
                                                 </Grid>
 
+                                                {/* Add spacing between fields */}
+                                                <br />
+
                                                 {/* Previous Claim */}
                                                 <Grid item xs={12}>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -6020,6 +6035,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         />
                                                     )}
                                                 </Grid>
+
+                                                {/* Add spacing between fields */}
+                                                <br />
 
                                                 {/* Additional Insurance */}
                                                 <Grid item xs={12}>
