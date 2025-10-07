@@ -5487,13 +5487,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 />
                                                                                             </Grid>
                                                                                             <Grid item xs={12} sm={6}>
-                                                                                                <TextField
-                                                                                                    fullWidth
-                                                                                                    label="מספר פוליסה"
-                                                                                                    value={victim.insuranceCompanyReport.policyNumber || ''}
-                                                                                                    onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'policyNumber', e.target.value)}
-                                                                                                    variant="outlined"
-                                                                                                />
+                                                                                                <FormControl fullWidth variant="outlined">
+                                                                                                    <InputLabel>מספר פוליסה</InputLabel>
+                                                                                                    <Select
+                                                                                                        value={victim.insuranceCompanyReport.policyNumber || ''}
+                                                                                                        onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'policyNumber', e.target.value)}
+                                                                                                        label="מספר פוליסה"
+                                                                                                    >
+                                                                                                        {formData.policyDocuments?.filter(doc => doc.documentType === 'פוליסה').map((policy, policyIndex) => (
+                                                                                                            <MenuItem key={policyIndex} value={policy.policyNumber}>
+                                                                                                                {policy.policyNumber} - {policy.insurer}
+                                                                                                            </MenuItem>
+                                                                                                        ))}
+                                                                                                    </Select>
+                                                                                                </FormControl>
                                                                                             </Grid>
                                                                                             <Grid item xs={12}>
                                                                                                 <TextField
