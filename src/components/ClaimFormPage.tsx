@@ -5851,7 +5851,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
                                                             <TextField
                                                                 fullWidth
-                                                                label="מי הבעלים או בעל זכויות נוסף"
+                                                                label="הבעלים או בעל הזכויות הנוסף"
                                                                 value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
                                                                 onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
                                                                 variant="outlined"
@@ -5949,20 +5949,20 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Box sx={{ display: 'flex', gap: 2, direction: 'rtl' }}>
                                                                 <TextField
                                                                     fullWidth
-                                                                    label="שעת איוש אחרון"
-                                                                    value={formData.propertyDamageInsuredDetails?.lastOccupiedTime || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('lastOccupiedTime', e.target.value)}
-                                                                    variant="outlined"
-                                                                    type="time"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                />
-                                                                <TextField
-                                                                    fullWidth
                                                                     label="תאריך איוש אחרון"
                                                                     value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
                                                                     onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
                                                                     variant="outlined"
                                                                     type="date"
+                                                                    InputLabelProps={{ shrink: true }}
+                                                                />
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שעת איוש אחרון"
+                                                                    value={formData.propertyDamageInsuredDetails?.lastOccupiedTime || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('lastOccupiedTime', e.target.value)}
+                                                                    variant="outlined"
+                                                                    type="time"
                                                                     InputLabelProps={{ shrink: true }}
                                                                 />
                                                             </Box>
