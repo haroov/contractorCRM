@@ -5756,10 +5756,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Other fields - Separate Paper */}
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                             <Box sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                gap: 2
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 3
                                             }}>
+                                                {/* Column 1: Questions */}
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: 2
+                                                }}>
                                                 {/* Is Sole Owner */}
                                                 <Box sx={{
                                                     display: 'flex',
@@ -6216,6 +6222,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             sx={{ mb: 2 }}
                                                         />
                                                     )}
+                                                </Box>
+
+                                                {/* Column 2: Reserved for future questions */}
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: 2,
+                                                    minHeight: '400px'
+                                                }}>
+                                                    {/* This column is reserved for future questions */}
+                                                </Box>
                                                 </Box>
                                             </Box>
                                         </Paper>
