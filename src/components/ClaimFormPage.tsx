@@ -7490,7 +7490,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 // Show confirmation dialog
                                                                                                 const confirmMessage = `האם אתה בטוח שברצונך למחוק את הצרופה?`;
                                                                                                 const confirmed = window.confirm(confirmMessage);
-                                                                                                
+
                                                                                                 if (confirmed) {
                                                                                                     const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
                                                                                                     const updatedItems = [...currentItems];
@@ -7513,9 +7513,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     </TableCell>
                                                                                 </TableRow>
                                                                             ))}
-                                                                            {/* Add Attachment Button - Inside table, bottom right */}
+                                                                            {/* Add Attachment Button - Inside table, bottom center */}
                                                                             <TableRow>
-                                                                                <TableCell colSpan={5} sx={{ textAlign: 'right', borderBottom: 'none', py: 2 }}>
+                                                                                <TableCell colSpan={5} sx={{ textAlign: 'center', borderBottom: 'none', py: 2 }}>
                                                                                     <Button
                                                                                         variant="outlined"
                                                                                         size="small"
@@ -7558,7 +7558,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 ))}
 
                                                 {/* Add Item Button - At the end */}
-                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 2 }}>
                                                     <Button
                                                         variant="contained"
                                                         onClick={() => {
@@ -7580,7 +7580,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             }
                                                         }}
                                                     >
-                                                        הוספה
+                                                        + הוספה
                                                     </Button>
                                                 </Box>
                                             </Box>
