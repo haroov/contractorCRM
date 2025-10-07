@@ -212,6 +212,7 @@ interface PropertyDamageInsured {
     fireDepartmentVisited: boolean | null;
     fireDepartmentVisitDate?: string;
     fireDepartmentStationName?: string;
+    fireDepartmentReport?: any[];
 }
 
 interface ClaimFormData {
@@ -288,7 +289,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             additionalInsurancePolicyNumber: '',
             fireDepartmentVisited: null,
             fireDepartmentVisitDate: '',
-            fireDepartmentStationName: ''
+            fireDepartmentStationName: '',
+            fireDepartmentReport: []
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -437,7 +439,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             additionalInsurancePolicyNumber: '',
                             fireDepartmentVisited: null,
                             fireDepartmentVisitDate: '',
-                            fireDepartmentStationName: ''
+                            fireDepartmentStationName: '',
+                            fireDepartmentReport: []
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -6308,10 +6311,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Fire Department Visit - Additional Section */}
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
-                                            <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
-                                                שדות נוספים
-                                            </Typography>
-                                            
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 {/* Fire Department Visit */}
                                                 <Box sx={{
@@ -6399,25 +6398,43 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     {/* Conditional field Column */}
                                                     <Box>
                                                         {formData.propertyDamageInsuredDetails?.fireDepartmentVisited === true && (
-                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="תאריך הביקור"
-                                                                    type="date"
-                                                                    value={formData.propertyDamageInsuredDetails?.fireDepartmentVisitDate || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('fireDepartmentVisitDate', e.target.value)}
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{
-                                                                        shrink: true,
-                                                                    }}
-                                                                />
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="שם התחנה"
-                                                                    value={formData.propertyDamageInsuredDetails?.fireDepartmentStationName || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('fireDepartmentStationName', e.target.value)}
-                                                                    variant="outlined"
-                                                                />
+                                                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'flex-start' }}>
+                                                                {/* File Upload */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <FileUpload
+                                                                        files={formData.propertyDamageInsuredDetails?.fireDepartmentReport || []}
+                                                                        onFilesChange={(files) => updatePropertyDamageDetails('fireDepartmentReport', files)}
+                                                                        label="דוח כיבוי אש"
+                                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                                        maxFiles={5}
+                                                                    />
+                                                                </Box>
+                                                                
+                                                                {/* Date Field */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="תאריך הביקור"
+                                                                        type="date"
+                                                                        value={formData.propertyDamageInsuredDetails?.fireDepartmentVisitDate || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('fireDepartmentVisitDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{
+                                                                            shrink: true,
+                                                                        }}
+                                                                    />
+                                                                </Box>
+                                                                
+                                                                {/* Station Name Field */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם התחנה"
+                                                                        value={formData.propertyDamageInsuredDetails?.fireDepartmentStationName || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('fireDepartmentStationName', e.target.value)}
+                                                                        variant="outlined"
+                                                                    />
+                                                                </Box>
                                                             </Box>
                                                         )}
                                                     </Box>
