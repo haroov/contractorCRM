@@ -239,6 +239,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     });
     const [subcontractors, setSubcontractors] = useState<any[]>([]);
     const [expandedEmployees, setExpandedEmployees] = useState<{ [key: number]: boolean }>({});
+    const [expandedThirdPartyVictims, setExpandedThirdPartyVictims] = useState<{ [key: number]: boolean }>({});
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -965,6 +966,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
     const toggleEmployeeExpansion = (index: number) => {
         setExpandedEmployees(prev => ({
+            ...prev,
+            [index]: prev[index] === true ? false : true
+        }));
+    };
+
+    const toggleThirdPartyVictimExpansion = (index: number) => {
+        setExpandedThirdPartyVictims(prev => ({
             ...prev,
             [index]: prev[index] === true ? false : true
         }));
@@ -4135,9 +4143,26 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 }]).map((victim, index) => (
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                פרטי הניזוק
-                                                            </Typography>
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                <MuiIconButton
+                                                                    onClick={() => toggleThirdPartyVictimExpansion(index)}
+                                                                    sx={{
+                                                                        color: '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: '#f3f0ff'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={expandedThirdPartyVictims[index] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"}
+                                                                        alt={expandedThirdPartyVictims[index] === true ? "סגור" : "פתח"}
+                                                                        style={{ width: '16px', height: '16px' }}
+                                                                    />
+                                                                </MuiIconButton>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                    פרטי הניזוק
+                                                                </Typography>
+                                                            </Box>
                                                             {index > 0 && (
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                                     <MuiIconButton
@@ -4156,7 +4181,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             )}
                                                         </Box>
 
-                                                        <Grid container spacing={2}>
+                                                        {/* Always show first row (name, ID, phone, email, address) - This should always be visible */}
+                                                        <Grid container spacing={2} sx={{ mb: expandedThirdPartyVictims[index] === true ? 2 : 0 }}>
                                                             <Grid item xs={12} sm={6}>
                                                                 <TextField
                                                                     fullWidth
@@ -4313,7 +4339,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     }}
                                                                 />
                                                             </Grid>
-                                                            {(formData.bodilyInjuryThirdParty === true) && (
+                                                        </Grid>
+
+                                                        {/* Show rest of content only when expanded */}
+                                                        {expandedThirdPartyVictims[index] === true && (
+                                                            <>
+                                                                <Grid container spacing={2}>
+                                                                    {(formData.bodilyInjuryThirdParty === true) && (
                                                                 <>
                                                                     <Grid item xs={12} sm={6}>
                                                                         <TextField
@@ -5522,6 +5554,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </TableContainer>
                                                             </Box>
                                                         </Box>
+
+                                                        {/* Close the expanded content condition */}
+                                                                </>
+                                                            )}
                                                     </Paper>
                                                 ))}
 
