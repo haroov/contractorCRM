@@ -6303,7 +6303,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         )}
                                                     </Box>
                                                 </Box>
+                                            </Box>
+                                        </Paper>
 
+                                        {/* Fire Department Visit - Additional Section */}
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                            <Typography variant="h6" gutterBottom sx={{ color: '#6b47c1', mb: 3 }}>
+                                                שדות נוספים
+                                            </Typography>
+                                            
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                                                 {/* Fire Department Visit */}
                                                 <Box sx={{
                                                     display: 'grid',
