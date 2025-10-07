@@ -212,7 +212,8 @@ interface PropertyDamageInsured {
     fireDepartmentVisited: boolean | null;
     fireDepartmentVisitDate?: string;
     fireDepartmentStationName?: string;
-    fireDepartmentReport?: any[];
+    fireDepartmentReport?: string;
+    fireDepartmentReportThumbnail?: string;
 }
 
 interface ClaimFormData {
@@ -290,7 +291,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             fireDepartmentVisited: null,
             fireDepartmentVisitDate: '',
             fireDepartmentStationName: '',
-            fireDepartmentReport: []
+            fireDepartmentReport: '',
+            fireDepartmentReportThumbnail: ''
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -440,7 +442,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             fireDepartmentVisited: null,
                             fireDepartmentVisitDate: '',
                             fireDepartmentStationName: '',
-                            fireDepartmentReport: []
+                            fireDepartmentReport: '',
+                            fireDepartmentReportThumbnail: ''
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -6403,18 +6406,48 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Box sx={{ flex: 1 }}>
                                                                     <FileUpload
                                                                         label="דוח כיבוי אש"
-                                                                        value={formData.propertyDamageInsuredDetails?.fireDepartmentReport?.[0]?.url || ''}
-                                                                        thumbnailUrl={formData.propertyDamageInsuredDetails?.fireDepartmentReport?.[0]?.thumbnailUrl || ''}
+                                                                        value={formData.propertyDamageInsuredDetails?.fireDepartmentReport || ''}
+                                                                        thumbnailUrl={formData.propertyDamageInsuredDetails?.fireDepartmentReportThumbnail || ''}
                                                                         onChange={(url, thumbnailUrl) => {
-                                                                            const files = url ? [{
-                                                                                url: url,
-                                                                                thumbnailUrl: thumbnailUrl,
-                                                                                name: 'דוח כיבוי אש',
-                                                                                type: 'application/pdf'
-                                                                            }] : [];
-                                                                            updatePropertyDamageDetails('fireDepartmentReport', files);
+                                                                            updatePropertyDamageDetails('fireDepartmentReport', url);
+                                                                            updatePropertyDamageDetails('fireDepartmentReportThumbnail', thumbnailUrl);
                                                                         }}
-                                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                                        onDelete={async () => {
+                                                                            // Show confirmation dialog
+                                                                            const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "דוח כיבוי אש"?`;
+
+                                                                            const confirmed = window.confirm(confirmMessage);
+
+                                                                            if (!confirmed) {
+                                                                                throw new Error('User cancelled deletion');
+                                                                            }
+
+                                                                            // Delete file from Blob storage
+                                                                            if (formData.propertyDamageInsuredDetails?.fireDepartmentReport) {
+                                                                                try {
+                                                                                    const response = await fetch('/api/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            url: formData.propertyDamageInsuredDetails.fireDepartmentReport
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!response.ok) {
+                                                                                        throw new Error('Failed to delete file from storage');
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting file:', error);
+                                                                                    // Continue with local deletion even if storage deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Clear the file from form data
+                                                                            updatePropertyDamageDetails('fireDepartmentReport', '');
+                                                                            updatePropertyDamageDetails('fireDepartmentReportThumbnail', '');
+                                                                        }}
                                                                         projectId={formData.projectId}
                                                                     />
                                                                 </Box>
