@@ -207,7 +207,8 @@ interface PropertyDamageInsured {
     previousClaimCompany?: string;
     previousClaimDetails?: string;
     additionalInsurance: boolean | null;
-    additionalInsuranceDetails?: string;
+    additionalInsuranceCompany?: string;
+    additionalInsurancePolicyNumber?: string;
 }
 
 interface ClaimFormData {
@@ -279,7 +280,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             previousDamage: null,
             previousClaim: null,
             previousClaimCompany: '',
-            additionalInsurance: null
+            additionalInsurance: null,
+            additionalInsuranceCompany: '',
+            additionalInsurancePolicyNumber: ''
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -423,7 +426,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             previousDamage: null,
                             previousClaim: null,
                             previousClaimCompany: '',
-                            additionalInsurance: null
+                            additionalInsurance: null,
+                            additionalInsuranceCompany: '',
+                            additionalInsurancePolicyNumber: ''
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -6102,7 +6107,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 color: 'text.secondary',
                                                                 marginRight: '10px'
                                                             }}>
-                                                                האם הוגשה תביעה קודמת בגין נזק דומה בחברת ביטוח (בעבר)
+                                                                הוגשה תביעה קודמת בגין נזק דומה בעבר
                                                             </Typography>
                                                             <Box sx={{
                                                                 display: 'flex',
@@ -6210,7 +6215,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 color: 'text.secondary',
                                                                 marginRight: '10px'
                                                             }}>
-                                                                האם קיים כיסוי ביטוחי נוסף לרכוש שניזוק (ביטוח נוסף בחברה אחרת)
+                                                                קיים כיסוי ביטוחי נוסף לרכוש שניזוק בחברה אחרת
                                                             </Typography>
                                                             <Box sx={{
                                                                 display: 'flex',
@@ -6266,15 +6271,22 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     {/* Conditional field Column */}
                                                     <Box>
                                                         {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
-                                                            <TextField
-                                                                fullWidth
-                                                                label="מספר הפוליסה ושם חברת הביטוח הנוספת"
-                                                                value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
-                                                                onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
-                                                                variant="outlined"
-                                                                multiline
-                                                                rows={2}
-                                                            />
+                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם חברת הביטוח הנוספת"
+                                                                    value={formData.propertyDamageInsuredDetails?.additionalInsuranceCompany || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('additionalInsuranceCompany', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="מספר הפוליסה"
+                                                                    value={formData.propertyDamageInsuredDetails?.additionalInsurancePolicyNumber || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('additionalInsurancePolicyNumber', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Box>
                                                         )}
                                                     </Box>
                                                 </Box>
