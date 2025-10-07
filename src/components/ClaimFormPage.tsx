@@ -297,6 +297,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [subcontractors, setSubcontractors] = useState<any[]>([]);
     const [expandedEmployees, setExpandedEmployees] = useState<{ [key: number]: boolean }>({});
     const [expandedThirdPartyVictims, setExpandedThirdPartyVictims] = useState<{ [key: number]: boolean }>({});
+    const [expandedDamagedItems, setExpandedDamagedItems] = useState<{ [key: number]: boolean }>({});
 
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
@@ -7361,9 +7362,31 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                                             {/* Item Header */}
                                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#6b47c1' }}>
-                                                                    פריט #{itemIndex + 1}
-                                                                </Typography>
+                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                    <MuiIconButton
+                                                                        onClick={() => {
+                                                                            setExpandedDamagedItems(prev => ({
+                                                                                ...prev,
+                                                                                [itemIndex]: !prev[itemIndex]
+                                                                            }));
+                                                                        }}
+                                                                        sx={{
+                                                                            padding: '4px',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#f3f0ff'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img
+                                                                            src={expandedDamagedItems[itemIndex] === true ? "/assets/iconArrowOpenUp.svg" : "/assets/iconArrowOpenDown.svg"}
+                                                                            alt={expandedDamagedItems[itemIndex] === true ? "סגור" : "פתח"}
+                                                                            style={{ width: '16px', height: '16px' }}
+                                                                        />
+                                                                    </MuiIconButton>
+                                                                    <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#6b47c1' }}>
+                                                                        פריט #{itemIndex + 1}
+                                                                    </Typography>
+                                                                </Box>
                                                                 {itemIndex > 0 && (
                                                                     <MuiIconButton
                                                                         onClick={() => {
@@ -7390,8 +7413,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 )}
                                                             </Box>
 
-                                                            {/* Item Fields */}
-                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
+                                                            {/* Always show first row (3 fields) - This should always be visible */}
+                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: expandedDamagedItems[itemIndex] === true ? 2 : 0 }}>
                                                                 {/* Description */}
                                                                 <TextField
                                                                     fullWidth
@@ -7445,7 +7468,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 />
                                                             </Box>
 
-                                                            {/* Attachments Section */}
+                                                            {/* Show attachments section only when expanded */}
+                                                            {expandedDamagedItems[itemIndex] === true && (
+                                                                <>
+                                                                    {/* Attachments Section */}
                                                             <Box>
                                                                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, color: '#666666' }}>
                                                                     צרופות
@@ -7695,6 +7721,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     </Table>
                                                                 </TableContainer>
                                                             </Box>
+                                                                </>
+                                                            )}
                                                         </Box>
                                                     </Paper>
                                                 ))}
