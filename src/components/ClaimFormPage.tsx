@@ -2413,7 +2413,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             onChange={(e) => handleFieldChange('insuredNegligenceDetails', e.target.value)}
                                                             variant="outlined"
                                                             multiline
-                                                            rows={3}
+                                                            rows={5}
                                                             sx={{
                                                                 '& .MuiOutlinedInput-root': {
                                                                     '& fieldset': {
