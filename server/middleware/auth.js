@@ -21,14 +21,8 @@ const requireAuth = (req, res, next) => {
     return next();
   }
   
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided, allowing access:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
+  // REMOVED: Insecure session ID bypass - this was a major security vulnerability
+  // Session IDs should be validated against a secure session store, not just checked for length
   
   console.log('❌ User is not authenticated and no valid session ID provided');
   return res.status(401).json({ 
@@ -56,14 +50,8 @@ const requireAdmin = (req, res, next) => {
     return next();
   }
   
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided for admin access, allowing:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
+  // REMOVED: Insecure session ID bypass - this was a major security vulnerability
+  // Admin access should require proper authentication, not just any session ID
   
   console.log('❌ Admin access denied - no valid session or session ID');
   return res.status(403).json({ 

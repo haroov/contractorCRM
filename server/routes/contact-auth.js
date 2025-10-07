@@ -17,22 +17,57 @@ if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendg
   console.log('⚠️ SendGrid not configured - OTP emails will be logged to console only');
 }
 
-// In-memory storage for OTPs (in production, use Redis or database)
+// SECURITY WARNING: In-memory storage for OTPs - NOT SUITABLE FOR PRODUCTION
+// TODO: Replace with Redis or secure database storage for production deployment
 const otpStorage = new Map();
+
+// Add cleanup for expired OTPs to prevent memory leaks
+setInterval(() => {
+  const now = new Date();
+  for (const [email, data] of otpStorage.entries()) {
+    if (now > data.expiresAt) {
+      otpStorage.delete(email);
+      console.log('🧹 Cleaned up expired OTP for:', email);
+    }
+  }
+}, 5 * 60 * 1000); // Clean up every 5 minutes
 
 // Generate 6-digit OTP
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Email validation function
+function validateEmail(email) {
+  if (!email || typeof email !== 'string') {
+    return { valid: false, error: 'כתובת אימייל נדרשת' };
+  }
+  
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { valid: false, error: 'פורמט אימייל לא תקין' };
+  }
+  
+  // Prevent email injection attacks
+  if (email.includes('\n') || email.includes('\r') || email.includes('\t')) {
+    return { valid: false, error: 'אימייל מכיל תווים לא חוקיים' };
+  }
+  
+  return { valid: true, email: email.toLowerCase().trim() };
+}
+
 // Check if email exists in system
 router.post('/check-email', async (req, res) => {
   try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ error: 'כתובת אימייל נדרשת' });
+    const { email: rawEmail } = req.body;
+    
+    const validation = validateEmail(rawEmail);
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.error });
     }
+    
+    const email = validation.email;
 
     const db = client.db('contractor-crm');
 
@@ -56,13 +91,14 @@ router.post('/check-email', async (req, res) => {
 // Send OTP email endpoint
 router.post('/send-otp', async (req, res) => {
   try {
-    const { email } = req.body;
-
-    // Email validation removed - email comes from URL parameter
-    if (!email) {
-      console.log('❌ No email provided in request body');
-      return res.status(400).json({ error: 'אימייל לא סופק' });
+    const { email: rawEmail } = req.body;
+    
+    const validation = validateEmail(rawEmail);
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.error });
     }
+    
+    const email = validation.email;
 
     const db = client.db('contractor-crm');
 
@@ -206,14 +242,37 @@ router.post('/send-otp', async (req, res) => {
   }
 });
 
+// OTP validation function
+function validateOTP(otp) {
+  if (!otp || typeof otp !== 'string') {
+    return { valid: false, error: 'קוד אימות נדרש' };
+  }
+  
+  // OTP should be exactly 6 digits
+  if (!/^\d{6}$/.test(otp)) {
+    return { valid: false, error: 'קוד אימות חייב להיות 6 ספרות' };
+  }
+  
+  return { valid: true, otp: otp.trim() };
+}
+
 // Verify OTP endpoint
 router.post('/verify-otp', async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email: rawEmail, otp: rawOtp } = req.body;
 
-    if (!email || !otp) {
-      return res.status(400).json({ error: 'נדרש אימייל וקוד אימות' });
+    const emailValidation = validateEmail(rawEmail);
+    if (!emailValidation.valid) {
+      return res.status(400).json({ error: emailValidation.error });
     }
+    
+    const otpValidation = validateOTP(rawOtp);
+    if (!otpValidation.valid) {
+      return res.status(400).json({ error: otpValidation.error });
+    }
+    
+    const email = emailValidation.email;
+    const otp = otpValidation.otp;
 
     // Check if OTP exists and is valid
     const storedData = otpStorage.get(email);
