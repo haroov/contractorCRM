@@ -258,8 +258,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [expandedEmployees, setExpandedEmployees] = useState<{ [key: number]: boolean }>({});
     const [expandedThirdPartyVictims, setExpandedThirdPartyVictims] = useState<{ [key: number]: boolean }>({});
 
-    console.log('🚀 ClaimFormPage component loaded - NEW VERSION!');
-
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
         projectName: searchParams.get('projectName') || '',
@@ -411,12 +409,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         eventAddress: data.claim.eventAddress || '',
                         description: data.claim.description || '',
                         // Main Damages
-                        propertyDamageInsured: (() => {
-                            console.log('Loading propertyDamageInsured from server:', data.claim.propertyDamageInsured);
-                            console.log('Full claim data from server:', data.claim);
-                            console.log('Type of propertyDamageInsured:', typeof data.claim.propertyDamageInsured);
-                            return data.claim.propertyDamageInsured !== undefined ? data.claim.propertyDamageInsured : null;
-                        })(),
+                        propertyDamageInsured: data.claim.propertyDamageInsured !== undefined ? data.claim.propertyDamageInsured : null,
                         propertyDamageInsuredDetails: data.claim.propertyDamageInsuredDetails || {
                             damageTypes: [],
                             estimatedDamageAmount: '',
@@ -2454,46 +2447,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
-                                        {/* SIMPLE DEBUG BUTTON - ALWAYS VISIBLE */}
-                                        <Box sx={{ mb: 2, p: 2, border: '2px solid red', backgroundColor: '#ffcccc' }}>
-                                            <Typography variant="h6" sx={{ color: 'red', mb: 1 }}>
-                                                🔧 DEBUG: נזק לרכוש המבוטח
-                                            </Typography>
-                                            <Typography variant="body2" sx={{ mb: 1 }}>
-                                                propertyDamageInsured = {String(formData.propertyDamageInsured)} (type: {typeof formData.propertyDamageInsured})
-                                            </Typography>
-                                            <Button
-                                                variant="contained"
-                                                size="large"
-                                                onClick={() => {
-                                                    console.log('🔧 Setting propertyDamageInsured to true');
-                                                    setFormData(prev => ({ ...prev, propertyDamageInsured: true }));
-                                                }}
-                                                sx={{ mr: 1, backgroundColor: 'green' }}
-                                            >
-                                                ✅ הגדר ל-True
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                size="large"
-                                                onClick={() => {
-                                                    console.log('🔧 Setting propertyDamageInsured to false');
-                                                    setFormData(prev => ({ ...prev, propertyDamageInsured: false }));
-                                                }}
-                                                sx={{ backgroundColor: 'red' }}
-                                            >
-                                                ❌ הגדר ל-False
-                                            </Button>
-                                        </Box>
 
                                         {/* Show message if no damage types are selected */}
-                                        {console.log('Damage Types Debug:', {
-                                            propertyDamageInsured: formData.propertyDamageInsured,
-                                            propertyDamageThirdParty: formData.propertyDamageThirdParty,
-                                            bodilyInjuryThirdParty: formData.bodilyInjuryThirdParty,
-                                            bodilyInjuryEmployee: formData.bodilyInjuryEmployee,
-                                            showMessage: formData.propertyDamageInsured !== true && formData.propertyDamageThirdParty !== true && formData.bodilyInjuryThirdParty !== true && formData.bodilyInjuryEmployee !== true
-                                        })}
                                         {formData.propertyDamageInsured !== true && formData.propertyDamageThirdParty !== true && formData.bodilyInjuryThirdParty !== true && formData.bodilyInjuryEmployee !== true && (
                                             <Box sx={{
                                                 p: 3,
@@ -5716,44 +5671,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 )}
 
                                 {/* Property Damage to Insured Section */}
-                                {console.log('Property Damage Debug:', {
-                                    propertyDamageInsured: formData.propertyDamageInsured,
-                                    activeTab: activeTab,
-                                    condition: formData.propertyDamageInsured === true && activeTab === 1
-                                })}
 
-                                {/* Temporary Debug Button */}
-                                {activeTab === 1 && (
-                                    <Box sx={{ mb: 2, p: 2, border: '1px solid red', backgroundColor: '#ffe6e6' }}>
-                                        <Typography variant="body2" sx={{ mb: 1 }}>
-                                            Debug: propertyDamageInsured = {String(formData.propertyDamageInsured)} (type: {typeof formData.propertyDamageInsured})
-                                        </Typography>
-                                        <Typography variant="body2" sx={{ mb: 1, color: 'red' }}>
-                                            ⚠️ הבעיה: הערך במסד הנתונים הוא true אבל נטען כ-false
-                                        </Typography>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => {
-                                                console.log('Setting propertyDamageInsured to true');
-                                                setFormData(prev => ({ ...prev, propertyDamageInsured: true }));
-                                            }}
-                                            sx={{ mr: 1 }}
-                                        >
-                                            🔧 תיקון זמני: הגדר ל-True
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => {
-                                                console.log('Setting propertyDamageInsured to false');
-                                                setFormData(prev => ({ ...prev, propertyDamageInsured: false }));
-                                            }}
-                                        >
-                                            Set to False
-                                        </Button>
-                                    </Box>
-                                )}
 
                                 {formData.propertyDamageInsured === true && activeTab === 1 && (
                                     <Box sx={{ mt: 4 }}>
