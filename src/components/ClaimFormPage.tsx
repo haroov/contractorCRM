@@ -563,8 +563,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-            ...prev,
-            [field]: value,
+                ...prev,
+                [field]: value,
                 updatedAt: new Date()
             };
 
@@ -1515,13 +1515,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1618,27 +1618,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -4144,9 +4144,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                    פרטי הניזוק
-                                                                </Typography>
                                                                 <MuiIconButton
                                                                     onClick={() => toggleThirdPartyVictimExpansion(index)}
                                                                     sx={{
@@ -4162,6 +4159,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         style={{ width: '16px', height: '16px' }}
                                                                     />
                                                                 </MuiIconButton>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                    פרטי הניזוק
+                                                                </Typography>
                                                             </Box>
                                                             {index > 0 && (
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -4346,316 +4346,61 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <>
                                                                 <Grid container spacing={2}>
                                                                     {(formData.bodilyInjuryThirdParty === true) && (
-                                                                <>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="תאריך לידה"
-                                                                            type="date"
-                                                                            value={victim.birthDate || ''}
-                                                                            onChange={(e) => updateThirdPartyVictim(index, 'birthDate', e.target.value)}
-                                                                            InputLabelProps={{
-                                                                                shrink: true,
-                                                                            }}
-                                                                            variant="outlined"
-                                                                            error={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate)}
-                                                                            helperText={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate) ? 'הגיל חייב להיות בין 16 ל-100' : ''}
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="מקצוע"
-                                                                            value={victim.profession || ''}
-                                                                            onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
-                                                                </>
-                                                            )}
-                                                        </Grid>
-
-                                                        {/* Representative Details Sub-section */}
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
-                                                                פרטי בא כח
-                                                            </Typography>
-
-                                                            {/* Representative Toggle */}
-                                                            <Box sx={{
-                                                                display: 'grid',
-                                                                gridTemplateColumns: '1fr 1fr',
-                                                                gap: 2,
-                                                                mb: 2
-                                                            }}>
-                                                                <Box sx={{
-                                                                    display: 'flex',
-                                                                    alignItems: 'flex-start',
-                                                                    justifyContent: 'flex-end'
-                                                                }}>
-                                                                    <Box sx={{
-                                                                        border: '1px solid #d1d5db',
-                                                                        borderRadius: '4px',
-                                                                        backgroundColor: 'white',
-                                                                        minHeight: '56px',
-                                                                        padding: '0 14px',
-                                                                        direction: 'rtl',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'space-between',
-                                                                        width: '100%'
-                                                                    }}>
-                                                                        <Typography sx={{
-                                                                            fontSize: '1rem',
-                                                                            color: 'text.secondary',
-                                                                            marginRight: '10px'
-                                                                        }}>
-                                                                            מיוצג על ידי בא כח
-                                                                        </Typography>
-                                                                        <Box sx={{
-                                                                            display: 'flex',
-                                                                            gap: 0,
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'flex-start',
-                                                                            marginLeft: '10px'
-                                                                        }}>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => {
-                                                                                    const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                    updateThirdPartyVictim(index, 'representative', {
-                                                                                        ...currentVictim.representative,
-                                                                                        hasRepresentative: false
-                                                                                    });
-                                                                                }}
-                                                                                sx={{
-                                                                                    borderRadius: '0 4px 4px 0',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    borderLeft: 'none',
-                                                                                    backgroundColor: !victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
-                                                                                    color: !victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: !victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '50px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                לא
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant="text"
-                                                                                onClick={() => {
-                                                                                    const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                    updateThirdPartyVictim(index, 'representative', {
-                                                                                        ...currentVictim.representative,
-                                                                                        hasRepresentative: true
-                                                                                    });
-                                                                                }}
-                                                                                sx={{
-                                                                                    borderRadius: '4px 0 0 4px',
-                                                                                    border: '1px solid #d1d5db',
-                                                                                    backgroundColor: victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
-                                                                                    color: victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
-                                                                                    '&:hover': {
-                                                                                        backgroundColor: victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
-                                                                                    },
-                                                                                    minWidth: '40px',
-                                                                                    height: '32px',
-                                                                                    textTransform: 'none',
-                                                                                    fontSize: '0.875rem',
-                                                                                    marginRight: '0px'
-                                                                                }}
-                                                                            >
-                                                                                כן
-                                                                            </Button>
-                                                                        </Box>
-                                                                    </Box>
-                                                                </Box>
-                                                            </Box>
-
-                                                            {/* Representative Details Fields */}
-                                                            {victim.representative?.hasRepresentative && (
-                                                                <Grid container spacing={2}>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="שם המייצג"
-                                                                            value={victim.representative?.name || ''}
-                                                                            onChange={(e) => {
-                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                updateThirdPartyVictim(index, 'representative', {
-                                                                                    ...currentVictim.representative,
-                                                                                    name: e.target.value
-                                                                                });
-                                                                            }}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="כתובת"
-                                                                            value={victim.representative?.address || ''}
-                                                                            onChange={(e) => {
-                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                updateThirdPartyVictim(index, 'representative', {
-                                                                                    ...currentVictim.representative,
-                                                                                    address: e.target.value
-                                                                                });
-                                                                            }}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="טלפון"
-                                                                            value={victim.representative?.phone || ''}
-                                                                            onChange={(e) => {
-                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                updateThirdPartyVictim(index, 'representative', {
-                                                                                    ...currentVictim.representative,
-                                                                                    phone: e.target.value
-                                                                                });
-                                                                            }}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
-                                                                    <Grid item xs={12} sm={6}>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label="אימייל"
-                                                                            value={victim.representative?.email || ''}
-                                                                            onChange={(e) => {
-                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                updateThirdPartyVictim(index, 'representative', {
-                                                                                    ...currentVictim.representative,
-                                                                                    email: e.target.value
-                                                                                });
-                                                                            }}
-                                                                            variant="outlined"
-                                                                            sx={{
-                                                                                '& .MuiOutlinedInput-root': {
-                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                },
-                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                            }}
-                                                                        />
-                                                                    </Grid>
+                                                                        <>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="תאריך לידה"
+                                                                                    type="date"
+                                                                                    value={victim.birthDate || ''}
+                                                                                    onChange={(e) => updateThirdPartyVictim(index, 'birthDate', e.target.value)}
+                                                                                    InputLabelProps={{
+                                                                                        shrink: true,
+                                                                                    }}
+                                                                                    variant="outlined"
+                                                                                    error={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate)}
+                                                                                    helperText={victim.birthDate && victim.birthDate.length > 0 && !validateBirthDate(victim.birthDate) ? 'הגיל חייב להיות בין 16 ל-100' : ''}
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="מקצוע"
+                                                                                    value={victim.profession || ''}
+                                                                                    onChange={(e) => updateThirdPartyVictim(index, 'profession', e.target.value)}
+                                                                                    variant="outlined"
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                        </>
+                                                                    )}
                                                                 </Grid>
-                                                            )}
-                                                        </Box>
 
-                                                        {/* Damage Nature Field */}
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
-                                                                מהות הנזק
-                                                            </Typography>
-                                                            <TextField
-                                                                fullWidth
-                                                                multiline
-                                                                rows={4}
-                                                                placeholder="מהות הנזק או הפגיעה"
-                                                                value={victim.damageNature || ''}
-                                                                onChange={(e) => updateThirdPartyVictim(index, 'damageNature', e.target.value)}
-                                                                variant="outlined"
-                                                                sx={{
-                                                                    '& .MuiOutlinedInput-root': {
-                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                    },
-                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                }}
-                                                            />
-                                                        </Box>
-
-                                                        {/* Damage Amount Field - Only for property damage */}
-                                                        {(formData.propertyDamageThirdParty === true) && (
-                                                            <Box sx={{ mt: 3 }}>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
-                                                                    היקף הנזק
-                                                                </Typography>
-                                                                <Box sx={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: '1fr 1fr',
-                                                                    gap: 2
-                                                                }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="היקף הנזק (₪)"
-                                                                        value={victim.damageAmount || ''}
-                                                                        onChange={(e) => {
-                                                                            // Format number with thousands separators
-                                                                            const value = e.target.value.replace(/[^\d]/g, '');
-                                                                            const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                                                                            updateThirdPartyVictim(index, 'damageAmount', formattedValue);
-                                                                        }}
-                                                                        variant="outlined"
-                                                                        placeholder="1,000"
-                                                                        sx={{
-                                                                            '& .MuiOutlinedInput-root': {
-                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                            },
-                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                        }}
-                                                                    />
-                                                                    <Box></Box>
-                                                                </Box>
-                                                            </Box>
-                                                        )}
-
-                                                        {/* Medical Treatment Sub-section - Only for bodily injury */}
-                                                        {(formData.bodilyInjuryThirdParty === true) && (
-                                                            <>
+                                                                {/* Representative Details Sub-section */}
                                                                 <Box sx={{ mt: 3 }}>
-                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                        טיפול רפואי
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                        פרטי בא כח
                                                                     </Typography>
+
+                                                                    {/* Representative Toggle */}
                                                                     <Box sx={{
                                                                         display: 'grid',
                                                                         gridTemplateColumns: '1fr 1fr',
-                                                                        gap: 2
+                                                                        gap: 2,
+                                                                        mb: 2
                                                                     }}>
                                                                         <Box sx={{
                                                                             display: 'flex',
@@ -4679,7 +4424,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     color: 'text.secondary',
                                                                                     marginRight: '10px'
                                                                                 }}>
-                                                                                    טיפול רפואי
+                                                                                    מיוצג על ידי בא כח
                                                                                 </Typography>
                                                                                 <Box sx={{
                                                                                     display: 'flex',
@@ -4690,15 +4435,21 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 }}>
                                                                                     <Button
                                                                                         variant="text"
-                                                                                        onClick={() => updateThirdPartyVictimMedical(index, 'received', false)}
+                                                                                        onClick={() => {
+                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                            updateThirdPartyVictim(index, 'representative', {
+                                                                                                ...currentVictim.representative,
+                                                                                                hasRepresentative: false
+                                                                                            });
+                                                                                        }}
                                                                                         sx={{
                                                                                             borderRadius: '0 4px 4px 0',
                                                                                             border: '1px solid #d1d5db',
                                                                                             borderLeft: 'none',
-                                                                                            backgroundColor: !victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                            color: !victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                            backgroundColor: !victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
+                                                                                            color: !victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
                                                                                             '&:hover': {
-                                                                                                backgroundColor: !victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                                backgroundColor: !victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
                                                                                             },
                                                                                             minWidth: '50px',
                                                                                             height: '32px',
@@ -4712,34 +4463,25 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     <Button
                                                                                         variant="text"
                                                                                         onClick={() => {
-                                                                                            updateThirdPartyVictimMedical(index, 'received', true);
-                                                                                            if (!victim.medicalTreatment.medicalDocuments || victim.medicalTreatment.medicalDocuments.length === 0) {
-                                                                                                // Initialize medical documents for third party victim
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                    ...currentVictim.medicalTreatment,
-                                                                                                    medicalDocuments: [{
-                                                                                                        documentName: '',
-                                                                                                        medicalInstitution: '',
-                                                                                                        fileUrl: '',
-                                                                                                        thumbnailUrl: '',
-                                                                                                        validUntil: ''
-                                                                                                    }]
-                                                                                                });
-                                                                                            }
+                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                            updateThirdPartyVictim(index, 'representative', {
+                                                                                                ...currentVictim.representative,
+                                                                                                hasRepresentative: true
+                                                                                            });
                                                                                         }}
                                                                                         sx={{
                                                                                             borderRadius: '4px 0 0 4px',
                                                                                             border: '1px solid #d1d5db',
-                                                                                            backgroundColor: victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
-                                                                                            color: victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                            backgroundColor: victim.representative?.hasRepresentative ? '#6b47c1' : 'transparent',
+                                                                                            color: victim.representative?.hasRepresentative ? 'white' : '#6b47c1',
                                                                                             '&:hover': {
-                                                                                                backgroundColor: victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                                backgroundColor: victim.representative?.hasRepresentative ? '#5a3aa1' : '#f3f4f6',
                                                                                             },
-                                                                                            minWidth: '50px',
+                                                                                            minWidth: '40px',
                                                                                             height: '32px',
                                                                                             textTransform: 'none',
-                                                                                            fontSize: '0.875rem'
+                                                                                            fontSize: '0.875rem',
+                                                                                            marginRight: '0px'
                                                                                         }}
                                                                                     >
                                                                                         כן
@@ -4747,25 +4489,845 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 </Box>
                                                                             </Box>
                                                                         </Box>
-                                                                        <Box></Box>
                                                                     </Box>
+
+                                                                    {/* Representative Details Fields */}
+                                                                    {victim.representative?.hasRepresentative && (
+                                                                        <Grid container spacing={2}>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="שם המייצג"
+                                                                                    value={victim.representative?.name || ''}
+                                                                                    onChange={(e) => {
+                                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                        updateThirdPartyVictim(index, 'representative', {
+                                                                                            ...currentVictim.representative,
+                                                                                            name: e.target.value
+                                                                                        });
+                                                                                    }}
+                                                                                    variant="outlined"
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="כתובת"
+                                                                                    value={victim.representative?.address || ''}
+                                                                                    onChange={(e) => {
+                                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                        updateThirdPartyVictim(index, 'representative', {
+                                                                                            ...currentVictim.representative,
+                                                                                            address: e.target.value
+                                                                                        });
+                                                                                    }}
+                                                                                    variant="outlined"
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="טלפון"
+                                                                                    value={victim.representative?.phone || ''}
+                                                                                    onChange={(e) => {
+                                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                        updateThirdPartyVictim(index, 'representative', {
+                                                                                            ...currentVictim.representative,
+                                                                                            phone: e.target.value
+                                                                                        });
+                                                                                    }}
+                                                                                    variant="outlined"
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                            <Grid item xs={12} sm={6}>
+                                                                                <TextField
+                                                                                    fullWidth
+                                                                                    label="אימייל"
+                                                                                    value={victim.representative?.email || ''}
+                                                                                    onChange={(e) => {
+                                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                        updateThirdPartyVictim(index, 'representative', {
+                                                                                            ...currentVictim.representative,
+                                                                                            email: e.target.value
+                                                                                        });
+                                                                                    }}
+                                                                                    variant="outlined"
+                                                                                    sx={{
+                                                                                        '& .MuiOutlinedInput-root': {
+                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                        },
+                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                    }}
+                                                                                />
+                                                                            </Grid>
+                                                                        </Grid>
+                                                                    )}
                                                                 </Box>
 
-                                                                {victim.medicalTreatment.received && (
-                                                                    <Box sx={{ width: '100%', mt: 2 }}>
+                                                                {/* Damage Nature Field */}
+                                                                <Box sx={{ mt: 3 }}>
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                        מהות הנזק
+                                                                    </Typography>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        multiline
+                                                                        rows={4}
+                                                                        placeholder="מהות הנזק או הפגיעה"
+                                                                        value={victim.damageNature || ''}
+                                                                        onChange={(e) => updateThirdPartyVictim(index, 'damageNature', e.target.value)}
+                                                                        variant="outlined"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            },
+                                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                        }}
+                                                                    />
+                                                                </Box>
+
+                                                                {/* Damage Amount Field - Only for property damage */}
+                                                                {(formData.propertyDamageThirdParty === true) && (
+                                                                    <Box sx={{ mt: 3 }}>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 2 }}>
+                                                                            היקף הנזק
+                                                                        </Typography>
+                                                                        <Box sx={{
+                                                                            display: 'grid',
+                                                                            gridTemplateColumns: '1fr 1fr',
+                                                                            gap: 2
+                                                                        }}>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                label="היקף הנזק (₪)"
+                                                                                value={victim.damageAmount || ''}
+                                                                                onChange={(e) => {
+                                                                                    // Format number with thousands separators
+                                                                                    const value = e.target.value.replace(/[^\d]/g, '');
+                                                                                    const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                                                                    updateThirdPartyVictim(index, 'damageAmount', formattedValue);
+                                                                                }}
+                                                                                variant="outlined"
+                                                                                placeholder="1,000"
+                                                                                sx={{
+                                                                                    '& .MuiOutlinedInput-root': {
+                                                                                        '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                        '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                    },
+                                                                                    '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                }}
+                                                                            />
+                                                                            <Box></Box>
+                                                                        </Box>
+                                                                    </Box>
+                                                                )}
+
+                                                                {/* Medical Treatment Sub-section - Only for bodily injury */}
+                                                                {(formData.bodilyInjuryThirdParty === true) && (
+                                                                    <>
+                                                                        <Box sx={{ mt: 3 }}>
+                                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                                טיפול רפואי
+                                                                            </Typography>
+                                                                            <Box sx={{
+                                                                                display: 'grid',
+                                                                                gridTemplateColumns: '1fr 1fr',
+                                                                                gap: 2
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'flex-start',
+                                                                                    justifyContent: 'flex-end'
+                                                                                }}>
+                                                                                    <Box sx={{
+                                                                                        border: '1px solid #d1d5db',
+                                                                                        borderRadius: '4px',
+                                                                                        backgroundColor: 'white',
+                                                                                        minHeight: '56px',
+                                                                                        padding: '0 14px',
+                                                                                        direction: 'rtl',
+                                                                                        display: 'flex',
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'space-between',
+                                                                                        width: '100%'
+                                                                                    }}>
+                                                                                        <Typography sx={{
+                                                                                            fontSize: '1rem',
+                                                                                            color: 'text.secondary',
+                                                                                            marginRight: '10px'
+                                                                                        }}>
+                                                                                            טיפול רפואי
+                                                                                        </Typography>
+                                                                                        <Box sx={{
+                                                                                            display: 'flex',
+                                                                                            gap: 0,
+                                                                                            alignItems: 'center',
+                                                                                            justifyContent: 'flex-start',
+                                                                                            marginLeft: '10px'
+                                                                                        }}>
+                                                                                            <Button
+                                                                                                variant="text"
+                                                                                                onClick={() => updateThirdPartyVictimMedical(index, 'received', false)}
+                                                                                                sx={{
+                                                                                                    borderRadius: '0 4px 4px 0',
+                                                                                                    border: '1px solid #d1d5db',
+                                                                                                    borderLeft: 'none',
+                                                                                                    backgroundColor: !victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                                    color: !victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                                    '&:hover': {
+                                                                                                        backgroundColor: !victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                                    },
+                                                                                                    minWidth: '50px',
+                                                                                                    height: '32px',
+                                                                                                    textTransform: 'none',
+                                                                                                    fontSize: '0.875rem',
+                                                                                                    marginRight: '0px'
+                                                                                                }}
+                                                                                            >
+                                                                                                לא
+                                                                                            </Button>
+                                                                                            <Button
+                                                                                                variant="text"
+                                                                                                onClick={() => {
+                                                                                                    updateThirdPartyVictimMedical(index, 'received', true);
+                                                                                                    if (!victim.medicalTreatment.medicalDocuments || victim.medicalTreatment.medicalDocuments.length === 0) {
+                                                                                                        // Initialize medical documents for third party victim
+                                                                                                        const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                            ...currentVictim.medicalTreatment,
+                                                                                                            medicalDocuments: [{
+                                                                                                                documentName: '',
+                                                                                                                medicalInstitution: '',
+                                                                                                                fileUrl: '',
+                                                                                                                thumbnailUrl: '',
+                                                                                                                validUntil: ''
+                                                                                                            }]
+                                                                                                        });
+                                                                                                    }
+                                                                                                }}
+                                                                                                sx={{
+                                                                                                    borderRadius: '4px 0 0 4px',
+                                                                                                    border: '1px solid #d1d5db',
+                                                                                                    backgroundColor: victim.medicalTreatment.received ? '#6b47c1' : 'transparent',
+                                                                                                    color: victim.medicalTreatment.received ? 'white' : '#6b47c1',
+                                                                                                    '&:hover': {
+                                                                                                        backgroundColor: victim.medicalTreatment.received ? '#5a3aa1' : '#f3f4f6',
+                                                                                                    },
+                                                                                                    minWidth: '50px',
+                                                                                                    height: '32px',
+                                                                                                    textTransform: 'none',
+                                                                                                    fontSize: '0.875rem'
+                                                                                                }}
+                                                                                            >
+                                                                                                כן
+                                                                                            </Button>
+                                                                                        </Box>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                                <Box></Box>
+                                                                            </Box>
+                                                                        </Box>
+
+                                                                        {victim.medicalTreatment.received && (
+                                                                            <Box sx={{ width: '100%', mt: 2 }}>
+                                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                                    <Table size="small">
+                                                                                        <TableHead>
+                                                                                            <TableRow>
+                                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
+                                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מוסד רפואי</TableCell>
+                                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
+                                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                                                            </TableRow>
+                                                                                        </TableHead>
+                                                                                        <TableBody>
+                                                                                            {(victim.medicalTreatment.medicalDocuments || []).map((document, docIndex) => (
+                                                                                                <TableRow key={docIndex}>
+                                                                                                    <TableCell>
+                                                                                                        <TextField
+                                                                                                            fullWidth
+                                                                                                            size="small"
+                                                                                                            value={document.documentName}
+                                                                                                            onChange={(e) => {
+                                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], documentName: e.target.value };
+                                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                    ...currentVictim.medicalTreatment,
+                                                                                                                    medicalDocuments: updatedDocuments
+                                                                                                                });
+                                                                                                            }}
+                                                                                                            variant="outlined"
+                                                                                                            sx={{
+                                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                                },
+                                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                            }}
+                                                                                                        />
+                                                                                                    </TableCell>
+                                                                                                    <TableCell>
+                                                                                                        <TextField
+                                                                                                            fullWidth
+                                                                                                            size="small"
+                                                                                                            value={document.medicalInstitution}
+                                                                                                            onChange={(e) => {
+                                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], medicalInstitution: e.target.value };
+                                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                    ...currentVictim.medicalTreatment,
+                                                                                                                    medicalDocuments: updatedDocuments
+                                                                                                                });
+                                                                                                            }}
+                                                                                                            variant="outlined"
+                                                                                                            sx={{
+                                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                                },
+                                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                            }}
+                                                                                                        />
+                                                                                                    </TableCell>
+                                                                                                    <TableCell>
+                                                                                                        <FileUpload
+                                                                                                            label="מסמך רפואי"
+                                                                                                            value={document.fileUrl || ''}
+                                                                                                            thumbnailUrl={document.thumbnailUrl || ''}
+                                                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], fileUrl: url, thumbnailUrl: thumbnailUrl };
+                                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                    ...currentVictim.medicalTreatment,
+                                                                                                                    medicalDocuments: updatedDocuments
+                                                                                                                });
+                                                                                                            }}
+                                                                                                            onDelete={async () => {
+                                                                                                                // Show confirmation dialog
+                                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
+
+                                                                                                                const confirmed = window.confirm(confirmMessage);
+
+                                                                                                                if (!confirmed) {
+                                                                                                                    throw new Error('User cancelled deletion'); // Throw error to prevent UI clearing
+                                                                                                                }
+
+                                                                                                                // Delete file from Blob storage
+                                                                                                                if (document.fileUrl) {
+                                                                                                                    try {
+                                                                                                                        const response = await fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: {
+                                                                                                                                'Content-Type': 'application/json',
+                                                                                                                            },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                                        });
+
+                                                                                                                        if (!response.ok) {
+                                                                                                                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
+                                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                                        }
+                                                                                                                    } catch (error) {
+                                                                                                                        console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                        throw error;
+                                                                                                                    }
+                                                                                                                }
+
+                                                                                                                // Delete thumbnail from Blob storage
+                                                                                                                if (document.thumbnailUrl) {
+                                                                                                                    try {
+                                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: {
+                                                                                                                                'Content-Type': 'application/json',
+                                                                                                                            },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                                        });
+
+                                                                                                                        if (!thumbnailResponse.ok) {
+                                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
+                                                                                                                            // Don't throw error for thumbnail deletion failure
+                                                                                                                        }
+                                                                                                                    } catch (error) {
+                                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                                        // Don't throw error for thumbnail deletion failure
+                                                                                                                    }
+                                                                                                                }
+
+                                                                                                                // Clear the file URLs in the document
+                                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], fileUrl: '', thumbnailUrl: '' };
+                                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                    ...currentVictim.medicalTreatment,
+                                                                                                                    medicalDocuments: updatedDocuments
+                                                                                                                });
+
+                                                                                                                // Show success message
+                                                                                                                setSnackbar({
+                                                                                                                    open: true,
+                                                                                                                    message: 'הקובץ נמחק בהצלחה',
+                                                                                                                    severity: 'success'
+                                                                                                                });
+                                                                                                            }}
+                                                                                                            projectId={formData.projectId}
+                                                                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                                                                        />
+                                                                                                    </TableCell>
+                                                                                                    <TableCell>
+                                                                                                        <TextField
+                                                                                                            fullWidth
+                                                                                                            size="small"
+                                                                                                            type="date"
+                                                                                                            value={document.validUntil || ''}
+                                                                                                            onChange={(e) => {
+                                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], validUntil: e.target.value };
+                                                                                                                updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                    ...currentVictim.medicalTreatment,
+                                                                                                                    medicalDocuments: updatedDocuments
+                                                                                                                });
+                                                                                                            }}
+                                                                                                            variant="outlined"
+                                                                                                            InputLabelProps={{ shrink: true }}
+                                                                                                            sx={{
+                                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                                                                },
+                                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                            }}
+                                                                                                        />
+                                                                                                    </TableCell>
+                                                                                                    <TableCell>
+                                                                                                        {docIndex > 0 && (
+                                                                                                            <MuiIconButton
+                                                                                                                onClick={() => {
+                                                                                                                    const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                                    const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                                    updatedDocuments.splice(docIndex, 1);
+                                                                                                                    updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                        ...currentVictim.medicalTreatment,
+                                                                                                                        medicalDocuments: updatedDocuments
+                                                                                                                    });
+                                                                                                                }}
+                                                                                                                sx={{
+                                                                                                                    color: '#f44336',
+                                                                                                                    '&:hover': {
+                                                                                                                        backgroundColor: '#ffebee',
+                                                                                                                        color: '#d32f2f'
+                                                                                                                    }
+                                                                                                                }}
+                                                                                                            >
+                                                                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
+                                                                                                            </MuiIconButton>
+                                                                                                        )}
+                                                                                                    </TableCell>
+                                                                                                </TableRow>
+                                                                                            ))}
+                                                                                            <TableRow>
+                                                                                                <TableCell colSpan={5} sx={{ textAlign: 'center', border: 'none', py: 2 }}>
+                                                                                                    <Button
+                                                                                                        variant="outlined"
+                                                                                                        onClick={() => {
+                                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
+                                                                                                            const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                            updatedDocuments.push({
+                                                                                                                documentName: '',
+                                                                                                                medicalInstitution: '',
+                                                                                                                fileUrl: '',
+                                                                                                                thumbnailUrl: '',
+                                                                                                                validUntil: ''
+                                                                                                            });
+                                                                                                            updateThirdPartyVictim(index, 'medicalTreatment', {
+                                                                                                                ...currentVictim.medicalTreatment,
+                                                                                                                medicalDocuments: updatedDocuments
+                                                                                                            });
+                                                                                                        }}
+                                                                                                        sx={{
+                                                                                                            borderColor: '#6b47c1',
+                                                                                                            color: '#6b47c1',
+                                                                                                            backgroundColor: 'white',
+                                                                                                            '&:hover': {
+                                                                                                                borderColor: '#5a3aa1',
+                                                                                                                color: '#5a3aa1',
+                                                                                                                backgroundColor: '#f3f0ff'
+                                                                                                            }
+                                                                                                        }}
+                                                                                                    >
+                                                                                                        הוספה
+                                                                                                    </Button>
+                                                                                                </TableCell>
+                                                                                            </TableRow>
+                                                                                        </TableBody>
+                                                                                    </Table>
+                                                                                </TableContainer>
+                                                                            </Box>
+                                                                        )}
+                                                                    </>
+                                                                )}
+
+                                                                {/* Reports Sub-section - Available for both bodily injury and property damage */}
+                                                                {((formData.bodilyInjuryThirdParty === true) || (formData.propertyDamageThirdParty === true)) && (
+                                                                    <Box sx={{ mt: 3 }}>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                            דיווחים
+                                                                        </Typography>
+                                                                        <Box sx={{
+                                                                            display: 'grid',
+                                                                            gridTemplateColumns: '1fr 1fr',
+                                                                            gap: 2
+                                                                        }}>
+                                                                            {/* Police Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        משטרה
+                                                                                    </Typography>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        gap: 0,
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
+                                                                                    }}>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: victim.policeReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {/* Police Report Details */}
+                                                                            <Box>
+                                                                                {victim.policeReport.reported && (
+                                                                                    <Box>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            label="שם התחנה"
+                                                                                            value={victim.policeReport.stationName || ''}
+                                                                                            onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'stationName', e.target.value)}
+                                                                                            variant="outlined"
+                                                                                            sx={{ mb: 2 }}
+                                                                                        />
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={victim.policeReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <FileUpload
+                                                                                                    label="אישור דיווח"
+                                                                                                    value={victim.policeReport.reportFile || ''}
+                                                                                                    thumbnailUrl={victim.policeReport.reportFileThumbnail || ''}
+                                                                                                    onChange={(url, thumbnailUrl) => {
+                                                                                                        updateThirdPartyVictimPoliceReport(index, 'reportFile', url);
+                                                                                                        updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', thumbnailUrl);
+                                                                                                    }}
+                                                                                                    onDelete={async () => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
+
+                                                                                                        const confirmed = window.confirm(confirmMessage);
+
+                                                                                                        if (!confirmed) {
+                                                                                                            throw new Error('User cancelled deletion');
+                                                                                                        }
+
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (victim.policeReport.reportFile) {
+                                                                                                            try {
+                                                                                                                const response = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: victim.policeReport.reportFile })
+                                                                                                                });
+
+                                                                                                                if (!response.ok) {
+                                                                                                                    console.warn('Failed to delete file from Blob storage:', victim.policeReport.reportFile);
+                                                                                                                    throw new Error('Failed to delete file from storage');
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                                throw error;
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (victim.policeReport.reportFileThumbnail) {
+                                                                                                            try {
+                                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                                    method: 'POST',
+                                                                                                                    headers: {
+                                                                                                                        'Content-Type': 'application/json',
+                                                                                                                    },
+                                                                                                                    body: JSON.stringify({ fileUrl: victim.policeReport.reportFileThumbnail })
+                                                                                                                });
+
+                                                                                                                if (!thumbnailResponse.ok) {
+                                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', victim.policeReport.reportFileThumbnail);
+                                                                                                                }
+                                                                                                            } catch (error) {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        // Clear the file URLs
+                                                                                                        updateThirdPartyVictimPoliceReport(index, 'reportFile', '');
+                                                                                                        updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', '');
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'הקובץ נמחק בהצלחה',
+                                                                                                            severity: 'success'
+                                                                                                        });
+                                                                                                    }}
+                                                                                                    projectId={formData.projectId}
+                                                                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                                                                />
+                                                                                            </Grid>
+                                                                                        </Grid>
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Box>
+                                                                        </Box>
+
+                                                                        <Box sx={{
+                                                                            display: 'grid',
+                                                                            gridTemplateColumns: '1fr 1fr',
+                                                                            gap: 2,
+                                                                            mt: 2
+                                                                        }}>
+                                                                            {/* Insurance Company Report */}
+                                                                            <Box sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'flex-start',
+                                                                                justifyContent: 'flex-end'
+                                                                            }}>
+                                                                                <Box sx={{
+                                                                                    border: '1px solid #d1d5db',
+                                                                                    borderRadius: '4px',
+                                                                                    backgroundColor: 'white',
+                                                                                    minHeight: '56px',
+                                                                                    padding: '0 14px',
+                                                                                    direction: 'rtl',
+                                                                                    display: 'flex',
+                                                                                    alignItems: 'center',
+                                                                                    justifyContent: 'space-between',
+                                                                                    width: '100%'
+                                                                                }}>
+                                                                                    <Typography sx={{
+                                                                                        fontSize: '1rem',
+                                                                                        color: 'text.secondary',
+                                                                                        marginRight: '10px'
+                                                                                    }}>
+                                                                                        חברת ביטוח
+                                                                                    </Typography>
+                                                                                    <Box sx={{
+                                                                                        display: 'flex',
+                                                                                        gap: 0,
+                                                                                        alignItems: 'center',
+                                                                                        justifyContent: 'flex-start',
+                                                                                        marginLeft: '10px'
+                                                                                    }}>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', false)}
+                                                                                            sx={{
+                                                                                                borderRadius: '0 4px 4px 0',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                borderLeft: 'none',
+                                                                                                backgroundColor: !victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: !victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: !victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem',
+                                                                                                marginRight: '0px'
+                                                                                            }}
+                                                                                        >
+                                                                                            לא
+                                                                                        </Button>
+                                                                                        <Button
+                                                                                            variant="text"
+                                                                                            onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', true)}
+                                                                                            sx={{
+                                                                                                borderRadius: '4px 0 0 4px',
+                                                                                                border: '1px solid #d1d5db',
+                                                                                                backgroundColor: victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
+                                                                                                color: victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
+                                                                                                },
+                                                                                                minWidth: '50px',
+                                                                                                height: '32px',
+                                                                                                textTransform: 'none',
+                                                                                                fontSize: '0.875rem'
+                                                                                            }}
+                                                                                        >
+                                                                                            כן
+                                                                                        </Button>
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {/* Insurance Company Report Details */}
+                                                                            <Box>
+                                                                                {victim.insuranceCompanyReport.reported && (
+                                                                                    <Box>
+                                                                                        <Grid container spacing={2}>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    type="date"
+                                                                                                    label="תאריך דיווח"
+                                                                                                    value={victim.insuranceCompanyReport.reportDate || ''}
+                                                                                                    onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'reportDate', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12} sm={6}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    label="מספר פוליסה"
+                                                                                                    value={victim.insuranceCompanyReport.policyNumber || ''}
+                                                                                                    onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'policyNumber', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                />
+                                                                                            </Grid>
+                                                                                            <Grid item xs={12}>
+                                                                                                <TextField
+                                                                                                    fullWidth
+                                                                                                    label="מספר תביעה בחברת הביטוח"
+                                                                                                    value={victim.insuranceCompanyReport.claimNumber || ''}
+                                                                                                    onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'claimNumber', e.target.value)}
+                                                                                                    variant="outlined"
+                                                                                                />
+                                                                                            </Grid>
+                                                                                        </Grid>
+                                                                                    </Box>
+                                                                                )}
+                                                                            </Box>
+                                                                        </Box>
+                                                                    </Box>
+                                                                )}
+
+                                                                {/* Attached Documents Sub-section */}
+                                                                <Box sx={{ mt: 3 }}>
+                                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                        צרופות
+                                                                    </Typography>
+                                                                    <Box sx={{ width: '100%' }}>
                                                                         <TableContainer component={Paper} sx={{ mb: 2 }}>
                                                                             <Table size="small">
                                                                                 <TableHead>
                                                                                     <TableRow>
                                                                                         <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
-                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מוסד רפואי</TableCell>
+                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאור</TableCell>
                                                                                         <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
-                                                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאריך תוקף</TableCell>
                                                                                         <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
                                                                                     </TableRow>
                                                                                 </TableHead>
                                                                                 <TableBody>
-                                                                                    {(victim.medicalTreatment.medicalDocuments || []).map((document, docIndex) => (
+                                                                                    {(victim.attachedDocuments || []).map((document, docIndex) => (
                                                                                         <TableRow key={docIndex}>
                                                                                             <TableCell>
                                                                                                 <TextField
@@ -4774,12 +5336,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                     value={document.documentName}
                                                                                                     onChange={(e) => {
                                                                                                         const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                        const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
                                                                                                         updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], documentName: e.target.value };
-                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                            ...currentVictim.medicalTreatment,
-                                                                                                            medicalDocuments: updatedDocuments
-                                                                                                        });
+                                                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
                                                                                                     }}
                                                                                                     variant="outlined"
                                                                                                     sx={{
@@ -4795,15 +5354,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 <TextField
                                                                                                     fullWidth
                                                                                                     size="small"
-                                                                                                    value={document.medicalInstitution}
+                                                                                                    value={document.description || ''}
                                                                                                     onChange={(e) => {
                                                                                                         const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                        const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
-                                                                                                        updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], medicalInstitution: e.target.value };
-                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                            ...currentVictim.medicalTreatment,
-                                                                                                            medicalDocuments: updatedDocuments
-                                                                                                        });
+                                                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                        updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], description: e.target.value };
+                                                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
                                                                                                     }}
                                                                                                     variant="outlined"
                                                                                                     sx={{
@@ -4817,26 +5373,26 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                             </TableCell>
                                                                                             <TableCell>
                                                                                                 <FileUpload
-                                                                                                    label="מסמך רפואי"
                                                                                                     value={document.fileUrl || ''}
                                                                                                     thumbnailUrl={document.thumbnailUrl || ''}
                                                                                                     onChange={(url, thumbnailUrl) => {
                                                                                                         const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                        const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
-                                                                                                        updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], fileUrl: url, thumbnailUrl: thumbnailUrl };
-                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                            ...currentVictim.medicalTreatment,
-                                                                                                            medicalDocuments: updatedDocuments
-                                                                                                        });
+                                                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                        updatedDocuments[docIndex] = {
+                                                                                                            ...updatedDocuments[docIndex],
+                                                                                                            fileUrl: url,
+                                                                                                            thumbnailUrl: thumbnailUrl
+                                                                                                        };
+                                                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
                                                                                                     }}
                                                                                                     onDelete={async () => {
                                                                                                         // Show confirmation dialog
-                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'ללא שם'}"?`;
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'המסמך'}"?`;
 
                                                                                                         const confirmed = window.confirm(confirmMessage);
 
                                                                                                         if (!confirmed) {
-                                                                                                            throw new Error('User cancelled deletion'); // Throw error to prevent UI clearing
+                                                                                                            throw new Error('User cancelled deletion');
                                                                                                         }
 
                                                                                                         // Delete file from Blob storage
@@ -4873,22 +5429,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                                                                                                 if (!thumbnailResponse.ok) {
                                                                                                                     console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
-                                                                                                                    // Don't throw error for thumbnail deletion failure
                                                                                                                 }
                                                                                                             } catch (error) {
                                                                                                                 console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                                // Don't throw error for thumbnail deletion failure
                                                                                                             }
                                                                                                         }
 
-                                                                                                        // Clear the file URLs in the document
+                                                                                                        // Remove document from array
                                                                                                         const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                        const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
-                                                                                                        updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], fileUrl: '', thumbnailUrl: '' };
-                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                            ...currentVictim.medicalTreatment,
-                                                                                                            medicalDocuments: updatedDocuments
-                                                                                                        });
+                                                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                        updatedDocuments.splice(docIndex, 1);
+                                                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
 
                                                                                                         // Show success message
                                                                                                         setSnackbar({
@@ -4902,84 +5453,95 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                                 />
                                                                                             </TableCell>
                                                                                             <TableCell>
-                                                                                                <TextField
-                                                                                                    fullWidth
-                                                                                                    size="small"
-                                                                                                    type="date"
-                                                                                                    value={document.validUntil || ''}
-                                                                                                    onChange={(e) => {
+                                                                                                <IconButton
+                                                                                                    onClick={() => {
+                                                                                                        // Show confirmation dialog
+                                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
+
+                                                                                                        const confirmed = window.confirm(confirmMessage);
+
+                                                                                                        if (!confirmed) {
+                                                                                                            return;
+                                                                                                        }
+
+                                                                                                        // Delete file from Blob storage
+                                                                                                        if (document.fileUrl) {
+                                                                                                            fetch('/api/upload/delete-file', {
+                                                                                                                method: 'POST',
+                                                                                                                headers: {
+                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                },
+                                                                                                                body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                            }).catch(error => {
+                                                                                                                console.warn('Error deleting file from Blob storage:', error);
+                                                                                                            });
+                                                                                                        }
+
+                                                                                                        // Delete thumbnail from Blob storage
+                                                                                                        if (document.thumbnailUrl) {
+                                                                                                            fetch('/api/upload/delete-file', {
+                                                                                                                method: 'POST',
+                                                                                                                headers: {
+                                                                                                                    'Content-Type': 'application/json',
+                                                                                                                },
+                                                                                                                body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                            }).catch(error => {
+                                                                                                                console.warn('Error deleting thumbnail from Blob storage:', error);
+                                                                                                            });
+                                                                                                        }
+
+                                                                                                        // Remove document from array
                                                                                                         const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                        const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
-                                                                                                        updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], validUntil: e.target.value };
-                                                                                                        updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                            ...currentVictim.medicalTreatment,
-                                                                                                            medicalDocuments: updatedDocuments
+                                                                                                        const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
+                                                                                                        updatedDocuments.splice(docIndex, 1);
+                                                                                                        updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
+
+                                                                                                        // Show success message
+                                                                                                        setSnackbar({
+                                                                                                            open: true,
+                                                                                                            message: 'המסמך נמחק בהצלחה',
+                                                                                                            severity: 'success'
                                                                                                         });
                                                                                                     }}
-                                                                                                    variant="outlined"
-                                                                                                    InputLabelProps={{ shrink: true }}
+                                                                                                    color="error"
+                                                                                                    size="small"
                                                                                                     sx={{
-                                                                                                        '& .MuiOutlinedInput-root': {
-                                                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                        },
-                                                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                                                                        '&:focus': {
+                                                                                                            backgroundColor: 'rgba(211, 47, 47, 0.12)'
+                                                                                                        }
                                                                                                     }}
-                                                                                                />
-                                                                                            </TableCell>
-                                                                                            <TableCell>
-                                                                                                {docIndex > 0 && (
-                                                                                                    <MuiIconButton
-                                                                                                        onClick={() => {
-                                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                            const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
-                                                                                                            updatedDocuments.splice(docIndex, 1);
-                                                                                                            updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                                ...currentVictim.medicalTreatment,
-                                                                                                                medicalDocuments: updatedDocuments
-                                                                                                            });
-                                                                                                        }}
-                                                                                                        sx={{
-                                                                                                            color: '#f44336',
-                                                                                                            '&:hover': {
-                                                                                                                backgroundColor: '#ffebee',
-                                                                                                                color: '#d32f2f'
-                                                                                                            }
-                                                                                                        }}
-                                                                                                    >
-                                                                                                        <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
-                                                                                                    </MuiIconButton>
-                                                                                                )}
+                                                                                                >
+                                                                                                    <img
+                                                                                                        src={trashIcon}
+                                                                                                        alt="מחיקה"
+                                                                                                        style={{ width: '20px', height: '20px' }}
+                                                                                                    />
+                                                                                                </IconButton>
                                                                                             </TableCell>
                                                                                         </TableRow>
                                                                                     ))}
                                                                                     <TableRow>
-                                                                                        <TableCell colSpan={5} sx={{ textAlign: 'center', border: 'none', py: 2 }}>
+                                                                                        <TableCell colSpan={4} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
                                                                                             <Button
                                                                                                 variant="outlined"
+                                                                                                startIcon={<AddIcon />}
                                                                                                 onClick={() => {
                                                                                                     const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                    const updatedDocuments = [...(currentVictim.medicalTreatment?.medicalDocuments || [])];
+                                                                                                    const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
                                                                                                     updatedDocuments.push({
                                                                                                         documentName: '',
-                                                                                                        medicalInstitution: '',
+                                                                                                        description: '',
                                                                                                         fileUrl: '',
-                                                                                                        thumbnailUrl: '',
-                                                                                                        validUntil: ''
+                                                                                                        thumbnailUrl: ''
                                                                                                     });
-                                                                                                    updateThirdPartyVictim(index, 'medicalTreatment', {
-                                                                                                        ...currentVictim.medicalTreatment,
-                                                                                                        medicalDocuments: updatedDocuments
-                                                                                                    });
+                                                                                                    updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
                                                                                                 }}
                                                                                                 sx={{
                                                                                                     borderColor: '#6b47c1',
                                                                                                     color: '#6b47c1',
-                                                                                                    backgroundColor: 'white',
                                                                                                     '&:hover': {
                                                                                                         borderColor: '#5a3aa1',
-                                                                                                        color: '#5a3aa1',
-                                                                                                        backgroundColor: '#f3f0ff'
+                                                                                                        backgroundColor: '#f3f4f6'
                                                                                                     }
                                                                                                 }}
                                                                                             >
@@ -4991,573 +5553,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             </Table>
                                                                         </TableContainer>
                                                                     </Box>
-                                                                )}
+                                                                </Box>
+
+                                                                {/* Close the expanded content condition */}
                                                             </>
                                                         )}
-
-                                                        {/* Reports Sub-section - Available for both bodily injury and property damage */}
-                                                        {((formData.bodilyInjuryThirdParty === true) || (formData.propertyDamageThirdParty === true)) && (
-                                                            <Box sx={{ mt: 3 }}>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                    דיווחים
-                                                                </Typography>
-                                                                <Box sx={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: '1fr 1fr',
-                                                                    gap: 2
-                                                                }}>
-                                                                    {/* Police Report */}
-                                                                    <Box sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'flex-start',
-                                                                        justifyContent: 'flex-end'
-                                                                    }}>
-                                                                        <Box sx={{
-                                                                            border: '1px solid #d1d5db',
-                                                                            borderRadius: '4px',
-                                                                            backgroundColor: 'white',
-                                                                            minHeight: '56px',
-                                                                            padding: '0 14px',
-                                                                            direction: 'rtl',
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'space-between',
-                                                                            width: '100%'
-                                                                        }}>
-                                                                            <Typography sx={{
-                                                                                fontSize: '1rem',
-                                                                                color: 'text.secondary',
-                                                                                marginRight: '10px'
-                                                                            }}>
-                                                                                משטרה
-                                                                            </Typography>
-                                                                            <Box sx={{
-                                                                                display: 'flex',
-                                                                                gap: 0,
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'flex-start',
-                                                                                marginLeft: '10px'
-                                                                            }}>
-                                                                                <Button
-                                                                                    variant="text"
-                                                                                    onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', false)}
-                                                                                    sx={{
-                                                                                        borderRadius: '0 4px 4px 0',
-                                                                                        border: '1px solid #d1d5db',
-                                                                                        borderLeft: 'none',
-                                                                                        backgroundColor: !victim.policeReport.reported ? '#6b47c1' : 'transparent',
-                                                                                        color: !victim.policeReport.reported ? 'white' : '#6b47c1',
-                                                                                        '&:hover': {
-                                                                                            backgroundColor: !victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                        },
-                                                                                        minWidth: '50px',
-                                                                                        height: '32px',
-                                                                                        textTransform: 'none',
-                                                                                        fontSize: '0.875rem',
-                                                                                        marginRight: '0px'
-                                                                                    }}
-                                                                                >
-                                                                                    לא
-                                                                                </Button>
-                                                                                <Button
-                                                                                    variant="text"
-                                                                                    onClick={() => updateThirdPartyVictimPoliceReport(index, 'reported', true)}
-                                                                                    sx={{
-                                                                                        borderRadius: '4px 0 0 4px',
-                                                                                        border: '1px solid #d1d5db',
-                                                                                        backgroundColor: victim.policeReport.reported ? '#6b47c1' : 'transparent',
-                                                                                        color: victim.policeReport.reported ? 'white' : '#6b47c1',
-                                                                                        '&:hover': {
-                                                                                            backgroundColor: victim.policeReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                        },
-                                                                                        minWidth: '50px',
-                                                                                        height: '32px',
-                                                                                        textTransform: 'none',
-                                                                                        fontSize: '0.875rem'
-                                                                                    }}
-                                                                                >
-                                                                                    כן
-                                                                                </Button>
-                                                                            </Box>
-                                                                        </Box>
-                                                                    </Box>
-
-                                                                    {/* Police Report Details */}
-                                                                    <Box>
-                                                                        {victim.policeReport.reported && (
-                                                                            <Box>
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    label="שם התחנה"
-                                                                                    value={victim.policeReport.stationName || ''}
-                                                                                    onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'stationName', e.target.value)}
-                                                                                    variant="outlined"
-                                                                                    sx={{ mb: 2 }}
-                                                                                />
-                                                                                <Grid container spacing={2}>
-                                                                                    <Grid item xs={12} sm={6}>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            type="date"
-                                                                                            label="תאריך דיווח"
-                                                                                            value={victim.policeReport.reportDate || ''}
-                                                                                            onChange={(e) => updateThirdPartyVictimPoliceReport(index, 'reportDate', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                        />
-                                                                                    </Grid>
-                                                                                    <Grid item xs={12} sm={6}>
-                                                                                        <FileUpload
-                                                                                            label="אישור דיווח"
-                                                                                            value={victim.policeReport.reportFile || ''}
-                                                                                            thumbnailUrl={victim.policeReport.reportFileThumbnail || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFile', url);
-                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', thumbnailUrl);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור דיווח למשטרה"?`;
-
-                                                                                                const confirmed = window.confirm(confirmMessage);
-
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (victim.policeReport.reportFile) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: victim.policeReport.reportFile })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', victim.policeReport.reportFile);
-                                                                                                            throw new Error('Failed to delete file from storage');
-                                                                                                        }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
-
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (victim.policeReport.reportFileThumbnail) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: victim.policeReport.reportFileThumbnail })
-                                                                                                        });
-
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', victim.policeReport.reportFileThumbnail);
-                                                                                                        }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
-
-                                                                                                // Clear the file URLs
-                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFile', '');
-                                                                                                updateThirdPartyVictimPoliceReport(index, 'reportFileThumbnail', '');
-
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            projectId={formData.projectId}
-                                                                                            accept=".pdf,.jpg,.jpeg,.png"
-                                                                                        />
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                            </Box>
-                                                                        )}
-                                                                    </Box>
-                                                                </Box>
-
-                                                                <Box sx={{
-                                                                    display: 'grid',
-                                                                    gridTemplateColumns: '1fr 1fr',
-                                                                    gap: 2,
-                                                                    mt: 2
-                                                                }}>
-                                                                    {/* Insurance Company Report */}
-                                                                    <Box sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'flex-start',
-                                                                        justifyContent: 'flex-end'
-                                                                    }}>
-                                                                        <Box sx={{
-                                                                            border: '1px solid #d1d5db',
-                                                                            borderRadius: '4px',
-                                                                            backgroundColor: 'white',
-                                                                            minHeight: '56px',
-                                                                            padding: '0 14px',
-                                                                            direction: 'rtl',
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'space-between',
-                                                                            width: '100%'
-                                                                        }}>
-                                                                            <Typography sx={{
-                                                                                fontSize: '1rem',
-                                                                                color: 'text.secondary',
-                                                                                marginRight: '10px'
-                                                                            }}>
-                                                                                חברת ביטוח
-                                                                            </Typography>
-                                                                            <Box sx={{
-                                                                                display: 'flex',
-                                                                                gap: 0,
-                                                                                alignItems: 'center',
-                                                                                justifyContent: 'flex-start',
-                                                                                marginLeft: '10px'
-                                                                            }}>
-                                                                                <Button
-                                                                                    variant="text"
-                                                                                    onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', false)}
-                                                                                    sx={{
-                                                                                        borderRadius: '0 4px 4px 0',
-                                                                                        border: '1px solid #d1d5db',
-                                                                                        borderLeft: 'none',
-                                                                                        backgroundColor: !victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                        color: !victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                        '&:hover': {
-                                                                                            backgroundColor: !victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                        },
-                                                                                        minWidth: '50px',
-                                                                                        height: '32px',
-                                                                                        textTransform: 'none',
-                                                                                        fontSize: '0.875rem',
-                                                                                        marginRight: '0px'
-                                                                                    }}
-                                                                                >
-                                                                                    לא
-                                                                                </Button>
-                                                                                <Button
-                                                                                    variant="text"
-                                                                                    onClick={() => updateThirdPartyVictimInsuranceReport(index, 'reported', true)}
-                                                                                    sx={{
-                                                                                        borderRadius: '4px 0 0 4px',
-                                                                                        border: '1px solid #d1d5db',
-                                                                                        backgroundColor: victim.insuranceCompanyReport.reported ? '#6b47c1' : 'transparent',
-                                                                                        color: victim.insuranceCompanyReport.reported ? 'white' : '#6b47c1',
-                                                                                        '&:hover': {
-                                                                                            backgroundColor: victim.insuranceCompanyReport.reported ? '#5a3aa1' : '#f3f4f6',
-                                                                                        },
-                                                                                        minWidth: '50px',
-                                                                                        height: '32px',
-                                                                                        textTransform: 'none',
-                                                                                        fontSize: '0.875rem'
-                                                                                    }}
-                                                                                >
-                                                                                    כן
-                                                                                </Button>
-                                                                            </Box>
-                                                                        </Box>
-                                                                    </Box>
-
-                                                                    {/* Insurance Company Report Details */}
-                                                                    <Box>
-                                                                        {victim.insuranceCompanyReport.reported && (
-                                                                            <Box>
-                                                                                <Grid container spacing={2}>
-                                                                                    <Grid item xs={12} sm={6}>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            type="date"
-                                                                                            label="תאריך דיווח"
-                                                                                            value={victim.insuranceCompanyReport.reportDate || ''}
-                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'reportDate', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                            InputLabelProps={{ shrink: true }}
-                                                                                        />
-                                                                                    </Grid>
-                                                                                    <Grid item xs={12} sm={6}>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            label="מספר פוליסה"
-                                                                                            value={victim.insuranceCompanyReport.policyNumber || ''}
-                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'policyNumber', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                        />
-                                                                                    </Grid>
-                                                                                    <Grid item xs={12}>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            label="מספר תביעה בחברת הביטוח"
-                                                                                            value={victim.insuranceCompanyReport.claimNumber || ''}
-                                                                                            onChange={(e) => updateThirdPartyVictimInsuranceReport(index, 'claimNumber', e.target.value)}
-                                                                                            variant="outlined"
-                                                                                        />
-                                                                                    </Grid>
-                                                                                </Grid>
-                                                                            </Box>
-                                                                        )}
-                                                                    </Box>
-                                                                </Box>
-                                                            </Box>
-                                                        )}
-
-                                                        {/* Attached Documents Sub-section */}
-                                                        <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                צרופות
-                                                            </Typography>
-                                                            <Box sx={{ width: '100%' }}>
-                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                                                    <Table size="small">
-                                                                        <TableHead>
-                                                                            <TableRow>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאור</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
-                                                                            </TableRow>
-                                                                        </TableHead>
-                                                                        <TableBody>
-                                                                            {(victim.attachedDocuments || []).map((document, docIndex) => (
-                                                                                <TableRow key={docIndex}>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.documentName}
-                                                                                            onChange={(e) => {
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], documentName: e.target.value };
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                                            }}
-                                                                                            variant="outlined"
-                                                                                            sx={{
-                                                                                                '& .MuiOutlinedInput-root': {
-                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                },
-                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                            }}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.description || ''}
-                                                                                            onChange={(e) => {
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = { ...updatedDocuments[docIndex], description: e.target.value };
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                                            }}
-                                                                                            variant="outlined"
-                                                                                            sx={{
-                                                                                                '& .MuiOutlinedInput-root': {
-                                                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                                                },
-                                                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                                            }}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <FileUpload
-                                                                                            value={document.fileUrl || ''}
-                                                                                            thumbnailUrl={document.thumbnailUrl || ''}
-                                                                                            onChange={(url, thumbnailUrl) => {
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = {
-                                                                                                    ...updatedDocuments[docIndex],
-                                                                                                    fileUrl: url,
-                                                                                                    thumbnailUrl: thumbnailUrl
-                                                                                                };
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                                            }}
-                                                                                            onDelete={async () => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "${document.documentName || 'המסמך'}"?`;
-
-                                                                                                const confirmed = window.confirm(confirmMessage);
-
-                                                                                                if (!confirmed) {
-                                                                                                    throw new Error('User cancelled deletion');
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (document.fileUrl) {
-                                                                                                    try {
-                                                                                                        const response = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
-                                                                                                        });
-
-                                                                                                        if (!response.ok) {
-                                                                                                            console.warn('Failed to delete file from Blob storage:', document.fileUrl);
-                                                                                                            throw new Error('Failed to delete file from storage');
-                                                                                                        }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                        throw error;
-                                                                                                    }
-                                                                                                }
-
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (document.thumbnailUrl) {
-                                                                                                    try {
-                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                            method: 'POST',
-                                                                                                            headers: {
-                                                                                                                'Content-Type': 'application/json',
-                                                                                                            },
-                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
-                                                                                                        });
-
-                                                                                                        if (!thumbnailResponse.ok) {
-                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', document.thumbnailUrl);
-                                                                                                        }
-                                                                                                    } catch (error) {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    }
-                                                                                                }
-
-                                                                                                // Remove document from array
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments.splice(docIndex, 1);
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'הקובץ נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            projectId={formData.projectId}
-                                                                                            accept=".pdf,.jpg,.jpeg,.png"
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <IconButton
-                                                                                            onClick={() => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
-
-                                                                                                const confirmed = window.confirm(confirmMessage);
-
-                                                                                                if (!confirmed) {
-                                                                                                    return;
-                                                                                                }
-
-                                                                                                // Delete file from Blob storage
-                                                                                                if (document.fileUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: {
-                                                                                                            'Content-Type': 'application/json',
-                                                                                                        },
-                                                                                                        body: JSON.stringify({ fileUrl: document.fileUrl })
-                                                                                                    }).catch(error => {
-                                                                                                        console.warn('Error deleting file from Blob storage:', error);
-                                                                                                    });
-                                                                                                }
-
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (document.thumbnailUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: {
-                                                                                                            'Content-Type': 'application/json',
-                                                                                                        },
-                                                                                                        body: JSON.stringify({ fileUrl: document.thumbnailUrl })
-                                                                                                    }).catch(error => {
-                                                                                                        console.warn('Error deleting thumbnail from Blob storage:', error);
-                                                                                                    });
-                                                                                                }
-
-                                                                                                // Remove document from array
-                                                                                                const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                                const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                                updatedDocuments.splice(docIndex, 1);
-                                                                                                updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'המסמך נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            color="error"
-                                                                                            size="small"
-                                                                                            sx={{
-                                                                                                '&:focus': {
-                                                                                                    backgroundColor: 'rgba(211, 47, 47, 0.12)'
-                                                                                                }
-                                                                                            }}
-                                                                                        >
-                                                                                            <img
-                                                                                                src={trashIcon}
-                                                                                                alt="מחיקה"
-                                                                                                style={{ width: '20px', height: '20px' }}
-                                                                                            />
-                                                                                        </IconButton>
-                                                                                    </TableCell>
-                                                                                </TableRow>
-                                                                            ))}
-                                                                            <TableRow>
-                                                                                <TableCell colSpan={4} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
-                                                                                    <Button
-                                                                                        variant="outlined"
-                                                                                        startIcon={<AddIcon />}
-                                                                                        onClick={() => {
-                                                                                            const currentVictim = formData.thirdPartyVictims[index] || {};
-                                                                                            const updatedDocuments = [...(currentVictim.attachedDocuments || [])];
-                                                                                            updatedDocuments.push({
-                                                                                                documentName: '',
-                                                                                                description: '',
-                                                                                                fileUrl: '',
-                                                                                                thumbnailUrl: ''
-                                                                                            });
-                                                                                            updateThirdPartyVictim(index, 'attachedDocuments', updatedDocuments);
-                                                                                        }}
-                                                                                        sx={{
-                                                                                            borderColor: '#6b47c1',
-                                                                                            color: '#6b47c1',
-                                                                                            '&:hover': {
-                                                                                                borderColor: '#5a3aa1',
-                                                                                                backgroundColor: '#f3f4f6'
-                                                                                            }
-                                                                                        }}
-                                                                                    >
-                                                                                        הוספה
-                                                                                    </Button>
-                                                                                </TableCell>
-                                                                            </TableRow>
-                                                                        </TableBody>
-                                                                    </Table>
-                                                                </TableContainer>
-                                                            </Box>
-                                                        </Box>
-
-                                                        {/* Close the expanded content condition */}
-                                                                </>
-                                                            )}
                                                     </Paper>
                                                 ))}
 
