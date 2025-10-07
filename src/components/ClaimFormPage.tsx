@@ -7308,7 +7308,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, color: '#666666' }}>
                                                                     צרופות
                                                                 </Typography>
-                                                                
+
                                                                 <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
                                                                     <Table>
                                                                         <TableHead>
@@ -7507,53 +7507,54 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                     </TableCell>
                                                                                 </TableRow>
                                                                             ))}
+                                                                            {/* Add Attachment Button - Inside table, bottom center */}
+                                                                            <TableRow>
+                                                                                <TableCell colSpan={5} sx={{ textAlign: 'center', borderBottom: 'none', py: 2 }}>
+                                                                                    <Button
+                                                                                        variant="outlined"
+                                                                                        size="small"
+                                                                                        onClick={() => {
+                                                                                            const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                            const updatedItems = [...currentItems];
+                                                                                            const newAttachment = {
+                                                                                                id: Date.now().toString(),
+                                                                                                documentType: '',
+                                                                                                documentDescription: '',
+                                                                                                fileUrl: '',
+                                                                                                thumbnailUrl: '',
+                                                                                                validUntil: ''
+                                                                                            };
+                                                                                            updatedItems[itemIndex] = {
+                                                                                                ...updatedItems[itemIndex],
+                                                                                                attachments: [...(updatedItems[itemIndex].attachments || []), newAttachment]
+                                                                                            };
+                                                                                            updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                        }}
+                                                                                        sx={{
+                                                                                            borderColor: '#6b47c1',
+                                                                                            color: '#6b47c1',
+                                                                                            '&:hover': {
+                                                                                                borderColor: '#5a3aa1',
+                                                                                                backgroundColor: '#f3f4f6'
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        + הוסף צרופה
+                                                                                    </Button>
+                                                                                </TableCell>
+                                                                            </TableRow>
                                                                         </TableBody>
                                                                     </Table>
                                                                 </TableContainer>
-
-                                                                {/* Add Attachment Button */}
-                                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                                                                    <Button
-                                                                        variant="outlined"
-                                                                        size="small"
-                                                                        onClick={() => {
-                                                                            const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                            const updatedItems = [...currentItems];
-                                                                            const newAttachment = {
-                                                                                id: Date.now().toString(),
-                                                                                documentType: '',
-                                                                                documentDescription: '',
-                                                                                fileUrl: '',
-                                                                                thumbnailUrl: '',
-                                                                                validUntil: ''
-                                                                            };
-                                                                            updatedItems[itemIndex] = {
-                                                                                ...updatedItems[itemIndex],
-                                                                                attachments: [...(updatedItems[itemIndex].attachments || []), newAttachment]
-                                                                            };
-                                                                            updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                        }}
-                                                                        sx={{
-                                                                            borderColor: '#6b47c1',
-                                                                            color: '#6b47c1',
-                                                                            '&:hover': {
-                                                                                borderColor: '#5a3aa1',
-                                                                                backgroundColor: '#f3f4f6'
-                                                                            }
-                                                                        }}
-                                                                    >
-                                                                        + הוסף צרופה
-                                                                    </Button>
-                                                                </Box>
                                                             </Box>
                                                         </Box>
                                                     </Paper>
                                                 ))}
-                                                
+
                                                 {/* Add Item Button - At the end */}
                                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                                                     <Button
-                                                        variant="outlined"
+                                                        variant="contained"
                                                         onClick={() => {
                                                             const newItem = {
                                                                 id: Date.now().toString(),
@@ -7566,11 +7567,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             updatePropertyDamageDetails('damagedItems', [...currentItems, newItem]);
                                                         }}
                                                         sx={{
-                                                            borderColor: '#6b47c1',
-                                                            color: '#6b47c1',
+                                                            backgroundColor: '#6b47c1',
+                                                            color: 'white',
                                                             '&:hover': {
-                                                                borderColor: '#5a3aa1',
-                                                                backgroundColor: '#f3f4f6'
+                                                                backgroundColor: '#5a3aa1'
                                                             }
                                                         }}
                                                     >
