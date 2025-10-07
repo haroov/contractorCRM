@@ -5756,8 +5756,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Other fields - Separate Paper */}
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                             <Box sx={{
-                                                display: 'grid',
-                                                gridTemplateColumns: '1fr 1fr',
+                                                display: 'flex',
+                                                flexDirection: 'column',
                                                 gap: 2
                                             }}>
                                                 {/* Is Sole Owner */}
