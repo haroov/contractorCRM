@@ -6780,18 +6780,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         projectId={formData.projectId}
                                                                     />
                                                                 </Box>
-                                                                
-                                                                {/* Station Name Field */}
-                                                                <Box sx={{ flex: 1 }}>
-                                                                    <TextField
-                                                                        fullWidth
-                                                                        label="שם התחנה"
-                                                                        value={formData.propertyDamageInsuredDetails?.policeStationName || ''}
-                                                                        onChange={(e) => updatePropertyDamageDetails('policeStationName', e.target.value)}
-                                                                        variant="outlined"
-                                                                    />
-                                                                </Box>
-                                                                
+
                                                                 {/* Report Date Field */}
                                                                 <Box sx={{ flex: 1 }}>
                                                                     <TextField
@@ -6804,6 +6793,17 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         InputLabelProps={{
                                                                             shrink: true,
                                                                         }}
+                                                                    />
+                                                                </Box>
+                                                                
+                                                                {/* Station Name Field */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם התחנה"
+                                                                        value={formData.propertyDamageInsuredDetails?.policeStationName || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('policeStationName', e.target.value)}
+                                                                        variant="outlined"
                                                                     />
                                                                 </Box>
                                                             </Box>
