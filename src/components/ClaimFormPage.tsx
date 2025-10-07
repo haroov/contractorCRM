@@ -562,8 +562,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-                ...prev,
-                [field]: value,
+            ...prev,
+            [field]: value,
                 updatedAt: new Date()
             };
 
@@ -1507,13 +1507,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    fullWidth
+                                        <TextField
+                                            fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                                    variant="outlined"
+                                            variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1610,27 +1610,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        '& fieldset': {
-                                                            borderColor: '#d0d0d0'
-                                                        },
-                                                        '&:hover fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        },
-                                                        '&.Mui-focused fieldset': {
-                                                            borderColor: '#6b47c1'
-                                                        }
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    '& fieldset': {
+                                                        borderColor: '#d0d0d0'
                                                     },
-                                                    '& .MuiInputLabel-root': {
-                                                        color: '#666666',
-                                                        '&.Mui-focused': {
-                                                            color: '#6b47c1'
-                                                        }
+                                                    '&:hover fieldset': {
+                                                        borderColor: '#6b47c1'
+                                                    },
+                                                    '&.Mui-focused fieldset': {
+                                                        borderColor: '#6b47c1'
                                                     }
-                                                }}
-                                            />
-                                        </Box>
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#666666',
+                                                    '&.Mui-focused': {
+                                                        color: '#6b47c1'
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -3806,254 +3806,254 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                                 )}
                                                                             </Box>
 
+                                                                            {/* Attached Documents Section - Inside employee details, full width */}
+                                                                            <Box sx={{ mt: 3 }}>
+                                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                                    צרופות
+                                                                                </Typography>
+                                                                                <Box sx={{ width: '100%' }}>
+                                                                                    <TableContainer component={Paper} sx={{ mb: 2 }}>
+                                                                                        <Table size="small">
+                                                                                            <TableHead>
+                                                                                                <TableRow>
+                                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
+                                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאור</TableCell>
+                                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
+                                                                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
+                                                                                                </TableRow>
+                                                                                            </TableHead>
+                                                                                            <TableBody>
+                                                                                                {(employee.attachedDocuments || []).map((document, docIndex) => (
+                                                                                                    <TableRow key={docIndex}>
+                                                                                                        <TableCell>
+                                                                                                            <TextField
+                                                                                                                fullWidth
+                                                                                                                size="small"
+                                                                                                                value={document.documentName}
+                                                                                                                onChange={(e) => {
+                                                                                                                    const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                    const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                    updatedDocuments[docIndex] = {
+                                                                                                                        ...updatedDocuments[docIndex],
+                                                                                                                        documentName: e.target.value
+                                                                                                                    };
+                                                                                                                    updatedEmployees[index] = {
+                                                                                                                        ...updatedEmployees[index],
+                                                                                                                        attachedDocuments: updatedDocuments
+                                                                                                                    };
+                                                                                                                    setFormData(prev => ({
+                                                                                                                        ...prev,
+                                                                                                                        injuredEmployees: updatedEmployees,
+                                                                                                                        updatedAt: new Date()
+                                                                                                                    }));
+                                                                                                                }}
+                                                                                                                variant="outlined"
+                                                                                                                placeholder="שם המסמך"
+                                                                                                            />
+                                                                                                        </TableCell>
+                                                                                                        <TableCell>
+                                                                                                            <TextField
+                                                                                                                fullWidth
+                                                                                                                size="small"
+                                                                                                                value={document.description || ''}
+                                                                                                                onChange={(e) => {
+                                                                                                                    const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                    const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                    updatedDocuments[docIndex] = {
+                                                                                                                        ...updatedDocuments[docIndex],
+                                                                                                                        description: e.target.value
+                                                                                                                    };
+                                                                                                                    updatedEmployees[index] = {
+                                                                                                                        ...updatedEmployees[index],
+                                                                                                                        attachedDocuments: updatedDocuments
+                                                                                                                    };
+                                                                                                                    setFormData(prev => ({
+                                                                                                                        ...prev,
+                                                                                                                        injuredEmployees: updatedEmployees,
+                                                                                                                        updatedAt: new Date()
+                                                                                                                    }));
+                                                                                                                }}
+                                                                                                                variant="outlined"
+                                                                                                                placeholder="תאור"
+                                                                                                            />
+                                                                                                        </TableCell>
+                                                                                                        <TableCell>
+                                                                                                            <FileUpload
+                                                                                                                onUpload={(fileUrl, thumbnailUrl) => {
+                                                                                                                    const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                    const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                    updatedDocuments[docIndex] = {
+                                                                                                                        ...updatedDocuments[docIndex],
+                                                                                                                        fileUrl,
+                                                                                                                        thumbnailUrl
+                                                                                                                    };
+                                                                                                                    updatedEmployees[index] = {
+                                                                                                                        ...updatedEmployees[index],
+                                                                                                                        attachedDocuments: updatedDocuments
+                                                                                                                    };
+                                                                                                                    setFormData(prev => ({
+                                                                                                                        ...prev,
+                                                                                                                        injuredEmployees: updatedEmployees,
+                                                                                                                        updatedAt: new Date()
+                                                                                                                    }));
+                                                                                                                }}
+                                                                                                                onDelete={() => {
+                                                                                                                    // Show confirmation dialog
+                                                                                                                    const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
+                                                                                                                    const confirmed = window.confirm(confirmMessage);
+                                                                                                                    if (!confirmed) {
+                                                                                                                        return;
+                                                                                                                    }
+                                                                                                                    // Delete file from Blob storage
+                                                                                                                    if (document.fileUrl) {
+                                                                                                                        fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                                        }).catch(error => { console.warn('Error deleting file from Blob storage:', error); });
+                                                                                                                    }
+                                                                                                                    // Delete thumbnail from Blob storage
+                                                                                                                    if (document.thumbnailUrl) {
+                                                                                                                        fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                                        }).catch(error => { console.warn('Error deleting thumbnail from Blob storage:', error); });
+                                                                                                                    }
+                                                                                                                    // Remove document from array
+                                                                                                                    const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                    const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                    updatedDocuments.splice(docIndex, 1);
+                                                                                                                    updatedEmployees[index] = {
+                                                                                                                        ...updatedEmployees[index],
+                                                                                                                        attachedDocuments: updatedDocuments
+                                                                                                                    };
+                                                                                                                    setFormData(prev => ({
+                                                                                                                        ...prev,
+                                                                                                                        injuredEmployees: updatedEmployees,
+                                                                                                                        updatedAt: new Date()
+                                                                                                                    }));
+                                                                                                                    // Show success message
+                                                                                                                    setSnackbar({
+                                                                                                                        open: true,
+                                                                                                                        message: 'המסמך נמחק בהצלחה',
+                                                                                                                        severity: 'success'
+                                                                                                                    });
+                                                                                                                }}
+                                                                                                                fileUrl={document.fileUrl}
+                                                                                                                thumbnailUrl={document.thumbnailUrl}
+                                                                                                            />
+                                                                                                        </TableCell>
+                                                                                                        <TableCell>
+                                                                                                            <IconButton
+                                                                                                                onClick={() => {
+                                                                                                                    // Show confirmation dialog
+                                                                                                                    const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
+                                                                                                                    const confirmed = window.confirm(confirmMessage);
+                                                                                                                    if (!confirmed) {
+                                                                                                                        return;
+                                                                                                                    }
+                                                                                                                    // Delete file from Blob storage
+                                                                                                                    if (document.fileUrl) {
+                                                                                                                        fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.fileUrl })
+                                                                                                                        }).catch(error => { console.warn('Error deleting file from Blob storage:', error); });
+                                                                                                                    }
+                                                                                                                    // Delete thumbnail from Blob storage
+                                                                                                                    if (document.thumbnailUrl) {
+                                                                                                                        fetch('/api/upload/delete-file', {
+                                                                                                                            method: 'POST',
+                                                                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                                                                            body: JSON.stringify({ fileUrl: document.thumbnailUrl })
+                                                                                                                        }).catch(error => { console.warn('Error deleting thumbnail from Blob storage:', error); });
+                                                                                                                    }
+                                                                                                                    // Remove document from array
+                                                                                                                    const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                    const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                    updatedDocuments.splice(docIndex, 1);
+                                                                                                                    updatedEmployees[index] = {
+                                                                                                                        ...updatedEmployees[index],
+                                                                                                                        attachedDocuments: updatedDocuments
+                                                                                                                    };
+                                                                                                                    setFormData(prev => ({
+                                                                                                                        ...prev,
+                                                                                                                        injuredEmployees: updatedEmployees,
+                                                                                                                        updatedAt: new Date()
+                                                                                                                    }));
+                                                                                                                    // Show success message
+                                                                                                                    setSnackbar({
+                                                                                                                        open: true,
+                                                                                                                        message: 'המסמך נמחק בהצלחה',
+                                                                                                                        severity: 'success'
+                                                                                                                    });
+                                                                                                                }}
+                                                                                                                color="error"
+                                                                                                                size="small"
+                                                                                                                sx={{
+                                                                                                                    '&:focus': {
+                                                                                                                        backgroundColor: 'rgba(211, 47, 47, 0.12)'
+                                                                                                                    }
+                                                                                                                }}
+                                                                                                            >
+                                                                                                                <img
+                                                                                                                    src={trashIcon}
+                                                                                                                    alt="מחיקה"
+                                                                                                                    style={{ width: '20px', height: '20px' }}
+                                                                                                                />
+                                                                                                            </IconButton>
+                                                                                                        </TableCell>
+                                                                                                    </TableRow>
+                                                                                                ))}
+                                                                                                <TableRow>
+                                                                                                    <TableCell colSpan={4} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
+                                                                                                        <Button
+                                                                                                            variant="outlined"
+                                                                                                            startIcon={<AddIcon />}
+                                                                                                            onClick={() => {
+                                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
+                                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
+                                                                                                                updatedDocuments.push({
+                                                                                                                    documentName: '',
+                                                                                                                    description: '',
+                                                                                                                    fileUrl: '',
+                                                                                                                    thumbnailUrl: ''
+                                                                                                                });
+                                                                                                                updatedEmployees[index] = {
+                                                                                                                    ...updatedEmployees[index],
+                                                                                                                    attachedDocuments: updatedDocuments
+                                                                                                                };
+                                                                                                                setFormData(prev => ({
+                                                                                                                    ...prev,
+                                                                                                                    injuredEmployees: updatedEmployees,
+                                                                                                                    updatedAt: new Date()
+                                                                                                                }));
+                                                                                                            }}
+                                                                                                            sx={{
+                                                                                                                borderColor: '#6b47c1',
+                                                                                                                color: '#6b47c1',
+                                                                                                                '&:hover': {
+                                                                                                                    borderColor: '#5a3aa1',
+                                                                                                                    backgroundColor: '#f3f4f6'
+                                                                                                                }
+                                                                                                            }}
+                                                                                                        >
+                                                                                                            הוספה
+                                                                                                        </Button>
+                                                                                                    </TableCell>
+                                                                                                </TableRow>
+                                                                                            </TableBody>
+                                                                                        </Table>
+                                                                                    </TableContainer>
+                                                                                </Box>
+                                                                            </Box>
+
                                                                         </Box>
                                                                     </Box>
                                                                 </>
                                                             )}
                                                         </Paper>
-
-                                                        {/* Attached Documents Section - Inside each employee for full width */}
-                                                        <Box sx={{ mt: 3, mx: -3, px: 3 }}>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                צרופות
-                                                            </Typography>
-                                                            <Box sx={{ width: '100%' }}>
-                                                                <TableContainer component={Paper} sx={{ mb: 2 }}>
-                                                                    <Table size="small">
-                                                                        <TableHead>
-                                                                            <TableRow>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המסמך</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>תאור</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>קובץ</TableCell>
-                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}></TableCell>
-                                                                            </TableRow>
-                                                                        </TableHead>
-                                                                        <TableBody>
-                                                                            {(employee.attachedDocuments || []).map((document, docIndex) => (
-                                                                                <TableRow key={docIndex}>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.documentName}
-                                                                                            onChange={(e) => {
-                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = {
-                                                                                                    ...updatedDocuments[docIndex],
-                                                                                                    documentName: e.target.value
-                                                                                                };
-                                                                                                updatedEmployees[index] = {
-                                                                                                    ...updatedEmployees[index],
-                                                                                                    attachedDocuments: updatedDocuments
-                                                                                                };
-                                                                                                setFormData(prev => ({
-                                                                                                    ...prev,
-                                                                                                    injuredEmployees: updatedEmployees,
-                                                                                                    updatedAt: new Date()
-                                                                                                }));
-                                                                                            }}
-                                                                                            variant="outlined"
-                                                                                            placeholder="שם המסמך"
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <TextField
-                                                                                            fullWidth
-                                                                                            size="small"
-                                                                                            value={document.description || ''}
-                                                                                            onChange={(e) => {
-                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = {
-                                                                                                    ...updatedDocuments[docIndex],
-                                                                                                    description: e.target.value
-                                                                                                };
-                                                                                                updatedEmployees[index] = {
-                                                                                                    ...updatedEmployees[index],
-                                                                                                    attachedDocuments: updatedDocuments
-                                                                                                };
-                                                                                                setFormData(prev => ({
-                                                                                                    ...prev,
-                                                                                                    injuredEmployees: updatedEmployees,
-                                                                                                    updatedAt: new Date()
-                                                                                                }));
-                                                                                            }}
-                                                                                            variant="outlined"
-                                                                                            placeholder="תאור"
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <FileUpload
-                                                                                            onUpload={(fileUrl, thumbnailUrl) => {
-                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                                updatedDocuments[docIndex] = {
-                                                                                                    ...updatedDocuments[docIndex],
-                                                                                                    fileUrl,
-                                                                                                    thumbnailUrl
-                                                                                                };
-                                                                                                updatedEmployees[index] = {
-                                                                                                    ...updatedEmployees[index],
-                                                                                                    attachedDocuments: updatedDocuments
-                                                                                                };
-                                                                                                setFormData(prev => ({
-                                                                                                    ...prev,
-                                                                                                    injuredEmployees: updatedEmployees,
-                                                                                                    updatedAt: new Date()
-                                                                                                }));
-                                                                                            }}
-                                                                                            onDelete={() => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
-                                                                                                const confirmed = window.confirm(confirmMessage);
-                                                                                                if (!confirmed) {
-                                                                                                    return;
-                                                                                                }
-                                                                                                // Delete file from Blob storage
-                                                                                                if (document.fileUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: { 'Content-Type': 'application/json' },
-                                                                                                        body: JSON.stringify({ fileUrl: document.fileUrl })
-                                                                                                    }).catch(error => { console.warn('Error deleting file from Blob storage:', error); });
-                                                                                                }
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (document.thumbnailUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: { 'Content-Type': 'application/json' },
-                                                                                                        body: JSON.stringify({ fileUrl: document.thumbnailUrl })
-                                                                                                    }).catch(error => { console.warn('Error deleting thumbnail from Blob storage:', error); });
-                                                                                                }
-                                                                                                // Remove document from array
-                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                                updatedDocuments.splice(docIndex, 1);
-                                                                                                updatedEmployees[index] = {
-                                                                                                    ...updatedEmployees[index],
-                                                                                                    attachedDocuments: updatedDocuments
-                                                                                                };
-                                                                                                setFormData(prev => ({
-                                                                                                    ...prev,
-                                                                                                    injuredEmployees: updatedEmployees,
-                                                                                                    updatedAt: new Date()
-                                                                                                }));
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'המסמך נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            fileUrl={document.fileUrl}
-                                                                                            thumbnailUrl={document.thumbnailUrl}
-                                                                                        />
-                                                                                    </TableCell>
-                                                                                    <TableCell>
-                                                                                        <IconButton
-                                                                                            onClick={() => {
-                                                                                                // Show confirmation dialog
-                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך "${document.documentName || 'ללא שם'}"?`;
-                                                                                                const confirmed = window.confirm(confirmMessage);
-                                                                                                if (!confirmed) {
-                                                                                                    return;
-                                                                                                }
-                                                                                                // Delete file from Blob storage
-                                                                                                if (document.fileUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: { 'Content-Type': 'application/json' },
-                                                                                                        body: JSON.stringify({ fileUrl: document.fileUrl })
-                                                                                                    }).catch(error => { console.warn('Error deleting file from Blob storage:', error); });
-                                                                                                }
-                                                                                                // Delete thumbnail from Blob storage
-                                                                                                if (document.thumbnailUrl) {
-                                                                                                    fetch('/api/upload/delete-file', {
-                                                                                                        method: 'POST',
-                                                                                                        headers: { 'Content-Type': 'application/json' },
-                                                                                                        body: JSON.stringify({ fileUrl: document.thumbnailUrl })
-                                                                                                    }).catch(error => { console.warn('Error deleting thumbnail from Blob storage:', error); });
-                                                                                                }
-                                                                                                // Remove document from array
-                                                                                                const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                                const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                                updatedDocuments.splice(docIndex, 1);
-                                                                                                updatedEmployees[index] = {
-                                                                                                    ...updatedEmployees[index],
-                                                                                                    attachedDocuments: updatedDocuments
-                                                                                                };
-                                                                                                setFormData(prev => ({
-                                                                                                    ...prev,
-                                                                                                    injuredEmployees: updatedEmployees,
-                                                                                                    updatedAt: new Date()
-                                                                                                }));
-                                                                                                // Show success message
-                                                                                                setSnackbar({
-                                                                                                    open: true,
-                                                                                                    message: 'המסמך נמחק בהצלחה',
-                                                                                                    severity: 'success'
-                                                                                                });
-                                                                                            }}
-                                                                                            color="error"
-                                                                                            size="small"
-                                                                                            sx={{
-                                                                                                '&:focus': {
-                                                                                                    backgroundColor: 'rgba(211, 47, 47, 0.12)'
-                                                                                                }
-                                                                                            }}
-                                                                                        >
-                                                                                            <img
-                                                                                                src={trashIcon}
-                                                                                                alt="מחיקה"
-                                                                                                style={{ width: '20px', height: '20px' }}
-                                                                                            />
-                                                                                        </IconButton>
-                                                                                    </TableCell>
-                                                                                </TableRow>
-                                                                            ))}
-                                                                            <TableRow>
-                                                                                <TableCell colSpan={4} sx={{ textAlign: 'center', borderBottom: 'none', pt: 2 }}>
-                                                                                    <Button
-                                                                                        variant="outlined"
-                                                                                        startIcon={<AddIcon />}
-                                                                                        onClick={() => {
-                                                                                            const updatedEmployees = [...(formData.injuredEmployees || [])];
-                                                                                            const updatedDocuments = [...(updatedEmployees[index].attachedDocuments || [])];
-                                                                                            updatedDocuments.push({
-                                                                                                documentName: '',
-                                                                                                description: '',
-                                                                                                fileUrl: '',
-                                                                                                thumbnailUrl: ''
-                                                                                            });
-                                                                                            updatedEmployees[index] = {
-                                                                                                ...updatedEmployees[index],
-                                                                                                attachedDocuments: updatedDocuments
-                                                                                            };
-                                                                                            setFormData(prev => ({
-                                                                                                ...prev,
-                                                                                                injuredEmployees: updatedEmployees,
-                                                                                                updatedAt: new Date()
-                                                                                            }));
-                                                                                        }}
-                                                                                        sx={{
-                                                                                            borderColor: '#6b47c1',
-                                                                                            color: '#6b47c1',
-                                                                                            '&:hover': {
-                                                                                                borderColor: '#5a3aa1',
-                                                                                                backgroundColor: '#f3f4f6'
-                                                                                            }
-                                                                                        }}
-                                                                                    >
-                                                                                        הוספה
-                                                                                    </Button>
-                                                                                </TableCell>
-                                                                            </TableRow>
-                                                                        </TableBody>
-                                                                    </Table>
-                                                                </TableContainer>
-                                                            </Box>
-                                                        </Box>
 
                                                     </>
                                                 ))}
