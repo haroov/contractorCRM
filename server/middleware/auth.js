@@ -20,17 +20,8 @@ const requireAuth = (req, res, next) => {
     console.log('✅ User is authenticated via custom session:', req.session.user.email);
     return next();
   }
-  
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided, allowing access:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
-  
-  console.log('❌ User is not authenticated and no valid session ID provided');
+  // Do NOT trust arbitrary session identifiers from headers or query params
+  console.log('❌ User is not authenticated');
   return res.status(401).json({ 
     error: 'Authentication required',
     redirect: '/login'
@@ -55,17 +46,8 @@ const requireAdmin = (req, res, next) => {
     console.log('✅ User is admin via custom session:', req.session.user.email);
     return next();
   }
-  
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided for admin access, allowing:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
-  
-  console.log('❌ Admin access denied - no valid session or session ID');
+  // Do NOT allow elevating privileges via arbitrary session identifiers
+  console.log('❌ Admin access denied - no valid authenticated admin session');
   return res.status(403).json({ 
     error: 'Admin access required' 
   });
