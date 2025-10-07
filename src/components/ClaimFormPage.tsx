@@ -5700,7 +5700,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     type="checkbox"
                                                                     checked={formData.propertyDamageInsuredDetails?.damageTypes.includes(type.value) || false}
                                                                     onChange={() => toggleDamageType(type.value)}
-                                                                    style={{ cursor: 'pointer' }}
+                                                                    style={{ 
+                                                                        cursor: 'pointer',
+                                                                        accentColor: '#6b47c1',
+                                                                        transform: 'scale(1.2)',
+                                                                        marginRight: '8px'
+                                                                    }}
                                                                 />
                                                                 <Typography>{type.label}</Typography>
                                                                 {type.value === 'אחר' && formData.propertyDamageInsuredDetails?.damageTypes.includes('אחר') && (
@@ -5724,7 +5729,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 </Grid>
 
                                                 {/* Estimated Damage Amount */}
-                                                <Grid item xs={12} sm={6}>
+                                                <Grid item xs={12}>
                                                     <TextField
                                                         fullWidth
                                                         label="סכום משוער של הנזק שנגרם (בשקלים)"
