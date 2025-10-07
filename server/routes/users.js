@@ -53,9 +53,11 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       email: email.toLowerCase().trim(),
       role: role || 'user',
       isActive: isActive !== undefined ? isActive : true,
-      googleId: null, // Will be set when user authenticates via Google
       lastLogin: null // Explicitly set to null for pending users
     };
+
+    // Don't set googleId to null - let it be undefined for new users
+    // It will be set when user authenticates via Google
 
     // Only add phone if it's provided and not empty
     if (phone && phone.trim() !== '') {
