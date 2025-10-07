@@ -7362,7 +7362,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                                             {/* Item Header */}
                                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#6b47c1' }}>
+                                                                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#666666' }}>
                                                                     פריט #{itemIndex + 1}
                                                                 </Typography>
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
