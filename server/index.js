@@ -313,6 +313,11 @@ const claimsRoutes = require('./routes/claims.js');
 app.use('/api/claims', claimsRoutes);
 console.log('✅ Claims routes configured');
 
+// Import fix-index routes
+const fixIndexRoutes = require('./routes/fix-index.js');
+app.use('/api', fixIndexRoutes);
+console.log('✅ Fix-index routes configured');
+
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
