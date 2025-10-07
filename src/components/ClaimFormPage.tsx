@@ -5727,11 +5727,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         ))}
                                                     </Box>
                                                 </Grid>
+                                            </Grid>
+                                        </Paper>
 
-                                                {/* Add spacing between damage types and other fields */}
-                                                <br />
-
-                                                {/* Estimated Damage Amount */}
+                                        {/* Estimated Damage Amount - Separate Paper */}
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                            <Grid container spacing={2}>
                                                 <Grid item xs={12}>
                                                     <TextField
                                                         fullWidth
@@ -5749,9 +5750,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         }}
                                                     />
                                                 </Grid>
+                                            </Grid>
+                                        </Paper>
 
-                                                {/* Add spacing between fields */}
-                                                <br />
+                                        {/* Other fields - Separate Paper */}
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                            <Grid container spacing={2}>
 
                                                 {/* Is Sole Owner */}
                                                 <Grid item xs={12}>
@@ -5819,9 +5823,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         />
                                                     )}
                                                 </Grid>
-
-                                                {/* Add spacing between fields */}
-                                                <br />
 
                                                 {/* Was Occupied */}
                                                 <Grid item xs={12}>
@@ -5892,9 +5893,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     )}
                                                 </Grid>
 
-                                                {/* Add spacing between fields */}
-                                                <br />
-
                                                 {/* Previous Damage */}
                                                 <Grid item xs={12}>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -5964,9 +5962,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     )}
                                                 </Grid>
 
-                                                {/* Add spacing between fields */}
-                                                <br />
-
                                                 {/* Previous Claim */}
                                                 <Grid item xs={12}>
                                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -6035,9 +6030,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         />
                                                     )}
                                                 </Grid>
-
-                                                {/* Add spacing between fields */}
-                                                <br />
 
                                                 {/* Additional Insurance */}
                                                 <Grid item xs={12}>
