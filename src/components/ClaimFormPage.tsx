@@ -192,6 +192,22 @@ interface ThirdPartyVictim {
     };
 }
 
+interface PropertyDamageInsured {
+    damageTypes: string[];
+    otherDamageType?: string;
+    estimatedDamageAmount: string;
+    isSoleOwner: boolean | null;
+    otherOwners?: string;
+    wasOccupied: boolean | null;
+    lastOccupiedDate?: string;
+    previousDamage: boolean | null;
+    previousDamageDetails?: string;
+    previousClaim: boolean | null;
+    previousClaimDetails?: string;
+    additionalInsurance: boolean | null;
+    additionalInsuranceDetails?: string;
+}
+
 interface ClaimFormData {
     projectId: string;
     projectName: string;
@@ -202,6 +218,7 @@ interface ClaimFormData {
     description: string;
     // Main Damages
     propertyDamageInsured: boolean | null;
+    propertyDamageInsuredDetails?: PropertyDamageInsured;
     propertyDamageThirdParty: boolean | null;
     bodilyInjuryThirdParty: boolean | null;
     bodilyInjuryEmployee: boolean | null;
@@ -241,6 +258,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const [expandedEmployees, setExpandedEmployees] = useState<{ [key: number]: boolean }>({});
     const [expandedThirdPartyVictims, setExpandedThirdPartyVictims] = useState<{ [key: number]: boolean }>({});
 
+    console.log('🚀 ClaimFormPage component loaded - NEW VERSION!');
+
     const [formData, setFormData] = useState<ClaimFormData>({
         projectId: searchParams.get('projectId') || '',
         projectName: searchParams.get('projectName') || '',
@@ -251,6 +270,15 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         description: '',
         // Main Damages
         propertyDamageInsured: null,
+        propertyDamageInsuredDetails: {
+            damageTypes: [],
+            estimatedDamageAmount: '',
+            isSoleOwner: null,
+            wasOccupied: null,
+            previousDamage: null,
+            previousClaim: null,
+            additionalInsurance: null
+        },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
         bodilyInjuryEmployee: null,
@@ -383,7 +411,21 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         eventAddress: data.claim.eventAddress || '',
                         description: data.claim.description || '',
                         // Main Damages
-                        propertyDamageInsured: data.claim.propertyDamageInsured !== undefined ? data.claim.propertyDamageInsured : null,
+                        propertyDamageInsured: (() => {
+                            console.log('Loading propertyDamageInsured from server:', data.claim.propertyDamageInsured);
+                            console.log('Full claim data from server:', data.claim);
+                            console.log('Type of propertyDamageInsured:', typeof data.claim.propertyDamageInsured);
+                            return data.claim.propertyDamageInsured !== undefined ? data.claim.propertyDamageInsured : null;
+                        })(),
+                        propertyDamageInsuredDetails: data.claim.propertyDamageInsuredDetails || {
+                            damageTypes: [],
+                            estimatedDamageAmount: '',
+                            isSoleOwner: null,
+                            wasOccupied: null,
+                            previousDamage: null,
+                            previousClaim: null,
+                            additionalInsurance: null
+                        },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
                         bodilyInjuryEmployee: data.claim.bodilyInjuryEmployee !== undefined ? data.claim.bodilyInjuryEmployee : null,
@@ -563,8 +605,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-            ...prev,
-            [field]: value,
+                ...prev,
+                [field]: value,
                 updatedAt: new Date()
             };
 
@@ -661,6 +703,35 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             ),
             updatedAt: new Date()
         }));
+    };
+
+    const updatePropertyDamageDetails = (field: keyof PropertyDamageInsured, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            propertyDamageInsuredDetails: {
+                ...prev.propertyDamageInsuredDetails!,
+                [field]: value
+            },
+            updatedAt: new Date()
+        }));
+    };
+
+    const toggleDamageType = (damageType: string) => {
+        setFormData(prev => {
+            const currentTypes = prev.propertyDamageInsuredDetails?.damageTypes || [];
+            const newTypes = currentTypes.includes(damageType)
+                ? currentTypes.filter(type => type !== damageType)
+                : [...currentTypes, damageType];
+
+            return {
+                ...prev,
+                propertyDamageInsuredDetails: {
+                    ...prev.propertyDamageInsuredDetails!,
+                    damageTypes: newTypes
+                },
+                updatedAt: new Date()
+            };
+        });
     };
 
     const addAdditionalResponsible = () => {
@@ -1515,13 +1586,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
                                                     sx={{
@@ -1618,27 +1689,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2383,6 +2454,73 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                 {activeTab === 1 && (
                                     <Box>
+                                        {/* SIMPLE DEBUG BUTTON - ALWAYS VISIBLE */}
+                                        <Box sx={{ mb: 2, p: 2, border: '2px solid red', backgroundColor: '#ffcccc' }}>
+                                            <Typography variant="h6" sx={{ color: 'red', mb: 1 }}>
+                                                🔧 DEBUG: נזק לרכוש המבוטח
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ mb: 1 }}>
+                                                propertyDamageInsured = {String(formData.propertyDamageInsured)} (type: {typeof formData.propertyDamageInsured})
+                                            </Typography>
+                                            <Button
+                                                variant="contained"
+                                                size="large"
+                                                onClick={() => {
+                                                    console.log('🔧 Setting propertyDamageInsured to true');
+                                                    setFormData(prev => ({ ...prev, propertyDamageInsured: true }));
+                                                }}
+                                                sx={{ mr: 1, backgroundColor: 'green' }}
+                                            >
+                                                ✅ הגדר ל-True
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                size="large"
+                                                onClick={() => {
+                                                    console.log('🔧 Setting propertyDamageInsured to false');
+                                                    setFormData(prev => ({ ...prev, propertyDamageInsured: false }));
+                                                }}
+                                                sx={{ backgroundColor: 'red' }}
+                                            >
+                                                ❌ הגדר ל-False
+                                            </Button>
+                                        </Box>
+
+                                        {/* Show message if no damage types are selected */}
+                                        {console.log('Damage Types Debug:', {
+                                            propertyDamageInsured: formData.propertyDamageInsured,
+                                            propertyDamageThirdParty: formData.propertyDamageThirdParty,
+                                            bodilyInjuryThirdParty: formData.bodilyInjuryThirdParty,
+                                            bodilyInjuryEmployee: formData.bodilyInjuryEmployee,
+                                            showMessage: formData.propertyDamageInsured !== true && formData.propertyDamageThirdParty !== true && formData.bodilyInjuryThirdParty !== true && formData.bodilyInjuryEmployee !== true
+                                        })}
+                                        {formData.propertyDamageInsured !== true && formData.propertyDamageThirdParty !== true && formData.bodilyInjuryThirdParty !== true && formData.bodilyInjuryEmployee !== true && (
+                                            <Box sx={{
+                                                p: 3,
+                                                mb: 3,
+                                                border: '1px solid #e0e0e0',
+                                                borderRadius: 1,
+                                                backgroundColor: '#f9f9f9',
+                                                textAlign: 'center'
+                                            }}>
+                                                <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
+                                                    כדי לראות פרטי נזק, יש לסמן "כן" עבור סוג הנזק הרלוונטי בטאב "כללי"
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    • נזק לרכוש המבוטח
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    • נזק לרכוש צד שלישי
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    • נזק גוף לעובד
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                    • נזק גוף לצד שלישי
+                                                </Typography>
+                                            </Box>
+                                        )}
+
                                         {formData.bodilyInjuryEmployee === true && (
                                             <Box>
                                                 <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
@@ -5574,6 +5712,462 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 </Button>
                                             </Box>
                                         )}
+                                    </Box>
+                                )}
+
+                                {/* Property Damage to Insured Section */}
+                                {console.log('Property Damage Debug:', {
+                                    propertyDamageInsured: formData.propertyDamageInsured,
+                                    activeTab: activeTab,
+                                    condition: formData.propertyDamageInsured === true && activeTab === 1
+                                })}
+
+                                {/* Temporary Debug Button */}
+                                {activeTab === 1 && (
+                                    <Box sx={{ mb: 2, p: 2, border: '1px solid red', backgroundColor: '#ffe6e6' }}>
+                                        <Typography variant="body2" sx={{ mb: 1 }}>
+                                            Debug: propertyDamageInsured = {String(formData.propertyDamageInsured)} (type: {typeof formData.propertyDamageInsured})
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ mb: 1, color: 'red' }}>
+                                            ⚠️ הבעיה: הערך במסד הנתונים הוא true אבל נטען כ-false
+                                        </Typography>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => {
+                                                console.log('Setting propertyDamageInsured to true');
+                                                setFormData(prev => ({ ...prev, propertyDamageInsured: true }));
+                                            }}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            🔧 תיקון זמני: הגדר ל-True
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            onClick={() => {
+                                                console.log('Setting propertyDamageInsured to false');
+                                                setFormData(prev => ({ ...prev, propertyDamageInsured: false }));
+                                            }}
+                                        >
+                                            Set to False
+                                        </Button>
+                                    </Box>
+                                )}
+
+                                {formData.propertyDamageInsured === true && activeTab === 1 && (
+                                    <Box sx={{ mt: 4 }}>
+                                        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                            נזק לרכוש המבוטח
+                                        </Typography>
+
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                            <Grid container spacing={2}>
+                                                {/* Damage Types */}
+                                                <Grid item xs={12}>
+                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 1 }}>
+                                                        סוג הנזק לרכוש (יש לסמן את סוג האירוע הרלוונטי):
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                                        {[
+                                                            { value: 'פריצה/גניבה', label: 'פריצה/גניבה' },
+                                                            { value: 'אובדן רכוש', label: 'אובדן רכוש' },
+                                                            { value: 'נזקי מים', label: 'נזקי מים (נזילת צנרת, הצפה וכד\')' },
+                                                            { value: 'נזקי אש', label: 'נזקי אש (שריפה)' },
+                                                            { value: 'נזקי טבע', label: 'נזקי טבע (סערה, סופה, שיטפון)' },
+                                                            { value: 'אחר', label: 'אחר' }
+                                                        ].map((type) => (
+                                                            <Box key={type.value} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={formData.propertyDamageInsuredDetails?.damageTypes.includes(type.value) || false}
+                                                                    onChange={() => toggleDamageType(type.value)}
+                                                                    style={{ cursor: 'pointer' }}
+                                                                />
+                                                                <Typography>{type.label}</Typography>
+                                                                {type.value === 'אחר' && formData.propertyDamageInsuredDetails?.damageTypes.includes('אחר') && (
+                                                                    <TextField
+                                                                        size="small"
+                                                                        placeholder="ציין סוג נזק אחר"
+                                                                        value={formData.propertyDamageInsuredDetails?.otherDamageType || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('otherDamageType', e.target.value)}
+                                                                        sx={{
+                                                                            ml: 2,
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </Box>
+                                                        ))}
+                                                    </Box>
+                                                </Grid>
+
+                                                {/* Estimated Damage Amount */}
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="סכום משוער של הנזק שנגרם (בשקלים)"
+                                                        value={formData.propertyDamageInsuredDetails?.estimatedDamageAmount || ''}
+                                                        onChange={(e) => updatePropertyDamageDetails('estimatedDamageAmount', e.target.value)}
+                                                        variant="outlined"
+                                                        type="number"
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                            },
+                                                            '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                        }}
+                                                    />
+                                                </Grid>
+
+                                                {/* Is Sole Owner */}
+                                                <Grid item xs={12}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                            המבוטח הוא הבעלים היחיד של הרכוש שניזוק
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('isSoleOwner', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.isSoleOwner === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.isSoleOwner === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.isSoleOwner === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('isSoleOwner', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.isSoleOwner === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.isSoleOwner === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.isSoleOwner === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                    {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מי הבעלים או בעל זכויות נוסף"
+                                                            value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
+                                                            variant="outlined"
+                                                            sx={{
+                                                                mt: 2,
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Grid>
+
+                                                {/* Was Occupied */}
+                                                <Grid item xs={12}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                            האם המקום היה מאויש בעת האירוע
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('wasOccupied', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.wasOccupied === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.wasOccupied === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.wasOccupied === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('wasOccupied', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.wasOccupied === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.wasOccupied === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.wasOccupied === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                    {formData.propertyDamageInsuredDetails?.wasOccupied === false && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מתי היה מאויש לאחרונה"
+                                                            value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
+                                                            variant="outlined"
+                                                            type="date"
+                                                            InputLabelProps={{ shrink: true }}
+                                                            sx={{
+                                                                mt: 2,
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Grid>
+
+                                                {/* Previous Damage */}
+                                                <Grid item xs={12}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                            האם נגרמו נזקים לרכוש זה בעבר
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('previousDamage', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.previousDamage === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.previousDamage === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.previousDamage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('previousDamage', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.previousDamage === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.previousDamage === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.previousDamage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                    {formData.propertyDamageInsuredDetails?.previousDamage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פרט על הנזק הקודם"
+                                                            value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{
+                                                                mt: 2,
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Grid>
+
+                                                {/* Previous Claim */}
+                                                <Grid item xs={12}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                            האם הוגשה תביעה קודמת בגין נזק דומה בחברת ביטוח (בעבר)
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('previousClaim', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.previousClaim === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.previousClaim === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.previousClaim === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('previousClaim', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.previousClaim === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.previousClaim === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.previousClaim === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                    {formData.propertyDamageInsuredDetails?.previousClaim === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="שם חברת הביטוח ופרטי התביעה הקודמת"
+                                                            value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{
+                                                                mt: 2,
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Grid>
+
+                                                {/* Additional Insurance */}
+                                                <Grid item xs={12}>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                            האם קיים כיסוי ביטוחי נוסף לרכוש שניזוק (ביטוח נוסף בחברה אחרת)
+                                                        </Typography>
+                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('additionalInsurance', false)}
+                                                                sx={{
+                                                                    borderRadius: '0 4px 4px 0',
+                                                                    border: '1px solid #d1d5db',
+                                                                    borderLeft: 'none',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.additionalInsurance === false ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.additionalInsurance === false ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.additionalInsurance === false ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                לא
+                                                            </Button>
+                                                            <Button
+                                                                variant="text"
+                                                                onClick={() => updatePropertyDamageDetails('additionalInsurance', true)}
+                                                                sx={{
+                                                                    borderRadius: '4px 0 0 4px',
+                                                                    border: '1px solid #d1d5db',
+                                                                    backgroundColor: formData.propertyDamageInsuredDetails?.additionalInsurance === true ? '#6b47c1' : 'transparent',
+                                                                    color: formData.propertyDamageInsuredDetails?.additionalInsurance === true ? 'white' : '#6b47c1',
+                                                                    '&:hover': {
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.additionalInsurance === true ? '#5a3aa1' : '#f3f4f6',
+                                                                    },
+                                                                    minWidth: '50px',
+                                                                    height: '32px',
+                                                                    textTransform: 'none',
+                                                                    fontSize: '0.875rem'
+                                                                }}
+                                                            >
+                                                                כן
+                                                            </Button>
+                                                        </Box>
+                                                    </Box>
+                                                    {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מספר הפוליסה ושם חברת הביטוח הנוספת"
+                                                            value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{
+                                                                mt: 2,
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '&:hover fieldset': { borderColor: '#6b47c1' },
+                                                                    '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                },
+                                                                '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Grid>
+                                            </Grid>
+                                        </Paper>
                                     </Box>
                                 )}
 
