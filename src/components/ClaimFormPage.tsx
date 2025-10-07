@@ -7233,6 +7233,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 {itemIndex > 0 && (
                                                                     <MuiIconButton
                                                                         onClick={() => {
+                                                                            // Show confirmation dialog
+                                                                            const confirmMessage = `האם אתה בטוח שברצונך למחוק את הפריט?`;
+                                                                            const confirmed = window.confirm(confirmMessage);
+                                                                            
+                                                                            if (!confirmed) {
+                                                                                return; // User cancelled deletion
+                                                                            }
+                                                                            
                                                                             const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
                                                                             updatePropertyDamageDetails('damagedItems', currentItems.filter((_, index) => index !== itemIndex));
                                                                         }}
