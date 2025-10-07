@@ -335,7 +335,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             burglaryPoliceReportFileThumbnail: '',
             burglaryPoliceStationName: '',
             burglaryPoliceReportDate: '',
-            damagedItems: []
+            damagedItems: [{
+                id: 'default-item-1',
+                description: '',
+                purchaseDate: '',
+                requestedAmount: '',
+                attachments: []
+            }]
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -501,7 +507,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             burglaryPoliceReportFileThumbnail: '',
                             burglaryPoliceStationName: '',
                             burglaryPoliceReportDate: '',
-                            damagedItems: []
+                            damagedItems: [{
+                                id: 'default-item-1',
+                                description: '',
+                                purchaseDate: '',
+                                requestedAmount: '',
+                                attachments: []
+                            }]
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -7206,60 +7218,34 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         <Typography variant="body1" gutterBottom sx={{ color: '#6b47c1', mb: 2, fontWeight: 'bold' }}>
                                             רשימת פריטי הרכוש שניזוקו/נגנבו
                                         </Typography>
-                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0', backgroundColor: 'white' }}>
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                                                {/* Add Item Button */}
-                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                    <Button
-                                                        variant="outlined"
-                                                        onClick={() => {
-                                                            const newItem = {
-                                                                id: Date.now().toString(),
-                                                                description: '',
-                                                                purchaseDate: '',
-                                                                requestedAmount: '',
-                                                                attachments: []
-                                                            };
-                                                            const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                            updatePropertyDamageDetails('damagedItems', [...currentItems, newItem]);
-                                                        }}
-                                                        sx={{
-                                                            borderColor: '#6b47c1',
-                                                            color: '#6b47c1',
-                                                            '&:hover': {
-                                                                borderColor: '#5a3aa1',
-                                                                backgroundColor: '#f3f4f6'
-                                                            }
-                                                        }}
-                                                    >
-                                                        + הוסף פריט
-                                                    </Button>
-                                                </Box>
 
                                                 {/* Items List */}
                                                 {formData.propertyDamageInsuredDetails?.damagedItems?.map((item, itemIndex) => (
-                                                    <Paper key={item.id} sx={{ p: 3, border: '1px solid #e0e0e0', backgroundColor: '#fafafa' }}>
+                                                    <Paper key={item.id} sx={{ p: 3, border: '1px solid #e0e0e0', backgroundColor: 'white' }}>
                                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                                             {/* Item Header */}
                                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                 <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#6b47c1' }}>
                                                                     פריט #{itemIndex + 1}
                                                                 </Typography>
-                                                                <Button
-                                                                    variant="text"
-                                                                    onClick={() => {
-                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                        updatePropertyDamageDetails('damagedItems', currentItems.filter((_, index) => index !== itemIndex));
-                                                                    }}
-                                                                    sx={{
-                                                                        color: '#d32f2f',
-                                                                        '&:hover': {
-                                                                            backgroundColor: '#ffebee'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    מחק פריט
-                                                                </Button>
+                                                                {itemIndex > 0 && (
+                                                                    <MuiIconButton
+                                                                        onClick={() => {
+                                                                            const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                            updatePropertyDamageDetails('damagedItems', currentItems.filter((_, index) => index !== itemIndex));
+                                                                        }}
+                                                                        sx={{
+                                                                            color: '#d32f2f',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#ffebee'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src={trashIcon} alt="מחק" style={{ width: '20px', height: '20px' }} />
+                                                                    </MuiIconButton>
+                                                                )}
                                                             </Box>
 
                                                             {/* Item Fields */}
@@ -7322,9 +7308,211 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, color: '#666666' }}>
                                                                     צרופות
                                                                 </Typography>
+                                                                
+                                                                <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                                    <Table>
+                                                                        <TableHead>
+                                                                            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>תיאור המסמך</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>קובץ</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>תאריך תוקף</TableCell>
+                                                                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>פעולות</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHead>
+                                                                        <TableBody>
+                                                                            {(item.attachments || []).map((attachment, attachmentIndex) => (
+                                                                                <TableRow key={attachment.id}>
+                                                                                    <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            value={attachment.documentType}
+                                                                                            onChange={(e) => {
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex].attachments![attachmentIndex] = {
+                                                                                                    ...updatedItems[itemIndex].attachments![attachmentIndex],
+                                                                                                    documentType: e.target.value
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            placeholder="קבלות, חשבוניות רכישה, דו״ח שמאי, הערכות שווי, תמונות הנזק"
+                                                                                            sx={{
+                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                    '& fieldset': {
+                                                                                                        borderColor: '#d0d0d0'
+                                                                                                    }
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            value={attachment.documentDescription}
+                                                                                            onChange={(e) => {
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex].attachments![attachmentIndex] = {
+                                                                                                    ...updatedItems[itemIndex].attachments![attachmentIndex],
+                                                                                                    documentDescription: e.target.value
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            sx={{
+                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                    '& fieldset': {
+                                                                                                        borderColor: '#d0d0d0'
+                                                                                                    }
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                                        <FileUpload
+                                                                                            label="העלאת קובץ"
+                                                                                            value={attachment.fileUrl}
+                                                                                            thumbnailUrl={attachment.thumbnailUrl}
+                                                                                            onChange={(url, thumbnailUrl) => {
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex].attachments![attachmentIndex] = {
+                                                                                                    ...updatedItems[itemIndex].attachments![attachmentIndex],
+                                                                                                    fileUrl: url,
+                                                                                                    thumbnailUrl: thumbnailUrl
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            onDelete={async () => {
+                                                                                                // Show confirmation dialog
+                                                                                                const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ?`;
+
+                                                                                                const confirmed = window.confirm(confirmMessage);
+
+                                                                                                if (!confirmed) {
+                                                                                                    throw new Error('User cancelled deletion');
+                                                                                                }
+
+                                                                                                // Delete file from Blob storage
+                                                                                                if (attachment.fileUrl) {
+                                                                                                    try {
+                                                                                                        const response = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({
+                                                                                                                fileUrl: attachment.fileUrl
+                                                                                                            }),
+                                                                                                        });
+
+                                                                                                        if (!response.ok) {
+                                                                                                            console.warn('Failed to delete file from Blob storage:', attachment.fileUrl);
+                                                                                                            throw new Error('Failed to delete file from storage');
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.error('Error deleting file:', error);
+                                                                                                        // Continue with local deletion even if storage deletion fails
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Delete thumbnail from Blob storage
+                                                                                                if (attachment.thumbnailUrl) {
+                                                                                                    try {
+                                                                                                        const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                                            method: 'POST',
+                                                                                                            headers: {
+                                                                                                                'Content-Type': 'application/json',
+                                                                                                            },
+                                                                                                            body: JSON.stringify({
+                                                                                                                fileUrl: attachment.thumbnailUrl
+                                                                                                            }),
+                                                                                                        });
+
+                                                                                                        if (!thumbnailResponse.ok) {
+                                                                                                            console.warn('Failed to delete thumbnail from Blob storage:', attachment.thumbnailUrl);
+                                                                                                            // Don't throw error for thumbnail deletion failure
+                                                                                                        }
+                                                                                                    } catch (error) {
+                                                                                                        console.error('Error deleting thumbnail:', error);
+                                                                                                        // Continue with local deletion even if thumbnail deletion fails
+                                                                                                    }
+                                                                                                }
+
+                                                                                                // Clear the file from form data
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex].attachments![attachmentIndex] = {
+                                                                                                    ...updatedItems[itemIndex].attachments![attachmentIndex],
+                                                                                                    fileUrl: '',
+                                                                                                    thumbnailUrl: ''
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            projectId={formData.projectId}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                                        <TextField
+                                                                                            fullWidth
+                                                                                            type="date"
+                                                                                            value={attachment.validUntil}
+                                                                                            onChange={(e) => {
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex].attachments![attachmentIndex] = {
+                                                                                                    ...updatedItems[itemIndex].attachments![attachmentIndex],
+                                                                                                    validUntil: e.target.value
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            variant="outlined"
+                                                                                            size="small"
+                                                                                            InputLabelProps={{
+                                                                                                shrink: true,
+                                                                                            }}
+                                                                                            sx={{
+                                                                                                '& .MuiOutlinedInput-root': {
+                                                                                                    '& fieldset': {
+                                                                                                        borderColor: '#d0d0d0'
+                                                                                                    }
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+                                                                                    </TableCell>
+                                                                                    <TableCell sx={{ borderBottom: '1px solid #e0e0e0', textAlign: 'center' }}>
+                                                                                        <MuiIconButton
+                                                                                            onClick={() => {
+                                                                                                const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                                                                const updatedItems = [...currentItems];
+                                                                                                updatedItems[itemIndex] = {
+                                                                                                    ...updatedItems[itemIndex],
+                                                                                                    attachments: updatedItems[itemIndex].attachments?.filter((_, index) => index !== attachmentIndex) || []
+                                                                                                };
+                                                                                                updatePropertyDamageDetails('damagedItems', updatedItems);
+                                                                                            }}
+                                                                                            sx={{
+                                                                                                color: '#d32f2f',
+                                                                                                '&:hover': {
+                                                                                                    backgroundColor: '#ffebee'
+                                                                                                }
+                                                                                            }}
+                                                                                        >
+                                                                                            <img src={trashIcon} alt="מחק" style={{ width: '20px', height: '20px' }} />
+                                                                                        </MuiIconButton>
+                                                                                    </TableCell>
+                                                                                </TableRow>
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </TableContainer>
 
                                                                 {/* Add Attachment Button */}
-                                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                                                                     <Button
                                                                         variant="outlined"
                                                                         size="small"
@@ -7357,191 +7545,38 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         + הוסף צרופה
                                                                     </Button>
                                                                 </Box>
-
-                                                                {/* Attachments List */}
-                                                                {item.attachments?.map((attachment, attachmentIndex) => (
-                                                                    <Paper key={attachment.id} sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0', backgroundColor: 'white' }}>
-                                                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                                            {/* Attachment Header */}
-                                                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#666666' }}>
-                                                                                    צרופה #{attachmentIndex + 1}
-                                                                                </Typography>
-                                                                                <Button
-                                                                                    variant="text"
-                                                                                    size="small"
-                                                                                    onClick={() => {
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex] = {
-                                                                                            ...updatedItems[itemIndex],
-                                                                                            attachments: updatedItems[itemIndex].attachments?.filter((_, index) => index !== attachmentIndex) || []
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    sx={{
-                                                                                        color: '#d32f2f',
-                                                                                        '&:hover': {
-                                                                                            backgroundColor: '#ffebee'
-                                                                                        }
-                                                                                    }}
-                                                                                >
-                                                                                    מחק
-                                                                                </Button>
-                                                                            </Box>
-
-                                                                            {/* Attachment Fields */}
-                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                                                                {/* Document Type */}
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    label="סוג המסמך"
-                                                                                    placeholder="קבלות, חשבוניות רכישה, דו״ח שמאי, הערכות שווי, תמונות הנזק"
-                                                                                    value={attachment.documentType}
-                                                                                    onChange={(e) => {
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex].attachments![attachmentIndex] = {
-                                                                                            ...updatedItems[itemIndex].attachments![attachmentIndex],
-                                                                                            documentType: e.target.value
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    variant="outlined"
-                                                                                />
-
-                                                                                {/* Document Description */}
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    label="תיאור המסמך"
-                                                                                    value={attachment.documentDescription}
-                                                                                    onChange={(e) => {
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex].attachments![attachmentIndex] = {
-                                                                                            ...updatedItems[itemIndex].attachments![attachmentIndex],
-                                                                                            documentDescription: e.target.value
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    variant="outlined"
-                                                                                />
-                                                                            </Box>
-
-                                                                            {/* File Upload and Valid Until */}
-                                                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                                                                {/* File Upload */}
-                                                                                <FileUpload
-                                                                                    label="העלאת קובץ"
-                                                                                    value={attachment.fileUrl}
-                                                                                    thumbnailUrl={attachment.thumbnailUrl}
-                                                                                    onChange={(url, thumbnailUrl) => {
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex].attachments![attachmentIndex] = {
-                                                                                            ...updatedItems[itemIndex].attachments![attachmentIndex],
-                                                                                            fileUrl: url,
-                                                                                            thumbnailUrl: thumbnailUrl
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    onDelete={async () => {
-                                                                                        // Show confirmation dialog
-                                                                                        const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ?`;
-
-                                                                                        const confirmed = window.confirm(confirmMessage);
-
-                                                                                        if (!confirmed) {
-                                                                                            throw new Error('User cancelled deletion');
-                                                                                        }
-
-                                                                                        // Delete file from Blob storage
-                                                                                        if (attachment.fileUrl) {
-                                                                                            try {
-                                                                                                const response = await fetch('/api/upload/delete-file', {
-                                                                                                    method: 'POST',
-                                                                                                    headers: {
-                                                                                                        'Content-Type': 'application/json',
-                                                                                                    },
-                                                                                                    body: JSON.stringify({
-                                                                                                        fileUrl: attachment.fileUrl
-                                                                                                    }),
-                                                                                                });
-
-                                                                                                if (!response.ok) {
-                                                                                                    console.warn('Failed to delete file from Blob storage:', attachment.fileUrl);
-                                                                                                    throw new Error('Failed to delete file from storage');
-                                                                                                }
-                                                                                            } catch (error) {
-                                                                                                console.error('Error deleting file:', error);
-                                                                                                // Continue with local deletion even if storage deletion fails
-                                                                                            }
-                                                                                        }
-
-                                                                                        // Delete thumbnail from Blob storage
-                                                                                        if (attachment.thumbnailUrl) {
-                                                                                            try {
-                                                                                                const thumbnailResponse = await fetch('/api/upload/delete-file', {
-                                                                                                    method: 'POST',
-                                                                                                    headers: {
-                                                                                                        'Content-Type': 'application/json',
-                                                                                                    },
-                                                                                                    body: JSON.stringify({
-                                                                                                        fileUrl: attachment.thumbnailUrl
-                                                                                                    }),
-                                                                                                });
-
-                                                                                                if (!thumbnailResponse.ok) {
-                                                                                                    console.warn('Failed to delete thumbnail from Blob storage:', attachment.thumbnailUrl);
-                                                                                                    // Don't throw error for thumbnail deletion failure
-                                                                                                }
-                                                                                            } catch (error) {
-                                                                                                console.error('Error deleting thumbnail:', error);
-                                                                                                // Continue with local deletion even if thumbnail deletion fails
-                                                                                            }
-                                                                                        }
-
-                                                                                        // Clear the file from form data
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex].attachments![attachmentIndex] = {
-                                                                                            ...updatedItems[itemIndex].attachments![attachmentIndex],
-                                                                                            fileUrl: '',
-                                                                                            thumbnailUrl: ''
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    projectId={formData.projectId}
-                                                                                />
-
-                                                                                {/* Valid Until */}
-                                                                                <TextField
-                                                                                    fullWidth
-                                                                                    label="תאריך תוקף"
-                                                                                    type="date"
-                                                                                    value={attachment.validUntil}
-                                                                                    onChange={(e) => {
-                                                                                        const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
-                                                                                        const updatedItems = [...currentItems];
-                                                                                        updatedItems[itemIndex].attachments![attachmentIndex] = {
-                                                                                            ...updatedItems[itemIndex].attachments![attachmentIndex],
-                                                                                            validUntil: e.target.value
-                                                                                        };
-                                                                                        updatePropertyDamageDetails('damagedItems', updatedItems);
-                                                                                    }}
-                                                                                    variant="outlined"
-                                                                                    InputLabelProps={{
-                                                                                        shrink: true,
-                                                                                    }}
-                                                                                />
-                                                                            </Box>
-                                                                        </Box>
-                                                                    </Paper>
-                                                                ))}
                                                             </Box>
                                                         </Box>
                                                     </Paper>
                                                 ))}
+                                                
+                                                {/* Add Item Button - At the end */}
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                                                    <Button
+                                                        variant="outlined"
+                                                        onClick={() => {
+                                                            const newItem = {
+                                                                id: Date.now().toString(),
+                                                                description: '',
+                                                                purchaseDate: '',
+                                                                requestedAmount: '',
+                                                                attachments: []
+                                                            };
+                                                            const currentItems = formData.propertyDamageInsuredDetails?.damagedItems || [];
+                                                            updatePropertyDamageDetails('damagedItems', [...currentItems, newItem]);
+                                                        }}
+                                                        sx={{
+                                                            borderColor: '#6b47c1',
+                                                            color: '#6b47c1',
+                                                            '&:hover': {
+                                                                borderColor: '#5a3aa1',
+                                                                backgroundColor: '#f3f4f6'
+                                                            }
+                                                        }}
+                                                    >
+                                                        הוספה
+                                                    </Button>
+                                                </Box>
                                             </Box>
                                         </Paper>
                                     </Box>
