@@ -7348,7 +7348,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                 )}
 
                                 {/* Damaged Items List - Show for any damage type */}
-                                {formData.propertyDamageInsuredDetails?.damageTypes && formData.propertyDamageInsuredDetails.damageTypes.length > 0 && (
+                                {formData.propertyDamageInsuredDetails?.damageTypes && formData.propertyDamageInsuredDetails.damageTypes.length > 0 && activeTab === 1 && (
                                     <Box>
                                         <Typography variant="body2" gutterBottom sx={{ color: '#666666', mb: 2, fontWeight: 'bold' }}>
                                             רשימת פריטי הרכוש שניזוקו/נגנבו
