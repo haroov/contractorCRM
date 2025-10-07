@@ -6425,22 +6425,46 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                             // Delete file from Blob storage
                                                                             if (formData.propertyDamageInsuredDetails?.fireDepartmentReport) {
                                                                                 try {
-                                                                                    const response = await fetch('/api/delete-file', {
+                                                                                    const response = await fetch('/api/upload/delete-file', {
                                                                                         method: 'POST',
                                                                                         headers: {
                                                                                             'Content-Type': 'application/json',
                                                                                         },
                                                                                         body: JSON.stringify({
-                                                                                            url: formData.propertyDamageInsuredDetails.fireDepartmentReport
+                                                                                            fileUrl: formData.propertyDamageInsuredDetails.fireDepartmentReport
                                                                                         }),
                                                                                     });
 
                                                                                     if (!response.ok) {
+                                                                                        console.warn('Failed to delete file from Blob storage:', formData.propertyDamageInsuredDetails.fireDepartmentReport);
                                                                                         throw new Error('Failed to delete file from storage');
                                                                                     }
                                                                                 } catch (error) {
                                                                                     console.error('Error deleting file:', error);
                                                                                     // Continue with local deletion even if storage deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Delete thumbnail from Blob storage
+                                                                            if (formData.propertyDamageInsuredDetails?.fireDepartmentReportThumbnail) {
+                                                                                try {
+                                                                                    const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            fileUrl: formData.propertyDamageInsuredDetails.fireDepartmentReportThumbnail
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!thumbnailResponse.ok) {
+                                                                                        console.warn('Failed to delete thumbnail from Blob storage:', formData.propertyDamageInsuredDetails.fireDepartmentReportThumbnail);
+                                                                                        // Don't throw error for thumbnail deletion failure
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting thumbnail:', error);
+                                                                                    // Continue with local deletion even if thumbnail deletion fails
                                                                                 }
                                                                             }
 
