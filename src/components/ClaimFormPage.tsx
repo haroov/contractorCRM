@@ -5755,18 +5755,43 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Other fields - Separate Paper */}
                                         <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
-                                            <Grid container spacing={3}>
-                                                {/* Column 1: Questions */}
-                                                <Grid item xs={12} md={6}>
-                                                    <Grid container spacing={2}>
-
-                                                        {/* Is Sole Owner */}
-                                                        <Grid item xs={12}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                            <Box sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr',
+                                                gap: 2
+                                            }}>
+                                                {/* Is Sole Owner */}
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
                                                             המבוטח הוא הבעלים היחיד של הרכוש שניזוק
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => updatePropertyDamageDetails('isSoleOwner', false)}
@@ -5782,7 +5807,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     minWidth: '50px',
                                                                     height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -5808,15 +5834,40 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                </Grid>
+                                                </Box>
 
                                                 {/* Was Occupied */}
-                                                <Grid item xs={12}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
                                                             האם המקום היה מאויש בעת האירוע
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => updatePropertyDamageDetails('wasOccupied', false)}
@@ -5832,7 +5883,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     minWidth: '50px',
                                                                     height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -5858,15 +5910,40 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                </Grid>
+                                                </Box>
 
                                                 {/* Previous Damage */}
-                                                <Grid item xs={12}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
                                                             האם נגרמו נזקים לרכוש זה בעבר
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => updatePropertyDamageDetails('previousDamage', false)}
@@ -5882,7 +5959,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     minWidth: '50px',
                                                                     height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -5908,15 +5986,40 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                </Grid>
+                                                </Box>
 
                                                 {/* Previous Claim */}
-                                                <Grid item xs={12}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
                                                             האם הוגשה תביעה קודמת בגין נזק דומה בחברת ביטוח (בעבר)
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => updatePropertyDamageDetails('previousClaim', false)}
@@ -5932,7 +6035,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     minWidth: '50px',
                                                                     height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -5958,15 +6062,40 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                </Grid>
+                                                </Box>
 
                                                 {/* Additional Insurance */}
-                                                <Grid item xs={12}>
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                        <Typography sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+                                                <Box sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'flex-start',
+                                                    justifyContent: 'flex-end'
+                                                }}>
+                                                    <Box sx={{
+                                                        border: '1px solid #d1d5db',
+                                                        borderRadius: '4px',
+                                                        backgroundColor: 'white',
+                                                        minHeight: '56px',
+                                                        padding: '0 14px',
+                                                        direction: 'rtl',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        width: '100%'
+                                                    }}>
+                                                        <Typography sx={{
+                                                            fontSize: '1rem',
+                                                            color: 'text.secondary',
+                                                            marginRight: '10px'
+                                                        }}>
                                                             האם קיים כיסוי ביטוחי נוסף לרכוש שניזוק (ביטוח נוסף בחברה אחרת)
                                                         </Typography>
-                                                        <Box sx={{ display: 'flex', gap: 0, alignItems: 'center' }}>
+                                                        <Box sx={{
+                                                            display: 'flex',
+                                                            gap: 0,
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-start',
+                                                            marginLeft: '10px'
+                                                        }}>
                                                             <Button
                                                                 variant="text"
                                                                 onClick={() => updatePropertyDamageDetails('additionalInsurance', false)}
@@ -5982,7 +6111,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     minWidth: '50px',
                                                                     height: '32px',
                                                                     textTransform: 'none',
-                                                                    fontSize: '0.875rem'
+                                                                    fontSize: '0.875rem',
+                                                                    marginRight: '0px'
                                                                 }}
                                                             >
                                                                 לא
@@ -6008,123 +6138,86 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </Button>
                                                         </Box>
                                                     </Box>
-                                                </Grid>
-                                                    </Grid>
-                                                </Grid>
+                                                </Box>
 
-                                                {/* Column 2: Conditional Fields */}
-                                                <Grid item xs={12} md={6}>
-                                                    <Grid container spacing={2}>
-                                                        {/* Conditional field for Is Sole Owner */}
-                                                        <Grid item xs={12}>
-                                                            {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="מי הבעלים או בעל זכויות נוסף"
-                                                                    value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
-                                                                    variant="outlined"
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Grid>
+                                                {/* Conditional field for Is Sole Owner */}
+                                                <Box>
+                                                    {formData.propertyDamageInsuredDetails?.isSoleOwner === false && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מי הבעלים או בעל זכויות נוסף"
+                                                            value={formData.propertyDamageInsuredDetails?.otherOwners || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('otherOwners', e.target.value)}
+                                                            variant="outlined"
+                                                            sx={{ mb: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
 
-                                                        {/* Conditional field for Was Occupied */}
-                                                        <Grid item xs={12}>
-                                                            {formData.propertyDamageInsuredDetails?.wasOccupied === false && (
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="מתי היה מאויש לאחרונה"
-                                                                    value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
-                                                                    variant="outlined"
-                                                                    type="date"
-                                                                    InputLabelProps={{ shrink: true }}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Grid>
+                                                {/* Conditional field for Was Occupied */}
+                                                <Box>
+                                                    {formData.propertyDamageInsuredDetails?.wasOccupied === false && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מתי היה מאויש לאחרונה"
+                                                            value={formData.propertyDamageInsuredDetails?.lastOccupiedDate || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('lastOccupiedDate', e.target.value)}
+                                                            variant="outlined"
+                                                            type="date"
+                                                            InputLabelProps={{ shrink: true }}
+                                                            sx={{ mb: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
 
-                                                        {/* Conditional field for Previous Damage */}
-                                                        <Grid item xs={12}>
-                                                            {formData.propertyDamageInsuredDetails?.previousDamage === true && (
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="פרט על הנזק הקודם"
-                                                                    value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
-                                                                    variant="outlined"
-                                                                    multiline
-                                                                    rows={2}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Grid>
+                                                {/* Conditional field for Previous Damage */}
+                                                <Box>
+                                                    {formData.propertyDamageInsuredDetails?.previousDamage === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פרט על הנזק הקודם"
+                                                            value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{ mb: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
 
-                                                        {/* Conditional field for Previous Claim */}
-                                                        <Grid item xs={12}>
-                                                            {formData.propertyDamageInsuredDetails?.previousClaim === true && (
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="שם חברת הביטוח ופרטי התביעה הקודמת"
-                                                                    value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
-                                                                    variant="outlined"
-                                                                    multiline
-                                                                    rows={2}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Grid>
+                                                {/* Conditional field for Previous Claim */}
+                                                <Box>
+                                                    {formData.propertyDamageInsuredDetails?.previousClaim === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="שם חברת הביטוח ופרטי התביעה הקודמת"
+                                                            value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{ mb: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
 
-                                                        {/* Conditional field for Additional Insurance */}
-                                                        <Grid item xs={12}>
-                                                            {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
-                                                                <TextField
-                                                                    fullWidth
-                                                                    label="מספר הפוליסה ושם חברת הביטוח הנוספת"
-                                                                    value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
-                                                                    onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
-                                                                    variant="outlined"
-                                                                    multiline
-                                                                    rows={2}
-                                                                    sx={{
-                                                                        '& .MuiOutlinedInput-root': {
-                                                                            '&:hover fieldset': { borderColor: '#6b47c1' },
-                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
-                                                                        },
-                                                                        '& .MuiInputLabel-root.Mui-focused': { color: '#6b47c1' }
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Grid>
-                                                    </Grid>
-                                                </Grid>
-                                            </Grid>
+                                                {/* Conditional field for Additional Insurance */}
+                                                <Box>
+                                                    {formData.propertyDamageInsuredDetails?.additionalInsurance === true && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="מספר הפוליסה ושם חברת הביטוח הנוספת"
+                                                            value={formData.propertyDamageInsuredDetails?.additionalInsuranceDetails || ''}
+                                                            onChange={(e) => updatePropertyDamageDetails('additionalInsuranceDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={2}
+                                                            sx={{ mb: 2 }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
                                         </Paper>
                                     </Box>
                                 )}
