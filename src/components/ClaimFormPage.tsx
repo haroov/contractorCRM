@@ -5780,7 +5780,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         '&:hover': { bgcolor: '#5a3aa1' }
                                                     }}
                                                 >
-                                                    הוספת ניזוק נוסף
+                                                    + הוספה
                                                 </Button>
                                             </Box>
                                         )}
