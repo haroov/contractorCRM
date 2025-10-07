@@ -6274,7 +6274,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                                                 <TextField
                                                                     fullWidth
-                                                                    label="שם חברת הביטוח הנוספת"
+                                                                    label="חברת הביטוח"
                                                                     value={formData.propertyDamageInsuredDetails?.additionalInsuranceCompany || ''}
                                                                     onChange={(e) => updatePropertyDamageDetails('additionalInsuranceCompany', e.target.value)}
                                                                     variant="outlined"
