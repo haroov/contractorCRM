@@ -204,6 +204,7 @@ interface PropertyDamageInsured {
     previousDamage: boolean | null;
     previousDamageDetails?: string;
     previousClaim: boolean | null;
+    previousClaimCompany?: string;
     previousClaimDetails?: string;
     additionalInsurance: boolean | null;
     additionalInsuranceDetails?: string;
@@ -277,6 +278,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             lastOccupiedTime: '',
             previousDamage: null,
             previousClaim: null,
+            previousClaimCompany: '',
             additionalInsurance: null
         },
         propertyDamageThirdParty: null,
@@ -420,6 +422,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             lastOccupiedTime: '',
                             previousDamage: null,
                             previousClaim: null,
+                            previousClaimCompany: '',
                             additionalInsurance: null
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
@@ -6058,7 +6061,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         {formData.propertyDamageInsuredDetails?.previousDamage === true && (
                                                             <TextField
                                                                 fullWidth
-                                                                label="פרט על הנזק הקודם"
+                                                                label="פירוט הנזק הקודם"
                                                                 value={formData.propertyDamageInsuredDetails?.previousDamageDetails || ''}
                                                                 onChange={(e) => updatePropertyDamageDetails('previousDamageDetails', e.target.value)}
                                                                 variant="outlined"
@@ -6155,15 +6158,24 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     {/* Conditional field Column */}
                                                     <Box>
                                                         {formData.propertyDamageInsuredDetails?.previousClaim === true && (
-                                                            <TextField
-                                                                fullWidth
-                                                                label="שם חברת הביטוח ופרטי התביעה הקודמת"
-                                                                value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
-                                                                onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
-                                                                variant="outlined"
-                                                                multiline
-                                                                rows={2}
-                                                            />
+                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם חברת הביטוח"
+                                                                    value={formData.propertyDamageInsuredDetails?.previousClaimCompany || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('previousClaimCompany', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="פרטי התביעה הקודמת"
+                                                                    value={formData.propertyDamageInsuredDetails?.previousClaimDetails || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('previousClaimDetails', e.target.value)}
+                                                                    variant="outlined"
+                                                                    multiline
+                                                                    rows={2}
+                                                                />
+                                                            </Box>
                                                         )}
                                                     </Box>
                                                 </Box>
