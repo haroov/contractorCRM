@@ -209,6 +209,9 @@ interface PropertyDamageInsured {
     additionalInsurance: boolean | null;
     additionalInsuranceCompany?: string;
     additionalInsurancePolicyNumber?: string;
+    fireDepartmentVisited: boolean | null;
+    fireDepartmentVisitDate?: string;
+    fireDepartmentStationName?: string;
 }
 
 interface ClaimFormData {
@@ -282,7 +285,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             previousClaimCompany: '',
             additionalInsurance: null,
             additionalInsuranceCompany: '',
-            additionalInsurancePolicyNumber: ''
+            additionalInsurancePolicyNumber: '',
+            fireDepartmentVisited: null,
+            fireDepartmentVisitDate: '',
+            fireDepartmentStationName: ''
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -428,7 +434,10 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             previousClaimCompany: '',
                             additionalInsurance: null,
                             additionalInsuranceCompany: '',
-                            additionalInsurancePolicyNumber: ''
+                            additionalInsurancePolicyNumber: '',
+                            fireDepartmentVisited: null,
+                            fireDepartmentVisitDate: '',
+                            fireDepartmentStationName: ''
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -5748,7 +5757,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     <TextField
                                                         fullWidth
                                                         label="סכום הנזק המשוער (₪)"
-                                                        value={formData.propertyDamageInsuredDetails?.estimatedDamageAmount ? 
+                                                        value={formData.propertyDamageInsuredDetails?.estimatedDamageAmount ?
                                                             Number(formData.propertyDamageInsuredDetails.estimatedDamageAmount).toLocaleString() : ''}
                                                         onChange={(e) => {
                                                             const numericValue = e.target.value.replace(/,/g, '');
@@ -6288,6 +6297,116 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     label="מספר הפוליסה"
                                                                     value={formData.propertyDamageInsuredDetails?.additionalInsurancePolicyNumber || ''}
                                                                     onChange={(e) => updatePropertyDamageDetails('additionalInsurancePolicyNumber', e.target.value)}
+                                                                    variant="outlined"
+                                                                />
+                                                            </Box>
+                                                        )}
+                                                    </Box>
+                                                </Box>
+
+                                                {/* Fire Department Visit */}
+                                                <Box sx={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '1fr 1fr',
+                                                    gap: 2,
+                                                    alignItems: 'start'
+                                                }}>
+                                                    {/* Question Column */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'flex-start',
+                                                        justifyContent: 'flex-end'
+                                                    }}>
+                                                        <Box sx={{
+                                                            border: '1px solid #d1d5db',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 'white',
+                                                            minHeight: '56px',
+                                                            padding: '0 14px',
+                                                            direction: 'rtl',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            width: '100%'
+                                                        }}>
+                                                            <Typography sx={{
+                                                                fontSize: '1rem',
+                                                                color: 'text.secondary',
+                                                                marginRight: '10px'
+                                                            }}>
+                                                                כיבוי אש ביקר במקום האירוע
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                gap: 0,
+                                                                alignItems: 'center',
+                                                                justifyContent: 'flex-start',
+                                                                marginLeft: '10px'
+                                                            }}>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('fireDepartmentVisited', false)}
+                                                                    sx={{
+                                                                        borderRadius: '0 4px 4px 0',
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderLeft: 'none',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === false ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === false ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === false ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem',
+                                                                        marginRight: '0px'
+                                                                    }}
+                                                                >
+                                                                    לא
+                                                                </Button>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('fireDepartmentVisited', true)}
+                                                                    sx={{
+                                                                        borderRadius: '4px 0 0 4px',
+                                                                        border: '1px solid #d1d5db',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === true ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === true ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.fireDepartmentVisited === true ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem'
+                                                                    }}
+                                                                >
+                                                                    כן
+                                                                </Button>
+                                                            </Box>
+                                                        </Box>
+                                                    </Box>
+
+                                                    {/* Conditional field Column */}
+                                                    <Box>
+                                                        {formData.propertyDamageInsuredDetails?.fireDepartmentVisited === true && (
+                                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="תאריך הביקור"
+                                                                    type="date"
+                                                                    value={formData.propertyDamageInsuredDetails?.fireDepartmentVisitDate || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('fireDepartmentVisitDate', e.target.value)}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{
+                                                                        shrink: true,
+                                                                    }}
+                                                                />
+                                                                <TextField
+                                                                    fullWidth
+                                                                    label="שם התחנה"
+                                                                    value={formData.propertyDamageInsuredDetails?.fireDepartmentStationName || ''}
+                                                                    onChange={(e) => updatePropertyDamageDetails('fireDepartmentStationName', e.target.value)}
                                                                     variant="outlined"
                                                                 />
                                                             </Box>
