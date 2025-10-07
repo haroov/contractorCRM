@@ -4144,6 +4144,9 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     <Paper key={index} sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
                                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                    פרטי הניזוק
+                                                                </Typography>
                                                                 <MuiIconButton
                                                                     onClick={() => toggleThirdPartyVictimExpansion(index)}
                                                                     sx={{
@@ -4159,9 +4162,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         style={{ width: '16px', height: '16px' }}
                                                                     />
                                                                 </MuiIconButton>
-                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
-                                                                    פרטי הניזוק
-                                                                </Typography>
                                                             </Box>
                                                             {index > 0 && (
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
