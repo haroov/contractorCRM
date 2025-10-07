@@ -266,6 +266,8 @@ interface ClaimFormData {
     witnesses: Witness[];
     hasAdditionalResponsible: boolean;
     additionalResponsible: AdditionalResponsible[];
+    insuredNegligence: boolean | null;
+    insuredNegligenceDetails?: string;
     injuredEmployees: InjuredEmployee[];
     thirdPartyVictims: ThirdPartyVictim[];
     policyDocuments: any[];
@@ -359,6 +361,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         witnesses: [],
         hasAdditionalResponsible: false,
         additionalResponsible: [],
+        insuredNegligence: null,
+        insuredNegligenceDetails: '',
         injuredEmployees: [],
         thirdPartyVictims: [],
         policyDocuments: [],
@@ -535,6 +539,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         witnesses: data.claim.witnesses || [],
                         hasAdditionalResponsible: data.claim.hasAdditionalResponsible || false,
                         additionalResponsible: data.claim.additionalResponsible || [],
+                        insuredNegligence: data.claim.insuredNegligence !== undefined ? data.claim.insuredNegligence : null,
+                        insuredNegligenceDetails: data.claim.insuredNegligenceDetails || '',
                         injuredEmployees: (data.claim.injuredEmployees || []).map((employee: any) => ({
                             fullName: employee.fullName || '',
                             idNumber: employee.idNumber || '',
@@ -2322,14 +2328,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             </TableContainer>
                                         </Box>
 
-                                        {/* Additional Responsible Section */}
+                                        {/* Negligence and Additional Responsible Section */}
                                         <Box sx={{ mb: 3 }}>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                alignItems: 'flex-start',
-                                                justifyContent: 'flex-end',
-                                                mb: 2
-                                            }}>
+                                            {/* 2-Column Grid for both questions */}
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                                                {/* Negligence Question */}
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
@@ -2347,7 +2350,77 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         color: 'text.secondary',
                                                         marginRight: '10px'
                                                     }}>
-                                                        האם יש גורם נוסף אפשרי שאחראי לאירוע?
+                                                        רשלנות של המבוטח תרמה לאירוע
+                                                    </Typography>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        gap: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'flex-start',
+                                                        marginLeft: '10px'
+                                                    }}>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('insuredNegligence', false)}
+                                                            sx={{
+                                                                borderRadius: '0 4px 4px 0',
+                                                                border: '1px solid #d1d5db',
+                                                                borderLeft: 'none',
+                                                                backgroundColor: formData.insuredNegligence === false ? '#6b47c1' : 'transparent',
+                                                                color: formData.insuredNegligence === false ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.insuredNegligence === false ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem',
+                                                                marginRight: '0px'
+                                                            }}
+                                                        >
+                                                            לא
+                                                        </Button>
+                                                        <Button
+                                                            variant="text"
+                                                            onClick={() => handleFieldChange('insuredNegligence', true)}
+                                                            sx={{
+                                                                borderRadius: '4px 0 0 4px',
+                                                                border: '1px solid #d1d5db',
+                                                                backgroundColor: formData.insuredNegligence === true ? '#6b47c1' : 'transparent',
+                                                                color: formData.insuredNegligence === true ? 'white' : '#6b47c1',
+                                                                '&:hover': {
+                                                                    backgroundColor: formData.insuredNegligence === true ? '#5a3aa1' : '#f3f4f6',
+                                                                },
+                                                                minWidth: '50px',
+                                                                height: '32px',
+                                                                textTransform: 'none',
+                                                                fontSize: '0.875rem'
+                                                            }}
+                                                        >
+                                                            כן
+                                                        </Button>
+                                                    </Box>
+                                                </Box>
+
+                                                {/* Additional Responsible Question */}
+                                                <Box sx={{
+                                                    border: '1px solid #d1d5db',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: 'white',
+                                                    minHeight: '56px',
+                                                    padding: '0 14px',
+                                                    direction: 'rtl',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}>
+                                                    <Typography sx={{
+                                                        fontSize: '1rem',
+                                                        color: 'text.secondary',
+                                                        marginRight: '10px'
+                                                    }}>
+                                                        גורם נוסף אפשרי שאחראי לאירוע
                                                     </Typography>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -2399,6 +2472,36 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
                                             </Box>
+
+                                            {/* Negligence Details - Conditional Field */}
+                                            {formData.insuredNegligence && (
+                                                <Box sx={{ mb: 2 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="פירוט ההתרשלות האפשרית"
+                                                        placeholder="תאר את ההתרשלות האפשרית של המבוטח"
+                                                        value={formData.insuredNegligenceDetails || ''}
+                                                        onChange={(e) => handleFieldChange('insuredNegligenceDetails', e.target.value)}
+                                                        variant="outlined"
+                                                        multiline
+                                                        rows={3}
+                                                        sx={{
+                                                            '& .MuiOutlinedInput-root': {
+                                                                '& fieldset': {
+                                                                    borderColor: '#d0d0d0'
+                                                                },
+                                                                '&:hover fieldset': {
+                                                                    borderColor: '#6b47c1'
+                                                                },
+                                                                '&.Mui-focused fieldset': {
+                                                                    borderColor: '#6b47c1',
+                                                                    boxShadow: '0 0 0 1px #6b47c1'
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                </Box>
+                                            )}
 
                                             {formData.hasAdditionalResponsible && (
                                                 <Box>
