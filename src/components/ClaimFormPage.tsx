@@ -214,6 +214,12 @@ interface PropertyDamageInsured {
     fireDepartmentStationName?: string;
     fireDepartmentReport?: string;
     fireDepartmentReportThumbnail?: string;
+    visibleFireDamageRemains: boolean | null;
+    policeReportFiled: boolean | null;
+    policeReportFile?: string;
+    policeReportFileThumbnail?: string;
+    policeStationName?: string;
+    policeReportDate?: string;
 }
 
 interface ClaimFormData {
@@ -292,7 +298,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
             fireDepartmentVisitDate: '',
             fireDepartmentStationName: '',
             fireDepartmentReport: '',
-            fireDepartmentReportThumbnail: ''
+            fireDepartmentReportThumbnail: '',
+            visibleFireDamageRemains: null,
+            policeReportFiled: null,
+            policeReportFile: '',
+            policeReportFileThumbnail: '',
+            policeStationName: '',
+            policeReportDate: ''
         },
         propertyDamageThirdParty: null,
         bodilyInjuryThirdParty: null,
@@ -443,7 +455,13 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                             fireDepartmentVisitDate: '',
                             fireDepartmentStationName: '',
                             fireDepartmentReport: '',
-                            fireDepartmentReportThumbnail: ''
+                            fireDepartmentReportThumbnail: '',
+                            visibleFireDamageRemains: null,
+                            policeReportFiled: null,
+                            policeReportFile: '',
+                            policeReportFileThumbnail: '',
+                            policeStationName: '',
+                            policeReportDate: ''
                         },
                         propertyDamageThirdParty: data.claim.propertyDamageThirdParty !== undefined ? data.claim.propertyDamageThirdParty : null,
                         bodilyInjuryThirdParty: data.claim.bodilyInjuryThirdParty !== undefined ? data.claim.bodilyInjuryThirdParty : null,
@@ -6499,6 +6517,293 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         value={formData.propertyDamageInsuredDetails?.fireDepartmentStationName || ''}
                                                                         onChange={(e) => updatePropertyDamageDetails('fireDepartmentStationName', e.target.value)}
                                                                         variant="outlined"
+                                                                    />
+                                                                </Box>
+                                                            </Box>
+                                                        )}
+                                                    </Box>
+                                                </Box>
+                                            </Box>
+                                        </Paper>
+                                    </Box>
+                                )}
+
+                                {/* Additional Fire Damage Fields - Only show if fire damage is selected */}
+                                {formData.propertyDamageInsuredDetails?.damageTypes?.includes('נזקי אש') && (
+                                    <Box>
+                                        <Paper sx={{ p: 3, mb: 3, border: '1px solid #e0e0e0' }}>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                                                {/* Row 1: Visible Fire Damage Remains */}
+                                                <Box sx={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '1fr 1fr',
+                                                    gap: 2,
+                                                    alignItems: 'start'
+                                                }}>
+                                                    {/* Question Column */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'flex-start',
+                                                        justifyContent: 'flex-end'
+                                                    }}>
+                                                        <Box sx={{
+                                                            border: '1px solid #d1d5db',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 'white',
+                                                            minHeight: '56px',
+                                                            padding: '0 14px',
+                                                            direction: 'rtl',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            width: '100%'
+                                                        }}>
+                                                            <Typography sx={{
+                                                                fontSize: '1rem',
+                                                                color: 'text.secondary',
+                                                                marginRight: '10px'
+                                                            }}>
+                                                                נותרו במקום סימנים גלויים של נזקי אש
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                gap: 0,
+                                                                alignItems: 'center',
+                                                                justifyContent: 'flex-start',
+                                                                marginLeft: '10px'
+                                                            }}>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('visibleFireDamageRemains', false)}
+                                                                    sx={{
+                                                                        borderRadius: '0 4px 4px 0',
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderLeft: 'none',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === false ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === false ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === false ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem',
+                                                                        marginRight: '0px'
+                                                                    }}
+                                                                >
+                                                                    לא
+                                                                </Button>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('visibleFireDamageRemains', true)}
+                                                                    sx={{
+                                                                        borderRadius: '4px 0 0 4px',
+                                                                        border: '1px solid #d1d5db',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === true ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === true ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.visibleFireDamageRemains === true ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem'
+                                                                    }}
+                                                                >
+                                                                    כן
+                                                                </Button>
+                                                            </Box>
+                                                        </Box>
+                                                    </Box>
+
+                                                    {/* Empty Column */}
+                                                    <Box></Box>
+                                                </Box>
+
+                                                {/* Row 2: Police Report Filed */}
+                                                <Box sx={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '1fr 1fr',
+                                                    gap: 2,
+                                                    alignItems: 'start'
+                                                }}>
+                                                    {/* Question Column */}
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'flex-start',
+                                                        justifyContent: 'flex-end'
+                                                    }}>
+                                                        <Box sx={{
+                                                            border: '1px solid #d1d5db',
+                                                            borderRadius: '4px',
+                                                            backgroundColor: 'white',
+                                                            minHeight: '56px',
+                                                            padding: '0 14px',
+                                                            direction: 'rtl',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            width: '100%'
+                                                        }}>
+                                                            <Typography sx={{
+                                                                fontSize: '1rem',
+                                                                color: 'text.secondary',
+                                                                marginRight: '10px'
+                                                            }}>
+                                                                דיווח למשטרה
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                gap: 0,
+                                                                alignItems: 'center',
+                                                                justifyContent: 'flex-start',
+                                                                marginLeft: '10px'
+                                                            }}>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('policeReportFiled', false)}
+                                                                    sx={{
+                                                                        borderRadius: '0 4px 4px 0',
+                                                                        border: '1px solid #d1d5db',
+                                                                        borderLeft: 'none',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.policeReportFiled === false ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.policeReportFiled === false ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.policeReportFiled === false ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem',
+                                                                        marginRight: '0px'
+                                                                    }}
+                                                                >
+                                                                    לא
+                                                                </Button>
+                                                                <Button
+                                                                    variant="text"
+                                                                    onClick={() => updatePropertyDamageDetails('policeReportFiled', true)}
+                                                                    sx={{
+                                                                        borderRadius: '4px 0 0 4px',
+                                                                        border: '1px solid #d1d5db',
+                                                                        backgroundColor: formData.propertyDamageInsuredDetails?.policeReportFiled === true ? '#6b47c1' : 'transparent',
+                                                                        color: formData.propertyDamageInsuredDetails?.policeReportFiled === true ? 'white' : '#6b47c1',
+                                                                        '&:hover': {
+                                                                            backgroundColor: formData.propertyDamageInsuredDetails?.policeReportFiled === true ? '#5a3aa1' : '#f3f4f6',
+                                                                        },
+                                                                        minWidth: '50px',
+                                                                        height: '32px',
+                                                                        textTransform: 'none',
+                                                                        fontSize: '0.875rem'
+                                                                    }}
+                                                                >
+                                                                    כן
+                                                                </Button>
+                                                            </Box>
+                                                        </Box>
+                                                    </Box>
+
+                                                    {/* Conditional field Column */}
+                                                    <Box>
+                                                        {formData.propertyDamageInsuredDetails?.policeReportFiled === true && (
+                                                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, alignItems: 'flex-start' }}>
+                                                                {/* File Upload */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <FileUpload
+                                                                        label="אישור משטרה"
+                                                                        value={formData.propertyDamageInsuredDetails?.policeReportFile || ''}
+                                                                        thumbnailUrl={formData.propertyDamageInsuredDetails?.policeReportFileThumbnail || ''}
+                                                                        onChange={(url, thumbnailUrl) => {
+                                                                            updatePropertyDamageDetails('policeReportFile', url);
+                                                                            updatePropertyDamageDetails('policeReportFileThumbnail', thumbnailUrl);
+                                                                        }}
+                                                                        onDelete={async () => {
+                                                                            // Show confirmation dialog
+                                                                            const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ "אישור משטרה"?`;
+
+                                                                            const confirmed = window.confirm(confirmMessage);
+
+                                                                            if (!confirmed) {
+                                                                                throw new Error('User cancelled deletion');
+                                                                            }
+
+                                                                            // Delete file from Blob storage
+                                                                            if (formData.propertyDamageInsuredDetails?.policeReportFile) {
+                                                                                try {
+                                                                                    const response = await fetch('/api/upload/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            fileUrl: formData.propertyDamageInsuredDetails.policeReportFile
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!response.ok) {
+                                                                                        console.warn('Failed to delete file from Blob storage:', formData.propertyDamageInsuredDetails.policeReportFile);
+                                                                                        throw new Error('Failed to delete file from storage');
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting file:', error);
+                                                                                    // Continue with local deletion even if storage deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Delete thumbnail from Blob storage
+                                                                            if (formData.propertyDamageInsuredDetails?.policeReportFileThumbnail) {
+                                                                                try {
+                                                                                    const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            fileUrl: formData.propertyDamageInsuredDetails.policeReportFileThumbnail
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!thumbnailResponse.ok) {
+                                                                                        console.warn('Failed to delete thumbnail from Blob storage:', formData.propertyDamageInsuredDetails.policeReportFileThumbnail);
+                                                                                        // Don't throw error for thumbnail deletion failure
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting thumbnail:', error);
+                                                                                    // Continue with local deletion even if thumbnail deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Clear the file from form data
+                                                                            updatePropertyDamageDetails('policeReportFile', '');
+                                                                            updatePropertyDamageDetails('policeReportFileThumbnail', '');
+                                                                        }}
+                                                                        projectId={formData.projectId}
+                                                                    />
+                                                                </Box>
+                                                                
+                                                                {/* Station Name Field */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="שם התחנה"
+                                                                        value={formData.propertyDamageInsuredDetails?.policeStationName || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('policeStationName', e.target.value)}
+                                                                        variant="outlined"
+                                                                    />
+                                                                </Box>
+                                                                
+                                                                {/* Report Date Field */}
+                                                                <Box sx={{ flex: 1 }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        label="תאריך הדיווח"
+                                                                        type="date"
+                                                                        value={formData.propertyDamageInsuredDetails?.policeReportDate || ''}
+                                                                        onChange={(e) => updatePropertyDamageDetails('policeReportDate', e.target.value)}
+                                                                        variant="outlined"
+                                                                        InputLabelProps={{
+                                                                            shrink: true,
+                                                                        }}
                                                                     />
                                                                 </Box>
                                                             </Box>
