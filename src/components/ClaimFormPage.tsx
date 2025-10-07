@@ -6402,14 +6402,23 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 {/* File Upload */}
                                                                 <Box sx={{ flex: 1 }}>
                                                                     <FileUpload
-                                                                        files={formData.propertyDamageInsuredDetails?.fireDepartmentReport || []}
-                                                                        onFilesChange={(files) => updatePropertyDamageDetails('fireDepartmentReport', files)}
                                                                         label="דוח כיבוי אש"
+                                                                        value={formData.propertyDamageInsuredDetails?.fireDepartmentReport?.[0]?.url || ''}
+                                                                        thumbnailUrl={formData.propertyDamageInsuredDetails?.fireDepartmentReport?.[0]?.thumbnailUrl || ''}
+                                                                        onChange={(url, thumbnailUrl) => {
+                                                                            const files = url ? [{
+                                                                                url: url,
+                                                                                thumbnailUrl: thumbnailUrl,
+                                                                                name: 'דוח כיבוי אש',
+                                                                                type: 'application/pdf'
+                                                                            }] : [];
+                                                                            updatePropertyDamageDetails('fireDepartmentReport', files);
+                                                                        }}
                                                                         accept=".pdf,.jpg,.jpeg,.png"
-                                                                        maxFiles={5}
+                                                                        projectId={formData.projectId}
                                                                     />
                                                                 </Box>
-                                                                
+
                                                                 {/* Date Field */}
                                                                 <Box sx={{ flex: 1 }}>
                                                                     <TextField
@@ -6424,7 +6433,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         }}
                                                                     />
                                                                 </Box>
-                                                                
+
                                                                 {/* Station Name Field */}
                                                                 <Box sx={{ flex: 1 }}>
                                                                     <TextField
