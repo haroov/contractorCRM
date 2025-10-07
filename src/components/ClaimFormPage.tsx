@@ -2330,7 +2330,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
 
                                         {/* Negligence and Additional Responsible Section */}
                                         <Box sx={{ mb: 3 }}>
-                                            {/* 2-Column Grid for both questions */}
+                                            {/* First Row - Negligence Question */}
                                             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                                 {/* Negligence Question */}
                                                 <Box sx={{
@@ -2402,6 +2402,39 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
 
+                                                {/* Negligence Details - Conditional Field */}
+                                                <Box>
+                                                    {formData.insuredNegligence && (
+                                                        <TextField
+                                                            fullWidth
+                                                            label="פירוט ההתרשלות האפשרית"
+                                                            placeholder="תאר את ההתרשלות האפשרית של המבוטח"
+                                                            value={formData.insuredNegligenceDetails || ''}
+                                                            onChange={(e) => handleFieldChange('insuredNegligenceDetails', e.target.value)}
+                                                            variant="outlined"
+                                                            multiline
+                                                            rows={3}
+                                                            sx={{
+                                                                '& .MuiOutlinedInput-root': {
+                                                                    '& fieldset': {
+                                                                        borderColor: '#d0d0d0'
+                                                                    },
+                                                                    '&:hover fieldset': {
+                                                                        borderColor: '#6b47c1'
+                                                                    },
+                                                                    '&.Mui-focused fieldset': {
+                                                                        borderColor: '#6b47c1',
+                                                                        boxShadow: '0 0 0 1px #6b47c1'
+                                                                    }
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            </Box>
+
+                                            {/* Second Row - Additional Responsible Question */}
+                                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                                 {/* Additional Responsible Question */}
                                                 <Box sx={{
                                                     border: '1px solid #d1d5db',
@@ -2471,37 +2504,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                         </Button>
                                                     </Box>
                                                 </Box>
-                                            </Box>
 
-                                            {/* Negligence Details - Conditional Field */}
-                                            {formData.insuredNegligence && (
-                                                <Box sx={{ mb: 2 }}>
-                                                    <TextField
-                                                        fullWidth
-                                                        label="פירוט ההתרשלות האפשרית"
-                                                        placeholder="תאר את ההתרשלות האפשרית של המבוטח"
-                                                        value={formData.insuredNegligenceDetails || ''}
-                                                        onChange={(e) => handleFieldChange('insuredNegligenceDetails', e.target.value)}
-                                                        variant="outlined"
-                                                        multiline
-                                                        rows={3}
-                                                        sx={{
-                                                            '& .MuiOutlinedInput-root': {
-                                                                '& fieldset': {
-                                                                    borderColor: '#d0d0d0'
-                                                                },
-                                                                '&:hover fieldset': {
-                                                                    borderColor: '#6b47c1'
-                                                                },
-                                                                '&.Mui-focused fieldset': {
-                                                                    borderColor: '#6b47c1',
-                                                                    boxShadow: '0 0 0 1px #6b47c1'
-                                                                }
-                                                            }
-                                                        }}
-                                                    />
+                                                {/* Empty Column for Additional Responsible */}
+                                                <Box>
+                                                    {/* Empty - no conditional field for this question */}
                                                 </Box>
-                                            )}
+                                            </Box>
 
                                             {formData.hasAdditionalResponsible && (
                                                 <Box>
