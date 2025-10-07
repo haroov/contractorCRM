@@ -5700,7 +5700,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     type="checkbox"
                                                                     checked={formData.propertyDamageInsuredDetails?.damageTypes.includes(type.value) || false}
                                                                     onChange={() => toggleDamageType(type.value)}
-                                                                    style={{ 
+                                                                    style={{
                                                                         cursor: 'pointer',
                                                                         accentColor: '#6b47c1',
                                                                         transform: 'scale(1.2)',
