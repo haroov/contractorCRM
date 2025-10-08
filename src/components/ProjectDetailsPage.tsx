@@ -10780,15 +10780,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.theftCoverage === true || project?.theftCoverage === 'true') && (
+                                            {(project?.theftCoverage?.isActive === true || project?.theftCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.theftCoverageAmount ?
-                                                        parseInt(project.theftCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.theftCoverage?.insuranceSum ?
+                                                        parseInt(project.theftCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverageAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('theftCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10805,15 +10805,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.theftCoverage === true || project?.theftCoverage === 'true') && (
+                                            {(project?.theftCoverage?.isActive === true || project?.theftCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.theftCoverageDeductible ?
-                                                        parseInt(project.theftCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.theftCoverage?.deductibles ?
+                                                        parseInt(project.theftCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('theftCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"

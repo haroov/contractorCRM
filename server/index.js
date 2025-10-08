@@ -28,11 +28,11 @@ dotenv.config();
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
   const transformed = { ...project };
-
+  
   // Define coverage types and their field mappings
   const coverageTypes = [
     'theftCoverage',
-    'workPropertyCoverage',
+    'workPropertyCoverage', 
     'adjacentPropertyCoverage',
     'transitPropertyCoverage',
     'auxiliaryBuildingsCoverage',
@@ -44,6 +44,14 @@ function transformInsuranceCoverageFields(project) {
 
   // Transform each coverage type from flat to nested structure
   coverageTypes.forEach(coverageType => {
+    // Check if the field is already in nested structure
+    if (transformed[coverageType] && typeof transformed[coverageType] === 'object' && 
+        transformed[coverageType].hasOwnProperty('isActive')) {
+      // Already in nested structure, keep as is
+      return;
+    }
+
+    // Transform from flat to nested structure
     const isActive = transformed[coverageType];
     const insuranceSum = transformed[`${coverageType}Amount`];
     const deductibles = transformed[`${coverageType}Deductible`];
@@ -66,11 +74,11 @@ function transformInsuranceCoverageFields(project) {
 // Helper function to transform nested insurance coverage fields to flat structure (for saving)
 function flattenInsuranceCoverageFields(project) {
   const flattened = { ...project };
-  
+
   // Define coverage types and their field mappings
   const coverageTypes = [
     'theftCoverage',
-    'workPropertyCoverage', 
+    'workPropertyCoverage',
     'adjacentPropertyCoverage',
     'transitPropertyCoverage',
     'auxiliaryBuildingsCoverage',
@@ -84,7 +92,7 @@ function flattenInsuranceCoverageFields(project) {
   coverageTypes.forEach(coverageType => {
     if (flattened[coverageType] && typeof flattened[coverageType] === 'object') {
       const coverage = flattened[coverageType];
-      
+
       // Extract values from nested structure
       flattened[coverageType] = coverage.isActive || false;
       flattened[`${coverageType}Amount`] = coverage.insuranceSum || '';
@@ -1410,7 +1418,7 @@ app.post('/api/projects', async (req, res) => {
 
     const db = client.db('contractor-crm');
 
-    // Keep the data as is (already in flat structure from client)
+    // Keep the data as is (now in nested structure from client)
     const projectData = {
       ...req.body,
       createdAt: new Date(),
@@ -1465,7 +1473,7 @@ app.put('/api/projects/:id', async (req, res) => {
 
     const db = client.db('contractor-crm');
 
-    // Keep the data as is (already in flat structure from client)
+    // Keep the data as is (now in nested structure from client)
     // Separate fields to set and fields to unset
     const fieldsToSet = {};
     const fieldsToUnset = {};
@@ -3582,7 +3590,7 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
       return res.status(404).json({ error: 'Project not found or access denied' });
     }
 
-    // Keep the data as is (already in flat structure from client)
+    // Keep the data as is (now in nested structure from client)
     const updateData = {
       ...req.body,
       updatedAt: new Date()
