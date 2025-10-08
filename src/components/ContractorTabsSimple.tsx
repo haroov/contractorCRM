@@ -1796,9 +1796,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 >
                     <Tab label="פרטי חברה" />
                     <Tab label="מידע עסקי" />
-                    <Tab label="פרויקטים" />
                     <Tab label="אנשי קשר" />
-                    <Tab label="הערות" />
+                    <Tab label="פרויקטים" />
+                    <Tab label="דשבורד" />
                 </Tabs>
             </Box>
 
@@ -3245,7 +3245,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                     </Box>
                 )}
 
-                {activeTab === 2 && (
+                {activeTab === 3 && (
                     <Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                             <TextField
@@ -3404,7 +3404,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                     </Box>
                 )}
 
-                {activeTab === 3 && (
+                {activeTab === 2 && (
                     <Box>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                             <TextField
@@ -3518,7 +3518,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                 {activeTab === 4 && (
                     <Box>
                         <Typography variant="h6" gutterBottom>
-                            הערות
+                            דשבורד
                         </Typography>
 
                         <TextField
