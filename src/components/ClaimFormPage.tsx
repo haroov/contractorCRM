@@ -2413,15 +2413,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 </Box>
 
                                                 {/* Column 2: Conditional Negligence Details */}
-                                                <Box sx={{
-                                                    height: '56px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    border: formData.insuredNegligence ? '1px solid #d1d5db' : 'none',
-                                                    borderRadius: '4px',
-                                                    backgroundColor: formData.insuredNegligence ? 'white' : 'transparent',
-                                                    padding: formData.insuredNegligence ? '0 14px' : '0',
-                                                }}>
+                                                <Box>
                                                     {formData.insuredNegligence && (
                                                         <TextField
                                                             fullWidth
@@ -2434,7 +2426,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             rows={3}
                                                             sx={{
                                                                 '& .MuiOutlinedInput-root': {
-                                                                    height: '100%',
                                                                     '& fieldset': {
                                                                         borderColor: '#d0d0d0'
                                                                     },
@@ -2445,11 +2436,6 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         borderColor: '#6b47c1',
                                                                         boxShadow: '0 0 0 1px #6b47c1'
                                                                     }
-                                                                },
-                                                                '& .MuiInputBase-input': {
-                                                                    height: '100% !important',
-                                                                    boxSizing: 'border-box',
-                                                                    padding: '14px'
                                                                 }
                                                             }}
                                                         />
