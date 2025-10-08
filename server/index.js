@@ -25,6 +25,44 @@ const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 
 dotenv.config();
 
+// Helper function to transform flat insurance coverage fields to nested structure
+function transformInsuranceCoverageFields(project) {
+  const transformed = { ...project };
+  
+  // Define coverage types and their field mappings
+  const coverageTypes = [
+    'theftCoverage',
+    'workPropertyCoverage', 
+    'adjacentPropertyCoverage',
+    'transitPropertyCoverage',
+    'auxiliaryBuildingsCoverage',
+    'machineryInstallationCoverage',
+    'debrisRemoval',
+    'architectFees',
+    'authorityChanges'
+  ];
+
+  // Transform each coverage type from flat to nested structure
+  coverageTypes.forEach(coverageType => {
+    const isActive = transformed[coverageType];
+    const insuranceSum = transformed[`${coverageType}Amount`];
+    const deductibles = transformed[`${coverageType}Deductible`];
+
+    // Create nested structure
+    transformed[coverageType] = {
+      isActive: isActive || false,
+      insuranceSum: insuranceSum || '',
+      deductibles: deductibles || ''
+    };
+
+    // Remove the old flat fields
+    delete transformed[`${coverageType}Amount`];
+    delete transformed[`${coverageType}Deductible`];
+  });
+
+  return transformed;
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -1213,10 +1251,11 @@ app.get('/api/projects', async (req, res) => {
 
     const projects = await db.collection('projects').find(query).toArray();
 
-    // Calculate correct status for each project
+    // Calculate correct status for each project and transform insurance coverage fields
     const projectsWithStatus = projects.map(project => {
       const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
-      return { ...project, status };
+      const projectWithStatus = { ...project, status };
+      return transformInsuranceCoverageFields(projectWithStatus);
     });
 
     console.log('📋 Fetched', projectsWithStatus.length, 'projects for contractor:', contractorId || 'all');
@@ -1264,11 +1303,14 @@ app.get('/api/projects/:id', async (req, res) => {
     const status = calculateProjectStatus(project.startDate, project.durationMonths, project.isClosed);
     const projectWithStatus = { ...project, status };
 
-    console.log('✅ Fetched project:', projectWithStatus.projectName);
-    console.log('🔍 Project subcontractors:', projectWithStatus.subcontractors);
+    // Transform flat insurance coverage fields to nested structure
+    const transformedProject = transformInsuranceCoverageFields(projectWithStatus);
+
+    console.log('✅ Fetched project:', transformedProject.projectName);
+    console.log('🔍 Project subcontractors:', transformedProject.subcontractors);
     res.json({
       success: true,
-      project: projectWithStatus
+      project: transformedProject
     });
   } catch (error) {
     console.error('❌ Error fetching project by ID:', error);
@@ -1314,8 +1356,11 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
       _id: { $in: projectIds.map(id => new ObjectId(id)) }
     }).toArray();
 
-    console.log('📋 Fetched', projects.length, 'projects for contractor:', id);
-    res.json(projects);
+    // Transform insurance coverage fields for each project
+    const transformedProjects = projects.map(project => transformInsuranceCoverageFields(project));
+
+    console.log('📋 Fetched', transformedProjects.length, 'projects for contractor:', id);
+    res.json(transformedProjects);
   } catch (error) {
     console.error('❌ Error fetching contractor projects:', error);
     res.status(500).json({ error: 'Failed to fetch contractor projects' });
