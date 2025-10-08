@@ -28,11 +28,11 @@ dotenv.config();
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
   const transformed = { ...project };
-  
+
   // Define coverage types and their field mappings
   const coverageTypes = [
     'theftCoverage',
-    'workPropertyCoverage', 
+    'workPropertyCoverage',
     'adjacentPropertyCoverage',
     'transitPropertyCoverage',
     'auxiliaryBuildingsCoverage',
@@ -45,8 +45,8 @@ function transformInsuranceCoverageFields(project) {
   // Transform each coverage type from flat to nested structure
   coverageTypes.forEach(coverageType => {
     // Check if the field is already in nested structure
-    if (transformed[coverageType] && typeof transformed[coverageType] === 'object' && 
-        transformed[coverageType].hasOwnProperty('isActive')) {
+    if (transformed[coverageType] && typeof transformed[coverageType] === 'object' &&
+      transformed[coverageType].hasOwnProperty('isActive')) {
       // Already in nested structure, keep as is
       return;
     }

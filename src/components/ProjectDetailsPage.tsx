@@ -675,18 +675,53 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             pledgers: []
                         },
                         // Initialize all coverage fields
-                        machineryInstallationCoverage: false,
-                        theftCoverage: false,
-                        workPropertyCoverage: false,
-                        adjacentPropertyCoverage: false,
-                        transitPropertyCoverage: false,
-                        auxiliaryBuildingsCoverage: false,
-                        debrisRemoval: false,
-                        architectFees: false,
-                        authorityChanges: false,
+                        machineryInstallationCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        theftCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        workPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        adjacentPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        transitPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        auxiliaryBuildingsCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        debrisRemoval: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        architectFees: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        authorityChanges: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
                         // Initialize all deductible fields
                         machineryInstallationCoverageDeductible: '',
-                        theftCoverageDeductible: '',
                         workPropertyCoverageDeductible: '',
                         adjacentPropertyCoverageDeductible: '',
                         transitPropertyCoverageDeductible: '',
@@ -696,7 +731,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         authorityChangesDeductible: '',
                         // Initialize other insurance fields
                         machineryInstallationCoverageAmount: '',
-                        theftCoverageAmount: '',
                         workPropertyCoverageAmount: '',
                         adjacentPropertyCoverageAmount: '',
                         transitPropertyCoverageAmount: '',
@@ -1246,18 +1280,53 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             pledgers: []
                         },
                         // Initialize all coverage fields
-                        machineryInstallationCoverage: false,
-                        theftCoverage: false,
-                        workPropertyCoverage: false,
-                        adjacentPropertyCoverage: false,
-                        transitPropertyCoverage: false,
-                        auxiliaryBuildingsCoverage: false,
-                        debrisRemoval: false,
-                        architectFees: false,
-                        authorityChanges: false,
+                        machineryInstallationCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        theftCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        workPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        adjacentPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        transitPropertyCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        auxiliaryBuildingsCoverage: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        debrisRemoval: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        architectFees: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
+                        authorityChanges: {
+                            isActive: false,
+                            insuranceSum: '',
+                            deductibles: ''
+                        },
                         // Initialize all deductible fields
                         machineryInstallationCoverageDeductible: '',
-                        theftCoverageDeductible: '',
                         workPropertyCoverageDeductible: '',
                         adjacentPropertyCoverageDeductible: '',
                         transitPropertyCoverageDeductible: '',
@@ -1267,7 +1336,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         authorityChangesDeductible: '',
                         // Initialize other insurance fields
                         machineryInstallationCoverageAmount: '',
-                        theftCoverageAmount: '',
                         workPropertyCoverageAmount: '',
                         adjacentPropertyCoverageAmount: '',
                         transitPropertyCoverageAmount: '',
