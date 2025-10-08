@@ -713,8 +713,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
     const handleFieldChange = (field: keyof ClaimFormData, value: string | boolean | null) => {
         setFormData(prev => {
             const newData = {
-            ...prev,
-            [field]: value,
+                ...prev,
+                [field]: value,
                 updatedAt: new Date()
             };
 
@@ -1694,65 +1694,65 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                         {/* Date and Time Fields */}
                                         <Grid container spacing={2} sx={{ mb: 3 }}>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="date"
                                                     label="תאריך האירוע"
                                                     value={formData.eventDate}
                                                     onChange={(e) => handleFieldChange('eventDate', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     required
                                                     InputLabelProps={{ shrink: true }}
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
-                                                    },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
+                                                <TextField
+                                                    fullWidth
                                                     type="time"
                                                     label="שעת האירוע"
                                                     value={formData.eventTime}
                                                     onChange={(e) => handleFieldChange('eventTime', e.target.value)}
-                                            variant="outlined"
+                                                    variant="outlined"
                                                     InputLabelProps={{ shrink: true }}
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
-                                                    },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
+                                                    sx={{
+                                                        '& .MuiOutlinedInput-root': {
+                                                            '& fieldset': {
+                                                                borderColor: '#d0d0d0'
+                                                            },
+                                                            '&:hover fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            },
+                                                            '&.Mui-focused fieldset': {
+                                                                borderColor: '#6b47c1'
+                                                            }
+                                                        },
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#666666',
+                                                            '&.Mui-focused': {
+                                                                color: '#6b47c1'
+                                                            }
+                                                        }
+                                                    }}
+                                                />
                                             </Grid>
                                         </Grid>
 
@@ -1763,12 +1763,12 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             gap: 2,
                                             mb: 3
                                         }}>
-                                        <TextField
-                                            fullWidth
+                                            <TextField
+                                                fullWidth
                                                 label="מקום האירוע"
                                                 value={formData.eventLocation}
                                                 onChange={(e) => handleFieldChange('eventLocation', e.target.value)}
-                                            variant="outlined"
+                                                variant="outlined"
                                                 placeholder="הזן מקום האירוע"
                                                 sx={{
                                                     '& .MuiOutlinedInput-root': {
@@ -1797,27 +1797,27 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 onChange={(e) => handleFieldChange('eventAddress', e.target.value)}
                                                 variant="outlined"
                                                 placeholder="הזן כתובת האירוע"
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    '& fieldset': {
-                                                        borderColor: '#d0d0d0'
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '& fieldset': {
+                                                            borderColor: '#d0d0d0'
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#6b47c1'
+                                                        }
                                                     },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#6b47c1'
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#6b47c1'
+                                                    '& .MuiInputLabel-root': {
+                                                        color: '#666666',
+                                                        '&.Mui-focused': {
+                                                            color: '#6b47c1'
+                                                        }
                                                     }
-                                                },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#666666',
-                                                    '&.Mui-focused': {
-                                                        color: '#6b47c1'
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    </Box>
+                                                }}
+                                            />
+                                        </Box>
 
                                         {/* Event Description */}
                                         <TextField
@@ -2333,14 +2333,14 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                             {/* First Row - Negligence Question */}
                                             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                                 {/* Negligence Question */}
-                                            <Box sx={{
+                                                <Box sx={{
                                                     border: '1px solid #d1d5db',
                                                     borderRadius: '4px',
                                                     backgroundColor: 'white',
                                                     minHeight: '56px',
                                                     padding: '0 14px',
                                                     direction: 'rtl',
-                                                display: 'flex',
+                                                    display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'space-between',
                                                     width: '100%'
@@ -2402,8 +2402,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </Box>
                                                 </Box>
 
-                                                {/* Negligence Details - Conditional Field */}
-                                                <Box>
+                                                {/* Column 2: Conditional Negligence Details */}
+                                                <Box sx={{
+                                                    height: '56px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    border: formData.insuredNegligence ? '1px solid #d1d5db' : 'none',
+                                                    borderRadius: '4px',
+                                                    backgroundColor: formData.insuredNegligence ? 'white' : 'transparent',
+                                                    padding: formData.insuredNegligence ? '0 14px' : '0',
+                                                }}>
                                                     {formData.insuredNegligence && (
                                                         <TextField
                                                             fullWidth
@@ -2416,6 +2424,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             rows={3}
                                                             sx={{
                                                                 '& .MuiOutlinedInput-root': {
+                                                                    height: '100%',
                                                                     '& fieldset': {
                                                                         borderColor: '#d0d0d0'
                                                                     },
@@ -2426,6 +2435,11 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         borderColor: '#6b47c1',
                                                                         boxShadow: '0 0 0 1px #6b47c1'
                                                                     }
+                                                                },
+                                                                '& .MuiInputBase-input': {
+                                                                    height: '100% !important',
+                                                                    boxSizing: 'border-box',
+                                                                    padding: '14px'
                                                                 }
                                                             }}
                                                         />
@@ -2659,8 +2673,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                             </TableBody>
                                                         </Table>
                                                     </TableContainer>
-                                    </Box>
-                                )}
+                                                </Box>
+                                            )}
                                         </Box>
                                     </Box>
                                 )}
@@ -2739,8 +2753,8 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                         >
                                                                             <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                         </MuiIconButton>
-                        )}
-                    </Box>
+                                                                    )}
+                                                                </Box>
                                                             </Box>
 
                                                             {/* Always show first row (name, ID, birth date, address) - This should always be visible */}
@@ -4374,7 +4388,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     </Box>
                                                                 </>
                                                             )}
-                </Paper>
+                                                        </Paper>
 
                                                     </>
                                                 ))}
@@ -4390,7 +4404,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                 >
                                                     הוספה
                                                 </Button>
-            </Box>
+                                            </Box>
                                         )}
 
 
@@ -4491,7 +4505,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                     >
                                                                         <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                                     </MuiIconButton>
-        </Box>
+                                                                </Box>
                                                             )}
                                                         </Box>
 
