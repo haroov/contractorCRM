@@ -268,6 +268,14 @@ interface ClaimFormData {
     additionalResponsible: AdditionalResponsible[];
     insuredNegligence: boolean | null;
     insuredNegligenceDetails?: string;
+    generalAttachments: Array<{
+        id: string;
+        documentType: string;
+        documentDescription: string;
+        fileUrl: string;
+        thumbnailUrl: string;
+        validUntil: string;
+    }>;
     injuredEmployees: InjuredEmployee[];
     thirdPartyVictims: ThirdPartyVictim[];
     policyDocuments: any[];
@@ -363,6 +371,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
         additionalResponsible: [],
         insuredNegligence: null,
         insuredNegligenceDetails: '',
+        generalAttachments: [],
         injuredEmployees: [],
         thirdPartyVictims: [],
         policyDocuments: [],
@@ -541,6 +550,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                         additionalResponsible: data.claim.additionalResponsible || [],
                         insuredNegligence: data.claim.insuredNegligence !== undefined ? data.claim.insuredNegligence : null,
                         insuredNegligenceDetails: data.claim.insuredNegligenceDetails || '',
+                        generalAttachments: data.claim.generalAttachments || [],
                         injuredEmployees: (data.claim.injuredEmployees || []).map((employee: any) => ({
                             fullName: employee.fullName || '',
                             idNumber: employee.idNumber || '',
@@ -2675,6 +2685,262 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                     </TableContainer>
                                                 </Box>
                                             )}
+                                        </Box>
+
+                                        {/* General Attachments Section */}
+                                        <Box sx={{ mb: 3 }}>
+                                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 2, color: '#666666' }}>
+                                                צרופות
+                                            </Typography>
+
+                                            <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>תיאור המסמך</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>קובץ</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>תאריך תוקף</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>פעולות</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {(formData.generalAttachments || []).map((attachment, attachmentIndex) => (
+                                                            <TableRow key={attachment.id}>
+                                                                <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={attachment.documentType}
+                                                                        onChange={(e) => {
+                                                                            const updatedAttachments = [...(formData.generalAttachments || [])];
+                                                                            updatedAttachments[attachmentIndex] = {
+                                                                                ...updatedAttachments[attachmentIndex],
+                                                                                documentType: e.target.value
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                generalAttachments: updatedAttachments
+                                                                            }));
+                                                                        }}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        placeholder="קבלות, חשבוניות רכישה, דו״ח שמאי, הערכות שווי, תמונות הנזק"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '& fieldset': {
+                                                                                    borderColor: '#d0d0d0'
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        value={attachment.documentDescription}
+                                                                        onChange={(e) => {
+                                                                            const updatedAttachments = [...(formData.generalAttachments || [])];
+                                                                            updatedAttachments[attachmentIndex] = {
+                                                                                ...updatedAttachments[attachmentIndex],
+                                                                                documentDescription: e.target.value
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                generalAttachments: updatedAttachments
+                                                                            }));
+                                                                        }}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '& fieldset': {
+                                                                                    borderColor: '#d0d0d0'
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                    <FileUpload
+                                                                        label="העלאת קובץ"
+                                                                        value={attachment.fileUrl}
+                                                                        thumbnailUrl={attachment.thumbnailUrl}
+                                                                        onChange={(url, thumbnailUrl) => {
+                                                                            const updatedAttachments = [...(formData.generalAttachments || [])];
+                                                                            updatedAttachments[attachmentIndex] = {
+                                                                                ...updatedAttachments[attachmentIndex],
+                                                                                fileUrl: url,
+                                                                                thumbnailUrl: thumbnailUrl
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                generalAttachments: updatedAttachments
+                                                                            }));
+                                                                        }}
+                                                                        onDelete={async () => {
+                                                                            // Show confirmation dialog
+                                                                            const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ?`;
+
+                                                                            const confirmed = window.confirm(confirmMessage);
+
+                                                                            if (!confirmed) {
+                                                                                throw new Error('User cancelled deletion');
+                                                                            }
+
+                                                                            // Delete file from Blob storage
+                                                                            if (attachment.fileUrl) {
+                                                                                try {
+                                                                                    const response = await fetch('/api/upload/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            fileUrl: attachment.fileUrl
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!response.ok) {
+                                                                                        console.warn('Failed to delete file from Blob storage:', attachment.fileUrl);
+                                                                                        throw new Error('Failed to delete file from storage');
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting file:', error);
+                                                                                    // Continue with local deletion even if storage deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Delete thumbnail from Blob storage
+                                                                            if (attachment.thumbnailUrl) {
+                                                                                try {
+                                                                                    const thumbnailResponse = await fetch('/api/upload/delete-file', {
+                                                                                        method: 'POST',
+                                                                                        headers: {
+                                                                                            'Content-Type': 'application/json',
+                                                                                        },
+                                                                                        body: JSON.stringify({
+                                                                                            fileUrl: attachment.thumbnailUrl
+                                                                                        }),
+                                                                                    });
+
+                                                                                    if (!thumbnailResponse.ok) {
+                                                                                        console.warn('Failed to delete thumbnail from Blob storage:', attachment.thumbnailUrl);
+                                                                                        // Don't throw error for thumbnail deletion failure
+                                                                                    }
+                                                                                } catch (error) {
+                                                                                    console.error('Error deleting thumbnail:', error);
+                                                                                    // Continue with local deletion even if thumbnail deletion fails
+                                                                                }
+                                                                            }
+
+                                                                            // Clear the file from form data
+                                                                            const updatedAttachments = [...(formData.generalAttachments || [])];
+                                                                            updatedAttachments[attachmentIndex] = {
+                                                                                ...updatedAttachments[attachmentIndex],
+                                                                                fileUrl: '',
+                                                                                thumbnailUrl: ''
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                generalAttachments: updatedAttachments
+                                                                            }));
+                                                                        }}
+                                                                        projectId={formData.projectId}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                                    <TextField
+                                                                        fullWidth
+                                                                        type="date"
+                                                                        value={attachment.validUntil}
+                                                                        onChange={(e) => {
+                                                                            const updatedAttachments = [...(formData.generalAttachments || [])];
+                                                                            updatedAttachments[attachmentIndex] = {
+                                                                                ...updatedAttachments[attachmentIndex],
+                                                                                validUntil: e.target.value
+                                                                            };
+                                                                            setFormData(prev => ({
+                                                                                ...prev,
+                                                                                generalAttachments: updatedAttachments
+                                                                            }));
+                                                                        }}
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        InputLabelProps={{
+                                                                            shrink: true,
+                                                                        }}
+                                                                        sx={{
+                                                                            '& .MuiOutlinedInput-root': {
+                                                                                '& fieldset': {
+                                                                                    borderColor: '#d0d0d0'
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell sx={{ borderBottom: '1px solid #e0e0e0', textAlign: 'center' }}>
+                                                                    <MuiIconButton
+                                                                        onClick={() => {
+                                                                            // Show confirmation dialog
+                                                                            const confirmMessage = `האם אתה בטוח שברצונך למחוק את הצרופה?`;
+                                                                            const confirmed = window.confirm(confirmMessage);
+
+                                                                            if (confirmed) {
+                                                                                const updatedAttachments = (formData.generalAttachments || []).filter((_, index) => index !== attachmentIndex);
+                                                                                setFormData(prev => ({
+                                                                                    ...prev,
+                                                                                    generalAttachments: updatedAttachments
+                                                                                }));
+                                                                            }
+                                                                        }}
+                                                                        sx={{
+                                                                            color: '#d32f2f',
+                                                                            '&:hover': {
+                                                                                backgroundColor: '#ffebee'
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        <img src={trashIcon} alt="מחק" style={{ width: '20px', height: '20px' }} />
+                                                                    </MuiIconButton>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                        {/* Add Attachment Button - Inside table, bottom center */}
+                                                        <TableRow>
+                                                            <TableCell colSpan={5} sx={{ textAlign: 'center', borderBottom: 'none', py: 2 }}>
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    onClick={() => {
+                                                                        const newAttachment = {
+                                                                            id: Date.now().toString(),
+                                                                            documentType: '',
+                                                                            documentDescription: '',
+                                                                            fileUrl: '',
+                                                                            thumbnailUrl: '',
+                                                                            validUntil: ''
+                                                                        };
+                                                                        setFormData(prev => ({
+                                                                            ...prev,
+                                                                            generalAttachments: [...(prev.generalAttachments || []), newAttachment]
+                                                                        }));
+                                                                    }}
+                                                                    sx={{
+                                                                        borderColor: '#6b47c1',
+                                                                        color: '#6b47c1',
+                                                                        '&:hover': {
+                                                                            borderColor: '#5a3aa1',
+                                                                            backgroundColor: '#f3f4f6'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    + הוספה
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
                                         </Box>
                                     </Box>
                                 )}
