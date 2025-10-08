@@ -705,7 +705,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         architectFeesAmount: '',
                         authorityChangesAmount: '',
                         propertyInsuranceAmount: '',
-                        runInPeriodDays: 60
+                        runInPeriodDays: 60,
+                        // Initialize additional coverage fields
+                        consequentialDamage: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
+                        vibrationsWeakening: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
+                        employerLiability: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        }
                     }
                 };
                 setProject(newProject);
@@ -900,7 +916,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     machineryInstallationCoverage: projectDataWithArrays.insuranceSpecification?.machineryInstallationCoverage,
                                     theftCoverage: projectDataWithArrays.insuranceSpecification?.theftCoverage,
                                     workPropertyCoverage: projectDataWithArrays.insuranceSpecification?.workPropertyCoverage,
-                                    adjacentPropertyCoverage: projectDataWithArrays.insuranceSpecification?.adjacentPropertyCoverage
+                                    adjacentPropertyCoverage: projectDataWithArrays.insuranceSpecification?.adjacentPropertyCoverage,
+                                    consequentialDamage: projectDataWithArrays.insuranceSpecification?.consequentialDamage,
+                                    vibrationsWeakening: projectDataWithArrays.insuranceSpecification?.vibrationsWeakening,
+                                    employerLiability: projectDataWithArrays.insuranceSpecification?.employerLiability
                                 });
                                 setProject(projectDataWithArrays);
 
@@ -1257,7 +1276,23 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         architectFeesAmount: '',
                         authorityChangesAmount: '',
                         propertyInsuranceAmount: '',
-                        runInPeriodDays: 60
+                        runInPeriodDays: 60,
+                        // Initialize additional coverage fields
+                        consequentialDamage: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
+                        vibrationsWeakening: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
+                        employerLiability: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        }
                     }
                 };
             }
