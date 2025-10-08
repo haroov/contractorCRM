@@ -25,7 +25,7 @@ const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 
 dotenv.config();
 
-// Helper function to transform flat insurance coverage fields to nested structure
+// Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
   const transformed = { ...project };
   
@@ -61,6 +61,38 @@ function transformInsuranceCoverageFields(project) {
   });
 
   return transformed;
+}
+
+// Helper function to transform nested insurance coverage fields to flat structure (for saving)
+function flattenInsuranceCoverageFields(project) {
+  const flattened = { ...project };
+  
+  // Define coverage types and their field mappings
+  const coverageTypes = [
+    'theftCoverage',
+    'workPropertyCoverage', 
+    'adjacentPropertyCoverage',
+    'transitPropertyCoverage',
+    'auxiliaryBuildingsCoverage',
+    'machineryInstallationCoverage',
+    'debrisRemoval',
+    'architectFees',
+    'authorityChanges'
+  ];
+
+  // Transform each coverage type from nested to flat structure
+  coverageTypes.forEach(coverageType => {
+    if (flattened[coverageType] && typeof flattened[coverageType] === 'object') {
+      const coverage = flattened[coverageType];
+      
+      // Extract values from nested structure
+      flattened[coverageType] = coverage.isActive || false;
+      flattened[`${coverageType}Amount`] = coverage.insuranceSum || '';
+      flattened[`${coverageType}Deductible`] = coverage.deductibles || '';
+    }
+  });
+
+  return flattened;
 }
 
 const app = express();
@@ -1374,8 +1406,12 @@ app.post('/api/projects', async (req, res) => {
     console.log('🔍 Request body:', req.body);
 
     const db = client.db('contractor-crm');
+    
+    // Transform nested insurance coverage fields to flat structure for saving
+    const flattenedData = flattenInsuranceCoverageFields(req.body);
+    
     const projectData = {
-      ...req.body,
+      ...flattenedData,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -1428,12 +1464,15 @@ app.put('/api/projects/:id', async (req, res) => {
 
     const db = client.db('contractor-crm');
 
+    // Transform nested insurance coverage fields to flat structure for saving
+    const flattenedBody = flattenInsuranceCoverageFields(req.body);
+
     // Separate fields to set and fields to unset
     const fieldsToSet = {};
     const fieldsToUnset = {};
 
     // Process each field in the request body
-    for (const [key, value] of Object.entries(req.body)) {
+    for (const [key, value] of Object.entries(flattenedBody)) {
       console.log('🔍 Processing field:', key, 'with value:', value);
 
       if (value === null) {
@@ -3544,8 +3583,11 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
       return res.status(404).json({ error: 'Project not found or access denied' });
     }
 
+    // Transform nested insurance coverage fields to flat structure for saving
+    const flattenedBody = flattenInsuranceCoverageFields(req.body);
+    
     const updateData = {
-      ...req.body,
+      ...flattenedBody,
       updatedAt: new Date()
     };
 
