@@ -6457,16 +6457,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', false)}
+                                                        onClick={() => handleNestedFieldChange('architectFees', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.architectFees === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.architectFees === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.architectFees === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6479,15 +6479,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', true)}
+                                                        onClick={() => handleNestedFieldChange('architectFees', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.architectFees === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.architectFees === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.architectFees === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6505,15 +6505,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
-                                            {project?.insuranceSpecification?.architectFees === true && (
+                                            {project?.architectFees === true && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.architectFeesAmount ?
-                                                        parseInt(project.insuranceSpecification.architectFeesAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.architectFeesAmount ?
+                                                        parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue || '');
+                                                        handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -6574,16 +6574,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)}
+                                                        onClick={() => handleNestedFieldChange('authorityChanges', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.authorityChanges === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.authorityChanges === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6596,15 +6596,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)}
+                                                        onClick={() => handleNestedFieldChange('authorityChanges', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.authorityChanges === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.authorityChanges === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -6622,15 +6622,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
-                                            {project?.insuranceSpecification?.authorityChanges === true && (
+                                            {project?.authorityChanges === true && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.authorityChangesAmount ?
-                                                        parseInt(project.insuranceSpecification.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.authorityChangesAmount ?
+                                                        parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue || '');
+                                                        handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10788,7 +10788,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         parseInt(project.theftCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverageAmount', numericValue || '');
+                                                        handleNestedFieldChange('theftCoverageAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10813,7 +10813,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         parseInt(project.theftCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('theftCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10873,16 +10873,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('workPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.workPropertyCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.workPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.workPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.workPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10895,15 +10895,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.workPropertyCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('workPropertyCoverage', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.workPropertyCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.workPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.workPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.workPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10921,15 +10921,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.insuranceSpecification?.workPropertyCoverage === true || project?.insuranceSpecification?.workPropertyCoverage === 'true') && (
+                                            {(project?.workPropertyCoverage === true || project?.workPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.workPropertyCoverageAmount ?
-                                                        parseInt(project.insuranceSpecification.workPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.workPropertyCoverageAmount ?
+                                                        parseInt(project.workPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverageAmount', numericValue || '');
+                                                        handleNestedFieldChange('workPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10946,15 +10946,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.insuranceSpecification?.workPropertyCoverage === true || project?.insuranceSpecification?.workPropertyCoverage === 'true') && (
+                                            {(project?.workPropertyCoverage === true || project?.workPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.insuranceSpecification?.workPropertyCoverageDeductible ?
-                                                        parseInt(project.insuranceSpecification.workPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.workPropertyCoverageDeductible ?
+                                                        parseInt(project.workPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('workPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11014,16 +11014,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('adjacentPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.adjacentPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.adjacentPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.adjacentPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11036,15 +11036,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('adjacentPropertyCoverage', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.adjacentPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.adjacentPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.adjacentPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.adjacentPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11062,15 +11062,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.insuranceSpecification?.adjacentPropertyCoverage === true || project?.insuranceSpecification?.adjacentPropertyCoverage === 'true') && (
+                                            {(project?.adjacentPropertyCoverage === true || project?.adjacentPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.adjacentPropertyCoverageAmount ?
-                                                        parseInt(project.insuranceSpecification.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.adjacentPropertyCoverageAmount ?
+                                                        parseInt(project.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageAmount', numericValue || '');
+                                                        handleNestedFieldChange('adjacentPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11087,15 +11087,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.insuranceSpecification?.adjacentPropertyCoverage === true || project?.insuranceSpecification?.adjacentPropertyCoverage === 'true') && (
+                                            {(project?.adjacentPropertyCoverage === true || project?.adjacentPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.insuranceSpecification?.adjacentPropertyCoverageDeductible ?
-                                                        parseInt(project.insuranceSpecification.adjacentPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.adjacentPropertyCoverageDeductible ?
+                                                        parseInt(project.adjacentPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('adjacentPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11155,16 +11155,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('transitPropertyCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.transitPropertyCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.transitPropertyCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.transitPropertyCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11177,15 +11177,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('transitPropertyCoverage', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.transitPropertyCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.transitPropertyCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.transitPropertyCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.transitPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.transitPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11203,15 +11203,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.insuranceSpecification?.transitPropertyCoverage === true || project?.insuranceSpecification?.transitPropertyCoverage === 'true') && (
+                                            {(project?.transitPropertyCoverage === true || project?.transitPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.transitPropertyCoverageAmount ?
-                                                        parseInt(project.insuranceSpecification.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.transitPropertyCoverageAmount ?
+                                                        parseInt(project.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageAmount', numericValue || '');
+                                                        handleNestedFieldChange('transitPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11228,15 +11228,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.insuranceSpecification?.transitPropertyCoverage === true || project?.insuranceSpecification?.transitPropertyCoverage === 'true') && (
+                                            {(project?.transitPropertyCoverage === true || project?.transitPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.insuranceSpecification?.transitPropertyCoverageDeductible ?
-                                                        parseInt(project.insuranceSpecification.transitPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.transitPropertyCoverageDeductible ?
+                                                        parseInt(project.transitPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('transitPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11297,16 +11297,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('auxiliaryBuildingsCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.auxiliaryBuildingsCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.auxiliaryBuildingsCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.auxiliaryBuildingsCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11319,15 +11319,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('auxiliaryBuildingsCoverage', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.auxiliaryBuildingsCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.auxiliaryBuildingsCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.auxiliaryBuildingsCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11345,15 +11345,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true || project?.insuranceSpecification?.auxiliaryBuildingsCoverage === 'true') && (
+                                            {(project?.auxiliaryBuildingsCoverage === true || project?.auxiliaryBuildingsCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.insuranceSpecification?.auxiliaryBuildingsCoverageAmount ?
-                                                        parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.auxiliaryBuildingsCoverageAmount ?
+                                                        parseInt(project.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageAmount', numericValue || '');
+                                                        handleNestedFieldChange('auxiliaryBuildingsCoverageAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11370,15 +11370,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true || project?.insuranceSpecification?.auxiliaryBuildingsCoverage === 'true') && (
+                                            {(project?.auxiliaryBuildingsCoverage === true || project?.auxiliaryBuildingsCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible ?
-                                                        parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.auxiliaryBuildingsCoverageDeductible ?
+                                                        parseInt(project.auxiliaryBuildingsCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('auxiliaryBuildingsCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11405,17 +11405,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות לפינוי הריסות (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.debrisRemoval', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.debrisRemoval === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.debrisRemoval === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('debrisRemoval', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.debrisRemoval === false ? '#6b47c1' : 'transparent', color: project?.debrisRemoval === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.debrisRemoval === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('debrisRemoval', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.debrisRemoval === true ? '#6b47c1' : 'transparent', color: project?.debrisRemoval === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.debrisRemoval === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                            {project?.insuranceSpecification?.debrisRemoval === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.debrisRemovalAmount ? parseInt(project.insuranceSpecification.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                            {project?.debrisRemoval === true && (
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.debrisRemovalAmount ? parseInt(project.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('debrisRemovalAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                            {project?.insuranceSpecification?.debrisRemoval === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.debrisRemovalDeductible ? parseInt(project.insuranceSpecification.debrisRemovalDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                            {project?.debrisRemoval === true && (
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.debrisRemovalDeductible ? parseInt(project.debrisRemovalDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('debrisRemovalDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
@@ -11426,17 +11426,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות שכר אדריכלים ואחרים (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.architectFees === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.architectFees', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.architectFees === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.architectFees === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('architectFees', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.architectFees === false ? '#6b47c1' : 'transparent', color: project?.architectFees === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.architectFees === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('architectFees', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.architectFees === true ? '#6b47c1' : 'transparent', color: project?.architectFees === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.architectFees === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                            {project?.insuranceSpecification?.architectFees === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.architectFeesAmount ? parseInt(project.insuranceSpecification.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                            {project?.architectFees === true && (
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.architectFeesAmount ? parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                            {project?.insuranceSpecification?.architectFees === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.architectFeesDeductible ? parseInt(project.insuranceSpecification.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                            {project?.architectFees === true && (
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.architectFeesDeductible ? parseInt(project.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
@@ -11447,17 +11447,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#6b47c1' : 'transparent', color: project?.insuranceSpecification?.authorityChanges === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.insuranceSpecification?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.authorityChanges === false ? '#6b47c1' : 'transparent', color: project?.authorityChanges === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.authorityChanges === true ? '#6b47c1' : 'transparent', color: project?.authorityChanges === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                                            {project?.insuranceSpecification?.authorityChanges === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.authorityChangesAmount ? parseInt(project.insuranceSpecification.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                            {project?.authorityChanges === true && (
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.authorityChangesAmount ? parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                            {project?.insuranceSpecification?.authorityChanges === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.authorityChangesDeductible ? parseInt(project.insuranceSpecification.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                            {project?.authorityChanges === true && (
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.authorityChangesDeductible ? parseInt(project.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
