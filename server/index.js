@@ -28,11 +28,11 @@ dotenv.config();
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
   const transformed = { ...project };
-
+  
   // Define coverage types and their field mappings
   const coverageTypes = [
     'theftCoverage',
-    'workPropertyCoverage',
+    'workPropertyCoverage', 
     'adjacentPropertyCoverage',
     'transitPropertyCoverage',
     'auxiliaryBuildingsCoverage',
@@ -42,30 +42,35 @@ function transformInsuranceCoverageFields(project) {
     'authorityChanges'
   ];
 
+  // Ensure insuranceSpecification exists
+  if (!transformed.insuranceSpecification) {
+    transformed.insuranceSpecification = {};
+  }
+
   // Transform each coverage type from flat to nested structure
   coverageTypes.forEach(coverageType => {
     // Check if the field is already in nested structure
-    if (transformed[coverageType] && typeof transformed[coverageType] === 'object' &&
-      transformed[coverageType].hasOwnProperty('isActive')) {
+    if (transformed.insuranceSpecification[coverageType] && typeof transformed.insuranceSpecification[coverageType] === 'object' && 
+        transformed.insuranceSpecification[coverageType].hasOwnProperty('isActive')) {
       // Already in nested structure, keep as is
       return;
     }
 
     // Transform from flat to nested structure
-    const isActive = transformed[coverageType];
-    const insuranceSum = transformed[`${coverageType}Amount`];
-    const deductibles = transformed[`${coverageType}Deductible`];
+    const isActive = transformed.insuranceSpecification[coverageType];
+    const insuranceSum = transformed.insuranceSpecification[`${coverageType}Amount`];
+    const deductibles = transformed.insuranceSpecification[`${coverageType}Deductible`];
 
     // Create nested structure
-    transformed[coverageType] = {
+    transformed.insuranceSpecification[coverageType] = {
       isActive: isActive || false,
       insuranceSum: insuranceSum || '',
       deductibles: deductibles || ''
     };
 
     // Remove the old flat fields
-    delete transformed[`${coverageType}Amount`];
-    delete transformed[`${coverageType}Deductible`];
+    delete transformed.insuranceSpecification[`${coverageType}Amount`];
+    delete transformed.insuranceSpecification[`${coverageType}Deductible`];
   });
 
   return transformed;
