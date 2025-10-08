@@ -833,6 +833,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         }
                                     }
                                 };
+                                console.log('🔄 Setting project state with processed data');
+                                console.log('🔄 Coverage boolean values in processed data:', {
+                                    machineryInstallationCoverage: updatedProjectData.insuranceSpecification?.machineryInstallationCoverage,
+                                    theftCoverage: updatedProjectData.insuranceSpecification?.theftCoverage,
+                                    workPropertyCoverage: updatedProjectData.insuranceSpecification?.workPropertyCoverage,
+                                    adjacentPropertyCoverage: updatedProjectData.insuranceSpecification?.adjacentPropertyCoverage
+                                });
                                 setProject(updatedProjectData);
                             } else {
                                 // Initialize arrays to prevent map errors
@@ -889,6 +896,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 };
                                 console.log('🔄 Setting project state with arrays data');
                                 console.log('🔄 Insurance specification data being set:', projectDataWithArrays.insuranceSpecification);
+                                console.log('🔄 Coverage boolean values:', {
+                                    machineryInstallationCoverage: projectDataWithArrays.insuranceSpecification?.machineryInstallationCoverage,
+                                    theftCoverage: projectDataWithArrays.insuranceSpecification?.theftCoverage,
+                                    workPropertyCoverage: projectDataWithArrays.insuranceSpecification?.workPropertyCoverage,
+                                    adjacentPropertyCoverage: projectDataWithArrays.insuranceSpecification?.adjacentPropertyCoverage
+                                });
                                 setProject(projectDataWithArrays);
 
                                 // Update exists fields automatically based on file presence
@@ -10502,16 +10515,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.machineryCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.machineryInstallationCoverage === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10524,15 +10537,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.insuranceSpecification?.machineryCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.machineryInstallationCoverage === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.insuranceSpecification?.machineryCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10577,7 +10590,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
-                                            {project?.insuranceSpecification?.machineryInstallationCoverage === true && (
+                                            {(project?.insuranceSpecification?.machineryInstallationCoverage === true || project?.insuranceSpecification?.machineryInstallationCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
@@ -10694,7 +10707,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {project?.insuranceSpecification?.theftCoverage === true && (
+                                            {(project?.insuranceSpecification?.theftCoverage === true || project?.insuranceSpecification?.theftCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
@@ -10719,7 +10732,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {project?.insuranceSpecification?.theftCoverage === true && (
+                                            {(project?.insuranceSpecification?.theftCoverage === true || project?.insuranceSpecification?.theftCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
@@ -10835,7 +10848,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {project?.insuranceSpecification?.workPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.workPropertyCoverage === true || project?.insuranceSpecification?.workPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
@@ -10860,7 +10873,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {project?.insuranceSpecification?.workPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.workPropertyCoverage === true || project?.insuranceSpecification?.workPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
@@ -10976,7 +10989,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {project?.insuranceSpecification?.adjacentPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.adjacentPropertyCoverage === true || project?.insuranceSpecification?.adjacentPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
@@ -11001,7 +11014,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {project?.insuranceSpecification?.adjacentPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.adjacentPropertyCoverage === true || project?.insuranceSpecification?.adjacentPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
@@ -11117,7 +11130,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {project?.insuranceSpecification?.transitPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.transitPropertyCoverage === true || project?.insuranceSpecification?.transitPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
@@ -11142,7 +11155,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {project?.insuranceSpecification?.transitPropertyCoverage === true && (
+                                            {(project?.insuranceSpecification?.transitPropertyCoverage === true || project?.insuranceSpecification?.transitPropertyCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
@@ -11259,7 +11272,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true && (
+                                            {(project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true || project?.insuranceSpecification?.auxiliaryBuildingsCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
@@ -11284,7 +11297,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true && (
+                                            {(project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true || project?.insuranceSpecification?.auxiliaryBuildingsCoverage === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
