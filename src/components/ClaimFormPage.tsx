@@ -2762,7 +2762,7 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                                                                 </TableCell>
                                                                 <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                                                     <FileUpload
-                                                                        label="העלאת קובץ"
+                                                                        label="צרופה"
                                                                         value={attachment.fileUrl}
                                                                         thumbnailUrl={attachment.thumbnailUrl}
                                                                         onChange={(url, thumbnailUrl) => {
