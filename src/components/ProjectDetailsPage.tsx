@@ -10800,16 +10800,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('theftCoverage.isActive', false)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage.isActive', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.theftCoverage?.isActive === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.theftCoverage?.isActive === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage?.isActive === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage?.isActive === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.theftCoverage?.isActive === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage?.isActive === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10822,15 +10822,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('theftCoverage.isActive', true)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.theftCoverage.isActive', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.theftCoverage?.isActive === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.theftCoverage?.isActive === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.theftCoverage?.isActive === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.theftCoverage?.isActive === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.theftCoverage?.isActive === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.theftCoverage?.isActive === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10848,15 +10848,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             gridTemplateColumns: '1fr 1fr',
                                             gap: 2
                                         }}>
-                                            {(project?.theftCoverage?.isActive === true || project?.theftCoverage?.isActive === 'true') && (
+                                            {(project?.insuranceSpecification?.theftCoverage?.isActive === true || project?.insuranceSpecification?.theftCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.theftCoverage?.insuranceSum ?
-                                                        parseInt(project.theftCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.theftCoverage?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.theftCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.theftCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10873,15 +10873,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                            {(project?.theftCoverage?.isActive === true || project?.theftCoverage?.isActive === 'true') && (
+                                            {(project?.insuranceSpecification?.theftCoverage?.isActive === true || project?.insuranceSpecification?.theftCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.theftCoverage?.deductibles ?
-                                                        parseInt(project.theftCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.theftCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.theftCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('theftCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.theftCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
