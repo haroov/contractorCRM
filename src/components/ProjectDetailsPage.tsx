@@ -10344,7 +10344,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה נפרדת - כיסוי להקמת מכונות וציוד */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -10488,7 +10488,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה 1 - גניבה ו/או פריצה */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -10569,9 +10569,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.theftCoverage === true && (
                                                 <TextField
@@ -10598,12 +10598,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {project?.insuranceSpecification?.theftCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -10635,7 +10629,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה 2 - רכוש עליו עובדים */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -10716,9 +10710,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.workPropertyCoverage === true && (
                                                 <TextField
@@ -10745,12 +10739,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {project?.insuranceSpecification?.workPropertyCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -10782,7 +10770,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה 3 - רכוש סמוך */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -10863,9 +10851,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.adjacentPropertyCoverage === true && (
                                                 <TextField
@@ -10892,12 +10880,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {project?.insuranceSpecification?.adjacentPropertyCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -10929,7 +10911,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה 4 - רכוש בהעברה */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -11010,9 +10992,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.transitPropertyCoverage === true && (
                                                 <TextField
@@ -11039,12 +11021,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {project?.insuranceSpecification?.transitPropertyCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -11076,7 +11052,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     {/* שורה 5 - מבני עזר וציוד קל */}
                                     <Box sx={{
                                         display: 'grid',
-                                        gridTemplateColumns: '1fr 1fr 1fr',
+                                        gridTemplateColumns: '1fr 1fr',
                                         gap: 2,
                                         mb: 2
                                     }}>
@@ -11158,9 +11134,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true && (
                                                 <TextField
@@ -11187,12 +11163,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {project?.insuranceSpecification?.auxiliaryBuildingsCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -11223,7 +11193,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                     {/* החזרי הוצאות במקרה ביטוח - 4 שורות חדשות */}
                                     {/* 1. הוצאות לפינוי הריסות (במקרה ביטוח) */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות לפינוי הריסות (במקרה ביטוח)</Typography>
@@ -11233,12 +11203,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                         </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.debrisRemoval === true && (
                                                 <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.debrisRemovalAmount ? parseInt(project.insuranceSpecification.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             {project?.insuranceSpecification?.debrisRemoval === true && (
                                                 <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.debrisRemovalDeductible ? parseInt(project.insuranceSpecification.debrisRemovalDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
@@ -11246,7 +11214,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* 2. הוצאות שכר אדריכלים ואחרים (במקרה ביטוח) */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות שכר אדריכלים ואחרים (במקרה ביטוח)</Typography>
@@ -11256,12 +11224,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                         </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.architectFees === true && (
                                                 <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.architectFeesAmount ? parseInt(project.insuranceSpecification.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             {project?.insuranceSpecification?.architectFees === true && (
                                                 <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.architectFeesDeductible ? parseInt(project.insuranceSpecification.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
@@ -11269,7 +11235,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     </Box>
 
                                     {/* 3. הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח) */}
-                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2, mb: 2 }}>
+                                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח)</Typography>
@@ -11279,12 +11245,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 </Box>
                                             </Box>
                                         </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.authorityChanges === true && (
                                                 <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.authorityChangesAmount ? parseInt(project.insuranceSpecification.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end' }}>
                                             {project?.insuranceSpecification?.authorityChanges === true && (
                                                 <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.authorityChangesDeductible ? parseInt(project.insuranceSpecification.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesDeductible', numericValue || ''); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
