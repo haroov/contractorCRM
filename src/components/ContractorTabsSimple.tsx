@@ -324,36 +324,36 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
     const [localIsoCertificateType, setLocalIsoCertificateType] = useState<string>('');
     const [localIsoCertificateThumbnail, setLocalIsoCertificateThumbnail] = useState<string>(contractor?.isoCertificateThumbnail || '');
     const [localIsoCertificateCreationDate, setLocalIsoCertificateCreationDate] = useState<string>(contractor?.isoCertificateCreationDate || '');
-    
+
     // New safety procedures fields
     const [localSafetyProceduresFile, setLocalSafetyProceduresFile] = useState<string>(contractor?.safetyProceduresFile || '');
     const [localSafetyProceduresThumbnail, setLocalSafetyProceduresThumbnail] = useState<string>(contractor?.safetyProceduresThumbnail || '');
     const [localSafetyProceduresLastUpdate, setLocalSafetyProceduresLastUpdate] = useState<string>(contractor?.safetyProceduresLastUpdate || '');
-    
+
     const [localSecurityProceduresFile, setLocalSecurityProceduresFile] = useState<string>(contractor?.securityProceduresFile || '');
     const [localSecurityProceduresThumbnail, setLocalSecurityProceduresThumbnail] = useState<string>(contractor?.securityProceduresThumbnail || '');
     const [localSecurityProceduresLastUpdate, setLocalSecurityProceduresLastUpdate] = useState<string>(contractor?.securityProceduresLastUpdate || '');
-    
+
     const [localEnvironmentalProtectionFile, setLocalEnvironmentalProtectionFile] = useState<string>(contractor?.environmentalProtectionFile || '');
     const [localEnvironmentalProtectionThumbnail, setLocalEnvironmentalProtectionThumbnail] = useState<string>(contractor?.environmentalProtectionThumbnail || '');
     const [localEnvironmentalProtectionLastUpdate, setLocalEnvironmentalProtectionLastUpdate] = useState<string>(contractor?.environmentalProtectionLastUpdate || '');
-    
+
     const [localContractorSafetyGuideFile, setLocalContractorSafetyGuideFile] = useState<string>(contractor?.contractorSafetyGuideFile || '');
     const [localContractorSafetyGuideThumbnail, setLocalContractorSafetyGuideThumbnail] = useState<string>(contractor?.contractorSafetyGuideThumbnail || '');
     const [localContractorSafetyGuideLastUpdate, setLocalContractorSafetyGuideLastUpdate] = useState<string>(contractor?.contractorSafetyGuideLastUpdate || '');
-    
+
     const [localHotWorkProcedureFile, setLocalHotWorkProcedureFile] = useState<string>(contractor?.hotWorkProcedureFile || '');
     const [localHotWorkProcedureThumbnail, setLocalHotWorkProcedureThumbnail] = useState<string>(contractor?.hotWorkProcedureThumbnail || '');
     const [localHotWorkProcedureLastUpdate, setLocalHotWorkProcedureLastUpdate] = useState<string>(contractor?.hotWorkProcedureLastUpdate || '');
-    
+
     const [localIllegalResidentsFile, setLocalIllegalResidentsFile] = useState<string>(contractor?.illegalResidentsFile || '');
     const [localIllegalResidentsThumbnail, setLocalIllegalResidentsThumbnail] = useState<string>(contractor?.illegalResidentsThumbnail || '');
     const [localIllegalResidentsLastUpdate, setLocalIllegalResidentsLastUpdate] = useState<string>(contractor?.illegalResidentsLastUpdate || '');
-    
+
     const [localQualityControlPlanFile, setLocalQualityControlPlanFile] = useState<string>(contractor?.qualityControlPlanFile || '');
     const [localQualityControlPlanThumbnail, setLocalQualityControlPlanThumbnail] = useState<string>(contractor?.qualityControlPlanThumbnail || '');
     const [localQualityControlPlanLastUpdate, setLocalQualityControlPlanLastUpdate] = useState<string>(contractor?.qualityControlPlanLastUpdate || '');
-    
+
     const [localEmergencyProceduresFile, setLocalEmergencyProceduresFile] = useState<string>(contractor?.emergencyProceduresFile || '');
     const [localEmergencyProceduresThumbnail, setLocalEmergencyProceduresThumbnail] = useState<string>(contractor?.emergencyProceduresThumbnail || '');
     const [localEmergencyProceduresLastUpdate, setLocalEmergencyProceduresLastUpdate] = useState<string>(contractor?.emergencyProceduresLastUpdate || '');
@@ -2354,14 +2354,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localSafetyCertificateThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Safety certificate onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             // Update local state
                                             setLocalSafetyCertificate(url);
                                             if (thumbnailUrl) {
                                                 setLocalSafetyCertificateThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             // Save to database immediately
                                             if (contractor?._id) {
                                                 try {
@@ -2371,11 +2371,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         safetyCertificateThumbnail: thumbnailUrl || '',
                                                         safetyCertificateCreationDate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     console.log('🔍 Saving safety certificate to database:', updateData);
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Safety certificate saved successfully:', result);
-                                                    
+
                                                     // Update contractor state
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({
@@ -2395,11 +2395,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Safety certificate onDelete called');
-                                        
+
                                         // Clear local state
                                         setLocalSafetyCertificate('');
                                         setLocalSafetyCertificateThumbnail('');
-                                        
+
                                         // Delete from database
                                         if (contractor?._id) {
                                             try {
@@ -2409,11 +2409,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     safetyCertificateThumbnail: null,
                                                     safetyCertificateCreationDate: null
                                                 };
-                                                
+
                                                 console.log('🗑️ Deleting safety certificate from database:', updateData);
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Safety certificate deleted successfully:', result);
-                                                
+
                                                 // Update contractor state
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
@@ -2492,14 +2492,14 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localIsoCertificateThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 ISO certificate onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             // Update local state
                                             setLocalIsoCertificate(url);
                                             if (thumbnailUrl) {
                                                 setLocalIsoCertificateThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             // Save to database immediately
                                             if (contractor?._id) {
                                                 try {
@@ -2509,11 +2509,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         isoCertificateThumbnail: thumbnailUrl || '',
                                                         isoCertificateCreationDate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     console.log('🔍 Saving ISO certificate to database:', updateData);
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ ISO certificate saved successfully:', result);
-                                                    
+
                                                     // Update contractor state
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({
@@ -2533,11 +2533,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ ISO certificate onDelete called');
-                                        
+
                                         // Clear local state
                                         setLocalIsoCertificate('');
                                         setLocalIsoCertificateThumbnail('');
-                                        
+
                                         // Delete from database
                                         if (contractor?._id) {
                                             try {
@@ -2547,11 +2547,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     isoCertificateThumbnail: null,
                                                     isoCertificateCreationDate: null
                                                 };
-                                                
+
                                                 console.log('🗑️ Deleting ISO certificate from database:', updateData);
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ ISO certificate deleted successfully:', result);
-                                                
+
                                                 // Update contractor state
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
@@ -2585,13 +2585,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localSafetyProceduresThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Safety procedures onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalSafetyProceduresFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalSafetyProceduresThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -2600,10 +2600,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         safetyProceduresThumbnail: thumbnailUrl || '',
                                                         safetyProceduresLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Safety procedures saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -2618,10 +2618,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Safety procedures onDelete called');
-                                        
+
                                         setLocalSafetyProceduresFile('');
                                         setLocalSafetyProceduresThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -2630,10 +2630,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     safetyProceduresThumbnail: null,
                                                     safetyProceduresLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Safety procedures deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -2681,13 +2681,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localEnvironmentalProtectionThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Environmental protection onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalEnvironmentalProtectionFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalEnvironmentalProtectionThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -2696,10 +2696,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         environmentalProtectionThumbnail: thumbnailUrl || '',
                                                         environmentalProtectionLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Environmental protection saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -2714,10 +2714,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Environmental protection onDelete called');
-                                        
+
                                         setLocalEnvironmentalProtectionFile('');
                                         setLocalEnvironmentalProtectionThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -2726,10 +2726,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     environmentalProtectionThumbnail: null,
                                                     environmentalProtectionLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Environmental protection deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -2776,13 +2776,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localContractorSafetyGuideThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Contractor safety guide onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalContractorSafetyGuideFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalContractorSafetyGuideThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -2791,10 +2791,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         contractorSafetyGuideThumbnail: thumbnailUrl || '',
                                                         contractorSafetyGuideLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Contractor safety guide saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -2809,10 +2809,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Contractor safety guide onDelete called');
-                                        
+
                                         setLocalContractorSafetyGuideFile('');
                                         setLocalContractorSafetyGuideThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -2821,10 +2821,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     contractorSafetyGuideThumbnail: null,
                                                     contractorSafetyGuideLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Contractor safety guide deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -2871,13 +2871,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localHotWorkProcedureThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Hot work procedure onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalHotWorkProcedureFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalHotWorkProcedureThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -2886,10 +2886,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         hotWorkProcedureThumbnail: thumbnailUrl || '',
                                                         hotWorkProcedureLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Hot work procedure saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -2904,10 +2904,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Hot work procedure onDelete called');
-                                        
+
                                         setLocalHotWorkProcedureFile('');
                                         setLocalHotWorkProcedureThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -2916,10 +2916,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     hotWorkProcedureThumbnail: null,
                                                     hotWorkProcedureLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Hot work procedure deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -2966,13 +2966,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localIllegalResidentsThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Illegal residents onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalIllegalResidentsFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalIllegalResidentsThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -2981,10 +2981,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         illegalResidentsThumbnail: thumbnailUrl || '',
                                                         illegalResidentsLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Illegal residents saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -2999,10 +2999,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Illegal residents onDelete called');
-                                        
+
                                         setLocalIllegalResidentsFile('');
                                         setLocalIllegalResidentsThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -3011,10 +3011,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     illegalResidentsThumbnail: null,
                                                     illegalResidentsLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Illegal residents deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -3061,13 +3061,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localQualityControlPlanThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Quality control plan onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalQualityControlPlanFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalQualityControlPlanThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -3076,10 +3076,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         qualityControlPlanThumbnail: thumbnailUrl || '',
                                                         qualityControlPlanLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Quality control plan saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -3094,10 +3094,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Quality control plan onDelete called');
-                                        
+
                                         setLocalQualityControlPlanFile('');
                                         setLocalQualityControlPlanThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -3106,10 +3106,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     qualityControlPlanThumbnail: null,
                                                     qualityControlPlanLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Quality control plan deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,
@@ -3156,13 +3156,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     thumbnailUrl={localEmergencyProceduresThumbnail || ''}
                                     onChange={async (url, thumbnailUrl) => {
                                         console.log('🔍 Emergency procedures onChange called with:', { url, thumbnailUrl });
-                                        
+
                                         if (url) {
                                             setLocalEmergencyProceduresFile(url);
                                             if (thumbnailUrl) {
                                                 setLocalEmergencyProceduresThumbnail(thumbnailUrl);
                                             }
-                                            
+
                                             if (contractor?._id) {
                                                 try {
                                                     const { contractorsAPI } = await import('../services/api');
@@ -3171,10 +3171,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                         emergencyProceduresThumbnail: thumbnailUrl || '',
                                                         emergencyProceduresLastUpdate: new Date().toISOString().split('T')[0]
                                                     };
-                                                    
+
                                                     const result = await contractorsAPI.update(contractor._id, updateData);
                                                     console.log('✅ Emergency procedures saved successfully:', result);
-                                                    
+
                                                     if (onUpdateContractor) {
                                                         onUpdateContractor({ ...contractor, ...updateData });
                                                     }
@@ -3189,10 +3189,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     }}
                                     onDelete={async () => {
                                         console.log('🗑️ Emergency procedures onDelete called');
-                                        
+
                                         setLocalEmergencyProceduresFile('');
                                         setLocalEmergencyProceduresThumbnail('');
-                                        
+
                                         if (contractor?._id) {
                                             try {
                                                 const { contractorsAPI } = await import('../services/api');
@@ -3201,10 +3201,10 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                     emergencyProceduresThumbnail: null,
                                                     emergencyProceduresLastUpdate: null
                                                 };
-                                                
+
                                                 const result = await contractorsAPI.update(contractor._id, updateData);
                                                 console.log('✅ Emergency procedures deleted successfully:', result);
-                                                
+
                                                 if (onUpdateContractor) {
                                                     onUpdateContractor({
                                                         ...contractor,

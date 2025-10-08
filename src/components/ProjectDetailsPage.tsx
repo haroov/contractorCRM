@@ -6513,7 +6513,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -6574,7 +6574,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>(במקרה ביטוח)</Typography>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)}
+                                                        onClick={() => handleNestedFieldChange('authorityChanges', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
@@ -6596,7 +6596,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)}
+                                                        onClick={() => handleNestedFieldChange('authorityChanges', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
@@ -6630,7 +6630,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11433,10 +11433,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.architectFees === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.architectFeesAmount ? parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.architectFeesAmount ? parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
                                             {project?.architectFees === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.architectFeesDeductible ? parseInt(project.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFeesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.architectFeesDeductible ? parseInt(project.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
@@ -11447,17 +11447,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Box sx={{ border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: 'white', minHeight: '56px', padding: '0 14px', direction: 'rtl', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                                                 <Typography sx={{ fontSize: '1rem', color: 'text.secondary', marginRight: '10px' }}>הוצאות בגין שינויים ותוספות על פי דרישת הרשויות (במקרה ביטוח)</Typography>
                                                 <Box sx={{ display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'flex-start', marginLeft: '10px' }}>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.authorityChanges === false ? '#6b47c1' : 'transparent', color: project?.authorityChanges === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
-                                                    <Button variant="text" onClick={() => handleNestedFieldChange('insuranceSpecification.authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.authorityChanges === true ? '#6b47c1' : 'transparent', color: project?.authorityChanges === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('authorityChanges', false)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '0 4px 4px 0', border: '1px solid #d1d5db', borderLeft: 'none', backgroundColor: project?.authorityChanges === false ? '#6b47c1' : 'transparent', color: project?.authorityChanges === false ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === false ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem', marginRight: '0px' }}>לא</Button>
+                                                    <Button variant="text" onClick={() => handleNestedFieldChange('authorityChanges', true)} disabled={mode === 'view' || !canEdit} sx={{ borderRadius: '4px 0 0 4px', border: '1px solid #d1d5db', backgroundColor: project?.authorityChanges === true ? '#6b47c1' : 'transparent', color: project?.authorityChanges === true ? 'white' : '#6b47c1', '&:hover': { backgroundColor: project?.authorityChanges === true ? '#5a3aa1' : '#f3f4f6' }, minWidth: '50px', height: '32px', textTransform: 'none', fontSize: '0.875rem' }}>כן</Button>
                                                 </Box>
                                             </Box>
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.authorityChanges === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.authorityChangesAmount ? parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.authorityChangesAmount ? parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
                                             {project?.authorityChanges === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.authorityChangesDeductible ? parseInt(project.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChangesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.authorityChangesDeductible ? parseInt(project.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
