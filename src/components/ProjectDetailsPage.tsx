@@ -2428,6 +2428,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
                 console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
+                console.log('🔄 Deductible fields in new project insuranceSpecification:', {
+                    machineryInstallationCoverageDeductible: projectToSave.insuranceSpecification?.machineryInstallationCoverageDeductible,
+                    theftCoverageDeductible: projectToSave.insuranceSpecification?.theftCoverageDeductible,
+                    workPropertyCoverageDeductible: projectToSave.insuranceSpecification?.workPropertyCoverageDeductible,
+                    adjacentPropertyCoverageDeductible: projectToSave.insuranceSpecification?.adjacentPropertyCoverageDeductible,
+                    transitPropertyCoverageDeductible: projectToSave.insuranceSpecification?.transitPropertyCoverageDeductible,
+                    auxiliaryBuildingsCoverageDeductible: projectToSave.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible,
+                    debrisRemovalDeductible: projectToSave.insuranceSpecification?.debrisRemovalDeductible,
+                    architectFeesDeductible: projectToSave.insuranceSpecification?.architectFeesDeductible,
+                    authorityChangesDeductible: projectToSave.insuranceSpecification?.authorityChangesDeductible
+                });
                 console.log('🔄 Key fields moved to root:', {
                     projectType: projectToSave.projectType,
                     garmoshkaFile: projectToSave.garmoshkaFile,
@@ -2477,6 +2488,17 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     insuranceSpecification: updateData.insuranceSpecification
                 });
                 console.log('🔄 Property pledge data:', updateData.insuranceSpecification?.propertyPledge);
+                console.log('🔄 Deductible fields in insuranceSpecification:', {
+                    machineryInstallationCoverageDeductible: updateData.insuranceSpecification?.machineryInstallationCoverageDeductible,
+                    theftCoverageDeductible: updateData.insuranceSpecification?.theftCoverageDeductible,
+                    workPropertyCoverageDeductible: updateData.insuranceSpecification?.workPropertyCoverageDeductible,
+                    adjacentPropertyCoverageDeductible: updateData.insuranceSpecification?.adjacentPropertyCoverageDeductible,
+                    transitPropertyCoverageDeductible: updateData.insuranceSpecification?.transitPropertyCoverageDeductible,
+                    auxiliaryBuildingsCoverageDeductible: updateData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible,
+                    debrisRemovalDeductible: updateData.insuranceSpecification?.debrisRemovalDeductible,
+                    architectFeesDeductible: updateData.insuranceSpecification?.architectFeesDeductible,
+                    authorityChangesDeductible: updateData.insuranceSpecification?.authorityChangesDeductible
+                });
                 console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({
                     role: s.role,
                     contractorObjectId: s.contractorObjectId
