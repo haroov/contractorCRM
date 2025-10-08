@@ -673,7 +673,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     insuranceSpecification: {
                         propertyPledge: {
                             pledgers: []
-                        }
+                        },
+                        // Initialize all coverage fields
+                        machineryInstallationCoverage: false,
+                        theftCoverage: false,
+                        workPropertyCoverage: false,
+                        adjacentPropertyCoverage: false,
+                        transitPropertyCoverage: false,
+                        auxiliaryBuildingsCoverage: false,
+                        debrisRemoval: false,
+                        architectFees: false,
+                        authorityChanges: false,
+                        // Initialize all deductible fields
+                        machineryInstallationCoverageDeductible: '',
+                        theftCoverageDeductible: '',
+                        workPropertyCoverageDeductible: '',
+                        adjacentPropertyCoverageDeductible: '',
+                        transitPropertyCoverageDeductible: '',
+                        auxiliaryBuildingsCoverageDeductible: '',
+                        debrisRemovalDeductible: '',
+                        architectFeesDeductible: '',
+                        authorityChangesDeductible: '',
+                        // Initialize other insurance fields
+                        machineryInstallationCoverageAmount: '',
+                        theftCoverageAmount: '',
+                        workPropertyCoverageAmount: '',
+                        adjacentPropertyCoverageAmount: '',
+                        transitPropertyCoverageAmount: '',
+                        auxiliaryBuildingsCoverageAmount: '',
+                        debrisRemovalAmount: '',
+                        architectFeesAmount: '',
+                        authorityChangesAmount: '',
+                        propertyInsuranceAmount: '',
+                        runInPeriodDays: 60
                     }
                 };
                 setProject(newProject);
@@ -718,6 +750,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
+                                        // Initialize all coverage fields with defaults
+                                        machineryInstallationCoverage: projectData.insuranceSpecification?.machineryInstallationCoverage || false,
+                                        theftCoverage: projectData.insuranceSpecification?.theftCoverage || false,
+                                        workPropertyCoverage: projectData.insuranceSpecification?.workPropertyCoverage || false,
+                                        adjacentPropertyCoverage: projectData.insuranceSpecification?.adjacentPropertyCoverage || false,
+                                        transitPropertyCoverage: projectData.insuranceSpecification?.transitPropertyCoverage || false,
+                                        auxiliaryBuildingsCoverage: projectData.insuranceSpecification?.auxiliaryBuildingsCoverage || false,
+                                        debrisRemoval: projectData.insuranceSpecification?.debrisRemoval || false,
+                                        architectFees: projectData.insuranceSpecification?.architectFees || false,
+                                        authorityChanges: projectData.insuranceSpecification?.authorityChanges || false,
+                                        // Initialize all deductible fields with defaults
+                                        machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
+                                        theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
+                                        workPropertyCoverageDeductible: projectData.insuranceSpecification?.workPropertyCoverageDeductible || '',
+                                        adjacentPropertyCoverageDeductible: projectData.insuranceSpecification?.adjacentPropertyCoverageDeductible || '',
+                                        transitPropertyCoverageDeductible: projectData.insuranceSpecification?.transitPropertyCoverageDeductible || '',
+                                        auxiliaryBuildingsCoverageDeductible: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible || '',
+                                        debrisRemovalDeductible: projectData.insuranceSpecification?.debrisRemovalDeductible || '',
+                                        architectFeesDeductible: projectData.insuranceSpecification?.architectFeesDeductible || '',
+                                        authorityChangesDeductible: projectData.insuranceSpecification?.authorityChangesDeductible || '',
+                                        // Initialize other insurance fields with defaults
+                                        machineryInstallationCoverageAmount: projectData.insuranceSpecification?.machineryInstallationCoverageAmount || '',
+                                        theftCoverageAmount: projectData.insuranceSpecification?.theftCoverageAmount || '',
+                                        workPropertyCoverageAmount: projectData.insuranceSpecification?.workPropertyCoverageAmount || '',
+                                        adjacentPropertyCoverageAmount: projectData.insuranceSpecification?.adjacentPropertyCoverageAmount || '',
+                                        transitPropertyCoverageAmount: projectData.insuranceSpecification?.transitPropertyCoverageAmount || '',
+                                        auxiliaryBuildingsCoverageAmount: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageAmount || '',
+                                        debrisRemovalAmount: projectData.insuranceSpecification?.debrisRemovalAmount || '',
+                                        architectFeesAmount: projectData.insuranceSpecification?.architectFeesAmount || '',
+                                        authorityChangesAmount: projectData.insuranceSpecification?.authorityChangesAmount || '',
+                                        propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
+                                        runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
+                                        // Preserve existing fields
                                         ...projectData.insuranceSpecification,
                                         propertyPledge: {
                                             ...projectData.insuranceSpecification?.propertyPledge,
@@ -782,6 +847,39 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
+                                        // Initialize all coverage fields with defaults
+                                        machineryInstallationCoverage: projectData.insuranceSpecification?.machineryInstallationCoverage || false,
+                                        theftCoverage: projectData.insuranceSpecification?.theftCoverage || false,
+                                        workPropertyCoverage: projectData.insuranceSpecification?.workPropertyCoverage || false,
+                                        adjacentPropertyCoverage: projectData.insuranceSpecification?.adjacentPropertyCoverage || false,
+                                        transitPropertyCoverage: projectData.insuranceSpecification?.transitPropertyCoverage || false,
+                                        auxiliaryBuildingsCoverage: projectData.insuranceSpecification?.auxiliaryBuildingsCoverage || false,
+                                        debrisRemoval: projectData.insuranceSpecification?.debrisRemoval || false,
+                                        architectFees: projectData.insuranceSpecification?.architectFees || false,
+                                        authorityChanges: projectData.insuranceSpecification?.authorityChanges || false,
+                                        // Initialize all deductible fields with defaults
+                                        machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
+                                        theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
+                                        workPropertyCoverageDeductible: projectData.insuranceSpecification?.workPropertyCoverageDeductible || '',
+                                        adjacentPropertyCoverageDeductible: projectData.insuranceSpecification?.adjacentPropertyCoverageDeductible || '',
+                                        transitPropertyCoverageDeductible: projectData.insuranceSpecification?.transitPropertyCoverageDeductible || '',
+                                        auxiliaryBuildingsCoverageDeductible: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible || '',
+                                        debrisRemovalDeductible: projectData.insuranceSpecification?.debrisRemovalDeductible || '',
+                                        architectFeesDeductible: projectData.insuranceSpecification?.architectFeesDeductible || '',
+                                        authorityChangesDeductible: projectData.insuranceSpecification?.authorityChangesDeductible || '',
+                                        // Initialize other insurance fields with defaults
+                                        machineryInstallationCoverageAmount: projectData.insuranceSpecification?.machineryInstallationCoverageAmount || '',
+                                        theftCoverageAmount: projectData.insuranceSpecification?.theftCoverageAmount || '',
+                                        workPropertyCoverageAmount: projectData.insuranceSpecification?.workPropertyCoverageAmount || '',
+                                        adjacentPropertyCoverageAmount: projectData.insuranceSpecification?.adjacentPropertyCoverageAmount || '',
+                                        transitPropertyCoverageAmount: projectData.insuranceSpecification?.transitPropertyCoverageAmount || '',
+                                        auxiliaryBuildingsCoverageAmount: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageAmount || '',
+                                        debrisRemovalAmount: projectData.insuranceSpecification?.debrisRemovalAmount || '',
+                                        architectFeesAmount: projectData.insuranceSpecification?.architectFeesAmount || '',
+                                        authorityChangesAmount: projectData.insuranceSpecification?.authorityChangesAmount || '',
+                                        propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
+                                        runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
+                                        // Preserve existing fields
                                         ...projectData.insuranceSpecification,
                                         propertyPledge: {
                                             ...projectData.insuranceSpecification?.propertyPledge,
@@ -790,6 +888,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     }
                                 };
                                 console.log('🔄 Setting project state with arrays data');
+                                console.log('🔄 Insurance specification data being set:', projectDataWithArrays.insuranceSpecification);
                                 setProject(projectDataWithArrays);
 
                                 // Update exists fields automatically based on file presence
