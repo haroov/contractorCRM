@@ -28,11 +28,11 @@ dotenv.config();
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
   const transformed = { ...project };
-  
+
   // Define coverage types and their field mappings
   const coverageTypes = [
     'theftCoverage',
-    'workPropertyCoverage', 
+    'workPropertyCoverage',
     'adjacentPropertyCoverage',
     'transitPropertyCoverage',
     'auxiliaryBuildingsCoverage',
@@ -90,6 +90,9 @@ function flattenInsuranceCoverageFields(project) {
       flattened[`${coverageType}Amount`] = coverage.insuranceSum || '';
       flattened[`${coverageType}Deductible`] = coverage.deductibles || '';
     }
+    // If the data is already in flat structure (which is the current case), keep it as is
+    // This handles the case where the client sends flat data like:
+    // theftCoverage: true, theftCoverageAmount: 100000, theftCoverageDeductible: 1000
   });
 
   return flattened;
@@ -1406,12 +1409,10 @@ app.post('/api/projects', async (req, res) => {
     console.log('🔍 Request body:', req.body);
 
     const db = client.db('contractor-crm');
-    
-    // Transform nested insurance coverage fields to flat structure for saving
-    const flattenedData = flattenInsuranceCoverageFields(req.body);
-    
+
+    // Keep the data as is (already in flat structure from client)
     const projectData = {
-      ...flattenedData,
+      ...req.body,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -1464,15 +1465,13 @@ app.put('/api/projects/:id', async (req, res) => {
 
     const db = client.db('contractor-crm');
 
-    // Transform nested insurance coverage fields to flat structure for saving
-    const flattenedBody = flattenInsuranceCoverageFields(req.body);
-
+    // Keep the data as is (already in flat structure from client)
     // Separate fields to set and fields to unset
     const fieldsToSet = {};
     const fieldsToUnset = {};
 
     // Process each field in the request body
-    for (const [key, value] of Object.entries(flattenedBody)) {
+    for (const [key, value] of Object.entries(req.body)) {
       console.log('🔍 Processing field:', key, 'with value:', value);
 
       if (value === null) {
@@ -3583,11 +3582,9 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
       return res.status(404).json({ error: 'Project not found or access denied' });
     }
 
-    // Transform nested insurance coverage fields to flat structure for saving
-    const flattenedBody = flattenInsuranceCoverageFields(req.body);
-    
+    // Keep the data as is (already in flat structure from client)
     const updateData = {
-      ...flattenedBody,
+      ...req.body,
       updatedAt: new Date()
     };
 

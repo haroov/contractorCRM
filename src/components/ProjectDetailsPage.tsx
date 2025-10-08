@@ -10732,16 +10732,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('theftCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('theftCoverage.isActive', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
                                                             border: '1px solid #d1d5db',
                                                             borderLeft: 'none',
-                                                            backgroundColor: project?.theftCoverage === false ? '#6b47c1' : 'transparent',
-                                                            color: project?.theftCoverage === false ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.theftCoverage?.isActive === false ? '#6b47c1' : 'transparent',
+                                                            color: project?.theftCoverage?.isActive === false ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.theftCoverage === false ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.theftCoverage?.isActive === false ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10754,15 +10754,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('theftCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('theftCoverage.isActive', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.theftCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.theftCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.theftCoverage?.isActive === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.theftCoverage?.isActive === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.theftCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.theftCoverage?.isActive === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
