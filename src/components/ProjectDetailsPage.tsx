@@ -1201,8 +1201,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     };
 
     const handleNestedFieldChange = useCallback((fieldPath: string, value: any) => {
-        console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
-        console.log('🔄 Current project state:', project);
+            console.log('🔄 handleNestedFieldChange called:', fieldPath, value);
+            console.log('🔄 Current project state:', project);
+            console.log('🔄 Insurance specification in current project:', project?.insuranceSpecification);
         // Always try to update, even if project is null
         setProject(prevProject => {
             // If prevProject is null, create a basic project structure
@@ -1220,6 +1221,43 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     mainContractor: '',
                     engineeringQuestionnaire: {
                         buildingPlan: {}
+                    },
+                    insuranceSpecification: {
+                        propertyPledge: {
+                            pledgers: []
+                        },
+                        // Initialize all coverage fields
+                        machineryInstallationCoverage: false,
+                        theftCoverage: false,
+                        workPropertyCoverage: false,
+                        adjacentPropertyCoverage: false,
+                        transitPropertyCoverage: false,
+                        auxiliaryBuildingsCoverage: false,
+                        debrisRemoval: false,
+                        architectFees: false,
+                        authorityChanges: false,
+                        // Initialize all deductible fields
+                        machineryInstallationCoverageDeductible: '',
+                        theftCoverageDeductible: '',
+                        workPropertyCoverageDeductible: '',
+                        adjacentPropertyCoverageDeductible: '',
+                        transitPropertyCoverageDeductible: '',
+                        auxiliaryBuildingsCoverageDeductible: '',
+                        debrisRemovalDeductible: '',
+                        architectFeesDeductible: '',
+                        authorityChangesDeductible: '',
+                        // Initialize other insurance fields
+                        machineryInstallationCoverageAmount: '',
+                        theftCoverageAmount: '',
+                        workPropertyCoverageAmount: '',
+                        adjacentPropertyCoverageAmount: '',
+                        transitPropertyCoverageAmount: '',
+                        auxiliaryBuildingsCoverageAmount: '',
+                        debrisRemovalAmount: '',
+                        architectFeesAmount: '',
+                        authorityChangesAmount: '',
+                        propertyInsuranceAmount: '',
+                        runInPeriodDays: 60
                     }
                 };
             }
