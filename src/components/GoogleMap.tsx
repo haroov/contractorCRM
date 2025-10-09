@@ -41,7 +41,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-            
+
             // Try alternative names (including Render's shorter name)
             if (!apiKey) {
                 apiKey = import.meta.env.VITE_GOOGLE_MAP;
@@ -55,19 +55,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             if (!apiKey) {
                 apiKey = import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
             }
-            
-            // Try to get from build-time environment variables
-            if (!apiKey) {
-                // Check if we're in production and try to get from build-time env vars
-                if (import.meta.env.PROD) {
-                    // Try to get from window object (set by build process)
-                    const buildTimeKey = (window as any).__GOOGLE_MAPS_API_KEY__;
-                    if (buildTimeKey) {
-                        console.log('✅ Found API key in build-time environment:', buildTimeKey.substring(0, 10) + '...');
-                        apiKey = buildTimeKey;
-                    }
-                }
-            }
+
 
             // Fallback: try to get from window object (if set by build process)
             if (!apiKey && (window as any).GOOGLE_MAPS_API_KEY) {
