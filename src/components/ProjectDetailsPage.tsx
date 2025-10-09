@@ -10638,14 +10638,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
                                         <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
+                                            display: 'grid',
+                                            gridTemplateColumns: '1fr 1fr',
+                                            gap: 2
                                         }}>
                                             {project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="תקופת ההרצה המבוקשת בימים (נכלל בתקופת הביטוח)"
+                                                    label="תקופת ההרצה (ימים)"
                                                     value={project?.insuranceSpecification?.runPeriodDays || ''}
                                                     onChange={(e) => handleNestedFieldChange('insuranceSpecification.runPeriodDays', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
@@ -10663,26 +10663,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }}
                                                 />
                                             )}
-                                        </Box>
-                                        <Box sx={{
-                                            display: 'flex',
-                                            alignItems: 'flex-start',
-                                            justifyContent: 'flex-end'
-                                        }}>
                                             {(project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true || project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
-                                                    label="השתתפות עצמית (₪)"
-                                                    value={project?.insuranceSpecification?.machineryInstallationCoverage?.deductibles ?
-                                                        parseInt(project.insuranceSpecification.machineryInstallationCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
-                                                    onChange={(e) => {
-                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
-                                                    }}
+                                                    label="השתתפות עצמית"
+                                                    value={project?.insuranceSpecification?.machineryInstallationCoverage?.deductibles || ''}
+                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.deductibles', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
-                                                    inputMode="numeric"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': {

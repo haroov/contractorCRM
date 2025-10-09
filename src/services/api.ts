@@ -94,7 +94,7 @@ export const projectsAPI = {
     console.log('🔍 Raw API response data:', data);
     console.log('🔍 Raw insuranceSpecification from API:', data.insuranceSpecification);
     console.log('🔍 Raw theftCoverage from API:', data.insuranceSpecification?.theftCoverage);
-    
+
     // Extract the project data from the response
     if (data.success && data.project) {
       console.log('🔍 Extracted project data:', data.project);
@@ -102,7 +102,7 @@ export const projectsAPI = {
       console.log('🔍 Extracted theftCoverage:', data.project.insuranceSpecification?.theftCoverage);
       return data.project;
     }
-    
+
     return data;
   },
 
