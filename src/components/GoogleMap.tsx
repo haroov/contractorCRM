@@ -94,9 +94,22 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             console.log('🔍 All environment variables:', Object.keys(import.meta.env));
 
             if (!apiKey) {
-                // Temporary fallback for debugging - remove in production
-                console.warn('⚠️ No API key found in environment variables, using temporary fallback');
-                apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
+                // Try to get from Render's environment variables directly
+                console.warn('⚠️ No API key found in Vite environment variables');
+                console.log('🔍 Trying to get from process.env...');
+                
+                // Try different ways to get the API key
+                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY || 
+                                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
+                                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
+                
+                if (processEnvKey) {
+                    console.log('✅ Found API key in process.env:', processEnvKey.substring(0, 10) + '...');
+                    apiKey = processEnvKey;
+                } else {
+                    console.warn('⚠️ No API key found anywhere, using temporary fallback');
+                    apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
+                }
             }
 
             const script = document.createElement('script');
