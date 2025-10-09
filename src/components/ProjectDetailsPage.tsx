@@ -2732,7 +2732,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleSave = async () => {
         try {
-            console.log('🚀 SAVE BUTTON CLICKED - Starting save process');
+            console.log('🚀 SAVE BUTTON CLICKED - Starting save process - VERSION 2');
             console.log('🚀 Current project data:', project);
 
             if (!project) {
