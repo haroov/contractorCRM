@@ -38,6 +38,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             }
 
             const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+            console.log('🔍 Google Maps API Key Debug:', {
+                apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
+                env: import.meta.env,
+                allEnvKeys: Object.keys(import.meta.env)
+            });
             if (!apiKey) {
                 reject(new Error('Google Maps API key not found'));
                 return;
