@@ -59,6 +59,7 @@ import trashIconUrl from '../assets/icon-trash.svg';
 import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
+import GoogleMap from './GoogleMap';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -4719,11 +4720,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                         {/* Map Section */}
                                                         <Box sx={{ mt: 3 }}>
-                                                            <Box sx={{ 
-                                                                display: 'flex', 
-                                                                alignItems: 'center', 
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
                                                                 justifyContent: 'space-between',
-                                                                mb: 2 
+                                                                mb: 2
                                                             }}>
                                                                 <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
                                                                     מפה
@@ -4731,7 +4732,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <IconButton
                                                                     onClick={() => setMapSectionExpanded(!mapSectionExpanded)}
                                                                     size="small"
-                                                                    sx={{ 
+                                                                    sx={{
                                                                         color: 'text.secondary',
                                                                         '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
                                                                     }}
@@ -4740,19 +4741,37 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 </IconButton>
                                                             </Box>
                                                             {mapSectionExpanded && (
-                                                                <Box sx={{
-                                                                    border: '1px solid #e0e0e0',
-                                                                    borderRadius: 1,
-                                                                    p: 2,
-                                                                    backgroundColor: '#f9f9f9',
-                                                                    minHeight: '200px',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center'
-                                                                }}>
-                                                                    <Typography variant="body2" color="text.secondary">
-                                                                        מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט
-                                                                    </Typography>
+                                                                <Box sx={{ p: 1 }}>
+                                                                    {project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x && 
+                                                                     project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y ? (
+                                                                        <GoogleMap
+                                                                            latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
+                                                                            longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
+                                                                            height="400px"
+                                                                            width="100%"
+                                                                            zoom={16}
+                                                                        />
+                                                                    ) : (
+                                                                        <Box sx={{
+                                                                            border: '1px solid #e0e0e0',
+                                                                            borderRadius: 1,
+                                                                            p: 3,
+                                                                            backgroundColor: '#f9f9f9',
+                                                                            minHeight: '200px',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            flexDirection: 'column',
+                                                                            gap: 2
+                                                                        }}>
+                                                                            <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                                                אנא הזן נ״צ לפרויקט כדי להציג את המפה
+                                                                            </Typography>
+                                                                            <Typography variant="caption" color="text.secondary" textAlign="center">
+                                                                                הזן ערכי X ו-Y בשדות הנ״צ למעלה
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    )}
                                                                 </Box>
                                                             )}
                                                         </Box>
