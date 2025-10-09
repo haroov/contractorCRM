@@ -742,7 +742,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         employerLiability: {
                             hasCoverage: false,
                             liabilityLimit: '',
-                            deductible: ''
+                            deductible: '',
+                            youthEmployment: {
+                                hasCoverage: false,
+                                details: ''
+                            },
+                            volunteerEmployment: {
+                                hasCoverage: false,
+                                details: ''
+                            },
+                            uncoveredEmployees: {
+                                hasCoverage: false,
+                                details: ''
+                            }
                         }
                     }
                 };
@@ -828,7 +840,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         employerLiability: {
                                             hasCoverage: projectData.insuranceSpecification?.employerLiability?.hasCoverage || false,
                                             liabilityLimit: projectData.insuranceSpecification?.employerLiability?.liabilityLimit || '',
-                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || ''
+                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || '',
+                                            youthEmployment: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.youthEmployment?.details || ''
+                                            },
+                                            volunteerEmployment: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.volunteerEmployment?.details || ''
+                                            },
+                                            uncoveredEmployees: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.uncoveredEmployees?.details || ''
+                                            }
                                         },
                                         // Preserve other fields from insuranceSpecification
                                         file: projectData.insuranceSpecification?.file,
@@ -936,7 +960,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         employerLiability: {
                                             hasCoverage: projectData.insuranceSpecification?.employerLiability?.hasCoverage || false,
                                             liabilityLimit: projectData.insuranceSpecification?.employerLiability?.liabilityLimit || '',
-                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || ''
+                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || '',
+                                            youthEmployment: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.youthEmployment?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.youthEmployment?.details || ''
+                                            },
+                                            volunteerEmployment: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.volunteerEmployment?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.volunteerEmployment?.details || ''
+                                            },
+                                            uncoveredEmployees: {
+                                                hasCoverage: projectData.insuranceSpecification?.employerLiability?.uncoveredEmployees?.hasCoverage || false,
+                                                details: projectData.insuranceSpecification?.employerLiability?.uncoveredEmployees?.details || ''
+                                            }
                                         },
                                         // Preserve other fields from insuranceSpecification
                                         file: projectData.insuranceSpecification?.file,
@@ -1361,7 +1397,19 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         employerLiability: {
                             hasCoverage: false,
                             liabilityLimit: '',
-                            deductible: ''
+                            deductible: '',
+                            youthEmployment: {
+                                hasCoverage: false,
+                                details: ''
+                            },
+                            volunteerEmployment: {
+                                hasCoverage: false,
+                                details: ''
+                            },
+                            uncoveredEmployees: {
+                                hasCoverage: false,
+                                details: ''
+                            }
                         }
                     }
                 };
