@@ -4713,6 +4713,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             onPlotDetailsChange={(plotDetails) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.plotDetails', plotDetails)}
                                                             disabled={mode === 'view' || !canEdit}
                                                         />
+
+                                                        {/* Map Section */}
+                                                        <Box sx={{ mt: 3 }}>
+                                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                                                מפה
+                                                            </Typography>
+                                                            <Box sx={{
+                                                                border: '1px solid #e0e0e0',
+                                                                borderRadius: 1,
+                                                                p: 2,
+                                                                backgroundColor: '#f9f9f9',
+                                                                minHeight: '200px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center'
+                                                            }}>
+                                                                <Typography variant="body2" color="text.secondary">
+                                                                    מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט
+                                                                </Typography>
+                                                            </Box>
+                                                        </Box>
                                                     </Box>
                                                 </Box>
 
