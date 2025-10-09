@@ -67,6 +67,9 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
                 viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
             });
+            
+            // Simple test log to verify deployment
+            console.log('🚀 NEW VERSION DEPLOYED - Testing VITE_GOOGLE_MAP:', import.meta.env.VITE_GOOGLE_MAP);
 
             // Additional detailed logging
             console.log('🔍 Detailed Environment Check:', {
