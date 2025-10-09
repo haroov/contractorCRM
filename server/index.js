@@ -29,7 +29,7 @@ dotenv.config();
 function transformInsuranceCoverageFields(project) {
   console.log('🔍 transformInsuranceCoverageFields called for project:', project.projectName);
   console.log('🔍 Raw insuranceSpecification from MongoDB:', project.insuranceSpecification);
-  
+
   const transformed = { ...project };
 
   // Define coverage types and their field mappings
@@ -53,7 +53,7 @@ function transformInsuranceCoverageFields(project) {
   // Transform each coverage type from flat to nested structure
   coverageTypes.forEach(coverageType => {
     console.log(`🔍 Processing ${coverageType}:`, transformed.insuranceSpecification[coverageType]);
-    
+
     // Check if the field is already in nested structure
     if (transformed.insuranceSpecification[coverageType] && typeof transformed.insuranceSpecification[coverageType] === 'object' &&
       transformed.insuranceSpecification[coverageType].hasOwnProperty('isActive')) {
@@ -1361,7 +1361,9 @@ app.get('/api/projects/:id', async (req, res) => {
     const projectWithStatus = { ...project, status };
 
     // Transform flat insurance coverage fields to nested structure
+    console.log('🔍 Before transformation - theftCoverage:', projectWithStatus.insuranceSpecification?.theftCoverage);
     const transformedProject = transformInsuranceCoverageFields(projectWithStatus);
+    console.log('🔍 After transformation - theftCoverage:', transformedProject.insuranceSpecification?.theftCoverage);
 
     console.log('✅ Fetched project:', transformedProject.projectName);
     console.log('🔍 Project subcontractors:', transformedProject.subcontractors);
