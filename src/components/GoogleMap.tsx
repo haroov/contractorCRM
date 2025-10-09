@@ -29,6 +29,30 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Load Google Maps API
+    const loadGoogleMapsAPI = () => {
+        return new Promise<void>((resolve, reject) => {
+            if (window.google) {
+                resolve();
+                return;
+            }
+
+            const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+            if (!apiKey) {
+                reject(new Error('Google Maps API key not found'));
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
+            script.async = true;
+            script.defer = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Google Maps API'));
+            document.head.appendChild(script);
+        });
+    };
+
     useEffect(() => {
         const initializeMap = () => {
             if (!window.google || !mapRef.current) {
@@ -105,27 +129,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             }
         };
 
-        // Check if Google Maps is loaded
-        if (window.google) {
-            initializeMap();
-        } else {
-            // Wait for Google Maps to load
-            const checkGoogleMaps = setInterval(() => {
-                if (window.google) {
-                    clearInterval(checkGoogleMaps);
-                    initializeMap();
-                }
-            }, 100);
-
-            // Cleanup interval after 10 seconds
-            setTimeout(() => {
-                clearInterval(checkGoogleMaps);
-                if (!window.google) {
-                    setError('Google Maps לא נטען. אנא בדוק את ה-API key');
-                    setIsLoading(false);
-                }
-            }, 10000);
-        }
+        // Load Google Maps API and initialize map
+        loadGoogleMapsAPI()
+            .then(() => {
+                initializeMap();
+            })
+            .catch((err) => {
+                console.error('Failed to load Google Maps API:', err);
+                setError('שגיאה בטעינת Google Maps API. אנא בדוק את ה-API key');
+                setIsLoading(false);
+            });
 
         return () => {
             if (marker) {
