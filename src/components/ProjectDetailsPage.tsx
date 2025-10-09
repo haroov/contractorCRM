@@ -8744,6 +8744,175 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                     </Box>
                                 </Box>
+
+                                {/* סקשן מפות והדמיות */}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                        מפות והדמיות
+                                    </Typography>
+
+                                    <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '20%' }}>סוג המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '25%' }}>תיאור המסמך</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '30%' }}>קובץ</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', width: '15%' }}>תאריך תוקף</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>פעולות</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {(project?.mapsAndVisualizations || []).map((attachment: any, attachmentIndex: number) => (
+                                                    <TableRow key={attachment.id}>
+                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                value={attachment.documentType || ''}
+                                                                onChange={(e) => {
+                                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                    updatedAttachments[attachmentIndex] = {
+                                                                        ...updatedAttachments[attachmentIndex],
+                                                                        documentType: e.target.value
+                                                                    };
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                size="small"
+                                                                placeholder="סוג המסמך"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                value={attachment.description || ''}
+                                                                onChange={(e) => {
+                                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                    updatedAttachments[attachmentIndex] = {
+                                                                        ...updatedAttachments[attachmentIndex],
+                                                                        description: e.target.value
+                                                                    };
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                size="small"
+                                                                placeholder="תיאור המסמך"
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                                {attachment.fileName && (
+                                                                    <Typography variant="body2" sx={{ color: '#6b47c1', flex: 1 }}>
+                                                                        {attachment.fileName}
+                                                                    </Typography>
+                                                                )}
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    component="label"
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    sx={{
+                                                                        borderColor: '#6b47c1',
+                                                                        color: '#6b47c1',
+                                                                        '&:hover': {
+                                                                            borderColor: '#5a3aa1',
+                                                                            backgroundColor: '#f3f4f6'
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    העלה קובץ
+                                                                    <input
+                                                                        type="file"
+                                                                        hidden
+                                                                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (file) {
+                                                                                const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                                updatedAttachments[attachmentIndex] = {
+                                                                                    ...updatedAttachments[attachmentIndex],
+                                                                                    fileName: file.name,
+                                                                                    file: file
+                                                                                };
+                                                                                handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </Button>
+                                                            </Box>
+                                                        </TableCell>
+                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
+                                                            <TextField
+                                                                fullWidth
+                                                                type="date"
+                                                                value={attachment.expiryDate || ''}
+                                                                onChange={(e) => {
+                                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                    updatedAttachments[attachmentIndex] = {
+                                                                        ...updatedAttachments[attachmentIndex],
+                                                                        expiryDate: e.target.value
+                                                                    };
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                size="small"
+                                                                InputLabelProps={{ shrink: true }}
+                                                                sx={{ direction: 'rtl' }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell sx={{ borderBottom: '1px solid #e0e0e0', textAlign: 'center' }}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => {
+                                                                    const updatedAttachments = (project?.mapsAndVisualizations || []).filter((_: any, index: number) => index !== attachmentIndex);
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                sx={{ color: '#dc2626' }}
+                                                            >
+                                                                <DeleteIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+
+                                    {canEdit && (
+                                        <Box sx={{ mt: 2, textAlign: 'right' }}>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<AddIcon />}
+                                                onClick={() => {
+                                                    const newAttachment = {
+                                                        id: `attachment_${Date.now()}`,
+                                                        documentType: '',
+                                                        description: '',
+                                                        fileName: '',
+                                                        file: null,
+                                                        expiryDate: ''
+                                                    };
+                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || []), newAttachment];
+                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                }}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    borderColor: '#6b47c1',
+                                                    color: '#6b47c1',
+                                                    '&:hover': {
+                                                        borderColor: '#5a3aa1',
+                                                        backgroundColor: '#f3f4f6'
+                                                    }
+                                                }}
+                                            >
+                                                הוסף מסמך
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </Box>
                             </Box>
                         )}
 
