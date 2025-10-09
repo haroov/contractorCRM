@@ -2732,6 +2732,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
     const handleSave = async () => {
         try {
+            console.log('🚀 SAVE BUTTON CLICKED - Starting save process');
+            console.log('🚀 Current project data:', project);
 
             if (!project) {
                 console.error('No project to save');
