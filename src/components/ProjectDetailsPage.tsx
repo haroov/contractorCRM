@@ -470,7 +470,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
-    const [mapSectionExpanded, setMapSectionExpanded] = useState(true);
+    const [mapSectionExpanded, setMapSectionExpanded] = useState(false);
     const [claims, setClaims] = useState<any[]>([]);
     const [loadingClaims, setLoadingClaims] = useState(false);
     const [bankNames, setBankNames] = useState<string[]>([
