@@ -39,7 +39,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-            
+
             // Try alternative names
             if (!apiKey) {
                 apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
@@ -47,7 +47,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             if (!apiKey) {
                 apiKey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
             }
-            
+
             // Fallback: try to get from window object (if set by build process)
             if (!apiKey && (window as any).GOOGLE_MAPS_API_KEY) {
                 apiKey = (window as any).GOOGLE_MAPS_API_KEY;
@@ -61,10 +61,22 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
                 viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
             });
+            
+            // Additional detailed logging
+            console.log('🔍 Detailed Environment Check:', {
+                'import.meta.env': import.meta.env,
+                'import.meta.env.MODE': import.meta.env.MODE,
+                'import.meta.env.DEV': import.meta.env.DEV,
+                'import.meta.env.PROD': import.meta.env.PROD,
+                'VITE_GOOGLE_MAPS_API_KEY': import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+                'GOOGLE_MAPS_API_KEY': import.meta.env.GOOGLE_MAPS_API_KEY,
+                'REACT_APP_GOOGLE_MAPS_API_KEY': import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY
+            });
 
             if (!apiKey) {
-                reject(new Error('Google Maps API key not found'));
-                return;
+                // Temporary fallback for debugging - remove in production
+                console.warn('⚠️ No API key found in environment variables, using temporary fallback');
+                apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
             }
 
             const script = document.createElement('script');
