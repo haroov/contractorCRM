@@ -792,7 +792,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
-                                        // Initialize all coverage fields with defaults
+                                        // Preserve existing fields first
+                                        ...projectData.insuranceSpecification,
+                                        // Then override with properly initialized coverage fields
                                         machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
                                         theftCoverage: getCoverageState(projectData.insuranceSpecification?.theftCoverage),
                                         workPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.workPropertyCoverage),
@@ -802,11 +804,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
-                                        // Old flat fields removed - now using nested structure
-                                        propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
-                                        runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
-                                        // Preserve existing fields
-                                        ...projectData.insuranceSpecification,
+                                        // Ensure propertyPledge is properly initialized
                                         propertyPledge: {
                                             ...projectData.insuranceSpecification?.propertyPledge,
                                             pledgers: projectData.insuranceSpecification?.propertyPledge?.pledgers || []
@@ -877,7 +875,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
-                                        // Initialize all coverage fields with defaults
+                                        // Preserve existing fields first
+                                        ...projectData.insuranceSpecification,
+                                        // Then override with properly initialized coverage fields
                                         machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
                                         theftCoverage: getCoverageState(projectData.insuranceSpecification?.theftCoverage),
                                         workPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.workPropertyCoverage),
@@ -887,11 +887,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
-                                        // Old flat fields removed - now using nested structure
-                                        propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
-                                        runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
-                                        // Preserve existing fields
-                                        ...projectData.insuranceSpecification,
+                                        // Ensure propertyPledge is properly initialized
                                         propertyPledge: {
                                             ...projectData.insuranceSpecification?.propertyPledge,
                                             pledgers: projectData.insuranceSpecification?.propertyPledge?.pledgers || []
@@ -900,6 +896,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 };
                                 console.log('🔄 Setting project state with arrays data');
                                 console.log('🔄 Insurance specification data being set:', projectDataWithArrays.insuranceSpecification);
+                                console.log('🔍 Raw theftCoverage from server:', projectData.insuranceSpecification?.theftCoverage);
+                                console.log('🔍 Processed theftCoverage after getCoverageState:', getCoverageState(projectData.insuranceSpecification?.theftCoverage));
                                 console.log('🔄 Coverage boolean values:', {
                                     machineryInstallationCoverage: projectDataWithArrays.insuranceSpecification?.machineryInstallationCoverage,
                                     theftCoverage: projectDataWithArrays.insuranceSpecification?.theftCoverage,
