@@ -903,11 +903,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     theftCoverage: projectDataWithArrays.insuranceSpecification?.theftCoverage,
                                     workPropertyCoverage: projectDataWithArrays.insuranceSpecification?.workPropertyCoverage,
                                     adjacentPropertyCoverage: projectDataWithArrays.insuranceSpecification?.adjacentPropertyCoverage,
-                                    consequentialDamage: projectDataWithArrays.insuranceSpecification?.consequentialDamage,
-                                    vibrationsWeakening: projectDataWithArrays.insuranceSpecification?.vibrationsWeakening,
-                                    employerLiability: projectDataWithArrays.insuranceSpecification?.employerLiability
+                                    transitPropertyCoverage: projectDataWithArrays.insuranceSpecification?.transitPropertyCoverage,
+                                    auxiliaryBuildingsCoverage: projectDataWithArrays.insuranceSpecification?.auxiliaryBuildingsCoverage,
+                                    debrisRemoval: projectDataWithArrays.insuranceSpecification?.debrisRemoval,
+                                    architectFees: projectDataWithArrays.insuranceSpecification?.architectFees,
+                                    authorityChanges: projectDataWithArrays.insuranceSpecification?.authorityChanges,
                                 });
+                                console.log('🔍 Final projectDataWithArrays before setProject:', projectDataWithArrays);
                                 setProject(projectDataWithArrays);
+                                console.log('✅ Project state set successfully');
 
                                 // Update exists fields automatically based on file presence
                                 const updatedProjectData = {
