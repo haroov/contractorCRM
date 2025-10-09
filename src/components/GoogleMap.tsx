@@ -39,13 +39,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
+            
             // Try alternative names
             if (!apiKey) {
                 apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
             }
             if (!apiKey) {
                 apiKey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+            }
+            if (!apiKey) {
+                apiKey = import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
             }
 
             // Fallback: try to get from window object (if set by build process)
@@ -61,7 +64,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
                 viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
             });
-            
+
             // Additional detailed logging
             console.log('🔍 Detailed Environment Check:', {
                 'import.meta.env': import.meta.env,
@@ -70,8 +73,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 'import.meta.env.PROD': import.meta.env.PROD,
                 'VITE_GOOGLE_MAPS_API_KEY': import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
                 'GOOGLE_MAPS_API_KEY': import.meta.env.GOOGLE_MAPS_API_KEY,
-                'REACT_APP_GOOGLE_MAPS_API_KEY': import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY
+                'REACT_APP_GOOGLE_MAPS_API_KEY': import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+                'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY': import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
             });
+            
+            // Log all environment variables that start with VITE_
+            const viteEnvVars = Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'));
+            console.log('🔍 All VITE_ environment variables:', viteEnvVars);
+            
+            // Log all environment variables
+            console.log('🔍 All environment variables:', Object.keys(import.meta.env));
 
             if (!apiKey) {
                 // Temporary fallback for debugging - remove in production
