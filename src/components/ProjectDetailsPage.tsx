@@ -12308,22 +12308,44 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* עמודה שנייה - שדה גבול אחריות */}
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                        {/* עמודה שנייה - שדות מותנים */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
                                                     label="גבול אחריות (₪)"
-                                                    value="20,000,000"
-                                                    disabled={true}
+                                                    value={project?.insuranceSpecification?.employerLiability?.liabilityLimit ? parseInt(project.insuranceSpecification.employerLiability.liabilityLimit.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.employerLiability.liabilityLimit', numericValue || '');
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
+                                                    inputMode="numeric"
                                                     sx={{
                                                         direction: 'rtl',
-                                                        '& .MuiInputBase-root': {
-                                                            minHeight: '56px',
-                                                            backgroundColor: '#f5f5f5'
-                                                        },
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                            {project?.insuranceSpecification?.employerLiability?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="השתתפות עצמית (₪)"
+                                                    value={project?.insuranceSpecification?.employerLiability?.deductible ? parseInt(project.insuranceSpecification.employerLiability.deductible.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.employerLiability.deductible', numericValue || '');
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    sx={{
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
                                                 />
