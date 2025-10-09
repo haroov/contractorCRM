@@ -27,6 +27,9 @@ dotenv.config();
 
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
+  console.log('🔍 transformInsuranceCoverageFields called for project:', project.projectName);
+  console.log('🔍 Raw insuranceSpecification from MongoDB:', project.insuranceSpecification);
+  
   const transformed = { ...project };
 
   // Define coverage types and their field mappings
@@ -49,10 +52,13 @@ function transformInsuranceCoverageFields(project) {
 
   // Transform each coverage type from flat to nested structure
   coverageTypes.forEach(coverageType => {
+    console.log(`🔍 Processing ${coverageType}:`, transformed.insuranceSpecification[coverageType]);
+    
     // Check if the field is already in nested structure
     if (transformed.insuranceSpecification[coverageType] && typeof transformed.insuranceSpecification[coverageType] === 'object' &&
       transformed.insuranceSpecification[coverageType].hasOwnProperty('isActive')) {
       // Already in nested structure, keep as is
+      console.log(`✅ ${coverageType} already in nested structure, keeping as is`);
       return;
     }
 
@@ -60,6 +66,8 @@ function transformInsuranceCoverageFields(project) {
     const isActive = transformed.insuranceSpecification[coverageType];
     const insuranceSum = transformed.insuranceSpecification[`${coverageType}Amount`];
     const deductibles = transformed.insuranceSpecification[`${coverageType}Deductible`];
+
+    console.log(`🔄 Transforming ${coverageType} from flat to nested:`, { isActive, insuranceSum, deductibles });
 
     // Create nested structure
     transformed.insuranceSpecification[coverageType] = {
@@ -73,6 +81,7 @@ function transformInsuranceCoverageFields(project) {
     delete transformed.insuranceSpecification[`${coverageType}Deductible`];
   });
 
+  console.log('🔍 Final transformed insuranceSpecification:', transformed.insuranceSpecification);
   return transformed;
 }
 
