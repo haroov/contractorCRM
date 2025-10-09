@@ -2762,6 +2762,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     schedule: project.schedule,
                     // Include subcontractors array
                     subcontractors: project.subcontractors || [],
+                    // Include machine maintenance data
+                    machineMaintenance: project.machineMaintenance,
                     // Include insurance specification with property pledge data
                     insuranceSpecification: project.insuranceSpecification
                 };
@@ -2796,6 +2798,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     stakeholders: project.stakeholders || [],
                     // Include subcontractors array
                     subcontractors: project.subcontractors || [],
+                    // Include machine maintenance data
+                    machineMaintenance: project.machineMaintenance,
                     // Move key fields from nested objects to root level
                     projectType: project.engineeringQuestionnaire?.buildingPlan?.projectType || '',
                     garmoshkaFile: project.engineeringQuestionnaire?.buildingPlan?.garmoshkaFile || '',
