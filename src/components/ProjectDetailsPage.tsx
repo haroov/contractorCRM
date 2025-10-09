@@ -49,7 +49,9 @@ import {
     ContentCopy as ContentCopyIcon,
     Clear as ClearIcon,
     Edit as EditIcon,
-    TableChart as ExcelIcon
+    TableChart as ExcelIcon,
+    KeyboardArrowDown as ArrowDownExpandIcon,
+    KeyboardArrowUp as ArrowUpCollapseIcon
 } from '@mui/icons-material';
 import type { Project, Stakeholder, Subcontractor } from '../types/contractor';
 import SkeletonLoader from './SkeletonLoader';
@@ -467,6 +469,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
     const [mode, setMode] = useState<'view' | 'edit' | 'new'>('view');
     const [activeTab, setActiveTab] = useState(0);
     const [claimsFilterTab, setClaimsFilterTab] = useState(0);
+    const [mapSectionExpanded, setMapSectionExpanded] = useState(false);
     const [claims, setClaims] = useState<any[]>([]);
     const [loadingClaims, setLoadingClaims] = useState(false);
     const [bankNames, setBankNames] = useState<string[]>([
@@ -4716,23 +4719,42 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                         {/* Map Section */}
                                                         <Box sx={{ mt: 3 }}>
-                                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                                מפה
-                                                            </Typography>
-                                                            <Box sx={{
-                                                                border: '1px solid #e0e0e0',
-                                                                borderRadius: 1,
-                                                                p: 2,
-                                                                backgroundColor: '#f9f9f9',
-                                                                minHeight: '200px',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'center'
+                                                            <Box sx={{ 
+                                                                display: 'flex', 
+                                                                alignItems: 'center', 
+                                                                justifyContent: 'space-between',
+                                                                mb: 2 
                                                             }}>
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט - VERSION 2
+                                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                                    מפה
                                                                 </Typography>
+                                                                <IconButton
+                                                                    onClick={() => setMapSectionExpanded(!mapSectionExpanded)}
+                                                                    size="small"
+                                                                    sx={{ 
+                                                                        color: 'text.secondary',
+                                                                        '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
+                                                                    }}
+                                                                >
+                                                                    {mapSectionExpanded ? <ArrowUpCollapseIcon /> : <ArrowDownExpandIcon />}
+                                                                </IconButton>
                                                             </Box>
+                                                            {mapSectionExpanded && (
+                                                                <Box sx={{
+                                                                    border: '1px solid #e0e0e0',
+                                                                    borderRadius: 1,
+                                                                    p: 2,
+                                                                    backgroundColor: '#f9f9f9',
+                                                                    minHeight: '200px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center'
+                                                                }}>
+                                                                    <Typography variant="body2" color="text.secondary">
+                                                                        מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט
+                                                                    </Typography>
+                                                                </Box>
+                                                            )}
                                                         </Box>
                                                     </Box>
                                                 </Box>
