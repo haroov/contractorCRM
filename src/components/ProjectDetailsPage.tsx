@@ -755,6 +755,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 hasCoverage: false,
                                 details: ''
                             }
+                        },
+                        collection: {
+                            totalPremium: '',
+                            paymentMethod: '',
+                            paymentDescription: ''
                         }
                     }
                 };
@@ -864,6 +869,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         propertyPledge: {
                                             ...projectData.insuranceSpecification?.propertyPledge,
                                             pledgers: projectData.insuranceSpecification?.propertyPledge?.pledgers || []
+                                        },
+                                        collection: {
+                                            totalPremium: projectData.insuranceSpecification?.collection?.totalPremium || '',
+                                            paymentMethod: projectData.insuranceSpecification?.collection?.paymentMethod || '',
+                                            paymentDescription: projectData.insuranceSpecification?.collection?.paymentDescription || ''
                                         }
                                     },
                                     engineeringQuestionnaire: {
@@ -1410,6 +1420,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 hasCoverage: false,
                                 details: ''
                             }
+                        },
+                        collection: {
+                            totalPremium: '',
+                            paymentMethod: '',
+                            paymentDescription: ''
                         }
                     }
                 };
@@ -12708,6 +12723,127 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </>
                                     )}
+                                </Box>
+                            </Box>
+                        )}
+
+                        {/* סקשן גביה */}
+                        {activeTab === 3 && (
+                            <Box sx={{ mt: 4 }}>
+                                <Typography variant="h6" sx={{ 
+                                    color: '#6b47c1', 
+                                    fontWeight: 'bold', 
+                                    mb: 3,
+                                    fontSize: '1.25rem'
+                                }}>
+                                    גביה
+                                </Typography>
+                                
+                                <Box sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr',
+                                    gap: 3,
+                                    alignItems: 'flex-start'
+                                }}>
+                                    {/* שורה 1 - סה"כ פרמיה */}
+                                    <Box sx={{
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        backgroundColor: 'white',
+                                        minHeight: '56px',
+                                        padding: '0 14px',
+                                        direction: 'rtl',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        width: '100%'
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '1rem',
+                                            color: 'text.secondary',
+                                            marginRight: '10px'
+                                        }}>
+                                            סה״כ פרמיה (₪)
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            value={project?.insuranceSpecification?.collection?.totalPremium ? parseInt(project.insuranceSpecification.collection.totalPremium.toString()).toLocaleString('he-IL') : ''}
+                                            onChange={(e) => {
+                                                const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                handleNestedFieldChange('insuranceSpecification.collection.totalPremium', numericValue || '');
+                                            }}
+                                            disabled={mode === 'view' || !canEdit}
+                                            size="small"
+                                            type="text"
+                                            inputMode="numeric"
+                                            sx={{
+                                                direction: 'rtl',
+                                                '& .MuiInputBase-root': { minHeight: '56px' },
+                                                '& .MuiInputLabel-root': { top: '0px' }
+                                            }}
+                                        />
+                                    </Box>
+
+                                    {/* עמודה ריקה */}
+                                    <Box></Box>
+
+                                    {/* שורה 2 - אמצעי תשלום */}
+                                    <Box sx={{
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        backgroundColor: 'white',
+                                        minHeight: '56px',
+                                        padding: '0 14px',
+                                        direction: 'rtl',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        width: '100%'
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: '1rem',
+                                            color: 'text.secondary',
+                                            marginRight: '10px'
+                                        }}>
+                                            אמצעי תשלום
+                                        </Typography>
+                                        <FormControl fullWidth size="small" sx={{ minWidth: 120 }}>
+                                            <Select
+                                                value={project?.insuranceSpecification?.collection?.paymentMethod || ''}
+                                                onChange={(e) => handleNestedFieldChange('insuranceSpecification.collection.paymentMethod', e.target.value)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                sx={{
+                                                    direction: 'rtl',
+                                                    '& .MuiSelect-select': { minHeight: '56px' }
+                                                }}
+                                            >
+                                                <MenuItem value="העברה בנקאית">העברה בנקאית</MenuItem>
+                                                <MenuItem value="כרטיס אשראי">כרטיס אשראי</MenuItem>
+                                                <MenuItem value="צ׳ק">צ׳ק</MenuItem>
+                                                <MenuItem value="אחר">אחר</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+
+                                    {/* עמודה 2 - שדה תיאור (מותנה) */}
+                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                        {project?.insuranceSpecification?.collection?.paymentMethod === 'אחר' && (
+                                            <TextField
+                                                fullWidth
+                                                label="תיאור"
+                                                value={project?.insuranceSpecification?.collection?.paymentDescription || ''}
+                                                onChange={(e) => handleNestedFieldChange('insuranceSpecification.collection.paymentDescription', e.target.value)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                size="small"
+                                                type="text"
+                                                sx={{
+                                                    direction: 'rtl',
+                                                    '& .MuiInputBase-root': { minHeight: '56px' },
+                                                    '& .MuiInputLabel-root': { top: '0px' }
+                                                }}
+                                            />
+                                        )}
+                                    </Box>
                                 </Box>
                             </Box>
                         )}
