@@ -30,16 +30,18 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     // Load Google Maps API
-    const loadGoogleMapsAPI = () => {
-        return new Promise<void>((resolve, reject) => {
-            if (window.google) {
-                resolve();
-                return;
-            }
+        const loadGoogleMapsAPI = () => {
+            return new Promise<void>((resolve, reject) => {
+                console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 3.0 🔥🔥🔥');
+                
+                if (window.google) {
+                    resolve();
+                    return;
+                }
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-            
+
             // Try alternative names (including Render's shorter name)
             if (!apiKey) {
                 apiKey = import.meta.env.VITE_GOOGLE_MAP;
@@ -67,7 +69,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
                 viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
             });
-            
+
             // Simple test log to verify deployment
             console.log('🚀 NEW VERSION DEPLOYED - Testing VITE_GOOGLE_MAP:', import.meta.env.VITE_GOOGLE_MAP);
 
