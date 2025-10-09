@@ -670,6 +670,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     budgetAllocation: [],
                     supervisorReports: [],
                     policyDocuments: [],
+                    machineMaintenance: {
+                        skilledMaintenance: false,
+                        externalCompany: false,
+                        externalCompanyName: '',
+                        otherProfessional: false,
+                        otherProfessionalDetails: ''
+                    },
                     insuranceSpecification: {
                         propertyPledge: {
                             pledgers: []
@@ -815,6 +822,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     budgetAllocation: projectData.budgetAllocation || [],
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
+                                    machineMaintenance: {
+                                        skilledMaintenance: projectData.machineMaintenance?.skilledMaintenance || false,
+                                        externalCompany: projectData.machineMaintenance?.externalCompany || false,
+                                        externalCompanyName: projectData.machineMaintenance?.externalCompanyName || '',
+                                        otherProfessional: projectData.machineMaintenance?.otherProfessional || false,
+                                        otherProfessionalDetails: projectData.machineMaintenance?.otherProfessionalDetails || ''
+                                    },
                                     insuranceSpecification: {
                                         // Initialize all coverage fields with proper nested structure
                                         machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
@@ -940,6 +954,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     budgetAllocation: projectData.budgetAllocation || [],
                                     supervisorReports: projectData.supervisorReports || [],
                                     policyDocuments: projectData.policyDocuments || [],
+                                    machineMaintenance: {
+                                        skilledMaintenance: projectData.machineMaintenance?.skilledMaintenance || false,
+                                        externalCompany: projectData.machineMaintenance?.externalCompany || false,
+                                        externalCompanyName: projectData.machineMaintenance?.externalCompanyName || '',
+                                        otherProfessional: projectData.machineMaintenance?.otherProfessional || false,
+                                        otherProfessionalDetails: projectData.machineMaintenance?.otherProfessionalDetails || ''
+                                    },
                                     insuranceSpecification: {
                                         // Initialize all coverage fields with proper nested structure
                                         machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
@@ -8916,7 +8937,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     }
                                                                 }}
                                                                 disabled={mode === 'view' || !canEdit}
-                                                                sx={{ 
+                                                                sx={{
                                                                     color: '#dc2626',
                                                                     '&:hover': {
                                                                         backgroundColor: '#ffebee',
