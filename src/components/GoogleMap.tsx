@@ -41,7 +41,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
+            
             // Try alternative names (including Render's shorter name)
             if (!apiKey) {
                 apiKey = import.meta.env.VITE_GOOGLE_MAP;
@@ -54,6 +54,19 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             }
             if (!apiKey) {
                 apiKey = import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+            }
+            
+            // Try to get from build-time environment variables
+            if (!apiKey) {
+                // Check if we're in production and try to get from build-time env vars
+                if (import.meta.env.PROD) {
+                    // Try to get from window object (set by build process)
+                    const buildTimeKey = (window as any).__GOOGLE_MAPS_API_KEY__;
+                    if (buildTimeKey) {
+                        console.log('✅ Found API key in build-time environment:', buildTimeKey.substring(0, 10) + '...');
+                        apiKey = buildTimeKey;
+                    }
+                }
             }
 
             // Fallback: try to get from window object (if set by build process)
@@ -96,17 +109,17 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             if (!apiKey) {
                 console.warn('⚠️ No API key found in Vite environment variables');
                 console.log('🔍 Trying to get from process.env...');
-                
+
                 // Try different ways to get the API key
-                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY || 
-                                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
-                                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
-                
+                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY ||
+                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
+                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
+
                 console.log('🔍 process.env.VITE_GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY);
                 console.log('🔍 process.env.VITE_GOOGLE_MAP:', (window as any).process?.env?.VITE_GOOGLE_MAP);
                 console.log('🔍 process.env.GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.GOOGLE_MAPS_API_KEY);
                 console.log('🔍 Final API Key from process.env fallback:', processEnvKey);
-                
+
                 if (processEnvKey) {
                     console.log('✅ Found API key in process.env:', processEnvKey.substring(0, 10) + '...');
                     apiKey = processEnvKey;

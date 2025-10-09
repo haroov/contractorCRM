@@ -8,7 +8,7 @@
     "server": "node server/index.js",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "dev": "vite",
-    "build": "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY VITE_GOOGLE_MAP=$VITE_GOOGLE_MAP vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "setup:env": "node scripts/setup-env.js",
