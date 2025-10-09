@@ -2768,6 +2768,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     insuranceSpecification: project.insuranceSpecification
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
+                console.log('🔄 Machine maintenance data in new project:', projectToSave.machineMaintenance);
                 console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
                 console.log('🔄 Insurance coverage fields in new project:', {
                     theftCoverage: projectToSave.insuranceSpecification?.theftCoverage,
@@ -2816,6 +2817,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 };
                 const projectId = project._id || project.id;
                 console.log('🔄 Sending update data to server:', updateData);
+                console.log('🔄 Machine maintenance data in update:', updateData.machineMaintenance);
                 console.log('🔄 Key fields moved to root:', {
                     projectType: updateData.projectType,
                     garmoshkaFile: updateData.garmoshkaFile,
