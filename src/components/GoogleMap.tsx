@@ -30,14 +30,14 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     // Load Google Maps API
-        const loadGoogleMapsAPI = () => {
-            return new Promise<void>((resolve, reject) => {
-                console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 3.0 🔥🔥🔥');
-                
-                if (window.google) {
-                    resolve();
-                    return;
-                }
+    const loadGoogleMapsAPI = () => {
+        return new Promise<void>((resolve, reject) => {
+            console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 3.0 🔥🔥🔥');
+
+            if (window.google) {
+                resolve();
+                return;
+            }
 
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
