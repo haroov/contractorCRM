@@ -40,7 +40,10 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
             
-            // Try alternative names
+            // Try alternative names (including Render's shorter name)
+            if (!apiKey) {
+                apiKey = import.meta.env.VITE_GOOGLE_MAP;
+            }
             if (!apiKey) {
                 apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
             }
@@ -72,15 +75,16 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 'import.meta.env.DEV': import.meta.env.DEV,
                 'import.meta.env.PROD': import.meta.env.PROD,
                 'VITE_GOOGLE_MAPS_API_KEY': import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+                'VITE_GOOGLE_MAP': import.meta.env.VITE_GOOGLE_MAP,
                 'GOOGLE_MAPS_API_KEY': import.meta.env.GOOGLE_MAPS_API_KEY,
                 'REACT_APP_GOOGLE_MAPS_API_KEY': import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
                 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY': import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
             });
-            
+
             // Log all environment variables that start with VITE_
             const viteEnvVars = Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'));
             console.log('🔍 All VITE_ environment variables:', viteEnvVars);
-            
+
             // Log all environment variables
             console.log('🔍 All environment variables:', Object.keys(import.meta.env));
 
