@@ -770,6 +770,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                 setLoading(false);
             } else if (projectId && projectId !== 'new') {
+                // Helper function to convert boolean coverage to nested object
+                const getCoverageState = (coverageData: any) => {
+                    if (typeof coverageData === 'boolean') {
+                        return { isActive: coverageData, insuranceSum: '', deductibles: '' };
+                    }
+                    // If it's already an object or undefined, return as is, with a default if undefined
+                    return coverageData || { isActive: false, insuranceSum: '', deductibles: '' };
+                };
+
                 // Load existing project from server
                 const loadProjectFromServer = async () => {
                     try {
@@ -801,15 +810,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
                                         // Initialize all coverage fields with defaults
-                                        machineryInstallationCoverage: projectData.insuranceSpecification?.machineryInstallationCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        theftCoverage: projectData.insuranceSpecification?.theftCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        workPropertyCoverage: projectData.insuranceSpecification?.workPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        adjacentPropertyCoverage: projectData.insuranceSpecification?.adjacentPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        transitPropertyCoverage: projectData.insuranceSpecification?.transitPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        auxiliaryBuildingsCoverage: projectData.insuranceSpecification?.auxiliaryBuildingsCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        debrisRemoval: projectData.insuranceSpecification?.debrisRemoval || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        architectFees: projectData.insuranceSpecification?.architectFees || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        authorityChanges: projectData.insuranceSpecification?.authorityChanges || { isActive: false, insuranceSum: '', deductibles: '' },
+                                        machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
+                                        theftCoverage: getCoverageState(projectData.insuranceSpecification?.theftCoverage),
+                                        workPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.workPropertyCoverage),
+                                        adjacentPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.adjacentPropertyCoverage),
+                                        transitPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.transitPropertyCoverage),
+                                        auxiliaryBuildingsCoverage: getCoverageState(projectData.insuranceSpecification?.auxiliaryBuildingsCoverage),
+                                        debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
+                                        architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
+                                        authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
                                         // Initialize all deductible fields with defaults
                                         machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
                                         theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
@@ -905,15 +914,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                     policyDocuments: projectData.policyDocuments || [],
                                     insuranceSpecification: {
                                         // Initialize all coverage fields with defaults
-                                        machineryInstallationCoverage: projectData.insuranceSpecification?.machineryInstallationCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        theftCoverage: projectData.insuranceSpecification?.theftCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        workPropertyCoverage: projectData.insuranceSpecification?.workPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        adjacentPropertyCoverage: projectData.insuranceSpecification?.adjacentPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        transitPropertyCoverage: projectData.insuranceSpecification?.transitPropertyCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        auxiliaryBuildingsCoverage: projectData.insuranceSpecification?.auxiliaryBuildingsCoverage || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        debrisRemoval: projectData.insuranceSpecification?.debrisRemoval || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        architectFees: projectData.insuranceSpecification?.architectFees || { isActive: false, insuranceSum: '', deductibles: '' },
-                                        authorityChanges: projectData.insuranceSpecification?.authorityChanges || { isActive: false, insuranceSum: '', deductibles: '' },
+                                        machineryInstallationCoverage: getCoverageState(projectData.insuranceSpecification?.machineryInstallationCoverage),
+                                        theftCoverage: getCoverageState(projectData.insuranceSpecification?.theftCoverage),
+                                        workPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.workPropertyCoverage),
+                                        adjacentPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.adjacentPropertyCoverage),
+                                        transitPropertyCoverage: getCoverageState(projectData.insuranceSpecification?.transitPropertyCoverage),
+                                        auxiliaryBuildingsCoverage: getCoverageState(projectData.insuranceSpecification?.auxiliaryBuildingsCoverage),
+                                        debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
+                                        architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
+                                        authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
                                         // Initialize all deductible fields with defaults
                                         machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
                                         theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
