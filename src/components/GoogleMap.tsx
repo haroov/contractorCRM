@@ -40,6 +40,14 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
             
+            // Try alternative names
+            if (!apiKey) {
+                apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
+            }
+            if (!apiKey) {
+                apiKey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+            }
+            
             // Fallback: try to get from window object (if set by build process)
             if (!apiKey && (window as any).GOOGLE_MAPS_API_KEY) {
                 apiKey = (window as any).GOOGLE_MAPS_API_KEY;
@@ -49,7 +57,9 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
                 env: import.meta.env,
                 allEnvKeys: Object.keys(import.meta.env),
-                windowKey: (window as any).GOOGLE_MAPS_API_KEY ? 'exists' : 'not found'
+                windowKey: (window as any).GOOGLE_MAPS_API_KEY ? 'exists' : 'not found',
+                viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
+                viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
             });
 
             if (!apiKey) {
