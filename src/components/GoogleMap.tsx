@@ -37,12 +37,26 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 return;
             }
 
-            const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+            // Try multiple ways to get the API key
+            let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+            
+            // Fallback: try to get from window object (if set by build process)
+            if (!apiKey && (window as any).GOOGLE_MAPS_API_KEY) {
+                apiKey = (window as any).GOOGLE_MAPS_API_KEY;
+            }
+            
+            // Fallback: hardcoded key for testing (remove in production)
+            if (!apiKey) {
+                apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
+            }
+            
             console.log('🔍 Google Maps API Key Debug:', {
                 apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
                 env: import.meta.env,
-                allEnvKeys: Object.keys(import.meta.env)
+                allEnvKeys: Object.keys(import.meta.env),
+                windowKey: (window as any).GOOGLE_MAPS_API_KEY ? 'exists' : 'not found'
             });
+            
             if (!apiKey) {
                 reject(new Error('Google Maps API key not found'));
                 return;
