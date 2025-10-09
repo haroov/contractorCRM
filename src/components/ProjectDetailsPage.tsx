@@ -4730,7 +4730,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 justifyContent: 'center'
                                                             }}>
                                                                 <Typography variant="body2" color="text.secondary">
-                                                                    מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט
+                                                                    מפה תשולב כאן עם Google Maps וסימון נ״צ הפרויקט - VERSION 2
                                                                 </Typography>
                                                             </Box>
                                                         </Box>
