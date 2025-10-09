@@ -720,24 +720,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             insuranceSum: '',
                             deductibles: ''
                         },
-                        // Initialize all deductible fields
-                        machineryInstallationCoverageDeductible: '',
-                        workPropertyCoverageDeductible: '',
-                        adjacentPropertyCoverageDeductible: '',
-                        transitPropertyCoverageDeductible: '',
-                        auxiliaryBuildingsCoverageDeductible: '',
-                        debrisRemovalDeductible: '',
-                        architectFeesDeductible: '',
-                        authorityChangesDeductible: '',
-                        // Initialize other insurance fields
-                        machineryInstallationCoverageAmount: '',
-                        workPropertyCoverageAmount: '',
-                        adjacentPropertyCoverageAmount: '',
-                        transitPropertyCoverageAmount: '',
-                        auxiliaryBuildingsCoverageAmount: '',
-                        debrisRemovalAmount: '',
-                        architectFeesAmount: '',
-                        authorityChangesAmount: '',
+                        // Old flat fields removed - now using nested structure
                         propertyInsuranceAmount: '',
                         runInPeriodDays: 60,
                         // Initialize additional coverage fields
@@ -819,26 +802,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
-                                        // Initialize all deductible fields with defaults
-                                        machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
-                                        theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
-                                        workPropertyCoverageDeductible: projectData.insuranceSpecification?.workPropertyCoverageDeductible || '',
-                                        adjacentPropertyCoverageDeductible: projectData.insuranceSpecification?.adjacentPropertyCoverageDeductible || '',
-                                        transitPropertyCoverageDeductible: projectData.insuranceSpecification?.transitPropertyCoverageDeductible || '',
-                                        auxiliaryBuildingsCoverageDeductible: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible || '',
-                                        debrisRemovalDeductible: projectData.insuranceSpecification?.debrisRemovalDeductible || '',
-                                        architectFeesDeductible: projectData.insuranceSpecification?.architectFeesDeductible || '',
-                                        authorityChangesDeductible: projectData.insuranceSpecification?.authorityChangesDeductible || '',
-                                        // Initialize other insurance fields with defaults
-                                        machineryInstallationCoverageAmount: projectData.insuranceSpecification?.machineryInstallationCoverageAmount || '',
-                                        theftCoverageAmount: projectData.insuranceSpecification?.theftCoverageAmount || '',
-                                        workPropertyCoverageAmount: projectData.insuranceSpecification?.workPropertyCoverageAmount || '',
-                                        adjacentPropertyCoverageAmount: projectData.insuranceSpecification?.adjacentPropertyCoverageAmount || '',
-                                        transitPropertyCoverageAmount: projectData.insuranceSpecification?.transitPropertyCoverageAmount || '',
-                                        auxiliaryBuildingsCoverageAmount: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageAmount || '',
-                                        debrisRemovalAmount: projectData.insuranceSpecification?.debrisRemovalAmount || '',
-                                        architectFeesAmount: projectData.insuranceSpecification?.architectFeesAmount || '',
-                                        authorityChangesAmount: projectData.insuranceSpecification?.authorityChangesAmount || '',
+                                        // Old flat fields removed - now using nested structure
                                         propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
                                         runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
                                         // Preserve existing fields
@@ -923,26 +887,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
-                                        // Initialize all deductible fields with defaults
-                                        machineryInstallationCoverageDeductible: projectData.insuranceSpecification?.machineryInstallationCoverageDeductible || '',
-                                        theftCoverageDeductible: projectData.insuranceSpecification?.theftCoverageDeductible || '',
-                                        workPropertyCoverageDeductible: projectData.insuranceSpecification?.workPropertyCoverageDeductible || '',
-                                        adjacentPropertyCoverageDeductible: projectData.insuranceSpecification?.adjacentPropertyCoverageDeductible || '',
-                                        transitPropertyCoverageDeductible: projectData.insuranceSpecification?.transitPropertyCoverageDeductible || '',
-                                        auxiliaryBuildingsCoverageDeductible: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible || '',
-                                        debrisRemovalDeductible: projectData.insuranceSpecification?.debrisRemovalDeductible || '',
-                                        architectFeesDeductible: projectData.insuranceSpecification?.architectFeesDeductible || '',
-                                        authorityChangesDeductible: projectData.insuranceSpecification?.authorityChangesDeductible || '',
-                                        // Initialize other insurance fields with defaults
-                                        machineryInstallationCoverageAmount: projectData.insuranceSpecification?.machineryInstallationCoverageAmount || '',
-                                        theftCoverageAmount: projectData.insuranceSpecification?.theftCoverageAmount || '',
-                                        workPropertyCoverageAmount: projectData.insuranceSpecification?.workPropertyCoverageAmount || '',
-                                        adjacentPropertyCoverageAmount: projectData.insuranceSpecification?.adjacentPropertyCoverageAmount || '',
-                                        transitPropertyCoverageAmount: projectData.insuranceSpecification?.transitPropertyCoverageAmount || '',
-                                        auxiliaryBuildingsCoverageAmount: projectData.insuranceSpecification?.auxiliaryBuildingsCoverageAmount || '',
-                                        debrisRemovalAmount: projectData.insuranceSpecification?.debrisRemovalAmount || '',
-                                        architectFeesAmount: projectData.insuranceSpecification?.architectFeesAmount || '',
-                                        authorityChangesAmount: projectData.insuranceSpecification?.authorityChangesAmount || '',
+                                        // Old flat fields removed - now using nested structure
                                         propertyInsuranceAmount: projectData.insuranceSpecification?.propertyInsuranceAmount || '',
                                         runInPeriodDays: projectData.insuranceSpecification?.runInPeriodDays || 60,
                                         // Preserve existing fields
@@ -1334,24 +1279,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             insuranceSum: '',
                             deductibles: ''
                         },
-                        // Initialize all deductible fields
-                        machineryInstallationCoverageDeductible: '',
-                        workPropertyCoverageDeductible: '',
-                        adjacentPropertyCoverageDeductible: '',
-                        transitPropertyCoverageDeductible: '',
-                        auxiliaryBuildingsCoverageDeductible: '',
-                        debrisRemovalDeductible: '',
-                        architectFeesDeductible: '',
-                        authorityChangesDeductible: '',
-                        // Initialize other insurance fields
-                        machineryInstallationCoverageAmount: '',
-                        workPropertyCoverageAmount: '',
-                        adjacentPropertyCoverageAmount: '',
-                        transitPropertyCoverageAmount: '',
-                        auxiliaryBuildingsCoverageAmount: '',
-                        debrisRemovalAmount: '',
-                        architectFeesAmount: '',
-                        authorityChangesAmount: '',
+                        // Old flat fields removed - now using nested structure
                         propertyInsuranceAmount: '',
                         runInPeriodDays: 60,
                         // Initialize additional coverage fields
@@ -2690,16 +2618,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 };
                 console.log('🔄 Creating new project with data:', projectToSave);
                 console.log('🔄 Stakeholders in new project:', projectToSave.stakeholders);
-                console.log('🔄 Deductible fields in new project insuranceSpecification:', {
-                    machineryInstallationCoverageDeductible: projectToSave.insuranceSpecification?.machineryInstallationCoverageDeductible,
-                    theftCoverageDeductible: projectToSave.insuranceSpecification?.theftCoverageDeductible,
-                    workPropertyCoverageDeductible: projectToSave.insuranceSpecification?.workPropertyCoverageDeductible,
-                    adjacentPropertyCoverageDeductible: projectToSave.insuranceSpecification?.adjacentPropertyCoverageDeductible,
-                    transitPropertyCoverageDeductible: projectToSave.insuranceSpecification?.transitPropertyCoverageDeductible,
-                    auxiliaryBuildingsCoverageDeductible: projectToSave.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible,
-                    debrisRemovalDeductible: projectToSave.insuranceSpecification?.debrisRemovalDeductible,
-                    architectFeesDeductible: projectToSave.insuranceSpecification?.architectFeesDeductible,
-                    authorityChangesDeductible: projectToSave.insuranceSpecification?.authorityChangesDeductible
+                console.log('🔄 Insurance coverage fields in new project:', {
+                    theftCoverage: projectToSave.insuranceSpecification?.theftCoverage,
+                    workPropertyCoverage: projectToSave.insuranceSpecification?.workPropertyCoverage,
+                    adjacentPropertyCoverage: projectToSave.insuranceSpecification?.adjacentPropertyCoverage
                 });
                 console.log('🔄 Key fields moved to root:', {
                     projectType: projectToSave.projectType,
@@ -2750,16 +2672,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     insuranceSpecification: updateData.insuranceSpecification
                 });
                 console.log('🔄 Property pledge data:', updateData.insuranceSpecification?.propertyPledge);
-                console.log('🔄 Deductible fields in insuranceSpecification:', {
-                    machineryInstallationCoverageDeductible: updateData.insuranceSpecification?.machineryInstallationCoverageDeductible,
-                    theftCoverageDeductible: updateData.insuranceSpecification?.theftCoverageDeductible,
-                    workPropertyCoverageDeductible: updateData.insuranceSpecification?.workPropertyCoverageDeductible,
-                    adjacentPropertyCoverageDeductible: updateData.insuranceSpecification?.adjacentPropertyCoverageDeductible,
-                    transitPropertyCoverageDeductible: updateData.insuranceSpecification?.transitPropertyCoverageDeductible,
-                    auxiliaryBuildingsCoverageDeductible: updateData.insuranceSpecification?.auxiliaryBuildingsCoverageDeductible,
-                    debrisRemovalDeductible: updateData.insuranceSpecification?.debrisRemovalDeductible,
-                    architectFeesDeductible: updateData.insuranceSpecification?.architectFeesDeductible,
-                    authorityChangesDeductible: updateData.insuranceSpecification?.authorityChangesDeductible
+                console.log('🔄 Insurance coverage fields in update:', {
+                    theftCoverage: updateData.insuranceSpecification?.theftCoverage,
+                    workPropertyCoverage: updateData.insuranceSpecification?.workPropertyCoverage,
+                    adjacentPropertyCoverage: updateData.insuranceSpecification?.adjacentPropertyCoverage
                 });
                 console.log('🔄 Stakeholders with contractorObjectIds:', updateData.stakeholders?.map(s => ({
                     role: s.role,
@@ -6586,11 +6502,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.architectFeesAmount ?
-                                                        parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.architectFees?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.architectFees.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.architectFees.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -6703,11 +6619,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.authorityChangesAmount ?
-                                                        parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.authorityChanges?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.authorityChanges.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.authorityChanges.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10665,7 +10581,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 }}>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('machineryCoverage', false)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.isActive', false)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '0 4px 4px 0',
@@ -10687,15 +10603,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     </Button>
                                                     <Button
                                                         variant="text"
-                                                        onClick={() => handleNestedFieldChange('machineryCoverage', true)}
+                                                        onClick={() => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.isActive', true)}
                                                         disabled={mode === 'view' || !canEdit}
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.machineryCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.machineryCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.machineryCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -10713,7 +10629,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
-                                            {project?.machineryCoverage === true && (
+                                            {project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true && (
                                                 <TextField
                                                     fullWidth
                                                     label="תקופת ההרצה המבוקשת בימים (נכלל בתקופת הביטוח)"
@@ -10740,15 +10656,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             alignItems: 'flex-start',
                                             justifyContent: 'flex-end'
                                         }}>
-                                            {(project?.machineryCoverage === true || project?.machineryCoverage === 'true') && (
+                                            {(project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === true || project?.insuranceSpecification?.machineryInstallationCoverage?.isActive === 'true') && (
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.machineryCoverageDeductible ?
-                                                        parseInt(project.insuranceSpecification.machineryCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.machineryInstallationCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.machineryInstallationCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('insuranceSpecification.machineryCoverageDeductible', numericValue || '');
+                                                        handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -10977,10 +10893,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         sx={{
                                                             borderRadius: '4px 0 0 4px',
                                                             border: '1px solid #d1d5db',
-                                                            backgroundColor: project?.workPropertyCoverage === true ? '#6b47c1' : 'transparent',
-                                                            color: project?.workPropertyCoverage === true ? 'white' : '#6b47c1',
+                                                            backgroundColor: project?.insuranceSpecification?.workPropertyCoverage?.isActive === true ? '#6b47c1' : 'transparent',
+                                                            color: project?.insuranceSpecification?.workPropertyCoverage?.isActive === true ? 'white' : '#6b47c1',
                                                             '&:hover': {
-                                                                backgroundColor: project?.workPropertyCoverage === true ? '#5a3aa1' : '#f3f4f6',
+                                                                backgroundColor: project?.insuranceSpecification?.workPropertyCoverage?.isActive === true ? '#5a3aa1' : '#f3f4f6',
                                                             },
                                                             minWidth: '50px',
                                                             height: '32px',
@@ -11002,11 +10918,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.workPropertyCoverageAmount ?
-                                                        parseInt(project.workPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.workPropertyCoverage?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.workPropertyCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('workPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11027,11 +10943,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.workPropertyCoverageDeductible ?
-                                                        parseInt(project.workPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.workPropertyCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.workPropertyCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('workPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.workPropertyCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11143,11 +11059,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.adjacentPropertyCoverageAmount ?
-                                                        parseInt(project.adjacentPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.adjacentPropertyCoverage?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.adjacentPropertyCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('adjacentPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11168,11 +11084,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.adjacentPropertyCoverageDeductible ?
-                                                        parseInt(project.adjacentPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.adjacentPropertyCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.adjacentPropertyCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('adjacentPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.adjacentPropertyCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11284,11 +11200,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.transitPropertyCoverageAmount ?
-                                                        parseInt(project.transitPropertyCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.transitPropertyCoverage?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.transitPropertyCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('transitPropertyCoverageAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11309,11 +11225,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.transitPropertyCoverageDeductible ?
-                                                        parseInt(project.transitPropertyCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.transitPropertyCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.transitPropertyCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('transitPropertyCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.transitPropertyCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11426,11 +11342,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="סכום הביטוח (₪)"
-                                                    value={project?.auxiliaryBuildingsCoverageAmount ?
-                                                        parseInt(project.auxiliaryBuildingsCoverageAmount.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.auxiliaryBuildingsCoverage?.insuranceSum ?
+                                                        parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverage.insuranceSum.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('auxiliaryBuildingsCoverageAmount', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage.insuranceSum', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11451,11 +11367,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="השתתפות עצמית (₪)"
-                                                    value={project?.auxiliaryBuildingsCoverageDeductible ?
-                                                        parseInt(project.auxiliaryBuildingsCoverageDeductible.toString()).toLocaleString('he-IL') : ''}
+                                                    value={project?.insuranceSpecification?.auxiliaryBuildingsCoverage?.deductibles ?
+                                                        parseInt(project.insuranceSpecification.auxiliaryBuildingsCoverage.deductibles.toString()).toLocaleString('he-IL') : ''}
                                                     onChange={(e) => {
                                                         const numericValue = e.target.value.replace(/[^\d]/g, '');
-                                                        handleNestedFieldChange('auxiliaryBuildingsCoverageDeductible', numericValue ? parseInt(numericValue) : 0);
+                                                        handleNestedFieldChange('insuranceSpecification.auxiliaryBuildingsCoverage.deductibles', numericValue ? parseInt(numericValue) : 0);
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
@@ -11489,10 +11405,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.debrisRemoval === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.debrisRemovalAmount ? parseInt(project.insuranceSpecification.debrisRemovalAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.debrisRemoval?.insuranceSum ? parseInt(project.insuranceSpecification.debrisRemoval.insuranceSum.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemoval.insuranceSum', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
                                             {project?.insuranceSpecification?.debrisRemoval === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.debrisRemovalDeductible ? parseInt(project.insuranceSpecification.debrisRemovalDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemovalDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.debrisRemoval?.deductibles ? parseInt(project.insuranceSpecification.debrisRemoval.deductibles.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.debrisRemoval.deductibles', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
@@ -11510,10 +11426,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.architectFees === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.architectFeesAmount ? parseInt(project.architectFeesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.architectFees?.insuranceSum ? parseInt(project.insuranceSpecification.architectFees.insuranceSum.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFees.insuranceSum', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
                                             {project?.architectFees === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.architectFeesDeductible ? parseInt(project.architectFeesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('architectFeesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.architectFees?.deductibles ? parseInt(project.insuranceSpecification.architectFees.deductibles.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.architectFees.deductibles', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
@@ -11531,10 +11447,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </Box>
                                         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.authorityChanges === true && (
-                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.authorityChangesAmount ? parseInt(project.authorityChangesAmount.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesAmount', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
+                                                <TextField fullWidth label="סכום הביטוח (₪)" value={project?.insuranceSpecification?.authorityChanges?.insuranceSum ? parseInt(project.insuranceSpecification.authorityChanges.insuranceSum.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChanges.insuranceSum', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} InputProps={{ endAdornment: (<Typography sx={{ color: 'text.secondary', ml: 1, fontSize: '1rem', fontWeight: 'bold' }}>₪</Typography>) }} />
                                             )}
                                             {project?.authorityChanges === true && (
-                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.authorityChangesDeductible ? parseInt(project.authorityChangesDeductible.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('authorityChangesDeductible', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
+                                                <TextField fullWidth label="השתתפות עצמית (₪)" value={project?.insuranceSpecification?.authorityChanges?.deductibles ? parseInt(project.insuranceSpecification.authorityChanges.deductibles.toString()).toLocaleString('he-IL') : ''} onChange={(e) => { const numericValue = e.target.value.replace(/[^\d]/g, ''); handleNestedFieldChange('insuranceSpecification.authorityChanges.deductibles', numericValue ? parseInt(numericValue) : 0); }} disabled={mode === 'view' || !canEdit} size="small" type="text" inputMode="numeric" sx={{ direction: 'rtl', '& .MuiInputBase-root': { minHeight: '56px' }, '& .MuiInputLabel-root': { top: '0px' } }} />
                                             )}
                                         </Box>
                                     </Box>
