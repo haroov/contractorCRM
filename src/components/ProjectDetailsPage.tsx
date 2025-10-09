@@ -4742,11 +4742,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             </Box>
                                                             {mapSectionExpanded && (
                                                                 <Box sx={{ p: 1 }}>
-                                                                    {project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x && 
-                                                                     project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y ? (
+                                                                    {project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x &&
+                                                                        project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y ? (
                                                                         <GoogleMap
-                                                                            latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
-                                                                            longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
+                                                                            latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
+                                                                            longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
                                                                             height="400px"
                                                                             width="100%"
                                                                             zoom={16}
