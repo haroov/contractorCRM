@@ -724,6 +724,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         propertyInsuranceAmount: '',
                         runInPeriodDays: 60,
                         // Initialize additional coverage fields
+                        thirdPartyLiability: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
                         consequentialDamage: {
                             hasCoverage: false,
                             liabilityLimit: '',
@@ -804,6 +809,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
+                                        // Initialize third-party liability fields
+                                        thirdPartyLiability: {
+                                            hasCoverage: projectData.insuranceSpecification?.thirdPartyLiability?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.thirdPartyLiability?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.thirdPartyLiability?.deductible || ''
+                                        },
+                                        consequentialDamage: {
+                                            hasCoverage: projectData.insuranceSpecification?.consequentialDamage?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.consequentialDamage?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.consequentialDamage?.deductible || ''
+                                        },
+                                        vibrationsWeakening: {
+                                            hasCoverage: projectData.insuranceSpecification?.vibrationsWeakening?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.vibrationsWeakening?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.vibrationsWeakening?.deductible || ''
+                                        },
+                                        employerLiability: {
+                                            hasCoverage: projectData.insuranceSpecification?.employerLiability?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.employerLiability?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || ''
+                                        },
                                         // Preserve other fields from insuranceSpecification
                                         file: projectData.insuranceSpecification?.file,
                                         fileCreationDate: projectData.insuranceSpecification?.fileCreationDate,
@@ -891,6 +917,27 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         debrisRemoval: getCoverageState(projectData.insuranceSpecification?.debrisRemoval),
                                         architectFees: getCoverageState(projectData.insuranceSpecification?.architectFees),
                                         authorityChanges: getCoverageState(projectData.insuranceSpecification?.authorityChanges),
+                                        // Initialize third-party liability fields
+                                        thirdPartyLiability: {
+                                            hasCoverage: projectData.insuranceSpecification?.thirdPartyLiability?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.thirdPartyLiability?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.thirdPartyLiability?.deductible || ''
+                                        },
+                                        consequentialDamage: {
+                                            hasCoverage: projectData.insuranceSpecification?.consequentialDamage?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.consequentialDamage?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.consequentialDamage?.deductible || ''
+                                        },
+                                        vibrationsWeakening: {
+                                            hasCoverage: projectData.insuranceSpecification?.vibrationsWeakening?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.vibrationsWeakening?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.vibrationsWeakening?.deductible || ''
+                                        },
+                                        employerLiability: {
+                                            hasCoverage: projectData.insuranceSpecification?.employerLiability?.hasCoverage || false,
+                                            liabilityLimit: projectData.insuranceSpecification?.employerLiability?.liabilityLimit || '',
+                                            deductible: projectData.insuranceSpecification?.employerLiability?.deductible || ''
+                                        },
                                         // Preserve other fields from insuranceSpecification
                                         file: projectData.insuranceSpecification?.file,
                                         fileCreationDate: projectData.insuranceSpecification?.fileCreationDate,
@@ -1296,6 +1343,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         propertyInsuranceAmount: '',
                         runInPeriodDays: 60,
                         // Initialize additional coverage fields
+                        thirdPartyLiability: {
+                            hasCoverage: false,
+                            liabilityLimit: '',
+                            deductible: ''
+                        },
                         consequentialDamage: {
                             hasCoverage: false,
                             liabilityLimit: '',
@@ -11865,8 +11917,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* עמודה שנייה - שדה גבול אחריות */}
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                        {/* עמודה שנייה - שדות מותנים */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -11880,6 +11932,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     size="small"
                                                     type="text"
                                                     inputMode="numeric"
+                                                    sx={{
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                            {project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="השתתפות עצמית"
+                                                    value={project?.insuranceSpecification?.thirdPartyLiability?.deductible || ''}
+                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.deductible', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
@@ -11973,8 +12041,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* עמודה שנייה - שדה גבול אחריות */}
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                        {/* עמודה שנייה - שדות מותנים */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -11988,6 +12056,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     size="small"
                                                     type="text"
                                                     inputMode="numeric"
+                                                    sx={{
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                            {project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="השתתפות עצמית"
+                                                    value={project?.insuranceSpecification?.consequentialDamage?.deductible || ''}
+                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.consequentialDamage.deductible', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
@@ -12077,8 +12161,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             </Box>
                                         </Box>
 
-                                        {/* עמודה שנייה - שדה גבול אחריות */}
-                                        <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                        {/* עמודה שנייה - שדות מותנים */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                                             {project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
@@ -12101,6 +12185,22 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     helperText="מוגבל ל-4,000,000 ₪ או 20% מגבול אחריות צד ג', הנמוך מביניהם"
+                                                    sx={{
+                                                        direction: 'rtl',
+                                                        '& .MuiInputBase-root': { minHeight: '56px' },
+                                                        '& .MuiInputLabel-root': { top: '0px' }
+                                                    }}
+                                                />
+                                            )}
+                                            {project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true && (
+                                                <TextField
+                                                    fullWidth
+                                                    label="השתתפות עצמית"
+                                                    value={project?.insuranceSpecification?.vibrationsWeakening?.deductible || ''}
+                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.vibrationsWeakening.deductible', e.target.value)}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    size="small"
+                                                    type="text"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
