@@ -94,7 +94,6 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             console.log('🔍 All environment variables:', Object.keys(import.meta.env));
 
             if (!apiKey) {
-                // Try to get from Render's environment variables directly
                 console.warn('⚠️ No API key found in Vite environment variables');
                 console.log('🔍 Trying to get from process.env...');
                 
@@ -102,6 +101,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY || 
                                     (window as any).process?.env?.VITE_GOOGLE_MAP ||
                                     (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
+                
+                console.log('🔍 process.env.VITE_GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY);
+                console.log('🔍 process.env.VITE_GOOGLE_MAP:', (window as any).process?.env?.VITE_GOOGLE_MAP);
+                console.log('🔍 process.env.GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.GOOGLE_MAPS_API_KEY);
+                console.log('🔍 Final API Key from process.env fallback:', processEnvKey);
                 
                 if (processEnvKey) {
                     console.log('✅ Found API key in process.env:', processEnvKey.substring(0, 10) + '...');
