@@ -12727,46 +12727,28 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                             </Box>
                         )}
 
-                        {/* סקשן גביה */}
+                        {/* סקשן פרמיה ותשלומים */}
                         {activeTab === 3 && (
-                            <Box sx={{ mt: 4 }}>
-                                <Typography variant="h6" sx={{ 
-                                    color: '#6b47c1', 
-                                    fontWeight: 'bold', 
-                                    mb: 3,
-                                    fontSize: '1.25rem'
-                                }}>
-                                    גביה
+                            <Box sx={{ mb: 4 }}>
+                                <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
+                                    פרמיה ותשלומים
                                 </Typography>
                                 
                                 <Box sx={{
                                     display: 'grid',
                                     gridTemplateColumns: '1fr 1fr',
-                                    gap: 3,
-                                    alignItems: 'flex-start'
+                                    gap: 2,
+                                    mb: 2
                                 }}>
-                                    {/* שורה 1 - סה"כ פרמיה */}
+                                    {/* עמודה שמאלית - שדה סה"כ פרמיה */}
                                     <Box sx={{
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        backgroundColor: 'white',
-                                        minHeight: '56px',
-                                        padding: '0 14px',
-                                        direction: 'rtl',
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        width: '100%'
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'flex-end'
                                     }}>
-                                        <Typography sx={{
-                                            fontSize: '1rem',
-                                            color: 'text.secondary',
-                                            marginRight: '10px'
-                                        }}>
-                                            סה״כ פרמיה (₪)
-                                        </Typography>
                                         <TextField
                                             fullWidth
+                                            label="סה״כ פרמיה (₪)"
                                             value={project?.insuranceSpecification?.collection?.totalPremium ? parseInt(project.insuranceSpecification.collection.totalPremium.toString()).toLocaleString('he-IL') : ''}
                                             onChange={(e) => {
                                                 const numericValue = e.target.value.replace(/[^\d]/g, '');
@@ -12778,40 +12760,32 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             inputMode="numeric"
                                             sx={{
                                                 direction: 'rtl',
-                                                '& .MuiInputBase-root': { minHeight: '56px' },
-                                                '& .MuiInputLabel-root': { top: '0px' }
+                                                '& .MuiInputBase-root': {
+                                                    minHeight: '56px'
+                                                },
+                                                '& .MuiInputLabel-root': {
+                                                    top: '0px'
+                                                }
                                             }}
                                         />
                                     </Box>
 
-                                    {/* עמודה ריקה */}
+                                    {/* עמודה ימנית - ריקה */}
                                     <Box></Box>
 
-                                    {/* שורה 2 - אמצעי תשלום */}
+                                    {/* עמודה שמאלית - שדה אמצעי תשלום */}
                                     <Box sx={{
-                                        border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        backgroundColor: 'white',
-                                        minHeight: '56px',
-                                        padding: '0 14px',
-                                        direction: 'rtl',
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        width: '100%'
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'flex-end'
                                     }}>
-                                        <Typography sx={{
-                                            fontSize: '1rem',
-                                            color: 'text.secondary',
-                                            marginRight: '10px'
-                                        }}>
-                                            אמצעי תשלום
-                                        </Typography>
-                                        <FormControl fullWidth size="small" sx={{ minWidth: 120 }}>
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel>אמצעי תשלום</InputLabel>
                                             <Select
                                                 value={project?.insuranceSpecification?.collection?.paymentMethod || ''}
                                                 onChange={(e) => handleNestedFieldChange('insuranceSpecification.collection.paymentMethod', e.target.value)}
                                                 disabled={mode === 'view' || !canEdit}
+                                                label="אמצעי תשלום"
                                                 sx={{
                                                     direction: 'rtl',
                                                     '& .MuiSelect-select': { minHeight: '56px' }
@@ -12825,8 +12799,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         </FormControl>
                                     </Box>
 
-                                    {/* עמודה 2 - שדה תיאור (מותנה) */}
-                                    <Box sx={{ display: 'flex', alignItems: 'flex-start', minHeight: '56px' }}>
+                                    {/* עמודה ימנית - שדה תיאור (מותנה) */}
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'flex-end'
+                                    }}>
                                         {project?.insuranceSpecification?.collection?.paymentMethod === 'אחר' && (
                                             <TextField
                                                 fullWidth
@@ -12838,8 +12816,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 type="text"
                                                 sx={{
                                                     direction: 'rtl',
-                                                    '& .MuiInputBase-root': { minHeight: '56px' },
-                                                    '& .MuiInputLabel-root': { top: '0px' }
+                                                    '& .MuiInputBase-root': {
+                                                        minHeight: '56px'
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        top: '0px'
+                                                    }
                                                 }}
                                             />
                                         )}
