@@ -90,7 +90,11 @@ export const projectsAPI = {
       throw new Error(`API returned non-JSON response: ${contentType}`);
     }
     
-    return response.json();
+    const data = await response.json();
+    console.log('🔍 Raw API response data:', data);
+    console.log('🔍 Raw insuranceSpecification from API:', data.insuranceSpecification);
+    console.log('🔍 Raw theftCoverage from API:', data.insuranceSpecification?.theftCoverage);
+    return data;
   },
 
   // Create new project

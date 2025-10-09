@@ -769,6 +769,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         const { projectsAPI } = await import('../services/api');
                         const projectData = await projectsAPI.getById(projectId);
                         console.log('🔍 Raw project data from server:', projectData);
+                        console.log('🔍 Raw insuranceSpecification from server:', projectData.insuranceSpecification);
+                        console.log('🔍 Raw theftCoverage from server:', projectData.insuranceSpecification?.theftCoverage);
                         if (projectData && projectData.projectName) {
                             console.log('✅ Project loaded from server:', projectData);
                             console.log('✅ Project name:', projectData.projectName);
