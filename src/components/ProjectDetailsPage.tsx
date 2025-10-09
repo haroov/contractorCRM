@@ -8802,46 +8802,85 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             />
                                                         </TableCell>
                                                         <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
-                                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                {attachment.fileName && (
-                                                                    <Typography variant="body2" sx={{ color: '#6b47c1', flex: 1 }}>
-                                                                        {attachment.fileName}
-                                                                    </Typography>
-                                                                )}
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    component="label"
-                                                                    disabled={mode === 'view' || !canEdit}
-                                                                    sx={{
-                                                                        borderColor: '#6b47c1',
-                                                                        color: '#6b47c1',
-                                                                        '&:hover': {
-                                                                            borderColor: '#5a3aa1',
-                                                                            backgroundColor: '#f3f4f6'
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    העלה קובץ
-                                                                    <input
-                                                                        type="file"
-                                                                        hidden
-                                                                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                                                                        onChange={(e) => {
-                                                                            const file = e.target.files?.[0];
-                                                                            if (file) {
-                                                                                const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
-                                                                                updatedAttachments[attachmentIndex] = {
-                                                                                    ...updatedAttachments[attachmentIndex],
-                                                                                    fileName: file.name,
-                                                                                    file: file
-                                                                                };
-                                                                                handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                            <FileUpload
+                                                                label="מפה/הדמיה"
+                                                                value={attachment.fileUrl}
+                                                                thumbnailUrl={attachment.thumbnailUrl}
+                                                                onChange={(url, thumbnailUrl) => {
+                                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                    updatedAttachments[attachmentIndex] = {
+                                                                        ...updatedAttachments[attachmentIndex],
+                                                                        fileUrl: url,
+                                                                        thumbnailUrl: thumbnailUrl
+                                                                    };
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                onDelete={async () => {
+                                                                    // Show confirmation dialog
+                                                                    const confirmMessage = `האם אתה בטוח שברצונך למחוק את הקובץ?`;
+
+                                                                    const confirmed = window.confirm(confirmMessage);
+
+                                                                    if (!confirmed) {
+                                                                        throw new Error('User cancelled deletion');
+                                                                    }
+
+                                                                    // Delete file from Blob storage
+                                                                    if (attachment.fileUrl) {
+                                                                        try {
+                                                                            const response = await fetch('/api/upload/delete-file', {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                    'Content-Type': 'application/json',
+                                                                                },
+                                                                                body: JSON.stringify({
+                                                                                    fileUrl: attachment.fileUrl
+                                                                                }),
+                                                                            });
+
+                                                                            if (!response.ok) {
+                                                                                console.warn('Failed to delete file from Blob storage:', attachment.fileUrl);
+                                                                                throw new Error('Failed to delete file from storage');
                                                                             }
-                                                                        }}
-                                                                    />
-                                                                </Button>
-                                                            </Box>
+                                                                        } catch (error) {
+                                                                            console.error('Error deleting file:', error);
+                                                                            // Continue with local deletion even if storage deletion fails
+                                                                        }
+                                                                    }
+
+                                                                    // Delete thumbnail from Blob storage
+                                                                    if (attachment.thumbnailUrl) {
+                                                                        try {
+                                                                            const response = await fetch('/api/upload/delete-file', {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                    'Content-Type': 'application/json',
+                                                                                },
+                                                                                body: JSON.stringify({
+                                                                                    fileUrl: attachment.thumbnailUrl
+                                                                                }),
+                                                                            });
+
+                                                                            if (!response.ok) {
+                                                                                console.warn('Failed to delete thumbnail from Blob storage:', attachment.thumbnailUrl);
+                                                                            }
+                                                                        } catch (error) {
+                                                                            console.error('Error deleting thumbnail:', error);
+                                                                        }
+                                                                    }
+
+                                                                    // Update local state
+                                                                    const updatedAttachments = [...(project?.mapsAndVisualizations || [])];
+                                                                    updatedAttachments[attachmentIndex] = {
+                                                                        ...updatedAttachments[attachmentIndex],
+                                                                        fileUrl: null,
+                                                                        thumbnailUrl: null
+                                                                    };
+                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                }}
+                                                                disabled={mode === 'view' || !canEdit}
+                                                                projectId={project?._id || project?.id}
+                                                            />
                                                         </TableCell>
                                                         <TableCell sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                                             <TextField
@@ -8866,13 +8905,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             <IconButton
                                                                 size="small"
                                                                 onClick={() => {
-                                                                    const updatedAttachments = (project?.mapsAndVisualizations || []).filter((_: any, index: number) => index !== attachmentIndex);
-                                                                    handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                    // Show confirmation dialog
+                                                                    const confirmMessage = `האם אתה בטוח שברצונך למחוק את המסמך?`;
+
+                                                                    const confirmed = window.confirm(confirmMessage);
+
+                                                                    if (confirmed) {
+                                                                        const updatedAttachments = (project?.mapsAndVisualizations || []).filter((_: any, index: number) => index !== attachmentIndex);
+                                                                        handleNestedFieldChange('mapsAndVisualizations', updatedAttachments);
+                                                                    }
                                                                 }}
                                                                 disabled={mode === 'view' || !canEdit}
-                                                                sx={{ color: '#dc2626' }}
+                                                                sx={{ 
+                                                                    color: '#dc2626',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#ffebee',
+                                                                        color: '#d32f2f'
+                                                                    }
+                                                                }}
                                                             >
-                                                                <DeleteIcon fontSize="small" />
+                                                                <img src="/assets/icon-trash.svg" alt="מחק" style={{ width: '16px', height: '16px' }} />
                                                             </IconButton>
                                                         </TableCell>
                                                     </TableRow>
@@ -8908,7 +8960,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     }
                                                 }}
                                             >
-                                                הוסף מסמך
+                                                + הוספה
                                             </Button>
                                         </Box>
                                     )}
