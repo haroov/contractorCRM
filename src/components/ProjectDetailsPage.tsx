@@ -11942,12 +11942,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {project?.insuranceSpecification?.thirdPartyLiability?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="השתתפות עצמית"
-                                                    value={project?.insuranceSpecification?.thirdPartyLiability?.deductible || ''}
-                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.deductible', e.target.value)}
+                                                    label="השתתפות עצמית (₪)"
+                                                    value={project?.insuranceSpecification?.thirdPartyLiability?.deductible ? parseInt(project.insuranceSpecification.thirdPartyLiability.deductible.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.thirdPartyLiability.deductible', numericValue || '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
+                                                    inputMode="numeric"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
@@ -12066,12 +12070,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {project?.insuranceSpecification?.consequentialDamage?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="השתתפות עצמית"
-                                                    value={project?.insuranceSpecification?.consequentialDamage?.deductible || ''}
-                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.consequentialDamage.deductible', e.target.value)}
+                                                    label="השתתפות עצמית (₪)"
+                                                    value={project?.insuranceSpecification?.consequentialDamage?.deductible ? parseInt(project.insuranceSpecification.consequentialDamage.deductible.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.consequentialDamage.deductible', numericValue || '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
+                                                    inputMode="numeric"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
@@ -12195,12 +12203,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             {project?.insuranceSpecification?.vibrationsWeakening?.hasCoverage === true && (
                                                 <TextField
                                                     fullWidth
-                                                    label="השתתפות עצמית"
-                                                    value={project?.insuranceSpecification?.vibrationsWeakening?.deductible || ''}
-                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.vibrationsWeakening.deductible', e.target.value)}
+                                                    label="השתתפות עצמית (₪)"
+                                                    value={project?.insuranceSpecification?.vibrationsWeakening?.deductible ? parseInt(project.insuranceSpecification.vibrationsWeakening.deductible.toString()).toLocaleString('he-IL') : ''}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/[^\d]/g, '');
+                                                        handleNestedFieldChange('insuranceSpecification.vibrationsWeakening.deductible', numericValue || '');
+                                                    }}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="text"
+                                                    inputMode="numeric"
                                                     sx={{
                                                         direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
