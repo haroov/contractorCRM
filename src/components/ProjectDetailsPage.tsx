@@ -10646,8 +10646,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 <TextField
                                                     fullWidth
                                                     label="תקופת ההרצה (ימים)"
-                                                    value={project?.insuranceSpecification?.runPeriodDays || ''}
-                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.runPeriodDays', e.target.value)}
+                                                    value={project?.insuranceSpecification?.machineryInstallationCoverage?.insuranceSum || ''}
+                                                    onChange={(e) => handleNestedFieldChange('insuranceSpecification.machineryInstallationCoverage.insuranceSum', e.target.value)}
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     type="number"
