@@ -5,6 +5,16 @@ export interface GISValues {
   cresta: string | null;
 }
 
+export interface FireStationData {
+  name: string;
+  address: string;
+  phone: string;
+  stationType: string;
+  distance: string;
+  travelTime: number;
+  distance_m: number;
+}
+
 export interface GISResponse {
   success: boolean;
   coordinates: {
@@ -54,6 +64,37 @@ class GISService {
       return data;
     } catch (error) {
       console.error('❌ GIS Service: Error calculating GIS values:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get nearest fire station based on coordinates
+   * @param x - X coordinate (longitude)
+   * @param y - Y coordinate (latitude)
+   * @returns Promise<FireStationData | null>
+   */
+  async getNearestFireStation(x: number, y: number): Promise<FireStationData | null> {
+    try {
+      console.log(`🔍 GIS Service: Finding nearest fire station for coordinates (${x}, ${y})`);
+
+      const response = await authenticatedFetch(`/api/gis/fire-station?x=${x}&y=${y}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to find nearest fire station');
+      }
+
+      const data = await response.json();
+      console.log('✅ GIS Service: Successfully found nearest fire station:', data);
+      return data.fireStation;
+    } catch (error) {
+      console.error('❌ GIS Service: Error finding nearest fire station:', error);
       throw error;
     }
   }

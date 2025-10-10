@@ -7639,9 +7639,51 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {/* טבלת מרחקים לשירותי חירום */}
                                         <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary' }}>
-                                                שירותי חירום
-                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                                    שירותי חירום
+                                                </Typography>
+                                                <IconButton
+                                                    onClick={async () => {
+                                                        const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
+                                                        const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
+                                                        
+                                                        if (!x || !y) {
+                                                            alert('אנא הזן קואורדינטות X ו-Y תחילה');
+                                                            return;
+                                                        }
+                                                        
+                                                        try {
+                                                            const fireStation = await gisService.getNearestFireStation(x, y);
+                                                            
+                                                            if (fireStation) {
+                                                                // Update fire station data
+                                                                handleNestedFieldChange('emergencyServices.fireStation.name', fireStation.name);
+                                                                handleNestedFieldChange('emergencyServices.fireStation.phone', fireStation.phone);
+                                                                handleNestedFieldChange('emergencyServices.fireStation.distance', fireStation.distance);
+                                                                handleNestedFieldChange('emergencyServices.fireStation.travelTime', fireStation.travelTime);
+                                                                
+                                                                alert(`נמצאה תחנת כיבוי אש קרובה: ${fireStation.name}`);
+                                                            } else {
+                                                                alert('לא נמצאה תחנת כיבוי אש קרובה');
+                                                            }
+                                                        } catch (error) {
+                                                            console.error('Error finding nearest fire station:', error);
+                                                            alert('שגיאה בחיפוש תחנת כיבוי אש');
+                                                        }
+                                                    }}
+                                                    disabled={mode === 'view' || !canEdit}
+                                                    sx={{ 
+                                                        color: '#6B46C1',
+                                                        '&:hover': {
+                                                            backgroundColor: '#f3f4f6'
+                                                        }
+                                                    }}
+                                                    title="חפש תחנת כיבוי אש קרובה"
+                                                >
+                                                    <AutoAwesomeIcon />
+                                                </IconButton>
+                                            </Box>
                                             <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0', overflow: 'auto', maxWidth: '100%' }}>
                                                 <Table size="small">
                                                     <TableHead>

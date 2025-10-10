@@ -228,4 +228,44 @@ router.get('/health', async (req, res) => {
   }
 });
 
+// Get nearest fire station for coordinates
+router.get('/fire-station', async (req, res) => {
+  const { x, y } = req.query;
+  
+  if (x === undefined || y === undefined) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Missing x or y coordinates' 
+    });
+  }
+
+  try {
+    console.log(`🔍 GIS API: Finding nearest fire station for coordinates (${x}, ${y})`);
+    
+    const fireStation = await gisService.getNearestFireStation(parseFloat(x), parseFloat(y));
+    
+    if (fireStation) {
+      res.json({
+        success: true,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        fireStation: fireStation
+      });
+    } else {
+      res.json({
+        success: false,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        fireStation: null,
+        message: 'No fire station found for the given coordinates'
+      });
+    }
+  } catch (error) {
+    console.error('❌ GIS API: Error finding nearest fire station:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to find nearest fire station',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
