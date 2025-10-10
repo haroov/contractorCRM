@@ -206,8 +206,8 @@ class GISService {
    * @param onError - Callback function called on error
    */
   async autoCalculateGISValues(
-    x: number, 
-    y: number, 
+    x: number,
+    y: number,
     onSuccess: (values: GISValues) => void,
     onError?: (error: Error) => void
   ): Promise<void> {

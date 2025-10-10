@@ -212,7 +212,7 @@ router.get('/health', async (req, res) => {
   try {
     // Test database connection
     await gisService.initialize();
-    
+
     res.json({
       success: true,
       message: 'GIS service is healthy',
@@ -228,22 +228,22 @@ router.get('/health', async (req, res) => {
   }
 });
 
-// Get nearest fire station for coordinates
+// Get nearest fire station for coordinates - Updated
 router.get('/fire-station', async (req, res) => {
   const { x, y } = req.query;
-  
+
   if (x === undefined || y === undefined) {
-    return res.status(400).json({ 
-      success: false, 
-      message: 'Missing x or y coordinates' 
+    return res.status(400).json({
+      success: false,
+      message: 'Missing x or y coordinates'
     });
   }
 
   try {
     console.log(`🔍 GIS API: Finding nearest fire station for coordinates (${x}, ${y})`);
-    
+
     const fireStation = await gisService.getNearestFireStation(parseFloat(x), parseFloat(y));
-    
+
     if (fireStation) {
       res.json({
         success: true,

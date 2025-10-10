@@ -200,7 +200,7 @@ class GISService {
   async getNearestFireStation(x, y) {
     try {
       await this.initialize();
-      
+
       // Use $geoNear aggregation pipeline for efficient spatial query
       // Note: Fire stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
       const pipeline = [
@@ -226,14 +226,14 @@ class GISService {
       ];
 
       const results = await this.gisDb.collection('fireStations').aggregate(pipeline).toArray();
-      
+
       if (results && results.length > 0) {
         const result = results[0];
         const distanceKm = (result.distance_m / 1000).toFixed(2);
-        
+
         // Estimate travel time (rough calculation: 1 minute per km in urban areas)
         const travelTime = Math.ceil(parseFloat(distanceKm) * 1.2);
-        
+
         const fireStationData = {
           name: result.properties?.Name || 'תחנת כיבוי אש',
           address: result.properties?.address || '',
@@ -243,7 +243,7 @@ class GISService {
           travelTime: travelTime,
           distance_m: result.distance_m
         };
-        
+
         console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
         return fireStationData;
       }
