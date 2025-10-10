@@ -32,7 +32,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     // Load Google Maps API
     const loadGoogleMapsAPI = () => {
         return new Promise<void>((resolve, reject) => {
-            console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 3.0 🔥🔥🔥');
+            console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 4.0 🔥🔥🔥');
 
             if (window.google) {
                 resolve();
@@ -42,18 +42,27 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
+            console.log('🔍 RENDER ENVIRONMENT VARIABLE CHECK:');
+            console.log('🔍 import.meta.env.VITE_GOOGLE_MAPS_API_KEY:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+            console.log('🔍 typeof import.meta.env.VITE_GOOGLE_MAPS_API_KEY:', typeof import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+            console.log('🔍 import.meta.env.VITE_GOOGLE_MAPS_API_KEY length:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY?.length);
+
             // Try alternative names (including Render's shorter name)
             if (!apiKey) {
                 apiKey = import.meta.env.VITE_GOOGLE_MAP;
+                console.log('🔍 Trying VITE_GOOGLE_MAP:', import.meta.env.VITE_GOOGLE_MAP);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
+                console.log('🔍 Trying GOOGLE_MAPS_API_KEY:', import.meta.env.GOOGLE_MAPS_API_KEY);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+                console.log('🔍 Trying REACT_APP_GOOGLE_MAPS_API_KEY:', import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+                console.log('🔍 Trying NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:', import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
             }
 
 
