@@ -7,18 +7,18 @@
 // Simple test function
 function testFireStations() {
     print("🔍 Testing fire stations data...");
-    
+
     const collection = db.getCollection('fireStations');
-    
+
     // Check total count
     const totalCount = collection.countDocuments();
     print(`📊 Total fire stations: ${totalCount}`);
-    
+
     if (totalCount === 0) {
         print("❌ No fire stations found in database!");
         return;
     }
-    
+
     // Get first few stations
     const stations = collection.find({}).limit(3).toArray();
     print("\n📋 Sample stations:");
@@ -28,13 +28,13 @@ function testFireStations() {
         print(`   Phone: ${station.properties?.EmergencyPhoneNumber || 'N/A'}`);
         print("");
     });
-    
+
     // Test with Achziv coordinates
     const achzivLon = 35.102275;
     const achzivLat = 33.04187;
-    
+
     print(`📍 Testing Achziv coordinates (${achzivLon}, ${achzivLat}):`);
-    
+
     try {
         const result = collection.aggregate([
             {
@@ -55,7 +55,7 @@ function testFireStations() {
                 }
             }
         ]).toArray();
-        
+
         if (result.length > 0) {
             const station = result[0];
             print(`✅ Found: ${station.name}`);
