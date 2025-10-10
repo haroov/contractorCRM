@@ -9042,10 +9042,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                         {activeTab === 2 && (
                             <Box>
-                                {/* סקשן 1 - דוח FS (אפ.אס) */}
+                                {/* סקשן 1 - תוכנית כלכלית (דוח F.S) */}
                                 <Box sx={{ mb: 4 }}>
                                     <FileUpload
-                                        label="דוח FS (אפ.אס)"
+                                        label="תוכנית כלכלית (דוח F.S)"
                                         value={fileUploadState.reportFS?.url || project?.reportFS?.file || ''}
                                         thumbnailUrl={fileUploadState.reportFS?.thumbnailUrl || project?.reportFS?.thumbnailUrl || ''}
                                         projectId={project?._id || project?.id}
