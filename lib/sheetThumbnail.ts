@@ -1,16 +1,54 @@
 import { createCanvas } from "@napi-rs/canvas";
 import * as XLSX from "xlsx";
 
+// SECURITY WARNING: xlsx library has known vulnerabilities (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9)
+// This function includes additional validation to mitigate risks
+// TODO: Consider replacing with a safer alternative like 'exceljs' or 'node-xlsx'
+
+function validateSpreadsheetData(data: any[][]): any[][] {
+  // Sanitize data to prevent prototype pollution and other attacks
+  return data.map(row => 
+    row.map(cell => {
+      if (cell === null || cell === undefined) return '';
+      // Convert to string and limit length to prevent DoS
+      const str = String(cell).slice(0, 1000);
+      // Remove potentially dangerous characters
+      return str.replace(/[<>'"&]/g, '');
+    })
+  );
+}
+
 export async function sheetToPngBuffer(
   buf: Buffer,
   maxRows = 12,
   maxCols = 8,
   targetWidth = 600
 ): Promise<Buffer> {
-  const wb = XLSX.read(buf, { type: "buffer" });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-  const data = rows.slice(0, maxRows).map(r => r.slice(0, maxCols));
+  try {
+    // Validate buffer size to prevent DoS attacks
+    if (buf.length > 10 * 1024 * 1024) { // 10MB limit
+      throw new Error('File too large');
+    }
+
+    const wb = XLSX.read(buf, { 
+      type: "buffer",
+      // Security options to limit processing
+      cellDates: false,
+      cellNF: false,
+      cellStyles: false,
+      sheetStubs: false
+    });
+    
+    if (!wb.SheetNames || wb.SheetNames.length === 0) {
+      throw new Error('No sheets found in workbook');
+    }
+    
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    
+    // Validate and sanitize data
+    const sanitizedRows = validateSpreadsheetData(rows);
+    const data = sanitizedRows.slice(0, maxRows).map(r => r.slice(0, maxCols));
 
   const cellW = Math.floor(targetWidth / maxCols);
   const cellH = 24;
@@ -42,5 +80,9 @@ export async function sheetToPngBuffer(
     }
   }
 
-  return canvas.toBuffer("image/png");
+    return canvas.toBuffer("image/png");
+  } catch (error) {
+    console.error('Error processing spreadsheet:', error);
+    throw new Error('Failed to process spreadsheet file');
+  }
 }

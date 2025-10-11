@@ -266,7 +266,14 @@ ${documentText}
       const content = response.choices[0]?.message?.content || '{}';
 
       try {
-        const parsedData = JSON.parse(content);
+        // Safely parse JSON to prevent prototype pollution
+        const parsedData = JSON.parse(content, (key, value) => {
+          // Prevent prototype pollution by rejecting dangerous keys
+          if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            return undefined;
+          }
+          return value;
+        });
         return this.validateAndCleanGarmoshkaData(parsedData);
       } catch (parseError) {
         console.error('Error parsing OpenAI response:', parseError);
@@ -333,7 +340,14 @@ ${documentText}
       const content = response.choices[0]?.message?.content || '{}';
 
       try {
-        const parsedData = JSON.parse(content);
+        // Safely parse JSON to prevent prototype pollution
+        const parsedData = JSON.parse(content, (key, value) => {
+          // Prevent prototype pollution by rejecting dangerous keys
+          if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+            return undefined;
+          }
+          return value;
+        });
         return this.validateAndCleanData(parsedData);
       } catch (parseError) {
         console.error('Error parsing OpenAI response:', parseError);

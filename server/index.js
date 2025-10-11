@@ -22,6 +22,7 @@ const documentParserRoutes = require('./routes/document-parser');
 const riskAnalysisRoutes = require('./routes/risk-analysis');
 const gisRoutes = require('./routes/gis');
 const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
+const { requireAuth, requireAdmin } = require('./middleware/auth');
 
 dotenv.config();
 
@@ -228,18 +229,46 @@ app.use(passport.session());
 require('./config/passport.js');
 console.log('✅ Passport configured');
 
-// Rate limiting
-const limiter = rateLimit({
+// Rate limiting - different limits for different environments
+const createRateLimiter = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: isProduction ? 100 : 500, // Stricter limits in production
+    message: {
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: '15 minutes'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Skip rate limiting for trusted IPs in development
+    skip: (req) => {
+      if (!isProduction && req.ip === '127.0.0.1') {
+        return true;
+      }
+      return false;
+    }
+  });
+};
+
+const limiter = createRateLimiter();
+app.use(limiter);
+
+// Stricter rate limiting for authentication endpoints
+const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // limit each IP to 1000 requests per windowMs (increased for development)
+  max: 10, // Only 10 auth attempts per 15 minutes
   message: {
-    error: 'Too many requests from this IP, please try again later.',
+    error: 'Too many authentication attempts, please try again later.',
     retryAfter: '15 minutes'
   },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
 });
-app.use(limiter);
+
+// Apply stricter rate limiting to auth routes
+app.use('/api/auth', authLimiter);
+app.use('/api/contact-auth', authLimiter);
 
 // MongoDB connection
 let client;
@@ -341,9 +370,14 @@ async function validateContractorStatus(companyId) {
   }
 }
 
-// Debug endpoint to check users
-app.get('/debug-users', async (req, res) => {
+// Debug endpoint to check users - SECURED WITH ADMIN AUTH
+app.get('/debug-users', requireAdmin, async (req, res) => {
   try {
+    // Only allow in development environment
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(404).json({ error: 'Endpoint not available in production' });
+    }
+    
     const User = require('./models/User');
     const users = await User.find({});
     res.json({
@@ -353,9 +387,9 @@ app.get('/debug-users', async (req, res) => {
         email: u.email,
         name: u.name,
         role: u.role,
-        googleId: u.googleId,
         isActive: u.isActive,
         lastLogin: u.lastLogin
+        // Removed googleId for security
       }))
     });
   } catch (error) {

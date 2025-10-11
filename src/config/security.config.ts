@@ -2,7 +2,12 @@
 export const SecurityConfig = {
     // Authentication & Authorization
     AUTH: {
-        JWT_SECRET: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production',
+        JWT_SECRET: process.env.JWT_SECRET || (() => {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('JWT_SECRET environment variable must be set in production');
+            }
+            return 'dev-jwt-secret-not-for-production';
+        })(),
         JWT_EXPIRES_IN: '24h',
         REFRESH_TOKEN_EXPIRES_IN: '7d',
         PASSWORD_MIN_LENGTH: 12,
@@ -46,7 +51,12 @@ export const SecurityConfig = {
 
     // Session Management
     SESSION: {
-        SECRET: process.env.SESSION_SECRET || 'your-super-secret-session-key-change-in-production',
+        SECRET: process.env.SESSION_SECRET || (() => {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('SESSION_SECRET environment variable must be set in production');
+            }
+            return 'dev-session-secret-not-for-production';
+        })(),
         COOKIE_SECURE: process.env.NODE_ENV === 'production',
         COOKIE_HTTP_ONLY: true,
         COOKIE_SAME_SITE: 'strict' as const,
