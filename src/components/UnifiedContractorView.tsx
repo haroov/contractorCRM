@@ -450,7 +450,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             allProjectNames: contractorProjects.map(p => p.projectName),
             activeProjectNames: activeProjects.map(p => p.projectName),
             futureProjectNames: futureProjects.map(p => p.projectName),
-            projectStatuses: contractorProjects.map(p => ({ name: p.projectName, status: p.projectStatus }))
+            projectStatuses: contractorProjects.map(p => ({ 
+              name: p.projectName, 
+              status: p.projectStatus,
+              startDate: p.startDate,
+              durationMonths: p.durationMonths,
+              isClosed: p.isClosed
+            }))
           });
         }
 
