@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import gisService from '../services/gisService';
+import SafetyDashboard from './SafetyDashboard';
 import {
     Box,
     Typography,
@@ -12982,6 +12983,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                 <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
                                     דשבורד ניהול סיכונים
                                 </Typography>
+
+                                {/* Safety Dashboard */}
+                                <SafetyDashboard
+                                    projectId={project?._id || project?.id || ''}
+                                    projectName={project?.projectName || ''}
+                                />
 
                                 {/* Safety Coins */}
                                 <Box sx={{ mb: 4 }}>

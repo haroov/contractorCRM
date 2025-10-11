@@ -85,3 +85,5 @@ RENDER_ENV_VARS.txt
 *_CREDENTIALS.txt
 *_SECRETS.txt
 .vercel
+server/credentials.json
+server/token.json

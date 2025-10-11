@@ -10,12 +10,12 @@
 // Function to create spatial index for fireStations collection
 function createFireStationsSpatialIndex() {
     print("🔄 Creating spatial index for fireStations collection...");
-    
+
     try {
         // Create 2dsphere index on geometry field
         db.getCollection('fireStations').createIndex(
             { "geometry": "2dsphere" },
-            { 
+            {
                 name: "geometry_2dsphere",
                 background: true
             }
@@ -29,7 +29,7 @@ function createFireStationsSpatialIndex() {
 // Function to check existing indexes
 function checkFireStationsIndexes() {
     print("🔍 Checking existing indexes for fireStations collection...");
-    
+
     const indexes = db.getCollection('fireStations').getIndexes();
     print("📊 Current indexes:");
     indexes.forEach(index => {
@@ -41,10 +41,10 @@ function checkFireStationsIndexes() {
 // Function to test the index with Achziv coordinates
 function testFireStationsQuery() {
     print("🧪 Testing fireStations query with Achziv coordinates...");
-    
+
     const achzivLon = 35.102275; // Longitude
     const achzivLat = 33.04187;  // Latitude
-    
+
     try {
         const pipeline = [
             {
@@ -67,9 +67,9 @@ function testFireStationsQuery() {
                 }
             }
         ];
-        
+
         const results = db.getCollection('fireStations').aggregate(pipeline).toArray();
-        
+
         if (results && results.length > 0) {
             const result = results[0];
             print(`✅ Query successful! Found fire station:`);
@@ -89,27 +89,27 @@ function testFireStationsQuery() {
 function main() {
     print("🚀 URGENT: Creating fireStations spatial index...");
     print("=" * 50);
-    
+
     try {
         // Step 1: Check existing indexes
         checkFireStationsIndexes();
         print("");
-        
+
         // Step 2: Create spatial index
         createFireStationsSpatialIndex();
         print("");
-        
+
         // Step 3: Check indexes again
         checkFireStationsIndexes();
         print("");
-        
+
         // Step 4: Test the query
         testFireStationsQuery();
         print("");
-        
+
         print("🎉 FireStations spatial index creation completed!");
         print("=" * 50);
-        
+
     } catch (error) {
         print(`❌ Error during index creation: ${error.message}`);
         print(error.stack);
@@ -118,3 +118,4 @@ function main() {
 
 // Run the main function
 main();
+

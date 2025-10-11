@@ -14,6 +14,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { GridFSBucket } = require('mongodb');
+const cron = require('node-cron');
 
 // Import routes
 const uploadRoutes = require('./routes/upload');
@@ -22,6 +23,8 @@ const documentParserRoutes = require('./routes/document-parser');
 const riskAnalysisRoutes = require('./routes/risk-analysis');
 const gisRoutes = require('./routes/gis');
 const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
+const safetyReportsRoutes = require('./routes/safety-reports');
+const { SafetyMonitorService } = require('./services/safetyMonitorService');
 
 dotenv.config();
 
@@ -386,6 +389,7 @@ app.use('/api/document-parser', documentParserRoutes);
 app.use('/api/risk-analysis', riskAnalysisRoutes);
 app.use('/api/gis', gisRoutes);
 app.use('/api/pdf-thumbnail', pdfThumbnailRoutes);
+app.use('/api/safety-reports', safetyReportsRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes
@@ -3692,6 +3696,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 // });
 
 connectDB().then(() => {
+  // Setup safety monitoring cron job
+  const safetyService = new SafetyMonitorService();
+  safetyService.initialize().then(() => {
+    console.log('✅ Safety Monitor Service initialized');
+
+    // Schedule daily safety report fetch at 7:00 AM Israel time
+    const cronSchedule = process.env.SAFETY_CRON_SCHEDULE || '0 7 * * *';
+    cron.schedule(cronSchedule, async () => {
+      try {
+        console.log('🕐 Running scheduled safety report fetch...');
+        await safetyService.fetchAndProcessReports();
+        console.log('✅ Scheduled safety report fetch completed');
+      } catch (error) {
+        console.error('❌ Error in scheduled safety report fetch:', error);
+      }
+    }, {
+      timezone: "Asia/Jerusalem"
+    });
+
+    console.log(`⏰ Safety monitoring cron job scheduled: ${cronSchedule} (Israel time)`);
+  }).catch(error => {
+    console.error('❌ Failed to initialize Safety Monitor Service:', error);
+  });
+
   app.listen(PORT, () => {
     console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v3.0 🚨🚨🚨');
     console.log('🚀 Server running on port', PORT);
@@ -3699,6 +3727,7 @@ connectDB().then(() => {
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
     console.log('👥 Contact Auth API: http://localhost:' + PORT + '/api/contact-auth');
     console.log('🔍 Test API: http://localhost:' + PORT + '/api/test');
+    console.log('🛡️ Safety Reports API: http://localhost:' + PORT + '/api/safety-reports');
     console.log('🚨 DEBUGGING: All API routes should work now!');
   });
 });
