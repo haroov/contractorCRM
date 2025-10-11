@@ -280,7 +280,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         const data = await response.json();
         const projectsData = Array.isArray(data) ? data : (data.projects || []);
         console.log('🔍 Loaded projects for stats:', projectsData.length);
-        
+
         // Update contractor statistics based on real projects
         updateContractorStatsFromProjects(projectsData);
       } else {
@@ -375,6 +375,11 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             matches = project.contractorName === contractor.name;
           }
 
+          // Method 5: Check by mainContractor as string (contractor name)
+          if (!matches && project.mainContractor && contractor.name) {
+            matches = project.mainContractor === contractor.name;
+          }
+
           // Method 4: Check by projectIds array in contractor
           if (!matches && contractor.projectIds && Array.isArray(contractor.projectIds)) {
             matches = contractor.projectIds.some(projectId =>
@@ -402,6 +407,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               method2Match: project.mainContractor && contractor.contractor_id ? project.mainContractor === contractor.contractor_id : false,
               method3Match: project.contractorName && contractor.name ? project.contractorName === contractor.name : false,
               method4Match: contractor.projectIds && Array.isArray(contractor.projectIds) ? contractor.projectIds.some(projectId => projectId === project._id || projectId === project.id || projectId.toString() === project._id?.toString()) : false,
+              method5Match: project.mainContractor && contractor.name ? project.mainContractor === contractor.name : false,
               finalMatch: matches
             });
           }
