@@ -4745,13 +4745,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <Box sx={{ p: 1 }}>
                                                                     {project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x &&
                                                                         project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y ? (
-                        <GoogleMap
-                            latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
-                            longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
-                            height="400px"
-                            width="100%"
-                            zoom={16}
-                        />
+                                                                        <GoogleMap
+                                                                            latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
+                                                                            longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
+                                                                            height="400px"
+                                                                            width="100%"
+                                                                            zoom={16}
+                                                                        />
                                                                     ) : (
                                                                         <Box sx={{
                                                                             border: '1px solid #e0e0e0',

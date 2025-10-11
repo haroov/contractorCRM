@@ -21,7 +21,7 @@ function testPNG25GeoNearQuery() {
     const pipeline = [
         {
             $geoNear: {
-                near: { type: "Point", coordinates: [testCoordinates.y, testCoordinates.x] },
+                near: { type: "Point", coordinates: [testCoordinates.x, testCoordinates.y] },
                 key: "geometry",
                 spherical: true,
                 distanceField: "distance_m"
@@ -76,7 +76,7 @@ function testCrestaGeoNearQuery() {
     const pipeline = [
         {
             $geoNear: {
-                near: { type: "Point", coordinates: [testCoordinates.y, testCoordinates.x] },
+                near: { type: "Point", coordinates: [testCoordinates.x, testCoordinates.y] },
                 key: "geometry",
                 spherical: true,
                 distanceField: "distance_m"
