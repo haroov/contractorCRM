@@ -259,6 +259,73 @@ class GISService {
   }
 
   /**
+   * Find nearest police station based on coordinates
+   * @param {number} x - X coordinate (longitude)
+   * @param {number} y - Y coordinate (latitude)
+   * @returns {Object|null} - Police station data or null if not found
+   */
+  async getNearestPoliceStation(x, y) {
+    try {
+      await this.initialize();
+
+      // Use $geoNear aggregation pipeline for efficient spatial query
+      // Note: Police stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [x, y] },
+            key: "geometry",
+            spherical: true,
+            distanceField: "distanceKM",
+            distanceMultiplier: 0.001
+          }
+        },
+        { $limit: 1 },
+        {
+          $project: {
+            _id: 0,
+            name: { $ifNull: ["$properties.Name", "$Name"] },
+            address: { $ifNull: ["$properties.Address", "$Address"] },
+            phone: { $ifNull: ["$properties.Phone", "$Phone", "100"] },
+            stationType: { $ifNull: ["$properties.SiteType", "$SiteType"] },
+            distanceKM: { $round: ["$distanceKM", 3] },
+            geometry: 1
+          }
+        }
+      ];
+
+      const results = await this.gisDb.collection('policeStations').aggregate(pipeline).toArray();
+
+      if (results && results.length > 0) {
+        const result = results[0];
+        const distanceKm = result.distanceKM.toFixed(3);
+
+        // Estimate travel time (rough calculation: 1.2 minutes per km in urban areas)
+        const travelTime = Math.ceil(parseFloat(distanceKm) * 1.2);
+
+        const policeStationData = {
+          name: result.name || 'תחנת משטרה',
+          address: result.address || '',
+          phone: result.phone || '100',
+          stationType: result.stationType || '',
+          distance: distanceKm,
+          travelTime: travelTime,
+          distance_m: result.distanceKM * 1000
+        };
+
+        console.log(`✅ GIS Service: Found nearest police station ${policeStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
+        return policeStationData;
+      }
+
+      console.log(`⚠️ GIS Service: No police station found for coordinates (${x}, ${y})`);
+      return null;
+    } catch (error) {
+      console.error('❌ GIS Service: Error getting nearest police station:', error);
+      return null;
+    }
+  }
+
+  /**
    * Calculate both PNG25 and Cresta values for given coordinates
    * @param {number} x - X coordinate (longitude)
    * @param {number} y - Y coordinate (latitude)

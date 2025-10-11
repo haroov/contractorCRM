@@ -15,6 +15,16 @@ export interface FireStationData {
   distance_m: number;
 }
 
+export interface PoliceStationData {
+  name: string;
+  address: string;
+  phone: string;
+  stationType: string;
+  distance: string;
+  travelTime: number;
+  distance_m: number;
+}
+
 export interface GISResponse {
   success: boolean;
   coordinates: {
@@ -95,6 +105,37 @@ class GISService {
       return data.fireStation;
     } catch (error) {
       console.error('❌ GIS Service: Error finding nearest fire station:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Find nearest police station for given coordinates
+   * @param x - X coordinate (longitude)
+   * @param y - Y coordinate (latitude)
+   * @returns Promise<PoliceStationData | null>
+   */
+  async getNearestPoliceStation(x: number, y: number): Promise<PoliceStationData | null> {
+    try {
+      console.log(`🔍 GIS Service: Finding nearest police station for coordinates (${x}, ${y})`);
+
+      const response = await authenticatedFetch(`/api/gis/police-station?x=${x}&y=${y}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to find nearest police station');
+      }
+
+      const data = await response.json();
+      console.log('✅ GIS Service: Successfully found nearest police station:', data);
+      return data.policeStation;
+    } catch (error) {
+      console.error('❌ GIS Service: Error finding nearest police station:', error);
       throw error;
     }
   }

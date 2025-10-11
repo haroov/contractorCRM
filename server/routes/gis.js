@@ -268,4 +268,44 @@ router.get('/fire-station', async (req, res) => {
   }
 });
 
+// Get nearest police station for coordinates
+router.get('/police-station', async (req, res) => {
+  const { x, y } = req.query;
+
+  if (x === undefined || y === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing x or y coordinates'
+    });
+  }
+
+  try {
+    console.log(`🔍 GIS API: Finding nearest police station for coordinates (${x}, ${y})`);
+
+    const policeStation = await gisService.getNearestPoliceStation(parseFloat(x), parseFloat(y));
+
+    if (policeStation) {
+      res.json({
+        success: true,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        policeStation: policeStation
+      });
+    } else {
+      res.json({
+        success: false,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        policeStation: null,
+        message: 'No police station found for the given coordinates'
+      });
+    }
+  } catch (error) {
+    console.error('❌ GIS API: Error finding nearest police station:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to find nearest police station',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
