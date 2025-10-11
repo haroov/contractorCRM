@@ -7708,15 +7708,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         onClick={async () => {
                                                                             const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
                                                                             const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
-                                                                            
+
                                                                             if (!x || !y) {
                                                                                 alert('אנא הזן קואורדינטות X ו-Y תחילה');
                                                                                 return;
                                                                             }
-                                                                            
+
                                                                             try {
                                                                                 const policeStation = await gisService.getNearestPoliceStation(x, y);
-                                                                                
+
                                                                                 if (policeStation) {
                                                                                     // Update police station data in the table
                                                                                     handleNestedFieldChange('environmentalSurvey.policeStationName', policeStation.name);
@@ -7724,7 +7724,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                     handleNestedFieldChange('environmentalSurvey.policeStationPhone', policeStation.phone.toString());
                                                                                     handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(policeStation.distance));
                                                                                     handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', policeStation.travelTime);
-                                                                                    
+
                                                                                     // Show success message without blocking
                                                                                     console.log(`✅ Found police station: ${policeStation.name} at ${policeStation.distance}km`);
                                                                                 } else {
@@ -7736,7 +7736,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             }
                                                                         }}
                                                                         disabled={mode === 'view' || !canEdit}
-                                                                        sx={{ 
+                                                                        sx={{
                                                                             color: '#6B46C1',
                                                                             '&:hover': {
                                                                                 backgroundColor: '#f3f4f6'
