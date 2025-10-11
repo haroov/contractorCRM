@@ -7655,24 +7655,63 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         }
 
                                                         try {
-                                                            const fireStation = await gisService.getNearestFireStation(x, y);
+                                                            // Search for all emergency services
+                                                            const [fireStation, policeStation] = await Promise.all([
+                                                                gisService.getNearestFireStation(x, y),
+                                                                gisService.getNearestPoliceStation(x, y)
+                                                            ]);
 
+                                                            let foundServices = [];
+
+                                                            // Update fire station data (only if fields are empty)
                                                             if (fireStation) {
-                                                                // Update fire station data in the table
-                                                                handleNestedFieldChange('environmentalSurvey.fireStationName', fireStation.name);
-                                                                handleNestedFieldChange('environmentalSurvey.fireStationAddress', fireStation.address);
-                                                                handleNestedFieldChange('environmentalSurvey.fireStationPhone', fireStation.phone.toString());
-                                                                handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(fireStation.distance));
-                                                                handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', fireStation.travelTime);
+                                                                if (!project?.environmentalSurvey?.fireStationName) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStationName', fireStation.name);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.fireStationAddress) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStationAddress', fireStation.address);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.fireStationPhone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStationPhone', fireStation.phone.toString());
+                                                                }
+                                                                if (!project?.environmentalSurvey?.distanceFromFireStation) {
+                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(fireStation.distance));
+                                                                }
+                                                                if (!project?.environmentalSurvey?.fireStationTravelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', fireStation.travelTime);
+                                                                }
+                                                                foundServices.push(`תחנת כיבוי אש: ${fireStation.name}`);
+                                                            }
 
-                                                                // Show success message without blocking
-                                                                console.log(`✅ Found fire station: ${fireStation.name} at ${fireStation.distance}km`);
+                                                            // Update police station data (only if fields are empty)
+                                                            if (policeStation) {
+                                                                if (!project?.environmentalSurvey?.policeStationName) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStationName', policeStation.name);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.policeStationAddress) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStationAddress', policeStation.address);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.policeStationPhone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStationPhone', policeStation.phone.toString());
+                                                                }
+                                                                if (!project?.environmentalSurvey?.distanceFromPoliceStation) {
+                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(policeStation.distance));
+                                                                }
+                                                                if (!project?.environmentalSurvey?.policeStationTravelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', policeStation.travelTime);
+                                                                }
+                                                                foundServices.push(`תחנת משטרה: ${policeStation.name}`);
+                                                            }
+
+                                                            // Show success message
+                                                            if (foundServices.length > 0) {
+                                                                console.log(`✅ Found emergency services: ${foundServices.join(', ')}`);
                                                             } else {
-                                                                alert('לא נמצאה תחנת כיבוי אש קרובה');
+                                                                alert('לא נמצאו שירותי חירום קרובים');
                                                             }
                                                         } catch (error) {
-                                                            console.error('Error finding nearest fire station:', error);
-                                                            alert('שגיאה בחיפוש תחנת כיבוי אש');
+                                                            console.error('Error finding emergency services:', error);
+                                                            alert('שגיאה בחיפוש שירותי חירום');
                                                         }
                                                     }}
                                                     disabled={mode === 'view' || !canEdit}
@@ -7682,7 +7721,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             backgroundColor: '#f3f4f6'
                                                         }
                                                     }}
-                                                    title="חפש תחנת כיבוי אש קרובה"
+                                                    title="חפש שירותי חירום קרובים"
                                                 >
                                                     <AutoAwesomeIcon />
                                                 </IconButton>
@@ -7702,51 +7741,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     <TableBody>
                                                         <TableRow>
                                                             <TableCell sx={{ padding: 1, textAlign: 'right' }}>
-                                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                    <Typography variant="body2">משטרה</Typography>
-                                                                    <IconButton
-                                                                        onClick={async () => {
-                                                                            const x = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x;
-                                                                            const y = project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y;
-
-                                                                            if (!x || !y) {
-                                                                                alert('אנא הזן קואורדינטות X ו-Y תחילה');
-                                                                                return;
-                                                                            }
-
-                                                                            try {
-                                                                                const policeStation = await gisService.getNearestPoliceStation(x, y);
-
-                                                                                if (policeStation) {
-                                                                                    // Update police station data in the table
-                                                                                    handleNestedFieldChange('environmentalSurvey.policeStationName', policeStation.name);
-                                                                                    handleNestedFieldChange('environmentalSurvey.policeStationAddress', policeStation.address);
-                                                                                    handleNestedFieldChange('environmentalSurvey.policeStationPhone', policeStation.phone.toString());
-                                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(policeStation.distance));
-                                                                                    handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', policeStation.travelTime);
-
-                                                                                    // Show success message without blocking
-                                                                                    console.log(`✅ Found police station: ${policeStation.name} at ${policeStation.distance}km`);
-                                                                                } else {
-                                                                                    alert('לא נמצאה תחנת משטרה קרובה');
-                                                                                }
-                                                                            } catch (error) {
-                                                                                console.error('Error finding nearest police station:', error);
-                                                                                alert('שגיאה בחיפוש תחנת משטרה');
-                                                                            }
-                                                                        }}
-                                                                        disabled={mode === 'view' || !canEdit}
-                                                                        sx={{
-                                                                            color: '#6B46C1',
-                                                                            '&:hover': {
-                                                                                backgroundColor: '#f3f4f6'
-                                                                            }
-                                                                        }}
-                                                                        title="חפש תחנת משטרה קרובה"
-                                                                    >
-                                                                        <AutoAwesomeIcon />
-                                                                    </IconButton>
-                                                                </Box>
+                                                                <Typography variant="body2">משטרה</Typography>
                                                             </TableCell>
                                                             <TableCell sx={{ padding: 1 }}>
                                                                 <TextField
