@@ -416,8 +416,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         });
 
         // Count active and future projects
-        const activeProjects = contractorProjects.filter(p => p.projectStatus === 'active' || p.projectStatus === 'current');
-        const futureProjects = contractorProjects.filter(p => p.projectStatus === 'future');
+        const activeProjects = contractorProjects.filter(p => p.projectStatus === 'active' || p.projectStatus === 'current' || p.status === 'current');
+        const futureProjects = contractorProjects.filter(p => p.projectStatus === 'future' || p.status === 'future');
 
         // Calculate values
         const activeProjectsValue = activeProjects.reduce((sum, p) => sum + (p.valueNis || 0), 0);
@@ -450,8 +450,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             allProjectNames: contractorProjects.map(p => p.projectName),
             activeProjectNames: activeProjects.map(p => p.projectName),
             futureProjectNames: futureProjects.map(p => p.projectName),
-            projectStatuses: contractorProjects.map(p => ({ 
-              name: p.projectName, 
+            projectStatuses: contractorProjects.map(p => ({
+              name: p.projectName,
               status: p.projectStatus,
               startDate: p.startDate,
               durationMonths: p.durationMonths,
