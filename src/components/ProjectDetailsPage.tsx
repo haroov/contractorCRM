@@ -7658,13 +7658,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             const fireStation = await gisService.getNearestFireStation(x, y);
 
                                                             if (fireStation) {
-                                                                // Update fire station data
-                                                                handleNestedFieldChange('emergencyServices.fireStation.name', fireStation.name);
-                                                                handleNestedFieldChange('emergencyServices.fireStation.phone', fireStation.phone);
-                                                                handleNestedFieldChange('emergencyServices.fireStation.distance', fireStation.distance);
-                                                                handleNestedFieldChange('emergencyServices.fireStation.travelTime', fireStation.travelTime);
+                                                                // Update fire station data in the table
+                                                                handleNestedFieldChange('environmentalSurvey.fireStationName', fireStation.name);
+                                                                handleNestedFieldChange('environmentalSurvey.fireStationAddress', fireStation.address);
+                                                                handleNestedFieldChange('environmentalSurvey.fireStationPhone', fireStation.phone.toString());
+                                                                handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(fireStation.distance));
+                                                                handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', fireStation.travelTime);
 
-                                                                alert(`נמצאה תחנת כיבוי אש קרובה: ${fireStation.name}`);
+                                                                // Show success message without blocking
+                                                                console.log(`✅ Found fire station: ${fireStation.name} at ${fireStation.distance}km`);
                                                             } else {
                                                                 alert('לא נמצאה תחנת כיבוי אש קרובה');
                                                             }
@@ -7691,6 +7693,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>תחום</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>שם</TableCell>
+                                                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>כתובת מלאה</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>טלפון</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>מרחק (ק״מ)</TableCell>
                                                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>זמן נסיעה (דק׳)</TableCell>
@@ -7710,6 +7713,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="שם התחנה"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.policeStationAddress || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationAddress', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="כתובת מלאה"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             height: 40,
@@ -7807,6 +7829,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
+                                                                    value={project?.environmentalSurvey?.fireStationAddress || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationAddress', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="כתובת מלאה"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
                                                                     value={project?.environmentalSurvey?.fireStationPhone || ''}
                                                                     onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationPhone', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
@@ -7876,6 +7917,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="שם המרכז"
+                                                                    sx={{
+                                                                        '& .MuiOutlinedInput-root': {
+                                                                            height: 40,
+                                                                            '& fieldset': { borderColor: '#e0e0e0' },
+                                                                            '&:hover fieldset': { borderColor: '#bdbdbd' },
+                                                                            '&.Mui-focused fieldset': { borderColor: '#6b47c1' }
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell sx={{ padding: 1 }}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    size="small"
+                                                                    value={project?.environmentalSurvey?.medicalCenterAddress || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterAddress', e.target.value)}
+                                                                    disabled={mode === 'view' || !canEdit}
+                                                                    variant="outlined"
+                                                                    placeholder="כתובת מלאה"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             height: 40,
