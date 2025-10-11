@@ -262,14 +262,32 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
       setContractors(filteredContractors);
 
-      // If we have projects loaded, update contractor stats
-      if (projects.length > 0) {
-        updateContractorStatsFromProjects(projects);
-      }
+      // Always load projects to update contractor stats
+      await loadProjectsForStats();
     } catch (error) {
       console.error('Error loading contractors:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load projects for statistics (without setting projects state)
+  const loadProjectsForStats = async () => {
+    try {
+      console.log('🔍 Loading projects for statistics...');
+      const response = await fetch('https://contractorcrm-api.onrender.com/api/projects');
+      if (response.ok) {
+        const data = await response.json();
+        const projectsData = Array.isArray(data) ? data : (data.projects || []);
+        console.log('🔍 Loaded projects for stats:', projectsData.length);
+        
+        // Update contractor statistics based on real projects
+        updateContractorStatsFromProjects(projectsData);
+      } else {
+        console.error('Failed to load projects for stats');
+      }
+    } catch (error) {
+      console.error('Error loading projects for stats:', error);
     }
   };
 
@@ -334,7 +352,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
       contractorName: p.contractorName,
       status: p.projectStatus
     })));
-    
+
     setContractors(prevContractors => {
       return prevContractors.map(contractor => {
         // Find projects for this contractor
@@ -406,9 +424,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           futureProjects: futureProjects.length,
           activeValue: activeProjectsValue,
           futureValue: futureProjectsValue,
-          allProjects: contractorProjects.map(p => ({ 
-            name: p.projectName, 
-            status: p.projectStatus, 
+          allProjects: contractorProjects.map(p => ({
+            name: p.projectName,
+            status: p.projectStatus,
             mainContractor: p.mainContractor,
             contractorName: p.contractorName
           }))
