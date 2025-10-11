@@ -326,6 +326,15 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
 
   // Update contractor statistics based on real projects
   const updateContractorStatsFromProjects = (projectsData: any[]) => {
+    console.log(`🔍 DEBUG: Total projects loaded: ${projectsData.length}`);
+    console.log(`🔍 DEBUG: All project names:`, projectsData.map(p => p.projectName));
+    console.log(`🔍 DEBUG: Projects with אכזיב:`, projectsData.filter(p => p.projectName && p.projectName.includes('אכזיב')).map(p => ({
+      name: p.projectName,
+      mainContractor: p.mainContractor,
+      contractorName: p.contractorName,
+      status: p.projectStatus
+    })));
+    
     setContractors(prevContractors => {
       return prevContractors.map(contractor => {
         // Find projects for this contractor
@@ -357,6 +366,28 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             );
           }
 
+          // Debug logging for אכזיב project
+          if (project.projectName && project.projectName.includes('אכזיב')) {
+            console.log(`🔍 DEBUG: Checking אכזיב project "${project.projectName}" for contractor "${contractor.name}":`, {
+              projectId: project._id,
+              projectName: project.projectName,
+              projectMainContractor: project.mainContractor,
+              projectMainContractorType: typeof project.mainContractor,
+              projectContractorName: project.contractorName,
+              projectStatus: project.projectStatus,
+              contractorId: contractor._id,
+              contractorIdType: typeof contractor._id,
+              contractorId2: contractor.contractor_id,
+              contractorName: contractor.name,
+              contractorProjectIds: contractor.projectIds,
+              method1Match: project.mainContractor && contractor._id ? project.mainContractor.toString() === contractor._id.toString() : false,
+              method2Match: project.mainContractor && contractor.contractor_id ? project.mainContractor === contractor.contractor_id : false,
+              method3Match: project.contractorName && contractor.name ? project.contractorName === contractor.name : false,
+              method4Match: contractor.projectIds && Array.isArray(contractor.projectIds) ? contractor.projectIds.some(projectId => projectId === project._id || projectId === project.id || projectId.toString() === project._id?.toString()) : false,
+              finalMatch: matches
+            });
+          }
+
           return matches;
         });
 
@@ -374,8 +405,30 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           activeProjects: activeProjects.length,
           futureProjects: futureProjects.length,
           activeValue: activeProjectsValue,
-          futureValue: futureProjectsValue
+          futureValue: futureProjectsValue,
+          allProjects: contractorProjects.map(p => ({ 
+            name: p.projectName, 
+            status: p.projectStatus, 
+            mainContractor: p.mainContractor,
+            contractorName: p.contractorName
+          }))
         });
+
+        // Special debug for צ.מ.ח המרמן
+        if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
+          console.log(`🔍 SPECIAL DEBUG for צ.מ.ח המרמן בע"מ:`, {
+            contractorId: contractor._id,
+            contractorId2: contractor.contractor_id,
+            contractorName: contractor.name,
+            totalProjectsFound: contractorProjects.length,
+            activeProjectsCount: activeProjects.length,
+            futureProjectsCount: futureProjects.length,
+            allProjectNames: contractorProjects.map(p => p.projectName),
+            activeProjectNames: activeProjects.map(p => p.projectName),
+            futureProjectNames: futureProjects.map(p => p.projectName),
+            projectStatuses: contractorProjects.map(p => ({ name: p.projectName, status: p.projectStatus }))
+          });
+        }
 
         return {
           ...contractor,
