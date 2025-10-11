@@ -113,7 +113,7 @@ const LoginPage: React.FC = () => {
       const redirectUri = 'https://contractorcrm-api.onrender.com/auth/google/callback';
       const params = new URLSearchParams({
         response_type: 'code',
-        client_id: '230216937198-4e1gs2k1lepumm2ea3n949u897vnda2m.apps.googleusercontent.com',
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '',
         redirect_uri: redirectUri,
         scope: 'profile email',
         access_type: 'offline',
