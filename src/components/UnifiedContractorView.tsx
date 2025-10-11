@@ -389,9 +389,9 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             );
           }
 
-          // Debug logging for אכזיב project
-          if (project.projectName && project.projectName.includes('אכזיב')) {
-            console.log(`🔍 DEBUG: Checking אכזיב project "${project.projectName}" for contractor "${contractor.name}":`, {
+          // Debug logging for all projects when checking צ.מ.ח המרמן
+          if (contractor.name === 'צ.מ.ח המרמן בע"מ') {
+            console.log(`🔍 DEBUG: Checking project "${project.projectName}" for contractor "${contractor.name}":`, {
               projectId: project._id,
               projectName: project.projectName,
               projectMainContractor: project.mainContractor,
