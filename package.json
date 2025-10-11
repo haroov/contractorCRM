@@ -16,6 +16,7 @@
     "test:safety-monitor": "node scripts/test-safety-monitor.js",
     "setup:safety-monitor": "node scripts/setup-safety-monitor.js",
     "generate-gmail-token": "node scripts/generate-gmail-token.js",
+    "create-gmail-token": "node scripts/create-gmail-token.js",
     "deploy": "git push origin main && npx vercel --prod",
     "deploy:build": "npm run build && npx vercel --prod",
     "docker:build": "docker build -t contractor-crm .",

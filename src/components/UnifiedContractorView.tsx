@@ -375,7 +375,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         });
 
         // Count active and future projects
-        const activeProjects = contractorProjects.filter(p => p.projectStatus === 'active');
+        const activeProjects = contractorProjects.filter(p => p.projectStatus === 'active' || p.projectStatus === 'current');
         const futureProjects = contractorProjects.filter(p => p.projectStatus === 'future');
 
         // Calculate values
@@ -1063,7 +1063,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
                     {projects.filter(p => {
                       if (projectsFilter === 'all') return true;
-                      if (projectsFilter === 'active') return p.projectStatus === 'active';
+                      if (projectsFilter === 'active') return p.projectStatus === 'active' || p.projectStatus === 'current';
                       if (projectsFilter === 'future') return p.projectStatus === 'future';
                       return p.projectStatus === 'closed';
                     }).length}
@@ -1074,7 +1074,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                 </Paper>
                 <Paper sx={{ p: 2, flex: 1, textAlign: 'center', bgcolor: 'white', boxShadow: 1 }}>
                   <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#424242' }}>
-                    {projects.filter(p => p.projectStatus === 'active').length}
+                    {projects.filter(p => p.projectStatus === 'active' || p.projectStatus === 'current').length}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     פרויקטים פעילים
@@ -1464,12 +1464,12 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                                     px: 1.5,
                                     py: 0.5,
                                     borderRadius: '16px',
-                                    bgcolor: project.projectStatus === 'active' ? '#e3f2fd' : project.projectStatus === 'future' ? '#fff3e0' : '#f0f0f0',
-                                    color: project.projectStatus === 'active' ? '#2196f3' : project.projectStatus === 'future' ? '#f57c00' : '#666',
+                                    bgcolor: (project.projectStatus === 'active' || project.projectStatus === 'current') ? '#e3f2fd' : project.projectStatus === 'future' ? '#fff3e0' : '#f0f0f0',
+                                    color: (project.projectStatus === 'active' || project.projectStatus === 'current') ? '#2196f3' : project.projectStatus === 'future' ? '#f57c00' : '#666',
                                     fontWeight: 'bold',
                                     minWidth: '70px'
                                   }}>
-                                    {project.projectStatus === 'active' ? 'פעיל' : project.projectStatus === 'future' ? 'עתידי' : 'סגור'}
+                                    {(project.projectStatus === 'active' || project.projectStatus === 'current') ? 'פעיל' : project.projectStatus === 'future' ? 'עתידי' : 'סגור'}
                                   </Box>
                                 </TableCell>
                                 <TableCell sx={{ textAlign: 'right' }}>
