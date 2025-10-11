@@ -209,18 +209,20 @@ class GISService {
             near: { type: "Point", coordinates: [x, y] },
             key: "geometry",
             spherical: true,
-            distanceField: "distance_m"
+            distanceField: "distanceKM",
+            distanceMultiplier: 0.001
           }
         },
         { $limit: 1 },
         {
           $project: {
-            _id: 1,
-            "properties.Name": 1,
-            "properties.address": 1,
-            "properties.EmergencyPhoneNumber": 1,
-            "properties.Station_Type": 1,
-            distance_m: 1
+            _id: 0,
+            name: { $ifNull: ["$properties.Name", "$Name"] },
+            address: { $ifNull: ["$properties.address", "$address"] },
+            phone: { $ifNull: ["$properties.EmergencyPhoneNumber", "$EmergencyPhoneNumber", "102"] },
+            stationType: { $ifNull: ["$properties.Station_Type", "$Station_Type"] },
+            distanceKM: { $round: ["$distanceKM", 3] },
+            geometry: 1
           }
         }
       ];
@@ -229,19 +231,19 @@ class GISService {
 
       if (results && results.length > 0) {
         const result = results[0];
-        const distanceKm = (result.distance_m / 1000).toFixed(2);
+        const distanceKm = result.distanceKM.toFixed(3);
 
-        // Estimate travel time (rough calculation: 1 minute per km in urban areas)
+        // Estimate travel time (rough calculation: 1.2 minutes per km in urban areas)
         const travelTime = Math.ceil(parseFloat(distanceKm) * 1.2);
 
         const fireStationData = {
-          name: result.properties?.Name || 'תחנת כיבוי אש',
-          address: result.properties?.address || '',
-          phone: result.properties?.EmergencyPhoneNumber || '102',
-          stationType: result.properties?.Station_Type || '',
+          name: result.name || 'תחנת כיבוי אש',
+          address: result.address || '',
+          phone: result.phone || '102',
+          stationType: result.stationType || '',
           distance: distanceKm,
           travelTime: travelTime,
-          distance_m: result.distance_m
+          distance_m: result.distanceKM * 1000
         };
 
         console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
