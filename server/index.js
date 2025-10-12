@@ -22,6 +22,7 @@ const projectFilesRoutes = require('./routes/project-files');
 const documentParserRoutes = require('./routes/document-parser');
 const riskAnalysisRoutes = require('./routes/risk-analysis');
 const companyAnalysisRoutes = require('./routes/company-analysis');
+console.log("✅ Company analysis routes loaded");
 const gisRoutes = require('./routes/gis');
 const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');

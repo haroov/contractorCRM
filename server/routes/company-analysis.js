@@ -2,6 +2,8 @@ const { Router } = require("express");
 const OpenAI = require("openai");
 const fetch = require("node-fetch");
 
+console.log("🚀 Loading company-analysis.js route");
+
 const router = Router();
 
 // Initialize OpenAI client - compatible with openai v3.3.0
@@ -121,6 +123,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
  * POST /analyze-company - Analyze company website
  */
 router.post("/analyze-company", async (req, res) => {
+    console.log("🎯 POST /analyze-company route hit");
     try {
         const { website } = req.body;
 
