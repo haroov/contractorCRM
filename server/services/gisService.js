@@ -363,12 +363,13 @@ class GISService {
 
       // Try different possible collection names
       let results = [];
-      const possibleNames = ['fuelStation', 'fuelStations', 'fuel_station', 'fuel_stations'];
+      const possibleNames = ['fuelStation', 'fuelStations', 'fuel_station', 'fuel_stations', 'fuelstation'];
       
       for (const collectionName of possibleNames) {
         try {
           const collection = this.gisDb.collection(collectionName);
           const count = await collection.countDocuments();
+          console.log(`🔍 Checking collection ${collectionName}: ${count} documents`);
           if (count > 0) {
             console.log(`✅ Found fuel stations in collection: ${collectionName} (${count} documents)`);
             results = await collection.aggregate(pipeline).toArray();
@@ -376,6 +377,17 @@ class GISService {
           }
         } catch (error) {
           console.log(`⚠️ Collection ${collectionName} not found or error:`, error.message);
+        }
+      }
+      
+      // If no results found, log all available collections
+      if (results.length === 0) {
+        console.log('🔍 No fuel stations found. Checking all available collections...');
+        try {
+          const collections = await this.gisDb.listCollections().toArray();
+          console.log('📋 Available collections:', collections.map(c => c.name));
+        } catch (error) {
+          console.log('⚠️ Could not list collections:', error.message);
         }
       }
 
