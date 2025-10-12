@@ -361,7 +361,23 @@ class GISService {
         }
       ];
 
-      const results = await this.gisDb.collection('fuelStation').aggregate(pipeline).toArray();
+      // Try different possible collection names
+      let results = [];
+      const possibleNames = ['fuelStation', 'fuelStations', 'fuel_station', 'fuel_stations'];
+      
+      for (const collectionName of possibleNames) {
+        try {
+          const collection = this.gisDb.collection(collectionName);
+          const count = await collection.countDocuments();
+          if (count > 0) {
+            console.log(`✅ Found fuel stations in collection: ${collectionName} (${count} documents)`);
+            results = await collection.aggregate(pipeline).toArray();
+            break;
+          }
+        } catch (error) {
+          console.log(`⚠️ Collection ${collectionName} not found or error:`, error.message);
+        }
+      }
 
       if (results && results.length > 0) {
         const result = results[0];
