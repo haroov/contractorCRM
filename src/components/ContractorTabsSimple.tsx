@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Box, Typography, Button, Tabs, Tab, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip, Autocomplete, InputAdornment, Chip } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon, Close as CloseIcon, Refresh as RefreshIcon, AutoAwesome as AutoAwesomeIcon } from '@mui/icons-material';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import FileUpload from './FileUpload';
 import { useNavigate } from 'react-router-dom';
@@ -257,40 +257,41 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         return `https://www.${domain}`;
     };
 
-    // Function to scrape company information from website
-    const scrapeCompanyInfo = async (websiteUrl: string) => {
+    // Function to analyze company website using AI
+    const analyzeCompanyWebsite = async (websiteUrl: string) => {
         if (!websiteUrl) return;
 
         setIsLoadingAbout(true);
         try {
-            const response = await fetch(`/api/scrape-company-info/${localCompanyId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    setCompanyAbout(data.about || '');
-                    setCompanyLogo(data.logo || '');
-                } else {
-                    console.warn('⚠️ Scraping returned unsuccessful:', data);
-                }
-            } else {
-                // Handle rate limiting and other HTTP errors
-                if (response.status === 429) {
-                    console.warn('⚠️ Rate limit exceeded for scraping. Please wait before trying again.');
-                    setCompanyAbout('מידע זמנית לא זמין - יותר מדי בקשות. נסה שוב בעוד כמה דקות.');
-                } else {
-                    console.error('❌ HTTP error scraping company info:', response.status, response.statusText);
-                    setCompanyAbout('שגיאה בטעינת מידע מהאתר. נסה שוב מאוחר יותר.');
-                }
+            console.log('🚀 analyzeCompanyWebsite called with:', websiteUrl);
+            
+            // Import the company analysis service
+            const { analyzeCompanyWebsite: analyzeWebsite, mapCompanyAnalysisToContractor } = await import('../services/companyAnalysisService');
+            console.log('📦 Services imported successfully');
+            
+            console.log('📞 Calling analyzeWebsite with:', websiteUrl);
+            const analysisResult = await analyzeWebsite(websiteUrl);
+            console.log('📊 Analysis result received:', analysisResult);
+            
+            const mappedData = mapCompanyAnalysisToContractor(analysisResult);
+            console.log('🗺️ Mapped data:', mappedData);
+            
+            // Update the contractor state with the analyzed data
+            if (mappedData.about) {
+                setCompanyAbout(mappedData.about);
             }
+            if (mappedData.logoUrl) {
+                setCompanyLogo(mappedData.logoUrl);
+            }
+            if (mappedData.name && localName !== mappedData.name) {
+                setLocalName(mappedData.name);
+            }
+            
+            console.log('✅ Company analysis completed successfully');
+            
         } catch (error) {
-            console.error('❌ Error scraping company info:', error);
-            setCompanyAbout('שגיאה בטעינת מידע מהאתר. נסה שוב מאוחר יותר.');
+            console.error('❌ Error analyzing company website:', error);
+            setCompanyAbout('שגיאה בניתוח האתר. נסה שוב מאוחר יותר.');
         } finally {
             setIsLoadingAbout(false);
         }
@@ -553,11 +554,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         }
     }, [activeTab, contractor?.company_id, localCompanyId]);
 
-    // Auto-scrape company info when website changes
+    // Auto-analyze company info when website changes
     useEffect(() => {
         if (localWebsite && localWebsite.startsWith('http')) {
-            console.log('🌐 Website changed, scraping company info:', localWebsite);
-            scrapeCompanyInfo(localWebsite);
+            console.log('🌐 Website changed, analyzing company info:', localWebsite);
+            analyzeCompanyWebsite(localWebsite);
         }
     }, [localWebsite]);
 
@@ -2125,20 +2126,19 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             }}
                                         />
                                         {localWebsite && canEdit && (
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                onClick={() => scrapeCompanyInfo(localWebsite)}
+                                            <IconButton
+                                                onClick={() => analyzeCompanyWebsite(localWebsite)}
                                                 disabled={isLoadingAbout}
                                                 sx={{
                                                     minWidth: 'auto',
-                                                    px: 2,
+                                                    width: '56px',
                                                     height: '56px',
-                                                    borderColor: '#6b47c1',
+                                                    border: '2px solid #6b47c1',
                                                     color: '#6b47c1',
                                                     '&:hover': {
                                                         borderColor: '#5a3aa1',
-                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
+                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)',
+                                                        transform: 'scale(1.05)'
                                                     },
                                                     '&:disabled': {
                                                         borderColor: '#d0d0d0',
@@ -2147,11 +2147,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 }}
                                             >
                                                 {isLoadingAbout ? (
-                                                    <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
+                                                    <CircularProgress size={24} sx={{ color: '#6b47c1' }} />
                                                 ) : (
-                                                    'סרוק מחדש'
+                                                    <AutoAwesomeIcon sx={{ fontSize: 28 }} />
                                                 )}
-                                            </Button>
+                                            </IconButton>
                                         )}
                                     </Box>
                                 </Grid>
