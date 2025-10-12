@@ -308,7 +308,7 @@ router.get('/police-station', async (req, res) => {
   }
 });
 
-// Get nearest fuel station for coordinates
+// Get nearest fuel station for coordinates - Updated
 router.get('/fuel-station', async (req, res) => {
   const { x, y } = req.query;
 

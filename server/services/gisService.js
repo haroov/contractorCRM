@@ -364,7 +364,7 @@ class GISService {
       // Try different possible collection names
       let results = [];
       const possibleNames = ['fuelStation', 'fuelStations', 'fuel_station', 'fuel_stations', 'fuelstation'];
-      
+
       for (const collectionName of possibleNames) {
         try {
           const collection = this.gisDb.collection(collectionName);
@@ -379,7 +379,7 @@ class GISService {
           console.log(`⚠️ Collection ${collectionName} not found or error:`, error.message);
         }
       }
-      
+
       // If no results found, log all available collections
       if (results.length === 0) {
         console.log('🔍 No fuel stations found. Checking all available collections...');
