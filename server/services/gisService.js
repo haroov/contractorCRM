@@ -336,11 +336,17 @@ class GISService {
       await this.initialize();
 
       // Use $geoNear aggregation pipeline for efficient spatial query
-      // Note: Fuel stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
+      // Note: Fuel stations data might be stored as [Y, X] (Latitude, Longitude) - let's try both
+      console.log(`🔍 GIS Service: Searching fuel stations for coordinates (${x}, ${y})`);
+      
+      // Try both coordinate orders
+      const coordinates1 = [x, y]; // [longitude, latitude] - standard GeoJSON
+      const coordinates2 = [y, x]; // [latitude, longitude] - alternative
+      
       const pipeline = [
         {
           $geoNear: {
-            near: { type: "Point", coordinates: [x, y] },
+            near: { type: "Point", coordinates: coordinates1 },
             key: "geometry",
             spherical: true,
             distanceField: "distanceKM",
@@ -395,20 +401,59 @@ class GISService {
         const result = results[0];
         const distanceKm = result.distanceKM.toFixed(3);
 
+        // Check if the distance is reasonable (less than 50km)
+        if (parseFloat(distanceKm) > 50) {
+          console.log(`⚠️ GIS Service: Found fuel station but distance seems too far (${distanceKm}km). Trying alternative coordinates...`);
+          
+          // Try with reversed coordinates
+          const pipeline2 = [
+            {
+              $geoNear: {
+                near: { type: "Point", coordinates: coordinates2 },
+                key: "geometry",
+                spherical: true,
+                distanceField: "distanceKM",
+                distanceMultiplier: 0.001
+              }
+            },
+            { $limit: 1 },
+            {
+              $project: {
+                _id: 0,
+                name: { $ifNull: ["$properties.Name", "$Name", "$properties.name"] },
+                address: { $ifNull: ["$properties.Address", "$address", "$properties.address"] },
+                phone: { $ifNull: ["$properties.Phone", "$phone", "$properties.phone", "לא זמין"] },
+                stationType: { $ifNull: ["$properties.Type", "$type", "$properties.type", "תחנת דלק"] },
+                distanceKM: { $round: ["$distanceKM", 3] },
+                geometry: 1
+              }
+            }
+          ];
+
+          const results2 = await this.gisDb.collection('fuelStation').aggregate(pipeline2).toArray();
+          if (results2 && results2.length > 0 && parseFloat(results2[0].distanceKM.toFixed(3)) < parseFloat(distanceKm)) {
+            console.log(`✅ GIS Service: Found closer fuel station with alternative coordinates`);
+            results = results2;
+          }
+        }
+
+        const finalResult = results[0];
+        const finalDistanceKm = finalResult.distanceKM.toFixed(3);
+
         // Estimate travel time (rough calculation: 1.5 minutes per km for fuel stations)
-        const travelTime = Math.ceil(parseFloat(distanceKm) * 1.5);
+        const travelTime = Math.ceil(parseFloat(finalDistanceKm) * 1.5);
 
         const fuelStationData = {
-          name: result.name || 'תחנת דלק',
-          address: result.address || '',
-          phone: result.phone || 'לא זמין',
-          stationType: result.stationType || 'תחנת דלק',
-          distance: distanceKm,
+          name: finalResult.name || 'תחנת דלק',
+          address: finalResult.address || '',
+          phone: finalResult.phone || 'לא זמין',
+          stationType: finalResult.stationType || 'תחנת דלק',
+          distance: finalDistanceKm,
           travelTime: travelTime,
-          distance_m: result.distanceKM * 1000
+          distance_m: finalResult.distanceKM * 1000
         };
 
-        console.log(`✅ GIS Service: Found nearest fuel station ${fuelStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
+        console.log(`✅ GIS Service: Found nearest fuel station ${fuelStationData.name} at distance ${finalDistanceKm}km for coordinates (${x}, ${y})`);
         return fuelStationData;
       }
 
