@@ -283,9 +283,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             if (mappedData.logoUrl) {
                 setCompanyLogo(mappedData.logoUrl);
             }
-            if (mappedData.name && localName !== mappedData.name) {
-                setLocalName(mappedData.name);
-            }
+            // Note: Not updating company name as it comes from company registry
 
             console.log('✅ Company analysis completed successfully');
 
@@ -2129,16 +2127,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                             <IconButton
                                                 onClick={() => analyzeCompanyWebsite(localWebsite)}
                                                 disabled={isLoadingAbout}
+                                                size="small"
                                                 sx={{
-                                                    minWidth: 'auto',
-                                                    width: '56px',
-                                                    height: '56px',
-                                                    border: '2px solid #6b47c1',
+                                                    border: '1px solid #6b47c1',
                                                     color: '#6b47c1',
                                                     '&:hover': {
                                                         borderColor: '#5a3aa1',
-                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)',
-                                                        transform: 'scale(1.05)'
+                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                                     },
                                                     '&:disabled': {
                                                         borderColor: '#d0d0d0',
@@ -2147,9 +2142,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 }}
                                             >
                                                 {isLoadingAbout ? (
-                                                    <CircularProgress size={24} sx={{ color: '#6b47c1' }} />
+                                                    <CircularProgress size={16} sx={{ color: '#6b47c1' }} />
                                                 ) : (
-                                                    <AutoAwesomeIcon sx={{ fontSize: 28 }} />
+                                                    <AutoAwesomeIcon sx={{ fontSize: 20 }} />
                                                 )}
                                             </IconButton>
                                         )}
