@@ -35,6 +35,17 @@ export interface FuelStationData {
   distance_m: number;
 }
 
+export interface FirstAidStationData {
+  name: string;
+  city: string;
+  address: string;
+  phone: string;
+  stationType: string;
+  distance: string;
+  travelTime: number;
+  distance_m: number;
+}
+
 export interface GISResponse {
   success: boolean;
   coordinates: {
@@ -177,6 +188,37 @@ class GISService {
       return data.fuelStation;
     } catch (error) {
       console.error('❌ GIS Service: Error finding nearest fuel station:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get nearest first aid station (MDA) based on coordinates
+   * @param x - X coordinate (longitude)
+   * @param y - Y coordinate (latitude)
+   * @returns Promise<FirstAidStationData | null>
+   */
+  async getNearestFirstAidStation(x: number, y: number): Promise<FirstAidStationData | null> {
+    try {
+      console.log(`🔍 GIS Service: Finding nearest first aid station for coordinates (${x}, ${y})`);
+
+      const response = await authenticatedFetch(`/api/gis/first-aid-station?x=${x}&y=${y}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to find nearest first aid station');
+      }
+
+      const data = await response.json();
+      console.log('✅ GIS Service: Successfully found nearest first aid station:', data);
+      return data.firstAidStation;
+    } catch (error) {
+      console.error('❌ GIS Service: Error finding nearest first aid station:', error);
       throw error;
     }
   }

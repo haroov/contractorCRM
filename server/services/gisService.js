@@ -338,11 +338,11 @@ class GISService {
       // Use $geoNear aggregation pipeline for efficient spatial query
       // Note: Fuel stations data might be stored as [Y, X] (Latitude, Longitude) - let's try both
       console.log(`🔍 GIS Service: Searching fuel stations for coordinates (${x}, ${y})`);
-      
+
       // Try both coordinate orders
       const coordinates1 = [x, y]; // [longitude, latitude] - standard GeoJSON
       const coordinates2 = [y, x]; // [latitude, longitude] - alternative
-      
+
       const pipeline = [
         {
           $geoNear: {
@@ -404,7 +404,7 @@ class GISService {
         // Check if the distance is reasonable (less than 50km)
         if (parseFloat(distanceKm) > 50) {
           console.log(`⚠️ GIS Service: Found fuel station but distance seems too far (${distanceKm}km). Trying alternative coordinates...`);
-          
+
           // Try with reversed coordinates
           const pipeline2 = [
             {
@@ -461,6 +461,77 @@ class GISService {
       return null;
     } catch (error) {
       console.error('❌ GIS Service: Error getting nearest fuel station:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get the nearest first aid station (MDA) based on coordinates
+   * @param {number} x - X coordinate (longitude)
+   * @param {number} y - Y coordinate (latitude)
+   * @returns {Object|null} - First aid station data or null if not found
+   */
+  async getNearestFirstAidStation(x, y) {
+    try {
+      await this.initialize();
+
+      // Use $geoNear aggregation pipeline for efficient spatial query
+      // Note: First aid stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
+      console.log(`🔍 GIS Service: Searching first aid stations for coordinates (${x}, ${y})`);
+      
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [x, y] },
+            key: "geometry",
+            spherical: true,
+            distanceField: "distanceKM",
+            distanceMultiplier: 0.001 // Convert meters to kilometers
+          }
+        },
+        { $limit: 1 },
+        {
+          $project: {
+            _id: 0,
+            name: { $ifNull: ["$properties.stationName", "$Name", "$properties.name"] },
+            city: { $ifNull: ["$properties.city", "$City", "$properties.City"] },
+            address: { $ifNull: ["$properties.address", "$Address", "$properties.Address"] },
+            phone: { $ifNull: ["$properties.phone", "$Phone", "$properties.Phone", "101"] },
+            stationType: { $ifNull: ["$properties.type", "$Type", "$properties.Type", "תחנת מד״א"] },
+            distanceKM: { $round: ["$distanceKM", 3] },
+            geometry: 1
+          }
+        }
+      ];
+
+      const results = await this.gisDb.collection('firstAidStations').aggregate(pipeline).toArray();
+
+      if (results && results.length > 0) {
+        const result = results[0];
+        const distanceKm = result.distanceKM.toFixed(3);
+
+        // Estimate travel time (rough calculation: 1.2 minutes per km for emergency services)
+        const travelTime = Math.ceil(parseFloat(distanceKm) * 1.2);
+
+        const firstAidStationData = {
+          name: result.name || 'תחנת מד״א',
+          city: result.city || '',
+          address: result.address || '',
+          phone: result.phone || '101',
+          stationType: result.stationType || 'תחנת מד״א',
+          distance: distanceKm,
+          travelTime: travelTime,
+          distance_m: result.distanceKM * 1000
+        };
+
+        console.log(`✅ GIS Service: Found nearest first aid station ${firstAidStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
+        return firstAidStationData;
+      }
+
+      console.log(`⚠️ GIS Service: No first aid station found for coordinates (${x}, ${y})`);
+      return null;
+    } catch (error) {
+      console.error('❌ GIS Service: Error getting nearest first aid station:', error);
       return null;
     }
   }

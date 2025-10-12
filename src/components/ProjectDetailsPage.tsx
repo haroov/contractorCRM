@@ -7666,10 +7666,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                         try {
                                                             // Search for all emergency services
-                                                            const [fireStation, policeStation, fuelStation] = await Promise.all([
+                                                            const [fireStation, policeStation, fuelStation, firstAidStation] = await Promise.all([
                                                                 gisService.getNearestFireStation(x, y),
                                                                 gisService.getNearestPoliceStation(x, y),
-                                                                gisService.getNearestFuelStation(x, y)
+                                                                gisService.getNearestFuelStation(x, y),
+                                                                gisService.getNearestFirstAidStation(x, y)
                                                             ]);
 
                                                             let foundServices = [];
@@ -7723,6 +7724,26 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(fuelStation.distance));
                                                                 }
                                                                 foundServices.push(`תחנת דלק: ${fuelStation.name}`);
+                                                            }
+
+                                                            // Update first aid station data (only if fields are empty)
+                                                            if (firstAidStation) {
+                                                                if (!project?.environmentalSurvey?.firstAidStationName) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationName', firstAidStation.name);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.firstAidStationAddress) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationAddress', firstAidStation.address);
+                                                                }
+                                                                if (!project?.environmentalSurvey?.firstAidStationPhone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationPhone', firstAidStation.phone.toString());
+                                                                }
+                                                                if (!project?.environmentalSurvey?.distanceFromFirstAidStation) {
+                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromFirstAidStation', parseFloat(firstAidStation.distance));
+                                                                }
+                                                                if (!project?.environmentalSurvey?.firstAidStationTravelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationTravelTime', firstAidStation.travelTime);
+                                                                }
+                                                                foundServices.push(`תחנת מד״א: ${firstAidStation.name}`);
                                                             }
 
                                                             // Show success message
@@ -7973,11 +7994,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.medicalCenterName || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterName', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStationName || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationName', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
-                                                                    placeholder="שם המרכז"
+                                                                    placeholder="שם התחנה"
                                                                     sx={{
                                                                         '& .MuiOutlinedInput-root': {
                                                                             height: 40,
@@ -7992,8 +8013,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.medicalCenterAddress || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterAddress', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStationAddress || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationAddress', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="כתובת מלאה"
@@ -8011,8 +8032,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.medicalCenterPhone || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterPhone', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStationPhone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationPhone', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="טלפון"
@@ -8031,8 +8052,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.distanceFromMedicalCenter || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromMedicalCenter', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.distanceFromFirstAidStation || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFirstAidStation', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 0.1 }}
@@ -8051,8 +8072,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.medicalCenterTravelTime || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.medicalCenterTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.firstAidStationTravelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationTravelTime', parseInt(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 1 }}

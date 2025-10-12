@@ -348,4 +348,44 @@ router.get('/fuel-station', async (req, res) => {
   }
 });
 
+// Get nearest first aid station (MDA) for coordinates
+router.get('/first-aid-station', async (req, res) => {
+  const { x, y } = req.query;
+
+  if (x === undefined || y === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing x or y coordinates'
+    });
+  }
+
+  try {
+    console.log(`🔍 GIS API: Finding nearest first aid station for coordinates (${x}, ${y})`);
+
+    const firstAidStation = await gisService.getNearestFirstAidStation(parseFloat(x), parseFloat(y));
+
+    if (firstAidStation) {
+      res.json({
+        success: true,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        firstAidStation: firstAidStation
+      });
+    } else {
+      res.json({
+        success: false,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        firstAidStation: null,
+        message: 'No first aid station found for the given coordinates'
+      });
+    }
+  } catch (error) {
+    console.error('❌ GIS API: Error finding nearest first aid station:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to find nearest first aid station',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
