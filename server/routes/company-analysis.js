@@ -7,9 +7,16 @@ console.log("🚀 Loading company-analysis.js route");
 const router = Router();
 
 // Initialize OpenAI client - compatible with openai v3.3.0
-const client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
-    apiKey: process.env.OPENAI_API_KEY
-}));
+let client;
+try {
+    client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
+        apiKey: process.env.OPENAI_API_KEY
+    }));
+    console.log("✅ OpenAI client initialized successfully");
+} catch (error) {
+    console.error("❌ Failed to initialize OpenAI client:", error);
+    throw error;
+}
 
 // Check if API key is available
 if (!process.env.OPENAI_API_KEY) {
