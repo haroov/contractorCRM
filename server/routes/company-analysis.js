@@ -23,25 +23,25 @@ const schema = {
     type: "object",
     additionalProperties: false,
     properties: {
-        companyName: { 
-            type: "string", 
-            description: "שם החברה" 
+        companyName: {
+            type: "string",
+            description: "שם החברה"
         },
-        about: { 
-            type: "string", 
-            description: "תיאור החברה - מידע על החברה, תחומי פעילות, היסטוריה" 
+        about: {
+            type: "string",
+            description: "תיאור החברה - מידע על החברה, תחומי פעילות, היסטוריה"
         },
-        safety: { 
-            type: "string", 
-            description: "מידע על בטיחות - תקני בטיחות, הסמכות, תעודות" 
+        safety: {
+            type: "string",
+            description: "מידע על בטיחות - תקני בטיחות, הסמכות, תעודות"
         },
-        projects: { 
-            type: "string", 
-            description: "פרויקטים - פרויקטים בולטים, לקוחות, הישגים" 
+        projects: {
+            type: "string",
+            description: "פרויקטים - פרויקטים בולטים, לקוחות, הישגים"
         },
-        logoUrl: { 
-            type: "string", 
-            description: "כתובת הלוגו של החברה" 
+        logoUrl: {
+            type: "string",
+            description: "כתובת הלוגו של החברה"
         }
     },
     required: ["companyName", "about"]
@@ -60,7 +60,7 @@ function buildSystemPrompt() {
 async function analyzeCompanyWebsite(websiteUrl) {
     try {
         console.log("🔍 Analyzing company website:", websiteUrl);
-        
+
         const response = await client.createChatCompletion({
             model: "gpt-4o-mini",
             messages: [
@@ -123,11 +123,11 @@ async function analyzeCompanyWebsite(websiteUrl) {
 router.post("/analyze-company", async (req, res) => {
     try {
         const { website } = req.body;
-        
+
         if (!website) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "Website URL is required" 
+            return res.status(400).json({
+                success: false,
+                error: "Website URL is required"
             });
         }
 

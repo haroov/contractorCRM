@@ -33,7 +33,7 @@ export async function analyzeCompanyWebsite(url: string): Promise<CompanyAnalysi
 
         const result = await response.json();
         console.log('📦 companyAnalysisService: Received JSON response:', result);
-        
+
         if (!result.success) {
             console.error('❌ companyAnalysisService: API response indicated failure:', result.error);
             throw new Error(result.error || 'Analysis failed');

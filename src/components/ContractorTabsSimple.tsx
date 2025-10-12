@@ -264,18 +264,18 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         setIsLoadingAbout(true);
         try {
             console.log('🚀 analyzeCompanyWebsite called with:', websiteUrl);
-            
+
             // Import the company analysis service
             const { analyzeCompanyWebsite: analyzeWebsite, mapCompanyAnalysisToContractor } = await import('../services/companyAnalysisService');
             console.log('📦 Services imported successfully');
-            
+
             console.log('📞 Calling analyzeWebsite with:', websiteUrl);
             const analysisResult = await analyzeWebsite(websiteUrl);
             console.log('📊 Analysis result received:', analysisResult);
-            
+
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
-            
+
             // Update the contractor state with the analyzed data
             if (mappedData.about) {
                 setCompanyAbout(mappedData.about);
@@ -286,9 +286,9 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             if (mappedData.name && localName !== mappedData.name) {
                 setLocalName(mappedData.name);
             }
-            
+
             console.log('✅ Company analysis completed successfully');
-            
+
         } catch (error) {
             console.error('❌ Error analyzing company website:', error);
             setCompanyAbout('שגיאה בניתוח האתר. נסה שוב מאוחר יותר.');
