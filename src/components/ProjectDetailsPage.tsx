@@ -7656,9 +7656,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                         try {
                                                             // Search for all emergency services
-                                                            const [fireStation, policeStation] = await Promise.all([
+                                                            const [fireStation, policeStation, fuelStation] = await Promise.all([
                                                                 gisService.getNearestFireStation(x, y),
-                                                                gisService.getNearestPoliceStation(x, y)
+                                                                gisService.getNearestPoliceStation(x, y),
+                                                                gisService.getNearestFuelStation(x, y)
                                                             ]);
 
                                                             let foundServices = [];
@@ -7701,6 +7702,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', policeStation.travelTime);
                                                                 }
                                                                 foundServices.push(`תחנת משטרה: ${policeStation.name}`);
+                                                            }
+
+                                                            // Update fuel station data (only if field is empty)
+                                                            if (fuelStation) {
+                                                                if (!project?.environmentalSurvey?.distanceFromGasStation) {
+                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(fuelStation.distance));
+                                                                }
+                                                                foundServices.push(`תחנת דלק: ${fuelStation.name}`);
                                                             }
 
                                                             // Show success message

@@ -25,6 +25,16 @@ export interface PoliceStationData {
   distance_m: number;
 }
 
+export interface FuelStationData {
+  name: string;
+  address: string;
+  phone: string;
+  stationType: string;
+  distance: string;
+  travelTime: number;
+  distance_m: number;
+}
+
 export interface GISResponse {
   success: boolean;
   coordinates: {
@@ -136,6 +146,37 @@ class GISService {
       return data.policeStation;
     } catch (error) {
       console.error('❌ GIS Service: Error finding nearest police station:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get nearest fuel station based on coordinates
+   * @param x - X coordinate (longitude)
+   * @param y - Y coordinate (latitude)
+   * @returns Promise<FuelStationData | null>
+   */
+  async getNearestFuelStation(x: number, y: number): Promise<FuelStationData | null> {
+    try {
+      console.log(`🔍 GIS Service: Finding nearest fuel station for coordinates (${x}, ${y})`);
+
+      const response = await authenticatedFetch(`/api/gis/fuel-station?x=${x}&y=${y}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to find nearest fuel station');
+      }
+
+      const data = await response.json();
+      console.log('✅ GIS Service: Successfully found nearest fuel station:', data);
+      return data.fuelStation;
+    } catch (error) {
+      console.error('❌ GIS Service: Error finding nearest fuel station:', error);
       throw error;
     }
   }

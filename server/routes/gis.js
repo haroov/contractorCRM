@@ -308,4 +308,44 @@ router.get('/police-station', async (req, res) => {
   }
 });
 
+// Get nearest fuel station for coordinates
+router.get('/fuel-station', async (req, res) => {
+  const { x, y } = req.query;
+
+  if (x === undefined || y === undefined) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing x or y coordinates'
+    });
+  }
+
+  try {
+    console.log(`🔍 GIS API: Finding nearest fuel station for coordinates (${x}, ${y})`);
+
+    const fuelStation = await gisService.getNearestFuelStation(parseFloat(x), parseFloat(y));
+
+    if (fuelStation) {
+      res.json({
+        success: true,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        fuelStation: fuelStation
+      });
+    } else {
+      res.json({
+        success: false,
+        coordinates: { x: parseFloat(x), y: parseFloat(y) },
+        fuelStation: null,
+        message: 'No fuel station found for the given coordinates'
+      });
+    }
+  } catch (error) {
+    console.error('❌ GIS API: Error finding nearest fuel station:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to find nearest fuel station',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

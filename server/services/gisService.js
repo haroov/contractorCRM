@@ -326,6 +326,73 @@ class GISService {
   }
 
   /**
+   * Get the nearest fuel station based on coordinates
+   * @param {number} x - X coordinate (longitude)
+   * @param {number} y - Y coordinate (latitude)
+   * @returns {Object|null} - Fuel station data or null if not found
+   */
+  async getNearestFuelStation(x, y) {
+    try {
+      await this.initialize();
+
+      // Use $geoNear aggregation pipeline for efficient spatial query
+      // Note: Fuel stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
+      const pipeline = [
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [x, y] },
+            key: "geometry",
+            spherical: true,
+            distanceField: "distanceKM",
+            distanceMultiplier: 0.001 // Convert meters to kilometers
+          }
+        },
+        { $limit: 1 },
+        {
+          $project: {
+            _id: 0,
+            name: { $ifNull: ["$properties.Name", "$Name", "$properties.name"] },
+            address: { $ifNull: ["$properties.Address", "$address", "$properties.address"] },
+            phone: { $ifNull: ["$properties.Phone", "$phone", "$properties.phone", "לא זמין"] },
+            stationType: { $ifNull: ["$properties.Type", "$type", "$properties.type", "תחנת דלק"] },
+            distanceKM: { $round: ["$distanceKM", 3] },
+            geometry: 1
+          }
+        }
+      ];
+
+      const results = await this.gisDb.collection('fuelStation').aggregate(pipeline).toArray();
+
+      if (results && results.length > 0) {
+        const result = results[0];
+        const distanceKm = result.distanceKM.toFixed(3);
+
+        // Estimate travel time (rough calculation: 1.5 minutes per km for fuel stations)
+        const travelTime = Math.ceil(parseFloat(distanceKm) * 1.5);
+
+        const fuelStationData = {
+          name: result.name || 'תחנת דלק',
+          address: result.address || '',
+          phone: result.phone || 'לא זמין',
+          stationType: result.stationType || 'תחנת דלק',
+          distance: distanceKm,
+          travelTime: travelTime,
+          distance_m: result.distanceKM * 1000
+        };
+
+        console.log(`✅ GIS Service: Found nearest fuel station ${fuelStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
+        return fuelStationData;
+      }
+
+      console.log(`⚠️ GIS Service: No fuel station found for coordinates (${x}, ${y})`);
+      return null;
+    } catch (error) {
+      console.error('❌ GIS Service: Error getting nearest fuel station:', error);
+      return null;
+    }
+  }
+
+  /**
    * Calculate both PNG25 and Cresta values for given coordinates
    * @param {number} x - X coordinate (longitude)
    * @param {number} y - Y coordinate (latitude)
