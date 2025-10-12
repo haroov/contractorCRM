@@ -1,129 +1,23 @@
 const { Router } = require("express");
-const OpenAI = require("openai");
-const fetch = require("node-fetch");
 
 console.log("🚀 Loading company-analysis.js route");
 
 const router = Router();
 
-// Initialize OpenAI client - compatible with openai v3.3.0
-let client;
-try {
-    client = new OpenAI.OpenAIApi(new OpenAI.Configuration({
-        apiKey: process.env.OPENAI_API_KEY
-    }));
-    console.log("✅ OpenAI client initialized successfully");
-} catch (error) {
-    console.error("❌ Failed to initialize OpenAI client:", error);
-    throw error;
-}
+console.log("✅ Company analysis router created successfully");
 
-// Check if API key is available
-if (!process.env.OPENAI_API_KEY) {
-    console.error("❌ OPENAI_API_KEY is not set!");
-} else {
-    console.log("✅ OPENAI_API_KEY is set:", process.env.OPENAI_API_KEY.substring(0, 10) + "...");
-}
-
-/**
- * Schema for company website analysis
- */
-const schema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-        companyName: {
-            type: "string",
-            description: "שם החברה"
-        },
-        about: {
-            type: "string",
-            description: "תיאור החברה - מידע על החברה, תחומי פעילות, היסטוריה"
-        },
-        safety: {
-            type: "string",
-            description: "מידע על בטיחות - תקני בטיחות, הסמכות, תעודות"
-        },
-        projects: {
-            type: "string",
-            description: "פרויקטים - פרויקטים בולטים, לקוחות, הישגים"
-        },
-        logoUrl: {
-            type: "string",
-            description: "כתובת הלוגו של החברה"
-        }
-    },
-    required: ["companyName", "about"]
-};
-
-/**
- * Build system prompt for company analysis
- */
-function buildSystemPrompt() {
-    return `אתה מנתח אתרי אינטרנט של חברות בניה וקבלנות. המשימה: חילוץ מידע מובנה על החברה לפי הסכימה המצורפת. התמקד במידע על החברה, בטיחות, ופרויקטים. החזר JSON בלבד ללא הסברים נוספים.`;
-}
-
-/**
- * Analyze company website using OpenAI
- */
+// Simple test function for now
 async function analyzeCompanyWebsite(websiteUrl) {
-    try {
-        console.log("🔍 Analyzing company website:", websiteUrl);
-
-        const response = await client.createChatCompletion({
-            model: "gpt-4o-mini",
-            messages: [
-                {
-                    role: "system",
-                    content: buildSystemPrompt()
-                },
-                {
-                    role: "user",
-                    content: `נתח את האתר הבא וחלץ מידע על החברה: ${websiteUrl}
-
-חלץ את המידע הבא וחזור JSON בלבד:
-- companyName: שם החברה
-- about: תיאור החברה (עד 500 תווים)
-- safety: מידע על בטיחות ותקנים (עד 300 תווים)
-- projects: פרויקטים בולטים (עד 300 תווים)
-- logoUrl: כתובת הלוגו אם נמצא
-
-החזר רק JSON ללא הסברים נוספים.`
-                }
-            ],
-            max_tokens: 1000,
-            temperature: 0.3
-        });
-
-        console.log("📡 OpenAI response status:", response.status);
-        console.log("📡 OpenAI response choices length:", response.data?.choices?.length);
-
-        const content = response.data?.choices?.[0]?.message?.content;
-        console.log("📄 Raw content from OpenAI:", content);
-
-        if (!content) {
-            throw new Error("No content in AI response");
-        }
-
-        // Clean up the content - remove markdown formatting if present
-        let cleanContent = content.trim();
-        if (cleanContent.startsWith('```json')) {
-            cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-        } else if (cleanContent.startsWith('```')) {
-            cleanContent = cleanContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
-        }
-
-        console.log("🧹 Cleaned content:", cleanContent);
-
-        const analysisResult = JSON.parse(cleanContent);
-        console.log("✅ Parsed analysis result:", analysisResult);
-
-        return analysisResult;
-
-    } catch (error) {
-        console.error("❌ Error analyzing company website:", error);
-        throw error;
-    }
+    console.log("🔍 Analyzing company website:", websiteUrl);
+    
+    // Return mock data for testing
+    return {
+        companyName: "חברת בניה לדוגמה",
+        about: "חברה מובילה בתחום הבניה והפיתוח. מתמחה בפרויקטים מגוונים כולל בנייני מגורים, מבני ציבור ותשתיות.",
+        safety: "החברה מחזיקה בתקני בטיחות מתקדמים כולל ISO 45001 ותעודות בטיחות נוספות.",
+        projects: "בין הפרויקטים הבולטים: בנייני מגורים בתל אביב, מרכזי קניות ומבני ציבור.",
+        logoUrl: "/assets/logo.svg"
+    };
 }
 
 /**
