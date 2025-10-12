@@ -7241,15 +7241,25 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             disabled={mode === 'view' || !canEdit}
                                         />
 
-                                        <TextField
-                                            fullWidth
-                                            label="מרחק מתחנת דלק (ק״מ)"
-                                            type="number"
-                                            value={project?.environmentalSurvey?.distanceFromGasStation || ''}
-                                            onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(e.target.value) || 0)}
-                                            disabled={mode === 'view' || !canEdit}
-                                            inputProps={{ min: 0, max: 200 }}
-                                        />
+                                        {/* תחנת דלק - גריד של 2 עמודות */}
+                                        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                                            <TextField
+                                                fullWidth
+                                                label="שם תחנת דלק"
+                                                value={project?.environmentalSurvey?.fuelStationName || ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.fuelStationName', e.target.value)}
+                                                disabled={mode === 'view' || !canEdit}
+                                            />
+                                            <TextField
+                                                fullWidth
+                                                label="מרחק (ק״מ)"
+                                                type="number"
+                                                value={project?.environmentalSurvey?.distanceFromGasStation || ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(e.target.value) || 0)}
+                                                disabled={mode === 'view' || !canEdit}
+                                                inputProps={{ min: 0, max: 200 }}
+                                            />
+                                        </Box>
 
                                         {/* שאלות עבודות בניה */}
                                         <Box sx={{ gridColumn: '1 / -1', mb: 2 }}>
@@ -7704,8 +7714,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 foundServices.push(`תחנת משטרה: ${policeStation.name}`);
                                                             }
 
-                                                            // Update fuel station data (only if field is empty)
+                                                            // Update fuel station data (only if fields are empty)
                                                             if (fuelStation) {
+                                                                if (!project?.environmentalSurvey?.fuelStationName) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fuelStationName', fuelStation.name);
+                                                                }
                                                                 if (!project?.environmentalSurvey?.distanceFromGasStation) {
                                                                     handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(fuelStation.distance));
                                                                 }
