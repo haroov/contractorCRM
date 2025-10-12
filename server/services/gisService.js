@@ -478,7 +478,7 @@ class GISService {
       // Use $geoNear aggregation pipeline for efficient spatial query
       // Note: First aid stations data is stored as [X, Y] (Longitude, Latitude) - standard GeoJSON format
       console.log(`🔍 GIS Service: Searching first aid stations for coordinates (${x}, ${y})`);
-      
+
       const pipeline = [
         {
           $geoNear: {
