@@ -1,20 +1,39 @@
 const { Router } = require("express");
-const OpenAI = require('openai');
 
-console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.2");
+console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.3");
 
 const router = Router();
 
 console.log("✅ Company analysis router created successfully");
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client - using dynamic require to avoid constructor issues
+let openai;
+try {
+    const OpenAI = require('openai');
+    openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log("✅ OpenAI client initialized successfully");
+} catch (error) {
+    console.error("❌ Error initializing OpenAI:", error);
+    openai = null;
+}
 
 // Real AI function using ChatGPT API
 async function analyzeCompanyWebsite(websiteUrl) {
     console.log("🔍 Analyzing company website with ChatGPT API:", websiteUrl);
+    
+    // Check if OpenAI is available
+    if (!openai) {
+        console.error("❌ OpenAI client not available");
+        return {
+            companyName: "חברה לא זוהתה",
+            about: `שגיאה בטעינת מערכת ה-AI. אנא נסה שוב מאוחר יותר.`,
+            safety: "מידע על בטיחות לא זמין",
+            projects: "מידע על פרויקטים לא זמין", 
+            logoUrl: null
+        };
+    }
     
     try {
         // Build the prompt for ChatGPT
