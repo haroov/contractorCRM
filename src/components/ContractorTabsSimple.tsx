@@ -2104,93 +2104,92 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                 אודות החברה
                             </Typography>
 
-                            <Grid container spacing={2} alignItems="flex-start">
-                                <Grid item xs={12} md={8}>
-                                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-                                        <TextField
-                                            fullWidth
-                                            multiline
-                                            rows={4}
-                                            label="אודות החברה"
-                                            value={companyAbout}
-                                            disabled={!canEdit}
-                                            sx={textFieldSx}
-                                            onChange={(e) => setCompanyAbout(e.target.value)}
-                                            placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
-                                            InputProps={{
-                                                endAdornment: isLoadingAbout && (
-                                                    <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
-                                                )
+                            {/* שדה אודות החברה - כל אורך העמוד, 8 שורות */}
+                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', mb: 3 }}>
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={8}
+                                    label="אודות החברה"
+                                    value={companyAbout}
+                                    disabled={!canEdit}
+                                    sx={textFieldSx}
+                                    onChange={(e) => setCompanyAbout(e.target.value)}
+                                    placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
+                                    InputProps={{
+                                        endAdornment: isLoadingAbout && (
+                                            <CircularProgress size={20} sx={{ color: '#6b47c1' }} />
+                                        )
+                                    }}
+                                />
+                                {localWebsite && canEdit && (
+                                    <IconButton
+                                        onClick={() => analyzeCompanyWebsite(localWebsite)}
+                                        disabled={isLoadingAbout}
+                                        size="small"
+                                        sx={{
+                                            border: '1px solid #6b47c1',
+                                            color: '#6b47c1',
+                                            '&:hover': {
+                                                borderColor: '#5a3aa1',
+                                                backgroundColor: 'rgba(136, 47, 215, 0.04)'
+                                            },
+                                            '&:disabled': {
+                                                borderColor: '#d0d0d0',
+                                                color: '#d0d0d0'
+                                            }
+                                        }}
+                                    >
+                                        {isLoadingAbout ? (
+                                            <CircularProgress size={16} sx={{ color: '#6b47c1' }} />
+                                        ) : (
+                                            <AutoAwesomeIcon sx={{ fontSize: 20 }} />
+                                        )}
+                                    </IconButton>
+                                )}
+                            </Box>
+
+                            {/* שדה לוגו החברה - 250x250 */}
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <Box sx={{
+                                    border: '2px dashed #ccc',
+                                    borderRadius: 2,
+                                    p: 2,
+                                    width: '250px',
+                                    height: '250px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    backgroundColor: '#fafafa'
+                                }}>
+                                    {companyLogo ? (
+                                        <img
+                                            src={companyLogo}
+                                            alt="לוגו החברה"
+                                            style={{
+                                                maxWidth: '100%',
+                                                maxHeight: '100%',
+                                                objectFit: 'contain'
                                             }}
                                         />
-                                        {localWebsite && canEdit && (
-                                            <IconButton
-                                                onClick={() => analyzeCompanyWebsite(localWebsite)}
-                                                disabled={isLoadingAbout}
-                                                size="small"
-                                                sx={{
-                                                    border: '1px solid #6b47c1',
-                                                    color: '#6b47c1',
-                                                    '&:hover': {
-                                                        borderColor: '#5a3aa1',
-                                                        backgroundColor: 'rgba(136, 47, 215, 0.04)'
-                                                    },
-                                                    '&:disabled': {
-                                                        borderColor: '#d0d0d0',
-                                                        color: '#d0d0d0'
-                                                    }
-                                                }}
-                                            >
-                                                {isLoadingAbout ? (
-                                                    <CircularProgress size={16} sx={{ color: '#6b47c1' }} />
-                                                ) : (
-                                                    <AutoAwesomeIcon sx={{ fontSize: 20 }} />
-                                                )}
-                                            </IconButton>
-                                        )}
-                                    </Box>
-                                </Grid>
-
-                                <Grid item xs={12} md={4}>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        p: 2,
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: 1,
-                                        minHeight: '120px',
-                                        justifyContent: 'center'
-                                    }}>
-                                        {companyLogo ? (
-                                            <img
-                                                src={companyLogo}
-                                                alt="לוגו החברה"
-                                                style={{
-                                                    maxWidth: '100%',
-                                                    maxHeight: '100px',
-                                                    objectFit: 'contain'
-                                                }}
-                                            />
-                                        ) : (
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                                                {isLoadingAbout ? (
-                                                    <>
-                                                        <CircularProgress size={24} />
-                                                        <Typography variant="body2" color="text.secondary" textAlign="center">
-                                                            טוען לוגו...
-                                                        </Typography>
-                                                    </>
-                                                ) : (
+                                    ) : (
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                                            {isLoadingAbout ? (
+                                                <>
+                                                    <CircularProgress size={32} sx={{ color: '#6b47c1' }} />
                                                     <Typography variant="body2" color="text.secondary" textAlign="center">
-                                                        לוגו החברה יופיע כאן אוטומטית
+                                                        טוען לוגו...
                                                     </Typography>
-                                                )}
-                                            </Box>
-                                        )}
-                                    </Box>
-                                </Grid>
-                            </Grid>
+                                                </>
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary" textAlign="center">
+                                                    לוגו החברה יופיע כאן אוטומטית
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Box>
                         </Box>
                     </Box>
                 )}
