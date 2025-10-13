@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-console.log("🚀 Loading company-analysis.js route");
+console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED");
 
 const router = Router();
 
@@ -9,7 +9,7 @@ console.log("✅ Company analysis router created successfully");
 // Simple test function for now
 async function analyzeCompanyWebsite(websiteUrl) {
     console.log("🔍 Analyzing company website:", websiteUrl);
-    
+
     // Return mock data for testing
     return {
         companyName: "חברת בניה לדוגמה",
@@ -24,7 +24,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
  * POST /analyze-company - Analyze company website
  */
 router.post("/analyze-company", async (req, res) => {
-    console.log("🎯 POST /analyze-company route hit");
+    console.log("🎯 🎯 🎯 POST /analyze-company route hit - UPDATED");
     try {
         const { website } = req.body;
 
