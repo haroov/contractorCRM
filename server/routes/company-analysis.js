@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const OpenAI = require('openai');
 
-console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED");
+console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.2");
 
 const router = Router();
 
