@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.3");
+console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.4");
 
 const router = Router();
 
@@ -9,13 +9,20 @@ console.log("✅ Company analysis router created successfully");
 // Initialize OpenAI client - using dynamic require to avoid constructor issues
 let openai;
 try {
+    console.log("🔍 Attempting to require OpenAI module...");
     const OpenAI = require('openai');
+    console.log("✅ OpenAI module required successfully");
+    console.log("🔍 OpenAI constructor type:", typeof OpenAI);
+    console.log("🔍 OpenAI API key available:", !!process.env.OPENAI_API_KEY);
+    
     openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
     });
     console.log("✅ OpenAI client initialized successfully");
 } catch (error) {
     console.error("❌ Error initializing OpenAI:", error);
+    console.error("❌ Error details:", error.message);
+    console.error("❌ Error stack:", error.stack);
     openai = null;
 }
 
