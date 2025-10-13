@@ -1,11 +1,11 @@
 const { Router } = require("express");
 
-console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.5 - FORCE REDEPLOY");
+console.log("🚀 🚀 🚀 Loading company-analysis.js route - UPDATED v0.0.6 - FINAL FIX");
 
 const router = Router();
 
 console.log("✅ Company analysis router created successfully");
-console.log("🔍 🔍 🔍 RENDER REDEPLOY FORCE - v0.0.5 - OpenAI debugging enabled");
+console.log("🔍 🔍 🔍 RENDER REDEPLOY FORCE - v0.0.6 - OpenAI debugging enabled");
 
 // Initialize OpenAI client - using dynamic require to avoid constructor issues
 let openai;
