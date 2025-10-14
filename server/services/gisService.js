@@ -252,6 +252,7 @@ class GISService {
 
         console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
         console.log(`📍 GIS Service: Fire station coordinates: ${JSON.stringify(fireStationData.coordinates)}`);
+        console.log(`🔧 GIS Service: Deployment test - coordinates should be included in response`);
         return fireStationData;
       }
 
