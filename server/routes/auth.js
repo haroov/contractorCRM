@@ -5,6 +5,7 @@ const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const router = express.Router();
+const { logEvent } = require('../services/eventLogger');
 
 // SendGrid configuration
 if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
@@ -109,7 +110,7 @@ router.post('/login', async (req, res) => {
     await user.save();
 
     // Create session
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) {
         console.error('❌ Session creation error:', err);
         return res.status(500).json({
@@ -119,6 +120,15 @@ router.post('/login', async (req, res) => {
       }
 
       console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
+
+      // Audit: successful login
+      await logEvent({
+        domain: 'auth',
+        action: 'login',
+        req,
+        target: { collection: 'users', id: user._id?.toString?.() },
+        tags: ['email_password']
+      });
 
       res.json({
         success: true,
@@ -135,6 +145,7 @@ router.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Login error:', error);
+    await logEvent({ domain: 'auth', action: 'login_failed', req, tags: ['email_password'] });
     res.status(500).json({
       success: false,
       message: 'שגיאה בשרת'
@@ -245,17 +256,18 @@ router.get('/google/callback', (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-  req.logout((err) => {
+  req.logout(async (err) => {
     if (err) {
       console.error('Logout error:', err);
       return res.status(500).json({ error: 'Logout failed' });
     }
-    req.session.destroy((err) => {
+    req.session.destroy(async (err) => {
       if (err) {
         console.error('Session destroy error:', err);
         return res.status(500).json({ error: 'Session cleanup failed' });
       }
       res.clearCookie('connect.sid');
+      await logEvent({ domain: 'auth', action: 'logout', req });
       res.json({ message: 'Logged out successfully' });
     });
   });
@@ -581,6 +593,15 @@ router.post('/send-login-email', async (req, res) => {
       console.log('🔑 OTP CODE FOR', email, ':', otp);
     }
 
+    // Audit: OTP sent (without exposing OTP)
+    await logEvent({
+      domain: 'auth',
+      action: 'otp_sent',
+      req,
+      target: { collection: systemUser ? 'users' : 'contractors', id: systemUser?._id?.toString?.() || email },
+      tags: [systemUser ? 'system_user' : 'contact_user']
+    });
+
     res.json({
       success: true,
       message: 'נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.'
@@ -588,6 +609,7 @@ router.post('/send-login-email', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Send OTP email error:', error);
+    await logEvent({ domain: 'auth', action: 'otp_send_failed', req });
     res.status(500).json({
       success: false,
       message: 'שגיאה בשליחת המייל'
@@ -669,7 +691,19 @@ router.post('/verify-otp', async (req, res) => {
     console.log('🔐 Session ID after OTP:', req.sessionID);
     console.log('🔐 Session data after OTP:', req.session);
 
-    res.json({
+  // Audit: login via OTP (system user or contractor contact)
+  await logEvent({
+    domain: 'auth',
+    action: 'login',
+    req,
+    target: {
+      collection: storedData.userType === 'system' ? 'users' : 'contractors',
+      id: storedData.userType === 'system' ? (userData._id || userData.id) : (userData.contractorId || ''),
+    },
+    tags: ['otp']
+  });
+
+  res.json({
       success: true,
       message: 'התחברות הצליחה',
       user: req.session.user,
@@ -677,7 +711,8 @@ router.post('/verify-otp', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Verify OTP error:', error);
+  console.error('❌ Verify OTP error:', error);
+  await logEvent({ domain: 'auth', action: 'otp_verify_failed', req });
     res.status(500).json({
       success: false,
       message: 'שגיאה באימות הקוד'

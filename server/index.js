@@ -15,6 +15,7 @@ const path = require('path');
 const fs = require('fs');
 const { GridFSBucket } = require('mongodb');
 const cron = require('node-cron');
+const { auditMiddleware } = require('./middleware/audit');
 
 // Import routes
 const uploadRoutes = require('./routes/upload');
@@ -232,6 +233,9 @@ app.use(passport.session());
 // Import and configure passport
 require('./config/passport.js');
 console.log('✅ Passport configured');
+
+// Audit middleware: after sessions are available but before routes
+app.use(auditMiddleware());
 
 // Rate limiting
 const limiter = rateLimit({
@@ -1023,6 +1027,13 @@ app.post('/api/contractors', async (req, res) => {
 
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
+    // Audit create contractor
+    if (req.audit) {
+      req.audit.setDomain('contractors');
+      req.audit.setAction('create');
+      req.audit.setTarget({ collection: 'contractors', id: result.insertedId?.toString?.(), idType: 'objectId' });
+      req.audit.setChanges({ after: contractorData, fields: Object.keys(contractorData) });
+    }
     res.status(201).json({ ...contractorData, _id: result.insertedId });
   } catch (error) {
     console.error('❌ Error creating contractor:', error);
@@ -1183,6 +1194,14 @@ app.put('/api/contractors/:id', async (req, res) => {
     }
 
     const { projects, ...contractorWithoutProjects } = updatedContractor;
+    // Audit update contractor (best-effort)
+    if (req.audit) {
+      const changedFields = Object.keys(updateData || {});
+      req.audit.setDomain('contractors');
+      req.audit.setAction('update');
+      req.audit.setTarget({ collection: 'contractors', id: updatedContractor._id?.toString?.(), idType: 'objectId' });
+      req.audit.setChanges({ fields: changedFields });
+    }
     const contractorWithProjectIds = {
       ...contractorWithoutProjects,
       projectIds: updatedContractor.projectIds || []
@@ -1206,6 +1225,12 @@ app.delete('/api/contractors/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contractor not found' });
     }
     console.log('✅ Deleted contractor:', req.params.id);
+    // Audit delete contractor
+    if (req.audit) {
+      req.audit.setDomain('contractors');
+      req.audit.setAction('delete');
+      req.audit.setTarget({ collection: 'contractors', id: String(req.params.id) });
+    }
     res.json({ message: 'Contractor deleted successfully' });
   } catch (error) {
     console.error('❌ Error deleting contractor:', error);
