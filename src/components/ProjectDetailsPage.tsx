@@ -61,6 +61,7 @@ import CloudSyncIcon from './CloudSyncIcon';
 import GentleCloudUploadIcon from './GentleCloudUploadIcon';
 import RefreshIcon from './RefreshIcon';
 import GoogleMap from './GoogleMap';
+import EmergencyStationsMap from './EmergencyStationsMap';
 
 // Helper function to generate ObjectId-like string
 const generateObjectId = (): string => {
@@ -4745,12 +4746,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <Box sx={{ p: 1 }}>
                                                                     {project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x &&
                                                                         project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y ? (
-                                                                        <GoogleMap
+                                                                        <EmergencyStationsMap
                                                                             latitude={project.engineeringQuestionnaire.buildingPlan.coordinates.y}
                                                                             longitude={project.engineeringQuestionnaire.buildingPlan.coordinates.x}
                                                                             height="400px"
                                                                             width="100%"
                                                                             zoom={16}
+                                                                            fireStation={project?.environmentalSurvey?.fireStation}
+                                                                            policeStation={project?.environmentalSurvey?.policeStation}
+                                                                            firstAidStation={project?.environmentalSurvey?.firstAidStation}
+                                                                            fuelStation={project?.environmentalSurvey?.fuelStation}
                                                                         />
                                                                     ) : (
                                                                         <Box sx={{
