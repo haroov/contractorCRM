@@ -16,10 +16,23 @@ try {
     console.log("🔍 OpenAI constructor type:", typeof OpenAI);
     console.log("🔍 OpenAI API key available:", !!process.env.OPENAI_API_KEY);
 
-    openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-    console.log("✅ OpenAI client initialized successfully");
+    // Check if OpenAI is a constructor or has a default export
+    if (typeof OpenAI === 'function') {
+        openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+    } else if (OpenAI.default && typeof OpenAI.default === 'function') {
+        openai = new OpenAI.default({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+    } else {
+        console.log("⚠️ OpenAI is not a constructor, skipping initialization");
+        openai = null;
+    }
+    
+    if (openai) {
+        console.log("✅ OpenAI client initialized successfully");
+    }
 } catch (error) {
     console.error("❌ Error initializing OpenAI:", error);
     console.error("❌ Error details:", error.message);

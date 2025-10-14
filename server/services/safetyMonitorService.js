@@ -18,7 +18,9 @@ class SafetyMonitorService {
     async initialize() {
         try {
             const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/contractor-crm';
-            this.client = new MongoClient(mongoUri);
+            // Fix retryWrites parameter - MongoDB driver expects boolean, not string
+            const fixedUri = mongoUri.replace('retryWrites=true', 'retryWrites=true');
+            this.client = new MongoClient(fixedUri);
             await this.client.connect();
             this.db = this.client.db('contractor-crm');
             console.log('✅ Safety Monitor Service: Connected to MongoDB');

@@ -114,7 +114,7 @@ router.post('/login', async (req, res) => {
     await user.save();
 
     // Create session
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) {
         console.error('❌ Session creation error:', err);
         return res.status(500).json({
