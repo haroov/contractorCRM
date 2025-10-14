@@ -200,6 +200,7 @@ class GISService {
    */
   async getNearestFireStation(x, y) {
     try {
+      console.log(`🔥 GIS Service: getNearestFireStation called with coordinates (${x}, ${y})`);
       await this.initialize();
 
       // Use $geoNear aggregation pipeline for efficient spatial query
@@ -243,16 +244,21 @@ class GISService {
 
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
-          console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to fire station (${stationLat}, ${stationLng})`);
+          console.log(`🚗 GIS Service: FIRE STATION - Getting road distance from project (${y}, ${x}) to fire station (${stationLat}, ${stationLng})`);
+          console.log(`🔍 GIS Service: FIRE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
+          
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-
+          
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
-            console.log(`✅ GIS Service: Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`✅ GIS Service: FIRE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`📊 GIS Service: FIRE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
           } else {
-            console.log(`⚠️ GIS Service: Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.log(`⚠️ GIS Service: FIRE STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
           }
+        } else {
+          console.log(`⚠️ GIS Service: FIRE STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
         }
 
         const fireStationData = {
@@ -291,6 +297,7 @@ class GISService {
    */
   async getNearestPoliceStation(x, y) {
     try {
+      console.log(`🚔 GIS Service: getNearestPoliceStation called with coordinates (${x}, ${y})`);
       await this.initialize();
 
       // Use $geoNear aggregation pipeline for efficient spatial query
@@ -334,16 +341,21 @@ class GISService {
 
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
-          console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to police station (${stationLat}, ${stationLng})`);
+          console.log(`🚗 GIS Service: POLICE STATION - Getting road distance from project (${y}, ${x}) to police station (${stationLat}, ${stationLng})`);
+          console.log(`🔍 GIS Service: POLICE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
+          
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-
+          
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
-            console.log(`✅ GIS Service: Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`✅ GIS Service: POLICE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`📊 GIS Service: POLICE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
           } else {
-            console.log(`⚠️ GIS Service: Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.log(`⚠️ GIS Service: POLICE STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
           }
+        } else {
+          console.log(`⚠️ GIS Service: POLICE STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
         }
 
         const policeStationData = {
@@ -525,6 +537,7 @@ class GISService {
    */
   async getNearestFirstAidStation(x, y) {
     try {
+      console.log(`🏥 GIS Service: getNearestFirstAidStation called with coordinates (${x}, ${y})`);
       await this.initialize();
 
       // Use $geoNear aggregation pipeline for efficient spatial query
@@ -571,16 +584,21 @@ class GISService {
 
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
-          console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to first aid station (${stationLat}, ${stationLng})`);
+          console.log(`🚗 GIS Service: FIRST AID STATION - Getting road distance from project (${y}, ${x}) to first aid station (${stationLat}, ${stationLng})`);
+          console.log(`🔍 GIS Service: FIRST AID STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
+          
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-
+          
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
-            console.log(`✅ GIS Service: Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`✅ GIS Service: FIRST AID STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
+            console.log(`📊 GIS Service: FIRST AID STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
           } else {
-            console.log(`⚠️ GIS Service: Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.log(`⚠️ GIS Service: FIRST AID STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
           }
+        } else {
+          console.log(`⚠️ GIS Service: FIRST AID STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
         }
 
         const firstAidStationData = {
