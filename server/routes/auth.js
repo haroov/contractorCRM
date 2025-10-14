@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
+const { logAuthEvent } = require('../lib/auditHelper');
 const router = express.Router();
 
 // SendGrid configuration
@@ -70,6 +71,8 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       console.log('❌ User not found:', email);
+      // Log failed authentication attempt
+      await logAuthEvent('login', req, { email }, false);
       return res.status(401).json({
         success: false,
         message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.'
@@ -98,6 +101,8 @@ router.post('/login', async (req, res) => {
 
     if (!isPasswordValid) {
       console.log('❌ Invalid password for:', email);
+      // Log failed authentication attempt
+      await logAuthEvent('login', req, user, false);
       return res.status(401).json({
         success: false,
         message: 'סיסמה שגויה'
@@ -119,6 +124,9 @@ router.post('/login', async (req, res) => {
       }
 
       console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
+
+      // Log successful authentication
+      await logAuthEvent('login', req, user, true);
 
       res.json({
         success: true,
@@ -244,7 +252,13 @@ router.get('/google/callback', (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post('/logout', async (req, res) => {
+  // Log logout event before destroying session
+  const user = req.user || req.session?.user;
+  if (user) {
+    await logAuthEvent('logout', req, user);
+  }
+  
   req.logout((err) => {
     if (err) {
       console.error('Logout error:', err);
@@ -630,6 +644,8 @@ router.post('/verify-otp', async (req, res) => {
 
     // Verify OTP
     if (storedData.otp !== otp) {
+      // Log failed OTP verification
+      await logAuthEvent('otp', req, { email }, false);
       return res.status(400).json({
         success: false,
         message: 'קוד אימות שגוי'
@@ -638,6 +654,9 @@ router.post('/verify-otp', async (req, res) => {
 
     // OTP is valid - create session
     const userData = storedData.userData;
+    
+    // Log successful OTP verification
+    await logAuthEvent('otp', req, userData, true);
 
     // Store user data in session
     req.session.user = {

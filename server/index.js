@@ -28,6 +28,13 @@ const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');
 const { SafetyMonitorService } = require('./services/safetyMonitorService');
 
+// Import audit system
+const auditService = require('./services/auditService');
+const { auditMiddleware, trackUserActivity } = require('./middleware/audit');
+const auditRoutes = require('./routes/audit');
+const { addAuditContext, logAuthEvent, createAuditAwareOperation } = require('./lib/auditHelper');
+console.log("✅ Audit system loaded");
+
 dotenv.config();
 
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
@@ -154,6 +161,17 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Add audit middleware to track all HTTP requests
+app.use(auditMiddleware({
+  excludePaths: ['/health', '/metrics', '/favicon.ico', '/public', '/assets'],
+  excludeMethods: ['OPTIONS'],
+  logResponseBody: false,
+  logRequestBody: true
+}));
+
+// Add user activity tracking middleware
+app.use(trackUserActivity());
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
@@ -414,6 +432,10 @@ console.log('✅ Enrichment routes configured');
 const claimsRoutes = require('./routes/claims.js');
 app.use('/api/claims', claimsRoutes);
 console.log('✅ Claims routes configured');
+
+// Import audit routes
+app.use('/api/audit', auditRoutes);
+console.log('✅ Audit routes configured');
 
 // Import fix-index routes
 const fixIndexRoutes = require('./routes/fix-index.js');
