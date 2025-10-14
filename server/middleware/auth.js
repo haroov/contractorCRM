@@ -1,91 +1,59 @@
-// Middleware to check if user is authenticated
+/**
+ * Authentication middleware
+ */
+
+// Check if user is authenticated
 const requireAuth = (req, res, next) => {
-  console.log('🔍 Auth middleware - isAuthenticated:', req.isAuthenticated());
-  console.log('🔍 Session ID:', req.sessionID);
-  console.log('🔍 User:', req.user);
-  console.log('🔍 Session user:', req.session?.user);
-  console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
-  console.log('🔍 sessionId query param:', req.query.sessionId);
-  console.log('🔍 Cookies:', req.headers.cookie);
-  console.log('🔍 All session data:', req.session);
-  
-  // Check if user is authenticated via passport session
-  if (req.isAuthenticated()) {
-    console.log('✅ User is authenticated via passport session:', req.user.email);
+  if (req.isAuthenticated && req.isAuthenticated()) {
     return next();
   }
   
-  // Check if user is authenticated via custom session (OTP login)
-  if (req.session?.user) {
-    console.log('✅ User is authenticated via custom session:', req.session.user.email);
-    return next();
-  }
-  
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided, allowing access:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
-  
-  console.log('❌ User is not authenticated and no valid session ID provided');
-  return res.status(401).json({ 
-    error: 'Authentication required',
-    redirect: '/login'
+  res.status(401).json({
+    success: false,
+    message: 'Authentication required'
   });
 };
 
-// Middleware to check if user is admin
+// Check if user is admin
 const requireAdmin = (req, res, next) => {
-  console.log('🔍 Admin middleware - isAuthenticated:', req.isAuthenticated());
-  console.log('🔍 User role:', req.user?.role);
-  console.log('🔍 Session user role:', req.session?.user?.role);
-  console.log('🔍 X-Session-ID header:', req.headers['x-session-id']);
-  
-  // Check if user is authenticated via passport session and is admin
-  if (req.isAuthenticated() && req.user.role === 'admin') {
-    console.log('✅ User is admin via passport session:', req.user.email);
-    return next();
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    if (req.user && req.user.role === 'admin') {
+      return next();
+    }
+    
+    res.status(403).json({
+      success: false,
+      message: 'Admin access required'
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
   }
-  
-  // Check if user is authenticated via custom session and is admin
-  if (req.session?.user && req.session.user.role === 'admin') {
-    console.log('✅ User is admin via custom session:', req.session.user.email);
-    return next();
-  }
-  
-  // Check if session ID is provided in headers or query params
-  const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided for admin access, allowing:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
-  }
-  
-  console.log('❌ Admin access denied - no valid session or session ID');
-  return res.status(403).json({ 
-    error: 'Admin access required' 
-  });
 };
 
-// Middleware to check if user has specific email
-const requireEmail = (allowedEmails) => {
-  return (req, res, next) => {
-    if (req.isAuthenticated() && allowedEmails.includes(req.user.email)) {
+// Check if user is active
+const requireActiveUser = (req, res, next) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    if (req.user && req.user.isActive) {
       return next();
-    } else {
-      return res.status(403).json({ 
-        error: 'Access denied for this email' 
-      });
     }
-  };
+    
+    res.status(403).json({
+      success: false,
+      message: 'Account is inactive'
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
+  }
 };
 
 module.exports = {
   requireAuth,
   requireAdmin,
-  requireEmail
+  requireActiveUser
 };

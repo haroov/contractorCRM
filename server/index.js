@@ -28,6 +28,10 @@ const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');
 const { SafetyMonitorService } = require('./services/safetyMonitorService');
 
+// Import event logging infrastructure
+const eventRoutes = require('./routes/events');
+const { logApiRequest, logAuthEvents, logErrors, logSecurityEvents } = require('./middleware/eventLogger');
+
 dotenv.config();
 
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
@@ -154,6 +158,11 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Event logging middleware
+app.use(logSecurityEvents);
+app.use(logApiRequest);
+app.use(logAuthEvents);
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
@@ -383,6 +392,10 @@ console.log('✅ User management routes configured');
 const contactAuthRoutes = require('./routes/contact-auth.js');
 app.use('/api/contact-auth', contactAuthRoutes);
 console.log('✅ Contact authentication routes configured');
+
+// Import event logging routes
+app.use('/api/events', eventRoutes);
+console.log('✅ Event logging routes configured');
 
 // Import upload routes
 app.use('/api/upload', uploadRoutes);
@@ -4059,6 +4072,19 @@ app.get('/restart', (req, res) => {
   setTimeout(() => {
     process.exit(0);
   }, 1000);
+});
+
+// Error handling middleware (must be last)
+app.use(logErrors);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Global error handler:', err);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
 });
 
 // Removed duplicate debug endpoint
