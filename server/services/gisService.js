@@ -254,6 +254,7 @@ class GISService {
         console.log(`📍 GIS Service: Fire station coordinates: ${JSON.stringify(fireStationData.coordinates)}`);
         console.log(`🔧 GIS Service: Deployment test - coordinates should be included in response`);
         console.log(`🚀 GIS Service: Version 0.0.8 - coordinates included in response`);
+        console.log(`🎯 GIS Service: Ready for map integration with coordinates`);
         return fireStationData;
       }
 
