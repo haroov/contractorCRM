@@ -19,7 +19,13 @@ router.post('/', async (req, res) => {
 
         console.log('🔍 Processed claim data:', claimData);
 
-        const result = await claimsCollection.insertOne(claimData);
+    const result = await claimsCollection.insertOne(claimData);
+
+    await req.logEvent('claims.create', {
+      entity: { type: 'claim', id: result.insertedId.toString() },
+      data: { projectId: req.body.projectId || null },
+      result: 'success'
+    });
 
         // Add claim ID to project's claimsIdArray
         if (req.body.projectId) {
@@ -65,6 +71,11 @@ router.post('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating claim:', error);
+    await req.logEvent('claims.create', {
+      result: 'failure',
+      error: error.message,
+      data: { projectId: req.body?.projectId || null }
+    });
         res.status(500).json({
             success: false,
             message: 'Failed to create claim',
@@ -144,24 +155,39 @@ router.put('/:claimId', async (req, res) => {
 
         console.log('🔍 Processed update data:', updateData);
 
-        const result = await claimsCollection.updateOne(
+    const result = await claimsCollection.updateOne(
             { _id: new ObjectId(claimId) },
             { $set: updateData }
         );
 
         if (result.matchedCount === 0) {
+      await req.logEvent('claims.update', {
+        result: 'failure',
+        error: 'not_found',
+        entity: { type: 'claim', id: claimId }
+      });
             return res.status(404).json({
                 success: false,
                 message: 'Claim not found'
             });
         }
 
+    await req.logEvent('claims.update', {
+      entity: { type: 'claim', id: claimId },
+      data: updateData,
+      result: 'success'
+    });
         res.json({
             success: true,
             message: 'Claim updated successfully'
         });
     } catch (error) {
         console.error('Error updating claim:', error);
+    await req.logEvent('claims.update', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'claim', id: req.params.claimId }
+    });
         res.status(500).json({
             success: false,
             message: 'Failed to update claim',
@@ -190,9 +216,14 @@ router.delete('/:claimId', async (req, res) => {
         }
 
         // Delete the claim
-        const result = await claimsCollection.deleteOne({ _id: new ObjectId(claimId) });
+    const result = await claimsCollection.deleteOne({ _id: new ObjectId(claimId) });
 
         if (result.deletedCount === 0) {
+      await req.logEvent('claims.delete', {
+        result: 'failure',
+        error: 'not_found',
+        entity: { type: 'claim', id: claimId }
+      });
             return res.status(404).json({
                 success: false,
                 message: 'Claim not found'
@@ -227,12 +258,21 @@ router.delete('/:claimId', async (req, res) => {
             }
         }
 
-        res.json({
+    await req.logEvent('claims.delete', {
+      entity: { type: 'claim', id: claimId },
+      result: 'success'
+    });
+    res.json({
             success: true,
             message: 'Claim deleted successfully'
         });
     } catch (error) {
         console.error('Error deleting claim:', error);
+    await req.logEvent('claims.delete', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'claim', id: req.params.claimId }
+    });
         res.status(500).json({
             success: false,
             message: 'Failed to delete claim',

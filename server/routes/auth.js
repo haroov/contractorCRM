@@ -59,6 +59,11 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      await req.logEvent('auth.login.failed', {
+        result: 'failure',
+        error: 'missing_fields',
+        data: { email: email || null, method: 'password' }
+      });
       return res.status(400).json({
         success: false,
         message: 'אימייל וסיסמה נדרשים'
@@ -70,6 +75,12 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       console.log('❌ User not found:', email);
+      await req.logEvent('auth.login.failed', {
+        result: 'failure',
+        error: 'user_not_found',
+        entity: { type: 'user', email: email.toLowerCase() },
+        data: { method: 'password' }
+      });
       return res.status(401).json({
         success: false,
         message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.'
@@ -78,6 +89,12 @@ router.post('/login', async (req, res) => {
 
     if (!user.isActive) {
       console.log('❌ User inactive:', email);
+      await req.logEvent('auth.login.failed', {
+        result: 'failure',
+        error: 'user_inactive',
+        entity: { type: 'user', id: user._id.toString(), email: user.email },
+        data: { method: 'password' }
+      });
       return res.status(401).json({
         success: false,
         message: 'חשבון לא פעיל. אנא פנה למנהל המערכת.'
@@ -87,6 +104,12 @@ router.post('/login', async (req, res) => {
     // Check if user has password (for email/password login)
     if (!user.password) {
       console.log('❌ User has no password set:', email);
+      await req.logEvent('auth.login.failed', {
+        result: 'failure',
+        error: 'no_password_set',
+        entity: { type: 'user', id: user._id.toString(), email: user.email },
+        data: { method: 'password' }
+      });
       return res.status(401).json({
         success: false,
         message: 'חשבון זה משתמש בהתחברות Google בלבד. אנא התחבר עם Google.'
@@ -98,6 +121,12 @@ router.post('/login', async (req, res) => {
 
     if (!isPasswordValid) {
       console.log('❌ Invalid password for:', email);
+      await req.logEvent('auth.login.failed', {
+        result: 'failure',
+        error: 'invalid_password',
+        entity: { type: 'user', id: user._id.toString(), email: user.email },
+        data: { method: 'password' }
+      });
       return res.status(401).json({
         success: false,
         message: 'סיסמה שגויה'
@@ -112,6 +141,12 @@ router.post('/login', async (req, res) => {
     req.login(user, (err) => {
       if (err) {
         console.error('❌ Session creation error:', err);
+        req.logEvent('auth.login.failed', {
+          result: 'failure',
+          error: 'session_creation_error',
+          entity: { type: 'user', id: user._id.toString(), email: user.email },
+          data: { method: 'password' }
+        });
         return res.status(500).json({
           success: false,
           message: 'שגיאה ביצירת הפעלה'
@@ -119,6 +154,11 @@ router.post('/login', async (req, res) => {
       }
 
       console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
+      req.logEvent('auth.login.success', {
+        entity: { type: 'user', id: user._id.toString(), email: user.email },
+        data: { method: 'password' },
+        result: 'success'
+      });
 
       res.json({
         success: true,
@@ -181,6 +221,10 @@ router.post('/set-password', requireAuth, async (req, res) => {
     await user.save();
 
     console.log('✅ Password set for user:', user.email);
+    await req.logEvent('auth.set_password', {
+      entity: { type: 'user', id: user._id.toString(), email: user.email },
+      result: 'success'
+    });
 
     res.json({
       success: true,
@@ -210,11 +254,19 @@ router.get('/google/callback', (req, res) => {
     })(req, res, (err) => {
       if (err) {
         console.error('❌ Passport authentication error:', err);
+        req.logEvent('auth.oauth.google.failed', {
+          result: 'failure',
+          error: err.message || 'passport_error'
+        });
         return res.redirect('https://dash.chocoinsurance.com/login?error=auth_failed');
       }
 
       if (!req.user) {
         console.error('❌ No user found after authentication');
+        req.logEvent('auth.oauth.google.failed', {
+          result: 'failure',
+          error: 'no_user_after_auth'
+        });
         return res.redirect('https://dash.chocoinsurance.com/login?error=no_user');
       }
 
@@ -231,6 +283,11 @@ router.get('/google/callback', (req, res) => {
           console.log('✅ Session saved successfully');
         }
 
+        req.logEvent('auth.oauth.google.success', {
+          entity: { type: 'user', id: req.user._id?.toString?.(), email: req.user.email },
+          result: 'success'
+        });
+
         // Successful authentication, redirect to main CRM page with session ID
         const redirectUrl = `https://dash.chocoinsurance.com/?sessionId=${req.sessionID}`;
         console.log('🔄 Redirecting to:', redirectUrl);
@@ -245,17 +302,32 @@ router.get('/google/callback', (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
+  const actorBefore = req.actor ? req.actor() : { type: 'unknown' };
   req.logout((err) => {
     if (err) {
       console.error('Logout error:', err);
+      req.logEvent('auth.logout', {
+        actor: actorBefore,
+        result: 'failure',
+        error: err.message || 'logout_error'
+      });
       return res.status(500).json({ error: 'Logout failed' });
     }
     req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);
+        req.logEvent('auth.logout', {
+          actor: actorBefore,
+          result: 'failure',
+          error: err.message || 'session_destroy_error'
+        });
         return res.status(500).json({ error: 'Session cleanup failed' });
       }
       res.clearCookie('connect.sid');
+      req.logEvent('auth.logout', {
+        actor: actorBefore,
+        result: 'success'
+      });
       res.json({ message: 'Logged out successfully' });
     });
   });
@@ -576,9 +648,17 @@ router.post('/send-login-email', async (req, res) => {
     if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
       await sgMail.send(msg);
       console.log('✅ OTP email sent to:', email);
+      await req.logEvent('auth.otp.email.send', {
+        data: { email },
+        result: 'sent'
+      });
     } else {
       console.log('📧 [DEV MODE] OTP email would be sent to:', email);
       console.log('🔑 OTP CODE FOR', email, ':', otp);
+      await req.logEvent('auth.otp.email.send', {
+        data: { email },
+        result: 'queued_dev'
+      });
     }
 
     res.json({
@@ -603,6 +683,11 @@ router.post('/verify-otp', async (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
+      await req.logEvent('auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'missing_fields',
+        data: { email: email || null }
+      });
       return res.status(400).json({
         success: false,
         message: 'אימייל וקוד אימות נדרשים'
@@ -613,6 +698,11 @@ router.post('/verify-otp', async (req, res) => {
     const storedData = otpStorage.get(email);
 
     if (!storedData) {
+      await req.logEvent('auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'not_found_or_expired',
+        data: { email }
+      });
       return res.status(400).json({
         success: false,
         message: 'קוד אימות לא נמצא או פג תוקף'
@@ -622,6 +712,11 @@ router.post('/verify-otp', async (req, res) => {
     // Check if OTP expired
     if (new Date() > storedData.expiresAt) {
       otpStorage.delete(email);
+      await req.logEvent('auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'expired',
+        data: { email }
+      });
       return res.status(400).json({
         success: false,
         message: 'קוד האימות פג תוקף'
@@ -630,6 +725,11 @@ router.post('/verify-otp', async (req, res) => {
 
     // Verify OTP
     if (storedData.otp !== otp) {
+      await req.logEvent('auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'invalid_code',
+        data: { email }
+      });
       return res.status(400).json({
         success: false,
         message: 'קוד אימות שגוי'
@@ -668,6 +768,12 @@ router.post('/verify-otp', async (req, res) => {
     console.log('✅ OTP verified successfully for:', email);
     console.log('🔐 Session ID after OTP:', req.sessionID);
     console.log('🔐 Session data after OTP:', req.session);
+
+    await req.logEvent('auth.otp.verify.success', {
+      entity: { type: 'user', email },
+      data: { userType: storedData.userType },
+      result: 'success'
+    });
 
     res.json({
       success: true,

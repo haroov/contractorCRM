@@ -156,6 +156,10 @@ router.post('/send-otp', async (req, res) => {
         console.log('⚠️ SendGrid in development mode - logging OTP to console for:', email);
         console.log('🔑 OTP CODE FOR', email, ':', otp);
         console.log('📧 Email would be sent with beautiful design including Choco logo');
+        await req.logEvent('contact_auth.otp.email.send', {
+          data: { email },
+          result: 'queued_dev'
+        });
         res.json({
           success: true,
           message: 'קוד אימות נשלח לכתובת האימייל שלך'
@@ -168,6 +172,10 @@ router.post('/send-otp', async (req, res) => {
         await sgMail.send(msg)
           .then(() => {
             console.log('✅ OTP email sent to:', email);
+            req.logEvent('contact_auth.otp.email.send', {
+              data: { email },
+              result: 'sent'
+            });
             res.json({
               success: true,
               message: 'קוד אימות נשלח לכתובת האימייל שלך'
@@ -189,6 +197,11 @@ router.post('/send-otp', async (req, res) => {
         code: emailError.code,
         response: emailError.response?.body,
         stack: emailError.stack
+      });
+      await req.logEvent('contact_auth.otp.email.send', {
+        result: 'failure',
+        error: emailError.message,
+        data: { email }
       });
       res.status(500).json({
         error: 'שגיאה בשליחת המייל',
@@ -212,6 +225,11 @@ router.post('/verify-otp', async (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
+      await req.logEvent('contact_auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'missing_fields',
+        data: { email: email || null }
+      });
       return res.status(400).json({ error: 'נדרש אימייל וקוד אימות' });
     }
 
@@ -219,21 +237,41 @@ router.post('/verify-otp', async (req, res) => {
     const storedData = otpStorage.get(email);
 
     if (!storedData) {
+      await req.logEvent('contact_auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'not_found_or_expired',
+        data: { email }
+      });
       return res.status(400).json({ error: 'קוד אימות לא נמצא או פג תוקף' });
     }
 
     if (new Date() > storedData.expiresAt) {
       otpStorage.delete(email);
+      await req.logEvent('contact_auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'expired',
+        data: { email }
+      });
       return res.status(400).json({ error: 'קוד האימות פג תוקף' });
     }
 
     if (storedData.otp !== otp) {
+      await req.logEvent('contact_auth.otp.verify.failed', {
+        result: 'failure',
+        error: 'invalid_code',
+        data: { email }
+      });
       return res.status(400).json({ error: 'קוד האימות שגוי' });
     }
 
     // OTP is valid, check if user has access to multiple contractors
     if (storedData.contractors.length > 1) {
       // User has access to multiple contractors - return list for selection
+      await req.logEvent('contact_auth.otp.verify.multiple_contractors', {
+        entity: { type: 'contact_user', email },
+        data: { contractors: storedData.contractors.map(c => c.contractorId) },
+        result: 'success'
+      });
       return res.json({
         success: true,
         multipleContractors: true,
@@ -271,6 +309,11 @@ router.post('/verify-otp', async (req, res) => {
     otpStorage.delete(email);
 
     console.log('✅ Contact user logged in via OTP:', contact.fullName, 'for contractor:', contractorData.contractorName);
+    await req.logEvent('contact_auth.otp.verify.success', {
+      entity: { type: 'contact_user', id: contact.id, email: contact.email },
+      data: { contractorId: contractorData.contractorId },
+      result: 'success'
+    });
 
     res.json({
       success: true,
@@ -289,6 +332,11 @@ router.post('/verify-otp', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Verify OTP error:', error);
+    await req.logEvent('contact_auth.otp.verify.failed', {
+      result: 'failure',
+      error: error.message,
+      data: { email: req.body?.email || null }
+    });
     res.status(500).json({ error: 'שגיאה באימות הקוד' });
   }
 });
@@ -311,6 +359,11 @@ router.post('/select-contractor', async (req, res) => {
     const { email, contractorId } = req.body;
 
     if (!email || !contractorId) {
+      await req.logEvent('contact_auth.select_contractor.failed', {
+        result: 'failure',
+        error: 'missing_fields',
+        data: { email: email || null, contractorId: contractorId || null }
+      });
       return res.status(400).json({ error: 'נדרש אימייל ומזהה קבלן' });
     }
 
@@ -318,6 +371,11 @@ router.post('/select-contractor', async (req, res) => {
     const storedData = otpStorage.get(email);
 
     if (!storedData) {
+      await req.logEvent('contact_auth.select_contractor.failed', {
+        result: 'failure',
+        error: 'session_expired',
+        data: { email }
+      });
       return res.status(400).json({ error: 'הסשן פג תוקף' });
     }
 
@@ -325,6 +383,11 @@ router.post('/select-contractor', async (req, res) => {
     const contractorData = storedData.contractors.find(c => c.contractorId === contractorId);
 
     if (!contractorData) {
+      await req.logEvent('contact_auth.select_contractor.failed', {
+        result: 'failure',
+        error: 'invalid_contractor',
+        data: { email, contractorId }
+      });
       return res.status(400).json({ error: 'בחירת קבלן לא תקינה' });
     }
 
@@ -350,6 +413,11 @@ router.post('/select-contractor', async (req, res) => {
     otpStorage.delete(email);
 
     console.log('✅ Contact user selected contractor:', contact.fullName, 'for contractor:', contractorData.contractorName);
+    await req.logEvent('contact_auth.select_contractor.success', {
+      entity: { type: 'contact_user', id: contact.id, email: contact.email },
+      data: { contractorId },
+      result: 'success'
+    });
 
     res.json({
       success: true,
@@ -374,7 +442,12 @@ router.post('/select-contractor', async (req, res) => {
 
 // Contact user logout
 router.post('/logout', (req, res) => {
+  const actorBefore = req.actor ? req.actor() : { type: 'unknown' };
   req.session.contactUser = null;
+  req.logEvent('contact_auth.logout', {
+    actor: actorBefore,
+    result: 'success'
+  });
   res.json({ message: 'Logged out successfully' });
 });
 

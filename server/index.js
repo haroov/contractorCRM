@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const { initEventLogger, eventContextMiddleware } = require('./lib/eventLogger');
 const cookieParser = require('cookie-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 const { MongoMemoryServer } = require('mongodb-memory-server');
@@ -144,7 +145,7 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }));
 
@@ -154,6 +155,9 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Event logging context (correlationId, actor, req.logEvent)
+app.use(eventContextMiddleware);
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
@@ -273,6 +277,10 @@ async function connectDB() {
     // Connect with Mongoose for User model
     await mongoose.connect(mongoUri);
     console.log('✅ Mongoose connected');
+
+    // Initialize events logger (ensure indexes)
+    await initEventLogger();
+    console.log('✅ Event logger initialized');
 
     client = new MongoClient(mongoUri);
     await client.connect();
@@ -446,7 +454,7 @@ app.options('/api/contractors/validate-status/:contractorId', cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }), (req, res) => {
   res.status(200).end();
@@ -465,7 +473,7 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }), requireAuth, async (req, res) => {
   try {

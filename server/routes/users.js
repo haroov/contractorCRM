@@ -74,12 +74,23 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     const user = new User(userData);
     await user.save();
 
+    await req.logEvent('users.create', {
+      entity: { type: 'user', id: user._id.toString(), email: user.email },
+      data: { name: user.name, role: user.role, isActive: user.isActive },
+      result: 'success'
+    });
+
     console.log('User created successfully:', user._id);
     res.status(201).json(user);
   } catch (error) {
     console.error('Error creating user:', error);
     console.error('Error details:', error.message);
     console.error('Error stack:', error.stack);
+    await req.logEvent('users.create', {
+      result: 'failure',
+      error: error.message,
+      data: { email: req.body?.email }
+    });
     res.status(500).json({ error: 'Failed to create user', details: error.message });
   }
 });
@@ -115,12 +126,27 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     ).select('-googleId');
 
     if (!user) {
+      await req.logEvent('users.update', {
+        result: 'failure',
+        error: 'not_found',
+        entity: { type: 'user', id: req.params.id }
+      });
       return res.status(404).json({ error: 'User not found' });
     }
 
+    await req.logEvent('users.update', {
+      entity: { type: 'user', id: user._id.toString(), email: user.email },
+      data: updateData,
+      result: 'success'
+    });
     res.json(user);
   } catch (error) {
     console.error('Error updating user:', error);
+    await req.logEvent('users.update', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'user', id: req.params.id }
+    });
     res.status(500).json({ error: 'Failed to update user' });
   }
 });
@@ -138,14 +164,28 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
 
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
+      await req.logEvent('users.delete', {
+        result: 'failure',
+        error: 'not_found',
+        entity: { type: 'user', id: req.params.id }
+      });
       return res.status(404).json({ error: 'User not found' });
     }
 
     console.log('User deleted successfully:', user.email);
+    await req.logEvent('users.delete', {
+      entity: { type: 'user', id: user._id.toString(), email: user.email },
+      result: 'success'
+    });
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
     console.error('Error details:', error.message);
+    await req.logEvent('users.delete', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'user', id: req.params.id }
+    });
     res.status(500).json({ error: 'Failed to delete user', details: error.message });
   }
 });
@@ -184,12 +224,23 @@ router.patch('/:id/toggle-active', requireAuth, requireAdmin, async (req, res) =
     user.isActive = !user.isActive;
     await user.save();
 
+    await req.logEvent('users.toggle_active', {
+      entity: { type: 'user', id: user._id.toString(), email: user.email },
+      data: { isActive: user.isActive },
+      result: 'success'
+    });
+
     res.json({
       message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
       isActive: user.isActive
     });
   } catch (error) {
     console.error('Error toggling user status:', error);
+    await req.logEvent('users.toggle_active', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'user', id: req.params.id }
+    });
     res.status(500).json({ error: 'Failed to toggle user status' });
   }
 });

@@ -84,7 +84,12 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
         }
       }
     );
-
+    // Log event
+    await req.logEvent('upload.certificate', {
+      entity: { type: 'contractor', id: contractorId },
+      data: { certificateType, url: blob.url, filename },
+      result: 'success'
+    });
 
     res.json({
       success: true,
@@ -99,6 +104,12 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error uploading certificate:', error);
+    await req.logEvent('upload.certificate', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'contractor', id: req.body?.contractorId || null },
+      data: { certificateType: req.body?.certificateType }
+    });
     res.status(500).json({
       success: false,
       error: 'Failed to upload certificate',
@@ -160,6 +171,13 @@ router.delete('/certificate', async (req, res) => {
 
     console.log(`✅ Removed ${certificateType} certificate from contractor ${contractorId}`);
 
+    // Log event
+    await req.logEvent('upload.certificate.delete', {
+      entity: { type: 'contractor', id: contractorId },
+      data: { certificateType, deletedFromBlob: !!certificateUrl },
+      result: 'success'
+    });
+
     res.json({
       success: true,
       message: 'Certificate removed successfully',
@@ -172,6 +190,12 @@ router.delete('/certificate', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error removing certificate:', error);
+    await req.logEvent('upload.certificate.delete', {
+      result: 'failure',
+      error: error.message,
+      entity: { type: 'contractor', id: req.body?.contractorId || null },
+      data: { certificateType: req.body?.certificateType }
+    });
     res.status(500).json({
       success: false,
       error: 'Failed to remove certificate',
