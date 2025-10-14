@@ -243,7 +243,11 @@ class GISService {
           stationType: result.stationType || '',
           distance: distanceKm,
           travelTime: travelTime,
-          distance_m: result.distanceKM * 1000
+          distance_m: result.distanceKM * 1000,
+          coordinates: {
+            longitude: result.geometry?.coordinates?.[0] || null,
+            latitude: result.geometry?.coordinates?.[1] || null
+          }
         };
 
         console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
@@ -310,7 +314,11 @@ class GISService {
           stationType: result.stationType || '',
           distance: distanceKm,
           travelTime: travelTime,
-          distance_m: result.distanceKM * 1000
+          distance_m: result.distanceKM * 1000,
+          coordinates: {
+            longitude: result.geometry?.coordinates?.[0] || null,
+            latitude: result.geometry?.coordinates?.[1] || null
+          }
         };
 
         console.log(`✅ GIS Service: Found nearest police station ${policeStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);
@@ -450,7 +458,11 @@ class GISService {
           stationType: finalResult.stationType || 'תחנת דלק',
           distance: finalDistanceKm,
           travelTime: travelTime,
-          distance_m: finalResult.distanceKM * 1000
+          distance_m: finalResult.distanceKM * 1000,
+          coordinates: {
+            longitude: finalResult.geometry?.coordinates?.[0] || null,
+            latitude: finalResult.geometry?.coordinates?.[1] || null
+          }
         };
 
         console.log(`✅ GIS Service: Found nearest fuel station ${fuelStationData.name} at distance ${finalDistanceKm}km for coordinates (${x}, ${y})`);
@@ -521,7 +533,11 @@ class GISService {
           stationType: result.stationType || 'תחנת מד״א',
           distance: distanceKm,
           travelTime: travelTime,
-          distance_m: result.distanceKM * 1000
+          distance_m: result.distanceKM * 1000,
+          coordinates: {
+            longitude: result.geometry?.coordinates?.[0] || null,
+            latitude: result.geometry?.coordinates?.[1] || null
+          }
         };
 
         console.log(`✅ GIS Service: Found nearest first aid station ${firstAidStationData.name} at distance ${distanceKm}km for coordinates (${x}, ${y})`);

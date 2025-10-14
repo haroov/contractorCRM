@@ -13,6 +13,10 @@ export interface FireStationData {
   distance: string;
   travelTime: number;
   distance_m: number;
+  coordinates: {
+    longitude: number | null;
+    latitude: number | null;
+  };
 }
 
 export interface PoliceStationData {
@@ -23,6 +27,10 @@ export interface PoliceStationData {
   distance: string;
   travelTime: number;
   distance_m: number;
+  coordinates: {
+    longitude: number | null;
+    latitude: number | null;
+  };
 }
 
 export interface FuelStationData {
@@ -33,6 +41,10 @@ export interface FuelStationData {
   distance: string;
   travelTime: number;
   distance_m: number;
+  coordinates: {
+    longitude: number | null;
+    latitude: number | null;
+  };
 }
 
 export interface FirstAidStationData {
@@ -44,6 +56,10 @@ export interface FirstAidStationData {
   distance: string;
   travelTime: number;
   distance_m: number;
+  coordinates: {
+    longitude: number | null;
+    latitude: number | null;
+  };
 }
 
 export interface GISResponse {

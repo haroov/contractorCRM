@@ -7246,16 +7246,16 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <TextField
                                                 fullWidth
                                                 label="שם תחנת דלק"
-                                                value={project?.environmentalSurvey?.fuelStationName || ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.fuelStationName', e.target.value)}
+                                                value={project?.environmentalSurvey?.fuelStation?.name || ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.fuelStation.name', e.target.value)}
                                                 disabled={mode === 'view' || !canEdit}
                                             />
                                             <TextField
                                                 fullWidth
                                                 label="מרחק (ק״מ)"
                                                 type="number"
-                                                value={project?.environmentalSurvey?.distanceFromGasStation || ''}
-                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(e.target.value) || 0)}
+                                                value={project?.environmentalSurvey?.fuelStation?.distance || ''}
+                                                onChange={(e) => handleNestedFieldChange('environmentalSurvey.fuelStation.distance', parseFloat(e.target.value) || 0)}
                                                 disabled={mode === 'view' || !canEdit}
                                                 inputProps={{ min: 0, max: 200 }}
                                             />
@@ -7677,71 +7677,91 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                             // Update fire station data (only if fields are empty)
                                                             if (fireStation) {
-                                                                if (!project?.environmentalSurvey?.fireStationName) {
-                                                                    handleNestedFieldChange('environmentalSurvey.fireStationName', fireStation.name);
+                                                                if (!project?.environmentalSurvey?.fireStation?.name) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.name', fireStation.name);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.fireStationAddress) {
-                                                                    handleNestedFieldChange('environmentalSurvey.fireStationAddress', fireStation.address);
+                                                                if (!project?.environmentalSurvey?.fireStation?.address) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.address', fireStation.address);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.fireStationPhone) {
-                                                                    handleNestedFieldChange('environmentalSurvey.fireStationPhone', fireStation.phone.toString());
+                                                                if (!project?.environmentalSurvey?.fireStation?.phone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.phone', fireStation.phone.toString());
                                                                 }
-                                                                if (!project?.environmentalSurvey?.distanceFromFireStation) {
-                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(fireStation.distance));
+                                                                if (!project?.environmentalSurvey?.fireStation?.distance) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.distance', parseFloat(fireStation.distance));
                                                                 }
-                                                                if (!project?.environmentalSurvey?.fireStationTravelTime) {
-                                                                    handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', fireStation.travelTime);
+                                                                if (!project?.environmentalSurvey?.fireStation?.travelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.travelTime', fireStation.travelTime);
+                                                                }
+                                                                // Store coordinates for future map functionality
+                                                                if (fireStation.coordinates?.longitude && fireStation.coordinates?.latitude) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.coordinates.longitude', fireStation.coordinates.longitude);
+                                                                    handleNestedFieldChange('environmentalSurvey.fireStation.coordinates.latitude', fireStation.coordinates.latitude);
                                                                 }
                                                                 foundServices.push(`תחנת כיבוי אש: ${fireStation.name}`);
                                                             }
 
                                                             // Update police station data (only if fields are empty)
                                                             if (policeStation) {
-                                                                if (!project?.environmentalSurvey?.policeStationName) {
-                                                                    handleNestedFieldChange('environmentalSurvey.policeStationName', policeStation.name);
+                                                                if (!project?.environmentalSurvey?.policeStation?.name) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.name', policeStation.name);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.policeStationAddress) {
-                                                                    handleNestedFieldChange('environmentalSurvey.policeStationAddress', policeStation.address);
+                                                                if (!project?.environmentalSurvey?.policeStation?.address) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.address', policeStation.address);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.policeStationPhone) {
-                                                                    handleNestedFieldChange('environmentalSurvey.policeStationPhone', policeStation.phone.toString());
+                                                                if (!project?.environmentalSurvey?.policeStation?.phone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.phone', policeStation.phone.toString());
                                                                 }
-                                                                if (!project?.environmentalSurvey?.distanceFromPoliceStation) {
-                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(policeStation.distance));
+                                                                if (!project?.environmentalSurvey?.policeStation?.distance) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.distance', parseFloat(policeStation.distance));
                                                                 }
-                                                                if (!project?.environmentalSurvey?.policeStationTravelTime) {
-                                                                    handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', policeStation.travelTime);
+                                                                if (!project?.environmentalSurvey?.policeStation?.travelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.travelTime', policeStation.travelTime);
+                                                                }
+                                                                // Store coordinates for future map functionality
+                                                                if (policeStation.coordinates?.longitude && policeStation.coordinates?.latitude) {
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.coordinates.longitude', policeStation.coordinates.longitude);
+                                                                    handleNestedFieldChange('environmentalSurvey.policeStation.coordinates.latitude', policeStation.coordinates.latitude);
                                                                 }
                                                                 foundServices.push(`תחנת משטרה: ${policeStation.name}`);
                                                             }
 
                                                             // Update fuel station data (only if fields are empty)
                                                             if (fuelStation) {
-                                                                if (!project?.environmentalSurvey?.fuelStationName) {
-                                                                    handleNestedFieldChange('environmentalSurvey.fuelStationName', fuelStation.name);
+                                                                if (!project?.environmentalSurvey?.fuelStation?.name) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fuelStation.name', fuelStation.name);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.distanceFromGasStation) {
-                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromGasStation', parseFloat(fuelStation.distance));
+                                                                if (!project?.environmentalSurvey?.fuelStation?.distance) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fuelStation.distance', parseFloat(fuelStation.distance));
+                                                                }
+                                                                // Store coordinates for future map functionality
+                                                                if (fuelStation.coordinates?.longitude && fuelStation.coordinates?.latitude) {
+                                                                    handleNestedFieldChange('environmentalSurvey.fuelStation.coordinates.longitude', fuelStation.coordinates.longitude);
+                                                                    handleNestedFieldChange('environmentalSurvey.fuelStation.coordinates.latitude', fuelStation.coordinates.latitude);
                                                                 }
                                                                 foundServices.push(`תחנת דלק: ${fuelStation.name}`);
                                                             }
 
                                                             // Update first aid station data (only if fields are empty)
                                                             if (firstAidStation) {
-                                                                if (!project?.environmentalSurvey?.firstAidStationName) {
-                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationName', firstAidStation.name);
+                                                                if (!project?.environmentalSurvey?.firstAidStation?.name) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.name', firstAidStation.name);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.firstAidStationAddress) {
-                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationAddress', firstAidStation.address);
+                                                                if (!project?.environmentalSurvey?.firstAidStation?.address) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.address', firstAidStation.address);
                                                                 }
-                                                                if (!project?.environmentalSurvey?.firstAidStationPhone) {
-                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationPhone', firstAidStation.phone.toString());
+                                                                if (!project?.environmentalSurvey?.firstAidStation?.phone) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.phone', firstAidStation.phone.toString());
                                                                 }
-                                                                if (!project?.environmentalSurvey?.distanceFromFirstAidStation) {
-                                                                    handleNestedFieldChange('environmentalSurvey.distanceFromFirstAidStation', parseFloat(firstAidStation.distance));
+                                                                if (!project?.environmentalSurvey?.firstAidStation?.distance) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.distance', parseFloat(firstAidStation.distance));
                                                                 }
-                                                                if (!project?.environmentalSurvey?.firstAidStationTravelTime) {
-                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStationTravelTime', firstAidStation.travelTime);
+                                                                if (!project?.environmentalSurvey?.firstAidStation?.travelTime) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.travelTime', firstAidStation.travelTime);
+                                                                }
+                                                                // Store coordinates for future map functionality
+                                                                if (firstAidStation.coordinates?.longitude && firstAidStation.coordinates?.latitude) {
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.coordinates.longitude', firstAidStation.coordinates.longitude);
+                                                                    handleNestedFieldChange('environmentalSurvey.firstAidStation.coordinates.latitude', firstAidStation.coordinates.latitude);
                                                                 }
                                                                 foundServices.push(`תחנת מד״א: ${firstAidStation.name}`);
                                                             }
@@ -7790,8 +7810,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.policeStationName || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationName', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.policeStation?.name || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStation.name', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="שם התחנה"
@@ -7809,8 +7829,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.policeStationAddress || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationAddress', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.policeStation?.address || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStation.address', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="כתובת מלאה"
@@ -7828,8 +7848,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.policeStationPhone || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationPhone', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.policeStation?.phone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStation.phone', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="טלפון"
@@ -7848,8 +7868,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.distanceFromPoliceStation || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromPoliceStation', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.policeStation?.distance || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStation.distance', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 0.1 }}
@@ -7868,8 +7888,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.policeStationTravelTime || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStationTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.policeStation?.travelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.policeStation.travelTime', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 1 }}
@@ -7892,8 +7912,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.fireStationName || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationName', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.fireStation?.name || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStation.name', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="שם התחנה"
@@ -7911,8 +7931,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.fireStationAddress || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationAddress', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.fireStation?.address || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStation.address', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="כתובת מלאה"
@@ -7930,8 +7950,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.fireStationPhone || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationPhone', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.fireStation?.phone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStation.phone', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="טלפון"
@@ -7950,8 +7970,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.distanceFromFireStation || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFireStation', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.fireStation?.distance || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStation.distance', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 0.1 }}
@@ -7970,8 +7990,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.fireStationTravelTime || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStationTravelTime', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.fireStation?.travelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.fireStation.travelTime', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 1 }}
@@ -7994,8 +8014,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.firstAidStationName || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationName', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStation?.name || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStation.name', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="שם התחנה"
@@ -8013,8 +8033,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.firstAidStationAddress || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationAddress', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStation?.address || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStation.address', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="כתובת מלאה"
@@ -8032,8 +8052,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 <TextField
                                                                     fullWidth
                                                                     size="small"
-                                                                    value={project?.environmentalSurvey?.firstAidStationPhone || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationPhone', e.target.value)}
+                                                                    value={project?.environmentalSurvey?.firstAidStation?.phone || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStation.phone', e.target.value)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     placeholder="טלפון"
@@ -8052,8 +8072,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.distanceFromFirstAidStation || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.distanceFromFirstAidStation', parseFloat(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.firstAidStation?.distance || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStation.distance', parseFloat(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 0.1 }}
@@ -8072,8 +8092,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                     fullWidth
                                                                     size="small"
                                                                     type="number"
-                                                                    value={project?.environmentalSurvey?.firstAidStationTravelTime || ''}
-                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStationTravelTime', parseInt(e.target.value) || 0)}
+                                                                    value={project?.environmentalSurvey?.firstAidStation?.travelTime || ''}
+                                                                    onChange={(e) => handleNestedFieldChange('environmentalSurvey.firstAidStation.travelTime', parseInt(e.target.value) || 0)}
                                                                     disabled={mode === 'view' || !canEdit}
                                                                     variant="outlined"
                                                                     inputProps={{ min: 0, max: 200, step: 1 }}
