@@ -370,14 +370,46 @@ app.get('/debug-users', async (req, res) => {
 
 // Import auth routes
 const authRoutes = require('./routes/auth.js');
-app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes); // Add direct auth routes for Google OAuth
-console.log('✅ Auth routes configured');
+app.use('/api/auth', EventLogger.authLogger(), authRoutes);
+app.use('/auth', EventLogger.authLogger(), authRoutes); // Add direct auth routes for Google OAuth
+console.log('✅ Auth routes configured with event logging');
 
 // Import user management routes
 const userRoutes = require('./routes/users.js');
-app.use('/api/users', userRoutes);
-console.log('✅ User management routes configured');
+app.use('/api/users', EventLogger.crudLogger({
+  entityType: 'USER',
+  getEntityId: (req) => req.params.id,
+  getEntityName: async (req, res) => {
+    if (req.method === 'GET' && res.locals.user) {
+      return res.locals.user.name;
+    }
+    return null;
+  },
+  getBeforeData: async (req) => {
+    if (req.method === 'PUT' || req.method === 'DELETE') {
+      try {
+        const db = client.db('contractor-crm');
+        const user = await db.collection('users').findOne({ _id: new ObjectId(req.params.id) });
+        return user;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  },
+  getAfterData: async (req, res) => {
+    if (req.method === 'POST' || req.method === 'PUT') {
+      return res.locals.updatedUser || req.body;
+    }
+    return null;
+  },
+  getMetadata: (req, res) => ({
+    email: req.body.email,
+    role: req.body.role,
+    isActive: req.body.isActive
+  })
+}), userRoutes);
+console.log('✅ User management routes configured with event logging');
 
 // Import contact authentication routes
 const contactAuthRoutes = require('./routes/contact-auth.js');
@@ -385,14 +417,81 @@ app.use('/api/contact-auth', contactAuthRoutes);
 console.log('✅ Contact authentication routes configured');
 
 // Import upload routes
-app.use('/api/upload', uploadRoutes);
-app.use('/api', projectFilesRoutes);
+app.use('/api/upload', EventLogger.systemLogger({
+  entityType: 'FILE',
+  getAction: (req) => 'UPLOAD',
+  getEntityId: (req) => req.file?.filename || null,
+  getEntityName: (req) => req.file?.originalname || null,
+  getMetadata: (req) => ({
+    filename: req.file?.filename,
+    originalName: req.file?.originalname,
+    size: req.file?.size,
+    mimetype: req.file?.mimetype
+  })
+}), uploadRoutes);
+app.use('/api', EventLogger.systemLogger({
+  entityType: 'FILE',
+  getAction: (req) => {
+    if (req.path.includes('/download')) return 'DOWNLOAD';
+    if (req.path.includes('/delete')) return 'DELETE_FILE';
+    return 'READ';
+  },
+  getEntityId: (req) => req.params.fileId || req.params.id,
+  getEntityName: (req) => req.params.filename || null
+}), projectFilesRoutes);
 app.use('/api/document-parser', documentParserRoutes);
 app.use('/api/risk-analysis', riskAnalysisRoutes);
 app.use('/api/company-analysis', companyAnalysisRoutes);
-app.use('/api/gis', gisRoutes);
+app.use('/api/gis', EventLogger.systemLogger({
+  entityType: 'GIS_DATA',
+  getAction: (req) => {
+    if (req.method === 'POST') return 'CREATE';
+    if (req.method === 'PUT') return 'UPDATE';
+    if (req.method === 'DELETE') return 'DELETE';
+    return 'READ';
+  },
+  getEntityId: (req) => req.params.id,
+  getEntityName: (req) => req.params.type || 'GIS Data',
+  getMetadata: (req) => ({
+    dataType: req.params.type,
+    coordinates: req.body?.coordinates,
+    radius: req.body?.radius
+  })
+}), gisRoutes);
 app.use('/api/pdf-thumbnail', pdfThumbnailRoutes);
-app.use('/api/safety-reports', safetyReportsRoutes);
+app.use('/api/safety-reports', EventLogger.crudLogger({
+  entityType: 'SAFETY_REPORT',
+  getEntityId: (req) => req.params.id,
+  getEntityName: async (req, res) => {
+    if (req.method === 'GET' && res.locals.safetyReport) {
+      return res.locals.safetyReport.title || res.locals.safetyReport.reportName;
+    }
+    return null;
+  },
+  getBeforeData: async (req) => {
+    if (req.method === 'PUT' || req.method === 'DELETE') {
+      try {
+        const db = client.db('contractor-crm');
+        const report = await db.collection('safety-reports').findOne({ _id: new ObjectId(req.params.id) });
+        return report;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  },
+  getAfterData: async (req, res) => {
+    if (req.method === 'POST' || req.method === 'PUT') {
+      return res.locals.updatedReport || req.body;
+    }
+    return null;
+  },
+  getMetadata: (req, res) => ({
+    contractorId: req.body.contractorId,
+    reportType: req.body.reportType,
+    status: req.body.status
+  })
+}), safetyReportsRoutes);
 console.log('✅ Upload routes configured');
 
 // Import docs routes
@@ -419,6 +518,22 @@ console.log('✅ Claims routes configured');
 const fixIndexRoutes = require('./routes/fix-index.js');
 app.use('/api', fixIndexRoutes);
 console.log('✅ Fix-index routes configured');
+
+// Import event logging routes
+const eventRoutes = require('./routes/events.js');
+app.use('/api/events', eventRoutes);
+console.log('✅ Event logging routes configured');
+
+// Import audit routes
+const auditRoutes = require('./routes/audit.js');
+app.use('/api/audit', auditRoutes);
+console.log('✅ Audit routes configured');
+
+// Import event logging middleware
+const EventLogger = require('./middleware/eventLogger.js');
+
+// Import Event model
+const Event = require('./models/Event.js');
 
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
@@ -565,7 +680,46 @@ app.use('/api/contractors', (req, res, next) => {
     // Use regular auth middleware
     return requireAuth(req, res, next);
   }
-}, contractorsRoutes);
+}, EventLogger.crudLogger({
+  entityType: 'CONTRACTOR',
+  getEntityId: (req) => req.params.id,
+  getEntityName: async (req, res) => {
+    if (req.method === 'GET' && res.locals.contractor) {
+      return res.locals.contractor.name;
+    }
+    return null;
+  },
+  getBeforeData: async (req) => {
+    if (req.method === 'PUT' || req.method === 'DELETE') {
+      try {
+        const db = client.db('contractor-crm');
+        const contractor = await db.collection('contractors').findOne({
+          $or: [
+            { _id: new ObjectId(req.params.id) },
+            { contractorId: req.params.id },
+            { companyId: req.params.id }
+          ]
+        });
+        return contractor;
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
+  },
+  getAfterData: async (req, res) => {
+    if (req.method === 'POST' || req.method === 'PUT') {
+      return res.locals.updatedContractor || req.body;
+    }
+    return null;
+  },
+  getMetadata: (req, res) => ({
+    contractorId: req.body.contractorId || req.params.id,
+    companyId: req.body.companyId,
+    city: req.body.city,
+    sector: req.body.sector
+  })
+}), contractorsRoutes);
 // app.use('/api/projects', requireAuth); // Temporarily disabled to debug
 // All project routes are now public for debugging
 console.log('✅ Auth middleware configured');
