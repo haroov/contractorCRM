@@ -5,6 +5,8 @@ const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
 const router = express.Router();
+const { auditBus } = require('../lib/auditBus');
+const { extractActor, extractRequest } = require('../middleware/audit');
 
 // SendGrid configuration
 if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
@@ -120,6 +122,19 @@ router.post('/login', async (req, res) => {
 
       console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
 
+      // Emit audit event for successful login
+      auditBus.emit('audit', {
+        type: 'auth.login.success',
+        actor: {
+          id: user._id,
+          email: user.email,
+          role: user.role
+        },
+        request: extractRequest(req),
+        data: { method: 'password' },
+        meta: { source: 'auth' }
+      });
+
       res.json({
         success: true,
         message: 'התחברת בהצלחה',
@@ -135,6 +150,13 @@ router.post('/login', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Login error:', error);
+    auditBus.emit('audit', {
+      type: 'auth.login.error',
+      actor: { email: req.body?.email },
+      request: extractRequest(req),
+      data: { error: error?.message },
+      meta: { source: 'auth' }
+    });
     res.status(500).json({
       success: false,
       message: 'שגיאה בשרת'
@@ -215,6 +237,11 @@ router.get('/google/callback', (req, res) => {
 
       if (!req.user) {
         console.error('❌ No user found after authentication');
+        auditBus.emit('audit', {
+          type: 'auth.oauth.callback.no_user',
+          request: extractRequest(req),
+          meta: { source: 'auth', provider: 'google' }
+        });
         return res.redirect('https://dash.chocoinsurance.com/login?error=no_user');
       }
 
@@ -227,8 +254,22 @@ router.get('/google/callback', (req, res) => {
       req.session.save((err) => {
         if (err) {
           console.error('❌ Session save error:', err);
+          auditBus.emit('audit', {
+            type: 'auth.oauth.session_save.error',
+            actor: extractActor(req),
+            request: extractRequest(req),
+            data: { error: err?.message },
+            meta: { source: 'auth', provider: 'google' }
+          });
         } else {
           console.log('✅ Session saved successfully');
+          auditBus.emit('audit', {
+            type: 'auth.oauth.login.success',
+            actor: extractActor(req),
+            request: extractRequest(req),
+            data: { provider: 'google' },
+            meta: { source: 'auth' }
+          });
         }
 
         // Successful authentication, redirect to main CRM page with session ID
@@ -248,14 +289,34 @@ router.post('/logout', (req, res) => {
   req.logout((err) => {
     if (err) {
       console.error('Logout error:', err);
+      auditBus.emit('audit', {
+        type: 'auth.logout.error',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        data: { error: err?.message },
+        meta: { source: 'auth' }
+      });
       return res.status(500).json({ error: 'Logout failed' });
     }
     req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);
+        auditBus.emit('audit', {
+          type: 'auth.logout.session_destroy.error',
+          actor: extractActor(req),
+          request: extractRequest(req),
+          data: { error: err?.message },
+          meta: { source: 'auth' }
+        });
         return res.status(500).json({ error: 'Session cleanup failed' });
       }
       res.clearCookie('connect.sid');
+      auditBus.emit('audit', {
+        type: 'auth.logout.success',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        meta: { source: 'auth' }
+      });
       res.json({ message: 'Logged out successfully' });
     });
   });
@@ -581,6 +642,14 @@ router.post('/send-login-email', async (req, res) => {
       console.log('🔑 OTP CODE FOR', email, ':', otp);
     }
 
+    // Audit OTP email send
+    auditBus.emit('audit', {
+      type: 'auth.otp.sent',
+      actor: { email },
+      request: extractRequest(req),
+      meta: { source: 'auth' }
+    });
+
     res.json({
       success: true,
       message: 'נשלח לך מייל עם קוד אימות. אנא בדוק את תיבת הדואר שלך.'
@@ -669,6 +738,14 @@ router.post('/verify-otp', async (req, res) => {
     console.log('🔐 Session ID after OTP:', req.sessionID);
     console.log('🔐 Session data after OTP:', req.session);
 
+    // Audit successful OTP verification
+    auditBus.emit('audit', {
+      type: 'auth.otp.verified',
+      actor: req.session.user,
+      request: extractRequest(req),
+      meta: { source: 'auth' }
+    });
+
     res.json({
       success: true,
       message: 'התחברות הצליחה',
@@ -678,6 +755,13 @@ router.post('/verify-otp', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Verify OTP error:', error);
+    auditBus.emit('audit', {
+      type: 'auth.otp.error',
+      actor: { email: req.body?.email },
+      request: extractRequest(req),
+      data: { error: error?.message },
+      meta: { source: 'auth' }
+    });
     res.status(500).json({
       success: false,
       message: 'שגיאה באימות הקוד'

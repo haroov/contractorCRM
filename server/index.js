@@ -15,6 +15,9 @@ const path = require('path');
 const fs = require('fs');
 const { GridFSBucket } = require('mongodb');
 const cron = require('node-cron');
+// Audit infrastructure
+const { auditMiddleware } = require('./middleware/audit');
+const { startAuditWriter } = require('./services/auditWriter');
 
 // Import routes
 const uploadRoutes = require('./routes/upload');
@@ -144,7 +147,7 @@ app.use(cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }));
 
@@ -232,6 +235,9 @@ app.use(passport.session());
 // Import and configure passport
 require('./config/passport.js');
 console.log('✅ Passport configured');
+
+// Attach audit middleware AFTER session/passport so actor is available
+app.use(auditMiddleware);
 
 // Rate limiting
 const limiter = rateLimit({
@@ -446,7 +452,7 @@ app.options('/api/contractors/validate-status/:contractorId', cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }), (req, res) => {
   res.status(200).end();
@@ -465,7 +471,7 @@ app.post('/api/contractors/validate-status/:contractorId', cors({
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Correlation-ID'],
   exposedHeaders: ['Set-Cookie']
 }), requireAuth, async (req, res) => {
   try {
@@ -588,8 +594,29 @@ app.get('/dashboard', (req, res) => {
 app.post('/auth/logout', (req, res) => {
   req.logout((err) => {
     if (err) {
+      try {
+        const { auditBus } = require('./lib/auditBus');
+        const { extractActor, extractRequest } = require('./middleware/audit');
+        auditBus.emit('audit', {
+          type: 'auth.logout.error',
+          actor: extractActor(req),
+          request: extractRequest(req),
+          data: { error: err?.message },
+          meta: { source: 'auth' }
+        });
+      } catch {}
       return res.status(500).json({ error: 'Logout failed' });
     }
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'auth.logout.success',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        meta: { source: 'auth' }
+      });
+    } catch {}
     res.json({ message: 'Logged out successfully' });
   });
 });
@@ -1023,6 +1050,23 @@ app.post('/api/contractors', async (req, res) => {
 
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
+
+    // Emit audit event for contractor creation
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'contractor.create',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'contractors', id: String(result.insertedId) },
+        data: { after: { ...contractorData, _id: result.insertedId } },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (contractor.create):', e?.message || e);
+    }
+
     res.status(201).json({ ...contractorData, _id: result.insertedId });
   } catch (error) {
     console.error('❌ Error creating contractor:', error);
@@ -1187,6 +1231,22 @@ app.put('/api/contractors/:id', async (req, res) => {
       ...contractorWithoutProjects,
       projectIds: updatedContractor.projectIds || []
     };
+    // Emit audit event for contractor update (include before state)
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'contractor.update',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'contractors', id: String(req.params.id) },
+        data: { before: existingContractor, after: contractorWithProjectIds, changes: req.body },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (contractor.update):', e?.message || e);
+    }
+
     res.json(contractorWithProjectIds);
   } catch (error) {
     console.error('❌ Error updating contractor:', error);
@@ -1197,6 +1257,8 @@ app.put('/api/contractors/:id', async (req, res) => {
 app.delete('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
+    // Fetch before state
+    const before = await db.collection('contractors').findOne({ _id: req.params.id });
     // Try to delete by _id first, then by contractor_id
     let result = await db.collection('contractors').deleteOne({ _id: req.params.id });
     if (result.deletedCount === 0) {
@@ -1206,6 +1268,20 @@ app.delete('/api/contractors/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contractor not found' });
     }
     console.log('✅ Deleted contractor:', req.params.id);
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'contractor.delete',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'contractors', id: String(req.params.id) },
+        data: { before },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (contractor.delete):', e?.message || e);
+    }
     res.json({ message: 'Contractor deleted successfully' });
   } catch (error) {
     console.error('❌ Error deleting contractor:', error);
@@ -1454,6 +1530,22 @@ app.post('/api/projects', async (req, res) => {
     const result = await db.collection('projects').insertOne(projectData);
     console.log('✅ Created new project:', result.insertedId);
 
+    // Audit: project created
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'project.create',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'projects', id: String(result.insertedId) },
+        data: { after: { ...projectData, _id: result.insertedId } },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (project.create):', e?.message || e);
+    }
+
     // Add project ID to contractor's projectIds array
     if (req.body.mainContractor) {
       console.log('🔍 Adding project ID to contractor:', req.body.mainContractor);
@@ -1541,6 +1633,14 @@ app.put('/api/projects/:id', async (req, res) => {
     console.log('🔧 Fields to set:', JSON.stringify(fieldsToSet, null, 2));
     console.log('🔧 Fields to unset:', JSON.stringify(fieldsToUnset, null, 2));
 
+    // Capture before state
+    let beforeProject = null;
+    try {
+      beforeProject = await db.collection('projects').findOne({ _id: new ObjectId(req.params.id) });
+    } catch (e) {
+      console.warn('Failed to load before state for project:', req.params.id, e?.message || e);
+    }
+
     // Build the update operation
     const updateOperation = {};
     if (Object.keys(fieldsToSet).length > 0) {
@@ -1580,6 +1680,21 @@ app.put('/api/projects/:id', async (req, res) => {
       }
     }
 
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'project.update',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'projects', id: String(req.params.id) },
+        data: { changes: req.body, before: beforeProject },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (project.update):', e?.message || e);
+    }
+
     res.json(result);
   } catch (error) {
     console.error('❌ Error updating project:', error);
@@ -1611,6 +1726,21 @@ app.delete('/api/projects/:id', async (req, res) => {
 
       // Update contractor statistics automatically
       await updateContractorStats(db, project.contractorId);
+    }
+
+    try {
+      const { auditBus } = require('./lib/auditBus');
+      const { extractActor, extractRequest } = require('./middleware/audit');
+      auditBus.emit('audit', {
+        type: 'project.delete',
+        actor: extractActor(req),
+        request: extractRequest(req),
+        target: { collection: 'projects', id: String(req.params.id) },
+        data: { before: project },
+        meta: { source: 'api' }
+      });
+    } catch (e) {
+      console.warn('Audit emit failed (project.delete):', e?.message || e);
     }
 
     res.json(result);
@@ -3629,6 +3759,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // });
 
 connectDB().then(() => {
+  // Start audit writer after DB is connected
+  startAuditWriter();
   // Setup safety monitoring cron job
   const safetyService = new SafetyMonitorService();
   safetyService.initialize().then(() => {
