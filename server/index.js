@@ -27,6 +27,15 @@ const gisRoutes = require('./routes/gis');
 const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');
 const { SafetyMonitorService } = require('./services/safetyMonitorService');
+const auditRoutes = require('./routes/audit');
+const auditService = require('./services/auditService');
+const { 
+  auditRequestMiddleware,
+  auditAuthMiddleware,
+  auditUnauthorizedMiddleware,
+  auditErrorMiddleware,
+  auditSuspiciousActivityMiddleware
+} = require('./middleware/auditMiddleware');
 
 dotenv.config();
 
@@ -154,6 +163,17 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Audit middleware - must be before routes
+app.use(auditRequestMiddleware({ 
+  skipRoutes: ['/health', '/favicon.ico', '/assets'] 
+}));
+app.use(auditAuthMiddleware());
+app.use(auditUnauthorizedMiddleware());
+app.use(auditSuspiciousActivityMiddleware({
+  maxRequestsPerMinute: 100,
+  suspiciousThreshold: 200
+}));
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
@@ -419,6 +439,10 @@ console.log('✅ Claims routes configured');
 const fixIndexRoutes = require('./routes/fix-index.js');
 app.use('/api', fixIndexRoutes);
 console.log('✅ Fix-index routes configured');
+
+// Import audit routes
+app.use('/api/audit', auditRoutes);
+console.log('✅ Audit routes configured');
 
 // Import contractors routes
 const contractorsRoutes = require('./routes/contractors.js');
@@ -868,6 +892,13 @@ app.get('/api/contractors', async (req, res) => {
     if (sessionUser) {
       console.log('✅ User authenticated:', sessionUser.email, 'Role:', sessionUser.role);
 
+      // Log contractors list access
+      auditService.logApiRequest({
+        action: 'list',
+        resourceType: 'contractor',
+        endpoint: '/api/contractors'
+      }, req, sessionUser);
+
       // Filter contractors based on user role
       if (sessionUser.role === 'admin' || sessionUser.userType === 'system') {
         // Admin users see all contractors
@@ -951,6 +982,11 @@ app.get('/api/contractors/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contractor not found' });
     }
 
+    // Log contractor view
+    if (req.user) {
+      auditService.logContractorViewed(req.user, contractor, req);
+    }
+
     console.log('✅ Found contractor:', contractor.name || contractor.nameEnglish);
 
     // Get projects for this contractor
@@ -1023,7 +1059,15 @@ app.post('/api/contractors', async (req, res) => {
 
     const result = await db.collection('contractors').insertOne(contractorData);
     console.log('✅ Created new contractor:', result.insertedId);
-    res.status(201).json({ ...contractorData, _id: result.insertedId });
+    
+    const newContractor = { ...contractorData, _id: result.insertedId };
+    
+    // Log contractor creation
+    if (req.user) {
+      auditService.logContractorCreated(req.user, newContractor, req);
+    }
+    
+    res.status(201).json(newContractor);
   } catch (error) {
     console.error('❌ Error creating contractor:', error);
     console.error('❌ Error stack:', error.stack);
@@ -1150,6 +1194,21 @@ app.put('/api/contractors/:id', async (req, res) => {
     }
     console.log('✅ Updated contractor:', req.params.id, 'Modified count:', result.modifiedCount);
 
+    // Log contractor update with changes
+    if (req.user && existingContractor && result.modifiedCount > 0) {
+      const changes = [];
+      for (const [key, value] of Object.entries(updateData)) {
+        if (existingContractor[key] !== value) {
+          changes.push({
+            field: key,
+            oldValue: existingContractor[key],
+            newValue: value
+          });
+        }
+      }
+      auditService.logContractorUpdated(req.user, { ...existingContractor, ...updateData }, changes, req);
+    }
+
     // Return the updated contractor data without projects field
     // Use the same search logic as before to find the updated contractor
     let updatedContractor;
@@ -1197,14 +1256,41 @@ app.put('/api/contractors/:id', async (req, res) => {
 app.delete('/api/contractors/:id', async (req, res) => {
   try {
     const db = client.db('contractor-crm');
+    
+    // First, find the contractor to get its data for audit logging
+    let contractor;
+    try {
+      if (req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+        contractor = await db.collection('contractors').findOne({ _id: new ObjectId(req.params.id) });
+      }
+      if (!contractor) {
+        contractor = await db.collection('contractors').findOne({ contractor_id: req.params.id });
+      }
+    } catch (error) {
+      console.log('Error finding contractor for deletion:', error);
+    }
+    
     // Try to delete by _id first, then by contractor_id
-    let result = await db.collection('contractors').deleteOne({ _id: req.params.id });
-    if (result.deletedCount === 0) {
+    let result;
+    try {
+      if (req.params.id.length === 24 && /^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+        result = await db.collection('contractors').deleteOne({ _id: new ObjectId(req.params.id) });
+      } else {
+        result = await db.collection('contractors').deleteOne({ contractor_id: req.params.id });
+      }
+    } catch (error) {
       result = await db.collection('contractors').deleteOne({ contractor_id: req.params.id });
     }
+    
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: 'Contractor not found' });
     }
+    
+    // Log contractor deletion
+    if (req.user && contractor) {
+      auditService.logContractorDeleted(req.user, contractor, req);
+    }
+    
     console.log('✅ Deleted contractor:', req.params.id);
     res.json({ message: 'Contractor deleted successfully' });
   } catch (error) {
@@ -3652,6 +3738,9 @@ connectDB().then(() => {
   }).catch(error => {
     console.error('❌ Failed to initialize Safety Monitor Service:', error);
   });
+
+  // Add audit error middleware at the end
+  app.use(auditErrorMiddleware());
 
   app.listen(PORT, () => {
     console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v3.0 🚨🚨🚨');

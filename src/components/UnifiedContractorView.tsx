@@ -1719,6 +1719,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
             ניהול משתמשים
           </MenuItem>
         )}
+        {/* Only show Audit Dashboard for admin users */}
+        {currentUser?.role === 'admin' && (
+          <MenuItem onClick={() => { window.location.href = '/audit'; handleUserMenuClose(); }}>
+            <AccountCircleIcon sx={{ mr: 1 }} />
+            מערכת ניטור פעילות
+          </MenuItem>
+        )}
         {/* Show view mode toggle for system users */}
         {(currentUser?.role === 'admin' || currentUser?.role === 'user') && (
           <MenuItem onClick={handleViewModeToggle}>
