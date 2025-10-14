@@ -4755,7 +4755,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             fireStation={project?.environmentalSurvey?.fireStation}
                                                                             policeStation={project?.environmentalSurvey?.policeStation}
                                                                             firstAidStation={project?.environmentalSurvey?.firstAidStation}
-                                                                            fuelStation={project?.environmentalSurvey?.fuelStation}
                                                                         />
                                                                     ) : (
                                                                         <Box sx={{

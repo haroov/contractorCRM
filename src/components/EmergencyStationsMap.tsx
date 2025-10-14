@@ -22,7 +22,6 @@ interface EmergencyStationsMapProps {
     fireStation?: EmergencyStation;
     policeStation?: EmergencyStation;
     firstAidStation?: EmergencyStation;
-    fuelStation?: EmergencyStation;
 }
 
 declare global {
@@ -40,8 +39,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
     zoom = 15,
     fireStation,
     policeStation,
-    firstAidStation,
-    fuelStation
+    firstAidStation
 }) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const [map, setMap] = useState<any>(null);
@@ -78,24 +76,17 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
         });
     };
 
-    // Create custom icons for different station types
-    const createStationIcon = (type: 'fire' | 'police' | 'medical' | 'fuel', color: string) => {
-        const icons = {
-            fire: '🔥',
-            police: '🚔',
-            medical: '🏥',
-            fuel: '⛽'
-        };
-
+    // Create simple colored pins for different station types
+    const createStationIcon = (type: 'fire' | 'police' | 'medical', color: string) => {
         return {
             url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="20" cy="20" r="18" fill="${color}" stroke="#ffffff" stroke-width="3"/>
-                    <text x="20" y="26" text-anchor="middle" font-size="16" fill="white">${icons[type]}</text>
+                <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24C32 7.163 24.837 0 16 0z" fill="${color}" stroke="#ffffff" stroke-width="2"/>
+                    <circle cx="16" cy="16" r="6" fill="#ffffff"/>
                 </svg>
             `),
-            scaledSize: new window.google.maps.Size(40, 40),
-            anchor: new window.google.maps.Point(20, 20)
+            scaledSize: new window.google.maps.Size(32, 40),
+            anchor: new window.google.maps.Point(16, 40)
         };
     };
 
@@ -112,7 +103,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 },
                 map: mapInstance,
                 title: `תחנת כיבוי אש: ${fireStation.name}`,
-                icon: createStationIcon('fire', '#ff4444'),
+                icon: createStationIcon('fire', '#dc2626'),
                 animation: window.google.maps.Animation.DROP
             });
 
@@ -145,7 +136,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 },
                 map: mapInstance,
                 title: `תחנת משטרה: ${policeStation.name}`,
-                icon: createStationIcon('police', '#2196f3'),
+                icon: createStationIcon('police', '#1e40af'),
                 animation: window.google.maps.Animation.DROP
             });
 
@@ -178,7 +169,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 },
                 map: mapInstance,
                 title: `מד״א: ${firstAidStation.name}`,
-                icon: createStationIcon('medical', '#4caf50'),
+                icon: createStationIcon('medical', '#16a34a'),
                 animation: window.google.maps.Animation.DROP
             });
 
@@ -202,38 +193,6 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
             newMarkers.push(mdaMarker);
         }
 
-        // Fuel Station Marker
-        if (fuelStation?.coordinates?.latitude && fuelStation?.coordinates?.longitude) {
-            const fuelMarker = new window.google.maps.Marker({
-                position: { 
-                    lat: fuelStation.coordinates.latitude, 
-                    lng: fuelStation.coordinates.longitude 
-                },
-                map: mapInstance,
-                title: `תחנת דלק: ${fuelStation.name}`,
-                icon: createStationIcon('fuel', '#ff9800'),
-                animation: window.google.maps.Animation.DROP
-            });
-
-            const fuelInfoWindow = new window.google.maps.InfoWindow({
-                content: `
-                    <div style="padding: 12px; text-align: right; direction: rtl; min-width: 200px;">
-                        <h3 style="margin: 0 0 8px 0; color: #ff9800;">⛽ תחנת דלק</h3>
-                        <p style="margin: 4px 0;"><strong>שם:</strong> ${fuelStation.name}</p>
-                        <p style="margin: 4px 0;"><strong>כתובת:</strong> ${fuelStation.address}</p>
-                        <p style="margin: 4px 0;"><strong>טלפון:</strong> ${fuelStation.phone}</p>
-                        <p style="margin: 4px 0;"><strong>מרחק:</strong> ${fuelStation.distance} ק״מ</p>
-                        <p style="margin: 4px 0;"><strong>זמן נסיעה:</strong> ${fuelStation.travelTime} דקות</p>
-                    </div>
-                `
-            });
-
-            fuelMarker.addListener('click', () => {
-                fuelInfoWindow.open(mapInstance, fuelMarker);
-            });
-
-            newMarkers.push(fuelMarker);
-        }
 
         setMarkers(newMarkers);
     };
@@ -335,7 +294,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 }
             });
         };
-    }, [latitude, longitude, zoom, fireStation, policeStation, firstAidStation, fuelStation]);
+    }, [latitude, longitude, zoom, fireStation, policeStation, firstAidStation]);
 
     if (error) {
         return (
