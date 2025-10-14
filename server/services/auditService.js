@@ -93,8 +93,39 @@ class AuditService extends EventEmitter {
                 eventData.deviceInfo = this.parseDeviceInfo(eventData.userAgent);
             }
 
+            // Create clean audit log object with only valid fields
+            const auditLogData = {
+                eventType: eventData.eventType,
+                action: eventData.action,
+                userId: eventData.userId,
+                userEmail: eventData.userEmail,
+                userName: eventData.userName,
+                userRole: eventData.userRole,
+                sessionId: eventData.sessionId,
+                ipAddress: eventData.ipAddress,
+                userAgent: eventData.userAgent,
+                deviceInfo: eventData.deviceInfo,
+                method: eventData.method,
+                url: eventData.url,
+                endpoint: eventData.endpoint,
+                resourceType: eventData.resourceType,
+                resourceId: eventData.resourceId,
+                resourceName: eventData.resourceName,
+                description: eventData.description,
+                changes: eventData.changes,
+                metadata: eventData.metadata,
+                success: eventData.success,
+                statusCode: eventData.statusCode,
+                errorMessage: eventData.errorMessage,
+                duration: eventData.duration,
+                timestamp: eventData.timestamp || new Date(),
+                tags: eventData.tags,
+                retentionDate: eventData.retentionDate,
+                isArchived: eventData.isArchived
+            };
+
             // Create audit log entry
-            const auditLog = new AuditLog(eventData);
+            const auditLog = new AuditLog(auditLogData);
             await auditLog.save();
 
             console.log(`✅ Audit log saved: ${eventData.eventType}/${eventData.action} by ${eventData.userEmail || 'anonymous'}`);
