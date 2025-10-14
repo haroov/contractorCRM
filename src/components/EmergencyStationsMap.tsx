@@ -245,7 +245,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                     icon: {
                         url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
               <svg width="32" height="40" viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24C32 7.163 24.837 0 16 0z" fill="#8b4513" stroke="#ffffff" stroke-width="2"/>
+                <path d="M16 0C7.163 0 0 7.163 0 16c0 8.837 16 24 16 24s16-15.163 16-24C32 7.163 24.837 0 16 0z" fill="#7c3aed" stroke="#ffffff" stroke-width="2"/>
                 <circle cx="16" cy="16" r="6" fill="#ffffff"/>
               </svg>
             `),
@@ -259,7 +259,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 const projectInfoWindow = new window.google.maps.InfoWindow({
                     content: `
             <div style="padding: 12px; text-align: right; direction: rtl; min-width: 200px;">
-              <h3 style="margin: 0 0 8px 0; color: #8b4513;">🏗️ מיקום הפרויקט</h3>
+              <h3 style="margin: 0 0 8px 0; color: #7c3aed;">🏗️ מיקום הפרויקט</h3>
               <p style="margin: 4px 0;"><strong>שם הפרויקט:</strong> ${project?.name || 'לא זמין'}</p>
               <p style="margin: 4px 0;"><strong>כתובת:</strong> ${project?.address || 'לא זמין'}</p>
               <p style="margin: 4px 0;"><strong>מגרש/חלקה:</strong> ${project?.plotNumber || 'לא זמין'}</p>

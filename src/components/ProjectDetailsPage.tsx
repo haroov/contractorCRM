@@ -4756,9 +4756,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             policeStation={project?.environmentalSurvey?.policeStation}
                                                                             firstAidStation={project?.environmentalSurvey?.firstAidStation}
                                                                             project={{
-                                                                                name: project?.name,
-                                                                                address: project?.address,
-                                                                                plotNumber: project?.plotNumber
+                                                                                name: project?.projectName,
+                                                                                address: project?.engineeringQuestionnaire?.buildingPlan?.address,
+                                                                                plotNumber: project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot
                                                                             }}
                                                                         />
                                                                     ) : (
