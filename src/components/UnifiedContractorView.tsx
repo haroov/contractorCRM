@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon, Security as SecurityIcon } from '@mui/icons-material';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
@@ -1717,6 +1717,13 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <MenuItem onClick={handleUserManagementClick}>
             <AccountCircleIcon sx={{ mr: 1 }} />
             ניהול משתמשים
+          </MenuItem>
+        )}
+        {/* Only show Audit Dashboard for admin users */}
+        {currentUser?.role === 'admin' && (
+          <MenuItem onClick={() => window.location.href = '/audit'}>
+            <SecurityIcon sx={{ mr: 1 }} />
+            לוח בקרת פעילות
           </MenuItem>
         )}
         {/* Show view mode toggle for system users */}

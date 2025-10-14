@@ -9,6 +9,7 @@ import UserManagement from './components/UserManagement';
 import SkeletonLoader from './components/SkeletonLoader';
 import UnifiedContractorView from './components/UnifiedContractorView';
 import ClaimFormPage from './components/ClaimFormPage';
+import AuditDashboard from './pages/AuditDashboard';
 // Removed API imports - using simple localStorage-based auth
 
 const theme = createTheme({
@@ -417,6 +418,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ClaimFormPage currentUser={user} />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit"
+              element={
+                <ProtectedRoute>
+                  <AuditDashboard />
                 </ProtectedRoute>
               }
             />
