@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const User = require('../models/User');
+const auditService = require('../services/auditService');
 const router = express.Router();
 
 // SendGrid configuration
@@ -70,6 +71,10 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       console.log('❌ User not found:', email);
+      
+      // Log failed login attempt
+      auditService.logUserLoginFailed(email, 'User not found', req);
+      
       return res.status(401).json({
         success: false,
         message: 'אינך מורשה למערכת. אנא פנה למנהל המערכת.'
@@ -78,6 +83,10 @@ router.post('/login', async (req, res) => {
 
     if (!user.isActive) {
       console.log('❌ User inactive:', email);
+      
+      // Log failed login attempt
+      auditService.logUserLoginFailed(email, 'User account inactive', req);
+      
       return res.status(401).json({
         success: false,
         message: 'חשבון לא פעיל. אנא פנה למנהל המערכת.'
@@ -98,6 +107,10 @@ router.post('/login', async (req, res) => {
 
     if (!isPasswordValid) {
       console.log('❌ Invalid password for:', email);
+      
+      // Log failed login attempt
+      auditService.logUserLoginFailed(email, 'Invalid password', req);
+      
       return res.status(401).json({
         success: false,
         message: 'סיסמה שגויה'
@@ -119,6 +132,9 @@ router.post('/login', async (req, res) => {
       }
 
       console.log('✅ User logged in successfully:', user.email, 'Role:', user.role);
+
+      // Log successful login
+      auditService.logUserLogin(user, req);
 
       res.json({
         success: true,
@@ -245,11 +261,19 @@ router.get('/google/callback', (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
+  const user = req.user; // Store user info before logout
+  
   req.logout((err) => {
     if (err) {
       console.error('Logout error:', err);
       return res.status(500).json({ error: 'Logout failed' });
     }
+    
+    // Log successful logout
+    if (user) {
+      auditService.logUserLogout(user, req);
+    }
+    
     req.session.destroy((err) => {
       if (err) {
         console.error('Session destroy error:', err);

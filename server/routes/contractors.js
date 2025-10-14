@@ -3,6 +3,8 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 const { requireContactAuth } = require('../middleware/contact-auth');
 const Contractor = require('../models/Contractor');
+const auditService = require('../services/auditService');
+const { auditResourceAccessMiddleware, auditCrudMiddleware, trackChanges } = require('../middleware/auditMiddleware');
 
 // Upload certificate endpoint - support both regular users and contact users
 router.post('/upload-certificate', async (req, res) => {
