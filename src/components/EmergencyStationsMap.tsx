@@ -262,7 +262,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
               <h3 style="margin: 0 0 8px 0; color: #7c3aed;">🏗️ מיקום הפרויקט</h3>
               <p style="margin: 4px 0;"><strong>שם הפרויקט:</strong> ${project?.name || 'לא זמין'}</p>
               <p style="margin: 4px 0;"><strong>כתובת:</strong> ${project?.address || 'לא זמין'}</p>
-              <p style="margin: 4px 0;"><strong>מגרש/חלקה:</strong> ${project?.plotNumber || 'לא זמין'}</p>
+              <p style="margin: 4px 0;"><strong>גוש/חלקה:</strong> ${project?.plotNumber || 'לא זמין'}</p>
               <p style="margin: 4px 0;"><strong>נ״צ:</strong> ${latitude.toFixed(6)}, ${longitude.toFixed(6)}</p>
             </div>
           `

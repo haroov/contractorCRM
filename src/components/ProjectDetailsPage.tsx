@@ -4758,7 +4758,9 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             project={{
                                                                                 name: project?.projectName,
                                                                                 address: project?.engineeringQuestionnaire?.buildingPlan?.address,
-                                                                                plotNumber: project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot
+                                                                                plotNumber: project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.block && project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot 
+                                                                                    ? `${project.engineeringQuestionnaire.buildingPlan.plotDetails[0].block} / ${project.engineeringQuestionnaire.buildingPlan.plotDetails[0].plot}`
+                                                                                    : project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot || 'לא זמין'
                                                                             }}
                                                                         />
                                                                     ) : (
