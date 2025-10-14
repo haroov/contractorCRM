@@ -15,6 +15,8 @@ const path = require('path');
 const fs = require('fs');
 const { GridFSBucket } = require('mongodb');
 const cron = require('node-cron');
+// Audit infrastructure
+const { audit } = require('./services/auditService');
 
 // Import routes
 const uploadRoutes = require('./routes/upload');
@@ -154,6 +156,11 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Ensure audit subscriber is active before handling requests
+audit.ensureSubscription();
+// Attach lightweight audit middleware early to capture requests/responses
+app.use(audit.createAuditMiddleware());
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
