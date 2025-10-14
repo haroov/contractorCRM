@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const { audit } = require('../services/auditService');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 // Get all users (admin only)
@@ -13,8 +14,23 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
     const users = await User.find({}).select('-googleId').sort({ createdAt: -1 });
     console.log('✅ Found users:', users.length);
     res.json(users);
+    audit.emit('users.list', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', action: 'read' },
+      meta: { count: users.length },
+      level: 'info'
+    });
   } catch (error) {
     console.error('Error fetching users:', error);
+    audit.emit('users.list.error', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      meta: { error: error.message },
+      level: 'error'
+    });
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
@@ -24,11 +40,33 @@ router.get('/:id', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-googleId');
     if (!user) {
+      audit.emit('users.read.not_found', {
+        ts: new Date(),
+        actor: audit.buildActor(req),
+        request: { path: req.originalUrl, method: req.method },
+        target: { collection: 'users', id: req.params.id, action: 'read' },
+        level: 'warn'
+      });
       return res.status(404).json({ error: 'User not found' });
     }
     res.json(user);
+    audit.emit('users.read', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'read' },
+      level: 'info'
+    });
   } catch (error) {
     console.error('Error fetching user:', error);
+    audit.emit('users.read.error', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'read' },
+      meta: { error: error.message },
+      level: 'error'
+    });
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 });
@@ -44,6 +82,13 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
+      audit.emit('users.create.conflict', {
+        ts: new Date(),
+        actor: audit.buildActor(req),
+        request: { path: req.originalUrl, method: req.method },
+        target: { collection: 'users', id: existingUser._id?.toString(), action: 'create' },
+        level: 'warn'
+      });
       return res.status(400).json({ error: 'User with this email already exists' });
     }
 
@@ -76,10 +121,25 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 
     console.log('User created successfully:', user._id);
     res.status(201).json(user);
+    audit.emit('users.create', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: user._id?.toString(), action: 'create' },
+      changes: { after: { email: user.email, role: user.role, isActive: user.isActive } },
+      level: 'info'
+    });
   } catch (error) {
     console.error('Error creating user:', error);
     console.error('Error details:', error.message);
     console.error('Error stack:', error.stack);
+    audit.emit('users.create.error', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      meta: { error: error.message },
+      level: 'error'
+    });
     res.status(500).json({ error: 'Failed to create user', details: error.message });
   }
 });
@@ -96,6 +156,13 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
         _id: { $ne: req.params.id }
       });
       if (existingUser) {
+        audit.emit('users.update.conflict', {
+          ts: new Date(),
+          actor: audit.buildActor(req),
+          request: { path: req.originalUrl, method: req.method },
+          target: { collection: 'users', id: req.params.id, action: 'update' },
+          level: 'warn'
+        });
         return res.status(400).json({ error: 'User with this email already exists' });
       }
     }
@@ -108,6 +175,7 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (role) updateData.role = role;
     if (isActive !== undefined) updateData.isActive = isActive;
 
+    const beforeUser = await User.findById(req.params.id).select('-googleId');
     const user = await User.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -117,10 +185,25 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
     res.json(user);
+    audit.emit('users.update', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'update' },
+      changes: { before: beforeUser ? { email: beforeUser.email, role: beforeUser.role, isActive: beforeUser.isActive } : null, after: { email: user.email, role: user.role, isActive: user.isActive } },
+      level: 'info'
+    });
   } catch (error) {
     console.error('Error updating user:', error);
+    audit.emit('users.update.error', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'update' },
+      meta: { error: error.message },
+      level: 'error'
+    });
     res.status(500).json({ error: 'Failed to update user' });
   }
 });
@@ -138,14 +221,37 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
 
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
+      audit.emit('users.delete.not_found', {
+        ts: new Date(),
+        actor: audit.buildActor(req),
+        request: { path: req.originalUrl, method: req.method },
+        target: { collection: 'users', id: req.params.id, action: 'delete' },
+        level: 'warn'
+      });
       return res.status(404).json({ error: 'User not found' });
     }
 
     console.log('User deleted successfully:', user.email);
     res.json({ message: 'User deleted successfully' });
+    audit.emit('users.delete', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'delete' },
+      changes: { before: { email: user.email, role: user.role, isActive: user.isActive } },
+      level: 'info'
+    });
   } catch (error) {
     console.error('Error deleting user:', error);
     console.error('Error details:', error.message);
+    audit.emit('users.delete.error', {
+      ts: new Date(),
+      actor: audit.buildActor(req),
+      request: { path: req.originalUrl, method: req.method },
+      target: { collection: 'users', id: req.params.id, action: 'delete' },
+      meta: { error: error.message },
+      level: 'error'
+    });
     res.status(500).json({ error: 'Failed to delete user', details: error.message });
   }
 });
