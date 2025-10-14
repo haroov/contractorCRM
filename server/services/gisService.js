@@ -233,19 +233,19 @@ class GISService {
       if (results && results.length > 0) {
         const result = results[0];
         const airDistanceKm = result.distanceKM.toFixed(3);
-        
+
         // Get station coordinates
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
-        
+
         let roadDistance = parseFloat(airDistanceKm);
         let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-        
+
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to fire station (${stationLat}, ${stationLng})`);
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
@@ -324,19 +324,19 @@ class GISService {
       if (results && results.length > 0) {
         const result = results[0];
         const airDistanceKm = result.distanceKM.toFixed(3);
-        
+
         // Get station coordinates
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
-        
+
         let roadDistance = parseFloat(airDistanceKm);
         let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-        
+
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to police station (${stationLat}, ${stationLng})`);
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
@@ -561,19 +561,19 @@ class GISService {
       if (results && results.length > 0) {
         const result = results[0];
         const airDistanceKm = result.distanceKM.toFixed(3);
-        
+
         // Get station coordinates
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
-        
+
         let roadDistance = parseFloat(airDistanceKm);
         let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-        
+
         // Try to get real road distance and travel time using Google Distance Matrix API
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: Getting road distance from project (${y}, ${x}) to first aid station (${stationLat}, ${stationLng})`);
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;

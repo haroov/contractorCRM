@@ -2110,10 +2110,16 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                     fullWidth
                                     multiline
                                     rows={8}
+                                    maxRows={8}
                                     label="אודות החברה"
                                     value={companyAbout}
                                     disabled={!canEdit}
-                                    sx={textFieldSx}
+                                    sx={{
+                                        ...textFieldSx,
+                                        '& .MuiInputBase-root': {
+                                            overflow: 'auto'
+                                        }
+                                    }}
                                     onChange={(e) => setCompanyAbout(e.target.value)}
                                     placeholder="מידע על החברה יופיע כאן אוטומטית מאתר האינטרנט..."
                                     InputProps={{
@@ -2128,14 +2134,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                         disabled={isLoadingAbout}
                                         size="small"
                                         sx={{
-                                            border: '1px solid #6b47c1',
                                             color: '#6b47c1',
                                             '&:hover': {
-                                                borderColor: '#5a3aa1',
                                                 backgroundColor: 'rgba(136, 47, 215, 0.04)'
                                             },
                                             '&:disabled': {
-                                                borderColor: '#d0d0d0',
                                                 color: '#d0d0d0'
                                             }
                                         }}
