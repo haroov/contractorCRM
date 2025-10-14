@@ -28,6 +28,11 @@ const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');
 const { SafetyMonitorService } = require('./services/safetyMonitorService');
 
+// Import audit system
+const auditService = require('./services/auditService');
+const systemEventEmitter = require('./services/eventEmitter');
+const { auditMiddleware, authAuditMiddleware } = require('./middleware/auditMiddleware');
+
 dotenv.config();
 
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
@@ -155,6 +160,16 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
+// Audit middleware - must be after session setup but before routes
+app.use(auditMiddleware({
+  excludePaths: ['/health', '/status', '/debug'],
+  excludeMethods: ['options'],
+  logLevel: 'info'
+}));
+
+// Authentication audit middleware
+app.use(authAuditMiddleware());
+
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
   console.log('🚨🚨🚨 API MIDDLEWARE HIT (EARLY):', req.originalUrl);
@@ -273,6 +288,33 @@ async function connectDB() {
     // Connect with Mongoose for User model
     await mongoose.connect(mongoUri);
     console.log('✅ Mongoose connected');
+    
+    // Load audit model
+    require('./models/AuditEvent');
+    console.log('✅ Audit model loaded');
+    
+    // Setup audit event listeners
+    systemEventEmitter.on('alert:rapidActivity', (data) => {
+      console.log('🚨 RAPID ACTIVITY ALERT:', data);
+    });
+    
+    systemEventEmitter.on('alert:suspiciousIP', (data) => {
+      console.log('🚨 SUSPICIOUS IP ALERT:', data);
+    });
+    
+    systemEventEmitter.on('alert:bulkDelete', (data) => {
+      console.log('🚨 BULK DELETE ALERT:', data);
+    });
+    
+    systemEventEmitter.on('alert:criticalDelete', (data) => {
+      console.log('🚨 CRITICAL DELETE ALERT:', data);
+    });
+    
+    systemEventEmitter.on('security:alert', (data) => {
+      console.log('🚨 SECURITY ALERT:', data);
+    });
+    
+    console.log('✅ Audit event listeners configured');
 
     client = new MongoClient(mongoUri);
     await client.connect();
@@ -378,6 +420,11 @@ console.log('✅ Auth routes configured');
 const userRoutes = require('./routes/users.js');
 app.use('/api/users', userRoutes);
 console.log('✅ User management routes configured');
+
+// Import audit routes
+const auditRoutes = require('./routes/audit.js');
+app.use('/api/audit', auditRoutes);
+console.log('✅ Audit routes configured');
 
 // Import contact authentication routes
 const contactAuthRoutes = require('./routes/contact-auth.js');
