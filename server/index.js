@@ -26,7 +26,12 @@ console.log("✅ Company analysis routes loaded");
 const gisRoutes = require('./routes/gis');
 const pdfThumbnailRoutes = require('./routes/pdf-thumbnail');
 const safetyReportsRoutes = require('./routes/safety-reports');
+const eventsRoutes = require('./routes/events');
 const { SafetyMonitorService } = require('./services/safetyMonitorService');
+
+// Import event logging middleware
+const { requestLoggingMiddleware, errorLoggingMiddleware } = require('./middleware/eventLogging');
+const eventLoggingService = require('./services/eventLoggingService');
 
 dotenv.config();
 
@@ -154,6 +159,15 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(cookieParser());
+
+// Add event logging middleware (after basic middleware, before routes)
+app.use(requestLoggingMiddleware({
+  logAllRequests: false,
+  logOnlyErrors: false,
+  excludePaths: ['/health', '/favicon.ico', '/assets', '/api/events'],
+  logRequestBody: false,
+  logResponseBody: false
+}));
 
 // 🚨🚨🚨 CRITICAL: Force JSON middleware for ALL API routes BEFORE any other middleware 🚨🚨🚨
 app.use('/api', (req, res, next) => {
@@ -424,6 +438,10 @@ console.log('✅ Fix-index routes configured');
 const contractorsRoutes = require('./routes/contractors.js');
 console.log('✅ Contractors routes imported');
 
+// Add events routes
+app.use('/api/events', eventsRoutes);
+console.log('✅ Events routes configured');
+
 // Import auth middleware
 const { requireAuth } = require('./middleware/auth.js');
 const { requireContactAuth, requireContactManager, requireContactContractorAccess } = require('./middleware/contact-auth.js');
@@ -601,6 +619,12 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     message: 'Contractor CRM API is running',
     database: dbType,
+    eventLogging: {
+      enabled: eventLoggingService.isEnabled,
+      logLevel: eventLoggingService.logLevel,
+      batchSize: eventLoggingService.batchSize,
+      queueSize: eventLoggingService.eventQueue.length
+    },
     timestamp: new Date().toISOString()
   });
 });
@@ -1433,7 +1457,7 @@ app.get('/api/contractors/:id/projects', async (req, res) => {
   }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/api/projects', crudEventMiddleware('CREATE', 'project'), async (req, res) => {
   try {
     console.log('🔍 POST /api/projects called');
     console.log('🔍 Request body keys:', Object.keys(req.body));
@@ -1488,7 +1512,7 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-app.put('/api/projects/:id', async (req, res) => {
+app.put('/api/projects/:id', crudEventMiddleware('UPDATE', 'project'), async (req, res) => {
   try {
     console.log('🔧 PUT /api/projects/:id called with ID:', req.params.id);
     console.log('🔧 Request body keys:', Object.keys(req.body));
@@ -1587,7 +1611,7 @@ app.put('/api/projects/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete('/api/projects/:id', crudEventMiddleware('DELETE', 'project'), async (req, res) => {
   try {
     const db = client.db('contractor-crm');
 
@@ -3489,7 +3513,7 @@ app.get('/api/contact/projects', requireContactAuth, async (req, res) => {
 });
 
 // Create new project (only for contact managers)
-app.post('/api/contact/projects', requireContactAuth, requireContactManager, async (req, res) => {
+app.post('/api/contact/projects', requireContactAuth, requireContactManager, crudEventMiddleware('CREATE', 'project'), async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
@@ -3522,7 +3546,7 @@ app.post('/api/contact/projects', requireContactAuth, requireContactManager, asy
 });
 
 // Update project (only for contact managers)
-app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, async (req, res) => {
+app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, crudEventMiddleware('UPDATE', 'project'), async (req, res) => {
   try {
     console.log('🔧 PUT /api/contact/projects/:id called with ID:', req.params.id);
     console.log('🔧 Contact user:', req.session.contactUser);
@@ -3569,7 +3593,7 @@ app.put('/api/contact/projects/:id', requireContactAuth, requireContactManager, 
 });
 
 // Delete project (only for contact managers)
-app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManager, async (req, res) => {
+app.delete('/api/contact/projects/:id', requireContactAuth, requireContactManager, crudEventMiddleware('DELETE', 'project'), async (req, res) => {
   try {
     const db = client.db('contractor-crm');
     const contractorId = req.session.contactUser.contractorId;
@@ -3653,12 +3677,16 @@ connectDB().then(() => {
     console.error('❌ Failed to initialize Safety Monitor Service:', error);
   });
 
+  // Add error logging middleware (should be last)
+  app.use(errorLoggingMiddleware);
+  
   app.listen(PORT, () => {
     console.log('🚨🚨🚨 SERVER STARTING - DEBUGGING VERSION v3.0 🚨🚨🚨');
     console.log('🚀 Server running on port', PORT);
     console.log('🏥 Health check: http://localhost:' + PORT + '/api/health');
     console.log('📋 Projects API: http://localhost:' + PORT + '/api/projects');
     console.log('👥 Contact Auth API: http://localhost:' + PORT + '/api/contact-auth');
+    console.log('📊 Events API: http://localhost:' + PORT + '/api/events');
     console.log('🔍 Test API: http://localhost:' + PORT + '/api/test');
     console.log('🛡️ Safety Reports API: http://localhost:' + PORT + '/api/safety-reports');
     console.log('🚨 DEBUGGING: All API routes should work now!');

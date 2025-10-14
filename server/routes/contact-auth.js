@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { MongoClient, ObjectId } = require('mongodb');
 const sgMail = require('@sendgrid/mail');
+const { authEventMiddleware } = require('../middleware/eventLogging');
+const eventLoggingService = require('../services/eventLoggingService');
 
 // MongoDB connection
 const client = new MongoClient(process.env.MONGODB_URI);
@@ -54,7 +56,7 @@ router.post('/check-email', async (req, res) => {
 });
 
 // Send OTP email endpoint
-router.post('/send-otp', async (req, res) => {
+router.post('/send-otp', authEventMiddleware('USER_OTP_SENT'), async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -207,7 +209,7 @@ router.post('/send-otp', async (req, res) => {
 });
 
 // Verify OTP endpoint
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', authEventMiddleware('USER_OTP_VERIFIED'), async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -373,7 +375,7 @@ router.post('/select-contractor', async (req, res) => {
 });
 
 // Contact user logout
-router.post('/logout', (req, res) => {
+router.post('/logout', authEventMiddleware('USER_LOGOUT'), (req, res) => {
   req.session.contactUser = null;
   res.json({ message: 'Logged out successfully' });
 });

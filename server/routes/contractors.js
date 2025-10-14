@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 const { requireContactAuth } = require('../middleware/contact-auth');
+const { crudEventMiddleware } = require('../middleware/eventLogging');
+const eventLoggingService = require('../services/eventLoggingService');
 const Contractor = require('../models/Contractor');
 
 // Upload certificate endpoint - support both regular users and contact users

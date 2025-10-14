@@ -3,6 +3,8 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const sgMail = require('@sendgrid/mail');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { authEventMiddleware } = require('../middleware/eventLogging');
+const eventLoggingService = require('../services/eventLoggingService');
 const User = require('../models/User');
 const router = express.Router();
 
@@ -52,7 +54,7 @@ router.get('/google', (req, res, next) => {
 });
 
 // Email/Password login
-router.post('/login', async (req, res) => {
+router.post('/login', authEventMiddleware('USER_LOGIN'), async (req, res) => {
   try {
     console.log('🔐 Email/Password login attempt:', req.body.email);
 
@@ -143,7 +145,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Set password for existing user (admin only)
-router.post('/set-password', requireAuth, async (req, res) => {
+router.post('/set-password', requireAuth, authEventMiddleware('USER_PASSWORD_CHANGE'), async (req, res) => {
   try {
     console.log('🔐 Set password request for:', req.body.email);
 
@@ -244,7 +246,7 @@ router.get('/google/callback', (req, res) => {
 });
 
 // Logout
-router.post('/logout', (req, res) => {
+router.post('/logout', authEventMiddleware('USER_LOGOUT'), (req, res) => {
   req.logout((err) => {
     if (err) {
       console.error('Logout error:', err);
@@ -446,7 +448,7 @@ function generateOTP() {
 const otpStorage = new Map();
 
 // Send OTP email endpoint
-router.post('/send-login-email', async (req, res) => {
+router.post('/send-login-email', authEventMiddleware('USER_OTP_SENT'), async (req, res) => {
   try {
     console.log('📧 Send OTP email request for:', req.body.email);
 
@@ -596,7 +598,7 @@ router.post('/send-login-email', async (req, res) => {
 });
 
 // Verify OTP endpoint
-router.post('/verify-otp', async (req, res) => {
+router.post('/verify-otp', authEventMiddleware('USER_OTP_VERIFIED'), async (req, res) => {
   try {
     console.log('🔐 Verify OTP request for:', req.body.email);
 
