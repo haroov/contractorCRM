@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const cheerio = require('cheerio');
 
 console.log("🚀 🚀 🚀 Loading company-analysis-v2.js route - UPDATED v0.0.8 - FORCE DEPLOY");
 
