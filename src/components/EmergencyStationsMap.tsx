@@ -56,21 +56,32 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
     // Load Google Maps API
     const loadGoogleMapsAPI = () => {
         return new Promise<void>((resolve, reject) => {
+            console.log('🚨 EMERGENCY STATIONS MAP - API KEY CHECK 🚨');
+            
             if (window.google) {
                 resolve();
                 return;
             }
 
             let apiKey = (import.meta as any).env.VITE_GOOGLE_MAPS_API_KEY;
+            console.log('🔍 VITE_GOOGLE_MAPS_API_KEY:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
+            
             if (!apiKey) {
                 apiKey = (import.meta as any).env.VITE_GOOGLE_MAP;
+                console.log('🔍 VITE_GOOGLE_MAP:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
             }
             if (!apiKey) {
                 apiKey = (import.meta as any).env.GOOGLE_MAPS_API_KEY;
+                console.log('🔍 GOOGLE_MAPS_API_KEY:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
             }
             if (!apiKey) {
+                console.warn('⚠️ NO ENVIRONMENT VARIABLE FOUND - USING FALLBACK KEY');
                 apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80'; // Fallback
+            } else {
+                console.log('✅ USING ENVIRONMENT VARIABLE API KEY');
             }
+            
+            console.log('🔍 Final API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
 
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
