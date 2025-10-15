@@ -131,6 +131,26 @@ async function analyzeCompanyWebsite(websiteUrl) {
         const uniquePaths = Array.from(new Set(candidatePaths));
         const pages = await Promise.all(uniquePaths.map(fetchPage));
 
+        // Discover and prioritize nav links (About/Projects/Safety)
+        try {
+            const $ = cheerio.load(pages[0]?.html || '');
+            const navLinks = [];
+            $('a[href]').each((_, el) => {
+                const href = $(el).attr('href') || '';
+                const text = ($(el).text() || '').toLowerCase();
+                if (/about|אודות|projects|פרויקטים|safety|בטיחות/.test(text) || /about|אודות|projects|פרויקטים|safety|בטיחות/.test(href)) {
+                    const abs = new URL(href, baseUrl.origin).href;
+                    if (new URL(abs).origin === baseUrl.origin) navLinks.push(abs);
+                }
+            });
+            for (const l of Array.from(new Set(navLinks))) {
+                try {
+                    const { html } = await fetchPage(l);
+                    pages.push({ url: l, html });
+                } catch (_) { }
+            }
+        } catch (_) { }
+
         const stripScriptsStyles = (html) => html
             .replace(/<script[\s\S]*?<\/script>/gi, ' ')
             .replace(/<style[\s\S]*?<\/style>/gi, ' ');
@@ -139,7 +159,12 @@ async function analyzeCompanyWebsite(websiteUrl) {
             .replace(/\s+/g, ' ')
             .trim();
 
-        const pageTexts = pages.map(p => ({ url: p.url, text: stripTags(p.html).slice(0, 40000) }));
+        const pageTexts = pages
+            .map(p => ({ url: p.url, text: stripTags(p.html).slice(0, 40000) }))
+            .sort((a, b) => {
+                const score = (u) => (/about|אודות/i.test(u) ? 100 : /projects|פרויקטים/i.test(u) ? 50 : /safety|בטיחות/i.test(u) ? 30 : 0);
+                return score(b.url) - score(a.url);
+            });
 
         // Extract logo candidates from homepage
         const homeHtml = pages.find(p => p.url === new URL('/', baseUrl.origin).href)?.html || pages[0]?.html || '';
@@ -161,8 +186,8 @@ async function analyzeCompanyWebsite(websiteUrl) {
             .join('\n\n====\n\n')
             .slice(0, 120000);
 
-        const systemPrompt = `אתה מנתח אתרי חברות בניה/נדל"ן. הסתמך אך ורק על הטקסט שסופק בקונטקסט. אם מידע חסר, השאר את השדה ריק. אין לנחש ואין להשתמש בידע חיצוני`;
-        const userPrompt = `קונטקסט האתר (טקסט גולמי שנשלף מהדפים):\n\n${contextBlocks}\n\nרמזי לוגו מאותו דומיין:\n${dedupedLogos.join('\n') || 'ללא'}\n\nהחזר רק JSON תקין עם המפתחות: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}.\nכללים:\n- companyName להשאיר ריק.\n- about: כ-1000 מילים, התמקדות בבניה/נדל"ן, פרויקטים והשקעות בבטיחות – רק ממה שמופיע בקונטקסט. אם אין מספיק מידע, החזר חלקי בלבד.\n- safety: תקנים/נהלים/ISO – רק מהקונטקסט.\n- projects: רשימת פרויקטים בולטים – רק מהקונטקסט.\n- logoUrl: מאותו דומיין בלבד.\n- אין טקסט נוסף מעבר ל-JSON.`;
+        const systemPrompt = `אתה מנתח אתרי חברות בניה/נדל"ן. הסתמך אך ורק על הטקסט שסופק בקונטקסט מן הדומיין הנתון. אם מידע חסר, השאר ריק. אין לנחש ואין להשתמש בידע חיצוני.`;
+        const userPrompt = `קונטקסט מהאתר (ממויין כך שעמוד אודות בראש):\n\n${contextBlocks}\n\nרמזי לוגו מאותו דומיין בלבד:\n${dedupedLogos.join('\n') || 'ללא'}\n\nהחזר רק JSON תקין עם המפתחות: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}.\nכללים:\n- companyName להשאיר ריק.\n- about: כ~1000 מילים, רק מן הקונטקסט שסופק; אין להוסיף מידע שלא מופיע.\n- safety: רק מן הקונטקסט.\n- projects: מערך שמות/תיאורים שמופיעים בקונטקסט בלבד.\n- logoUrl: מאותו דומיין בלבד.\n- אין טקסט נוסף מעבר ל-JSON.`;
 
         console.log("📝 Sending request to OpenAI... (", openaiClientVersion, ")");
 
@@ -181,8 +206,8 @@ async function analyzeCompanyWebsite(websiteUrl) {
                 model: "gpt-4o-mini",
                 messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
                 temperature: 0.0,
-                max_tokens: 4000
-            });
+            max_tokens: 4000
+        });
             console.log("✅ Received response from OpenAI (v3)");
             aiResponse = response.data?.choices?.[0]?.message?.content || response.data?.choices?.[0]?.text;
         } else {
