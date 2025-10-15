@@ -61,10 +61,10 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
 
             if (!apiKey) {
                 // Try different ways to get the API key
-                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY || 
-                                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
-                                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
-                
+                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY ||
+                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
+                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
+
                 if (processEnvKey) {
                     apiKey = processEnvKey;
                 } else {

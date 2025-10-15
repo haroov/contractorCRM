@@ -88,7 +88,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
             }
         };
 
-        const candidatePaths = [ '/', '/about', '/en/about', '/he/about', '/אודות', '/company', '/projects', '/projects/', '/בטיחות', '/safety' ];
+        const candidatePaths = ['/', '/about', '/en/about', '/he/about', '/אודות', '/company', '/projects', '/projects/', '/בטיחות', '/safety'];
         const uniquePaths = Array.from(new Set(candidatePaths));
         const pages = await Promise.all(uniquePaths.map(fetchPage));
 
@@ -131,7 +131,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
         if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
             const response = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
-                messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userPrompt } ],
+                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
                 temperature: 0.2,
                 max_tokens: 4000
             });
@@ -140,7 +140,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
         } else if (openai && typeof openai.createChatCompletion === 'function') {
             const response = await openai.createChatCompletion({
                 model: "gpt-4o-mini",
-                messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userPrompt } ],
+                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
                 temperature: 0.2,
                 max_tokens: 4000
             });

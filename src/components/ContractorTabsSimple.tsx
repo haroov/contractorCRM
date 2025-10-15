@@ -257,6 +257,30 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
         return `https://www.${domain}`;
     };
 
+    // Compute normalized Levenshtein similarity (0..1)
+    const computeStringSimilarity = (a: string, b: string): number => {
+        const s1 = (a || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
+        const s2 = (b || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
+        if (!s1 || !s2) return 0;
+        const n = s1.length, m = s2.length;
+        const dp: number[][] = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+        for (let i = 0; i <= n; i++) dp[i][0] = i;
+        for (let j = 0; j <= m; j++) dp[0][j] = j;
+        for (let i = 1; i <= n; i++) {
+            for (let j = 1; j <= m; j++) {
+                const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                dp[i][j] = Math.min(
+                    dp[i - 1][j] + 1,
+                    dp[i][j - 1] + 1,
+                    dp[i - 1][j - 1] + cost
+                );
+            }
+        }
+        const dist = dp[n][m];
+        const maxLen = Math.max(n, m) || 1;
+        return 1 - dist / maxLen;
+    };
+
     // Function to analyze company website using AI
     const analyzeCompanyWebsite = async (websiteUrl: string) => {
         if (!websiteUrl) return;
@@ -275,6 +299,24 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);
             console.log('🗺️ Mapped data:', mappedData);
+
+            // Debug name similarity: compare DB name to AI-detected company name (if any)
+            try {
+                const dbName = contractor?.name || localName || '';
+                const aiName = (analysisResult?.companyName || '').toString();
+                if (aiName && dbName) {
+                    const similarity = computeStringSimilarity(dbName, aiName);
+                    if (similarity < 0.95) {
+                        console.warn('⚠️ Company name mismatch (similarity < 95%)', { dbName, aiName, similarity });
+                    } else {
+                        console.log('✅ Company name similarity OK (>=95%)', { dbName, aiName, similarity });
+                    }
+                } else {
+                    console.log('ℹ️ Skipping name similarity check (missing dbName or aiName)', { dbName, aiName });
+                }
+            } catch (e) {
+                console.warn('⚠️ Name similarity check failed:', e);
+            }
 
             // Update the contractor state with the analyzed data
             if (mappedData.about) {
