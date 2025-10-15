@@ -7,8 +7,9 @@ const router = Router();
 console.log("✅ Company analysis router created successfully");
 console.log("🔍 🔍 🔍 RENDER REDEPLOY FORCE - v0.0.8 - OpenAI debugging enabled");
 
-// Initialize OpenAI client - using dynamic require to avoid constructor issues
+// Initialize OpenAI client - support both SDK v4 and v3 (legacy)
 let openai;
+let openaiClientVersion = 'unknown';
 try {
     console.log("🔍 Attempting to require OpenAI module...");
     const OpenAI = require('openai');
@@ -16,22 +17,26 @@ try {
     console.log("🔍 OpenAI constructor type:", typeof OpenAI);
     console.log("🔍 OpenAI API key available:", !!process.env.OPENAI_API_KEY);
 
-    // Check if OpenAI is a constructor or has a default export
+    // Prefer SDK v4 style (class constructor)
     if (typeof OpenAI === 'function') {
-        openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
-    } else if (OpenAI.default && typeof OpenAI.default === 'function') {
-        openai = new OpenAI.default({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
+        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        openaiClientVersion = 'v4-class';
+    } else if (OpenAI && OpenAI.default && typeof OpenAI.default === 'function') {
+        openai = new OpenAI.default({ apiKey: process.env.OPENAI_API_KEY });
+        openaiClientVersion = 'v4-default-class';
+    } else if (OpenAI && (OpenAI.Configuration || OpenAI.OpenAIApi)) {
+        // SDK v3 style: { Configuration, OpenAIApi }
+        const { Configuration, OpenAIApi } = OpenAI;
+        const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
+        openai = new OpenAIApi(configuration);
+        openaiClientVersion = 'v3-api';
     } else {
-        console.log("⚠️ OpenAI is not a constructor, skipping initialization");
+        console.log("⚠️ OpenAI module shape not recognized; skipping initialization");
         openai = null;
     }
 
     if (openai) {
-        console.log("✅ OpenAI client initialized successfully");
+        console.log("✅ OpenAI client initialized successfully (", openaiClientVersion, ")");
     }
 } catch (error) {
     console.error("❌ Error initializing OpenAI:", error);
@@ -79,27 +84,40 @@ async function analyzeCompanyWebsite(websiteUrl) {
 
 החזר סיכום מקיף של החברה באורך של כ-1,000 מילים המתמקד בתחום הבניה והנדל"ן, פרויקטים והשקעות בבטיחות.`;
 
-        console.log("📝 Sending request to OpenAI...");
+        console.log("📝 Sending request to OpenAI... (", openaiClientVersion, ")");
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-                {
-                    role: "system",
-                    content: systemPrompt
-                },
-                {
-                    role: "user",
-                    content: userPrompt
-                }
-            ],
-            temperature: 0.3,
-            max_tokens: 4000
-        });
+        let aiResponse;
+        if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
+            // SDK v4 style
+            const response = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                temperature: 0.3,
+                max_tokens: 4000
+            });
+            console.log("✅ Received response from OpenAI (v4)");
+            aiResponse = response.choices?.[0]?.message?.content;
+        } else if (openai && typeof openai.createChatCompletion === 'function') {
+            // SDK v3 style
+            const response = await openai.createChatCompletion({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                temperature: 0.3,
+                max_tokens: 4000
+            });
+            console.log("✅ Received response from OpenAI (v3)");
+            aiResponse = response.data?.choices?.[0]?.message?.content || response.data?.choices?.[0]?.text;
+        } else {
+            throw new Error("Unsupported OpenAI client; no chat completion method available");
+        }
 
-        console.log("✅ Received response from OpenAI");
-
-        const aiResponse = response.choices?.[0]?.message?.content;
+        
         if (!aiResponse) {
             throw new Error("No content in AI response");
         }
