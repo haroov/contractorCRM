@@ -51,8 +51,13 @@ function auditMiddleware(options = {}) {
                 }
             };
 
-            // Log the event
-            auditService.logEvent(auditData);
+            // Log the event (with error handling)
+            try {
+                auditService.logEvent(auditData);
+            } catch (error) {
+                console.error('❌ Failed to log audit event in middleware:', error);
+                // Don't break the request flow
+            }
 
             // Call original end function
             originalEnd.call(this, chunk, encoding);

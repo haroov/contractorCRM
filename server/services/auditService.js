@@ -104,7 +104,21 @@ class AuditService extends EventEmitter {
                 sessionId: eventData.sessionId,
                 ipAddress: eventData.ipAddress,
                 userAgent: eventData.userAgent,
-                deviceInfo: eventData.deviceInfo,
+                deviceInfo: eventData.deviceInfo ? {
+                    browser: eventData.deviceInfo.browser ? {
+                        name: eventData.deviceInfo.browser.name || 'Unknown',
+                        version: eventData.deviceInfo.browser.version || 'Unknown'
+                    } : undefined,
+                    os: eventData.deviceInfo.os ? {
+                        name: eventData.deviceInfo.os.name || 'Unknown',
+                        version: eventData.deviceInfo.os.version || 'Unknown'
+                    } : undefined,
+                    device: eventData.deviceInfo.device ? {
+                        type: eventData.deviceInfo.device.type || 'desktop',
+                        vendor: eventData.deviceInfo.device.vendor || 'Unknown',
+                        model: eventData.deviceInfo.device.model || 'Unknown'
+                    } : undefined
+                } : undefined,
                 method: eventData.method,
                 url: eventData.url,
                 endpoint: eventData.endpoint,
@@ -131,7 +145,9 @@ class AuditService extends EventEmitter {
             console.log(`✅ Audit log saved: ${eventData.eventType}/${eventData.action} by ${eventData.userEmail || 'anonymous'}`);
         } catch (error) {
             console.error('❌ Failed to save audit log to database:', error);
-            throw error;
+            // Don't throw error to prevent breaking the main application flow
+            // Just log the error and continue
+            console.error('❌ Audit log data that failed:', JSON.stringify(auditLogData, null, 2));
         }
     }
 
