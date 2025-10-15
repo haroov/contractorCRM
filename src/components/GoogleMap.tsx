@@ -32,8 +32,6 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     // Load Google Maps API
     const loadGoogleMapsAPI = () => {
         return new Promise<void>((resolve, reject) => {
-            console.log('🔥🔥🔥 GOOGLE MAPS LOADING - VERSION 4.0 🔥🔥🔥');
-
             if (window.google) {
                 resolve();
                 return;
@@ -42,86 +40,34 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             // Try multiple ways to get the API key
             let apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-            console.log('🔍 RENDER ENVIRONMENT VARIABLE CHECK:');
-            console.log('🔍 import.meta.env.VITE_GOOGLE_MAPS_API_KEY:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
-            console.log('🔍 typeof import.meta.env.VITE_GOOGLE_MAPS_API_KEY:', typeof import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
-            console.log('🔍 import.meta.env.VITE_GOOGLE_MAPS_API_KEY length:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY?.length);
-
             // Try alternative names (including Render's shorter name)
             if (!apiKey) {
                 apiKey = import.meta.env.VITE_GOOGLE_MAP;
-                console.log('🔍 Trying VITE_GOOGLE_MAP:', import.meta.env.VITE_GOOGLE_MAP);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.GOOGLE_MAPS_API_KEY;
-                console.log('🔍 Trying GOOGLE_MAPS_API_KEY:', import.meta.env.GOOGLE_MAPS_API_KEY);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-                console.log('🔍 Trying REACT_APP_GOOGLE_MAPS_API_KEY:', import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY);
             }
             if (!apiKey) {
                 apiKey = import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-                console.log('🔍 Trying NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:', import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
             }
-
 
             // Fallback: try to get from window object (if set by build process)
             if (!apiKey && (window as any).GOOGLE_MAPS_API_KEY) {
                 apiKey = (window as any).GOOGLE_MAPS_API_KEY;
             }
 
-            console.log('🔍 Google Maps API Key Debug:', {
-                apiKey: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined',
-                env: import.meta.env,
-                allEnvKeys: Object.keys(import.meta.env),
-                windowKey: (window as any).GOOGLE_MAPS_API_KEY ? 'exists' : 'not found',
-                viteKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'exists' : 'undefined',
-                viteKeyValue: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-            });
-
-            // Simple test log to verify deployment
-            console.log('🚀 NEW VERSION DEPLOYED - Testing VITE_GOOGLE_MAP:', import.meta.env.VITE_GOOGLE_MAP);
-
-            // Additional detailed logging
-            console.log('🔍 Detailed Environment Check:', {
-                'import.meta.env': import.meta.env,
-                'import.meta.env.MODE': import.meta.env.MODE,
-                'import.meta.env.DEV': import.meta.env.DEV,
-                'import.meta.env.PROD': import.meta.env.PROD,
-                'VITE_GOOGLE_MAPS_API_KEY': import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-                'VITE_GOOGLE_MAP': import.meta.env.VITE_GOOGLE_MAP,
-                'GOOGLE_MAPS_API_KEY': import.meta.env.GOOGLE_MAPS_API_KEY,
-                'REACT_APP_GOOGLE_MAPS_API_KEY': import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-                'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY': import.meta.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-            });
-
-            // Log all environment variables that start with VITE_
-            const viteEnvVars = Object.keys(import.meta.env).filter(key => key.startsWith('VITE_'));
-            console.log('🔍 All VITE_ environment variables:', viteEnvVars);
-
-            // Log all environment variables
-            console.log('🔍 All environment variables:', Object.keys(import.meta.env));
-
             if (!apiKey) {
-                console.warn('⚠️ No API key found in Vite environment variables');
-                console.log('🔍 Trying to get from process.env...');
-
                 // Try different ways to get the API key
-                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY ||
-                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
-                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
-
-                console.log('🔍 process.env.VITE_GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY);
-                console.log('🔍 process.env.VITE_GOOGLE_MAP:', (window as any).process?.env?.VITE_GOOGLE_MAP);
-                console.log('🔍 process.env.GOOGLE_MAPS_API_KEY:', (window as any).process?.env?.GOOGLE_MAPS_API_KEY);
-                console.log('🔍 Final API Key from process.env fallback:', processEnvKey);
-
+                const processEnvKey = (window as any).process?.env?.VITE_GOOGLE_MAPS_API_KEY || 
+                                    (window as any).process?.env?.VITE_GOOGLE_MAP ||
+                                    (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
+                
                 if (processEnvKey) {
-                    console.log('✅ Found API key in process.env:', processEnvKey.substring(0, 10) + '...');
                     apiKey = processEnvKey;
                 } else {
-                    console.warn('⚠️ No API key found anywhere, using temporary fallback');
                     apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
                 }
             }

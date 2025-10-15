@@ -121,8 +121,6 @@ const LoginPage: React.FC = () => {
       });
 
       const fullUrl = `${googleAuthUrl}?${params.toString()}`;
-      console.log('🔐 Redirecting to Google OAuth URL:', fullUrl);
-      console.log('🔐 Using absolute redirect_uri:', redirectUri);
 
       // Redirect to Google OAuth
       window.location.href = fullUrl;

@@ -56,32 +56,21 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
     // Load Google Maps API
     const loadGoogleMapsAPI = () => {
         return new Promise<void>((resolve, reject) => {
-            console.log('🚨 EMERGENCY STATIONS MAP - API KEY CHECK 🚨');
-            
             if (window.google) {
                 resolve();
                 return;
             }
 
             let apiKey = (import.meta as any).env.VITE_GOOGLE_MAPS_API_KEY;
-            console.log('🔍 VITE_GOOGLE_MAPS_API_KEY:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
-            
             if (!apiKey) {
                 apiKey = (import.meta as any).env.VITE_GOOGLE_MAP;
-                console.log('🔍 VITE_GOOGLE_MAP:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
             }
             if (!apiKey) {
                 apiKey = (import.meta as any).env.GOOGLE_MAPS_API_KEY;
-                console.log('🔍 GOOGLE_MAPS_API_KEY:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
             }
             if (!apiKey) {
-                console.warn('⚠️ NO ENVIRONMENT VARIABLE FOUND - USING FALLBACK KEY');
                 apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80'; // Fallback
-            } else {
-                console.log('✅ USING ENVIRONMENT VARIABLE API KEY');
             }
-            
-            console.log('🔍 Final API Key:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
 
             const script = document.createElement('script');
             script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry`;
@@ -114,9 +103,9 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
         // Fire Station Marker
         if (fireStation?.coordinates?.latitude && fireStation?.coordinates?.longitude) {
             const fireMarker = new window.google.maps.Marker({
-                position: { 
-                    lat: fireStation.coordinates.latitude, 
-                    lng: fireStation.coordinates.longitude 
+                position: {
+                    lat: fireStation.coordinates.latitude,
+                    lng: fireStation.coordinates.longitude
                 },
                 map: mapInstance,
                 title: `תחנת כיבוי אש: ${fireStation.name}`,
@@ -147,9 +136,9 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
         // Police Station Marker
         if (policeStation?.coordinates?.latitude && policeStation?.coordinates?.longitude) {
             const policeMarker = new window.google.maps.Marker({
-                position: { 
-                    lat: policeStation.coordinates.latitude, 
-                    lng: policeStation.coordinates.longitude 
+                position: {
+                    lat: policeStation.coordinates.latitude,
+                    lng: policeStation.coordinates.longitude
                 },
                 map: mapInstance,
                 title: `תחנת משטרה: ${policeStation.name}`,
@@ -180,9 +169,9 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
         // First Aid Station (MDA) Marker
         if (firstAidStation?.coordinates?.latitude && firstAidStation?.coordinates?.longitude) {
             const mdaMarker = new window.google.maps.Marker({
-                position: { 
-                    lat: firstAidStation.coordinates.latitude, 
-                    lng: firstAidStation.coordinates.longitude 
+                position: {
+                    lat: firstAidStation.coordinates.latitude,
+                    lng: firstAidStation.coordinates.longitude
                 },
                 map: mapInstance,
                 title: `מד״א: ${firstAidStation.name}`,
