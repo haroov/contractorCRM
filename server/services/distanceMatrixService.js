@@ -3,10 +3,10 @@ const https = require('https');
 class DistanceMatrixService {
   constructor() {
     // Try multiple environment variable names for Google Maps API key
-    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY ||
-      process.env.GOOGLE_MAPS_API_KEY ||
-      process.env.GOOGLE_API_KEY ||
-      'AIzaSyCdoJ0A9HCJFUuAiWpHblF5SVOT-zS4Z1M'; // New geoMatrix API key
+    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || 
+                  process.env.GOOGLE_MAPS_API_KEY || 
+                  process.env.GOOGLE_API_KEY ||
+                  process.env.GEO_MATRIX_API_KEY; // New geoMatrix API key from environment
     this.baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json';
   }
 
