@@ -10,6 +10,7 @@ import './index.css'
 import App from './App.tsx'
 import ErrorBoundary from './ErrorBoundary.tsx'
 import './i18n'
+import i18n from './i18n'
 
 console.log('🚀 Starting application...');
 
@@ -68,24 +69,20 @@ function AppWrapper() {
     const handleLanguageChange = (lng: string) => {
       const newLang = lng as Language;
       setLanguage(newLang);
-
+      
       const direction = getDirection(newLang);
       setTheme(createAppTheme(direction));
-
+      
       // Update document attributes
       document.documentElement.dir = direction;
       document.documentElement.lang = getHtmlLang(newLang);
     };
 
     // Listen to i18next language changes
-    const handleLanguageChangeEvent = (event: any) => {
-      handleLanguageChange(event.detail.lng);
-    };
-
-    window.addEventListener('languageChanged', handleLanguageChangeEvent);
+    i18n.on('languageChanged', handleLanguageChange);
 
     return () => {
-      window.removeEventListener('languageChanged', handleLanguageChangeEvent);
+      i18n.off('languageChanged', handleLanguageChange);
     };
   }, []);
 

@@ -3,7 +3,6 @@ import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '
 import { AccountCircle as AccountCircleIcon, Language as LanguageIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { type Language, getDirection, getHtmlLang } from '../locale';
-import { createAppTheme } from '../theme';
 
 interface UserMenuProps {
     user: {
@@ -50,19 +49,10 @@ export default function UserMenu({
         setLanguageMenuAnchor(null);
     };
 
-    const changeLanguage = async (lang: Language) => {
-        await i18n.changeLanguage(lang);
-        const direction = getDirection(lang);
-        document.documentElement.dir = direction;
-        document.documentElement.lang = getHtmlLang(lang);
-
-        // Dispatch custom event to notify main.tsx of language change
-        window.dispatchEvent(new CustomEvent('languageChanged', {
-            detail: { lng: lang }
-        }));
-
-        handleLanguageMenuClose();
-    };
+  const changeLanguage = async (lang: Language) => {
+    await i18n.changeLanguage(lang);
+    handleLanguageMenuClose();
+  };
 
     const currentLanguage = i18n.language as Language;
 
