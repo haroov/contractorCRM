@@ -62,53 +62,86 @@ async function analyzeCompanyWebsite(websiteUrl) {
     }
 
     try {
-        // Build the prompt for ChatGPT
-        const systemPrompt = `אתה מומחה לניתוח אתרי אינטרנט של חברות בניה ונדל"ן. תפקידך לנתח אתר אינטרנט של חברה ולהחזיר מידע מקיף על החברה.
+        // Normalize URL and prep helpers
+        const normalizeUrl = (url) => {
+            if (!url) return '';
+            const hasProtocol = /^https?:\/\//i.test(url);
+            return hasProtocol ? url : `https://${url}`;
+        };
+        const baseUrl = new URL(normalizeUrl(websiteUrl));
+        const sameDomainOnly = (u) => {
+            try { const x = new URL(u, baseUrl.origin); return x.origin === baseUrl.origin ? x.href : null; } catch { return null; }
+        };
 
-החזר את המידע בפורמט JSON עם השדות הבאים:
-- companyName: שם החברה
-- about: סיכום מקיף של החברה באורך של כ-1,000 מילים המתמקד בתחום הבניה והנדל"ן, פרויקטים בולטים והשקעות בבטיחות. כלול: היסטוריה של החברה, תחומי התמחות ספציפיים בבניה ונדל"ן, פרויקטים משמעותיים שביצעה החברה, השקעות ותקני בטיחות, מחויבות לקיימות, צוות מקצועי, טכנולוגיות מתקדמות בבניה, אחריות חברתית
-- safety: מידע מפורט על תקני בטיחות ואיכות, השקעות בבטיחות, תעודות וסטנדרטים
-- projects: פרויקטים בולטים של החברה בתחום הבניה והנדל"ן
-- logoUrl: קישור ישיר לתמונה של הלוגו של החברה (לא לוגו של אתרים אחרים)
+        // Fetch key pages from the site
+        const fetch = require('node-fetch');
+        const fetchPage = async (path) => {
+            const target = new URL(path, baseUrl.origin).href;
+            try {
+                const res = await fetch(target, { headers: { 'User-Agent': 'Mozilla/5.0 (ContractorCRM/1.0)' }, timeout: 15000 });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const html = await res.text();
+                return { url: target, html };
+            } catch (e) {
+                console.warn('⚠️ Failed to fetch page', target, e.message);
+                return { url: target, html: '' };
+            }
+        };
 
-חשוב: החזר רק JSON תקין ללא טקסט נוסף.`;
+        const candidatePaths = [ '/', '/about', '/en/about', '/he/about', '/אודות', '/company', '/projects', '/projects/', '/בטיחות', '/safety' ];
+        const uniquePaths = Array.from(new Set(candidatePaths));
+        const pages = await Promise.all(uniquePaths.map(fetchPage));
 
-        const userPrompt = `אנא נתח את האתר הבא: ${websiteUrl}
+        const stripScriptsStyles = (html) => html
+            .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+            .replace(/<style[\s\S]*?<\/style>/gi, ' ');
+        const stripTags = (html) => stripScriptsStyles(html)
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
 
-התמקד במיוחד ב:
-1. דף "אודות" או "About" - חפש מידע על היסטוריה, תחומי התמחות, צוות
-2. דף "פרויקטים" או "Projects" - חפש פרויקטים בולטים בתחום הבניה והנדל"ן
-3. דף "בטיחות" או "Safety" - חפש השקעות בבטיחות, תקנים, תעודות
-4. הלוגו של החברה (לא לוגו של אתרים אחרים)
+        const pageTexts = pages.map(p => ({ url: p.url, text: stripTags(p.html).slice(0, 40000) }));
 
-החזר סיכום מקיף של החברה באורך של כ-1,000 מילים המתמקד בתחום הבניה והנדל"ן, פרויקטים והשקעות בבטיחות.`;
+        // Extract logo candidates from homepage
+        const homeHtml = pages.find(p => p.url === new URL('/', baseUrl.origin).href)?.html || pages[0]?.html || '';
+        const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+        const logoHints = [];
+        let m;
+        while ((m = imgRegex.exec(homeHtml)) !== null) {
+            const src = m[1];
+            const abs = sameDomainOnly(src.startsWith('http') ? src : new URL(src, baseUrl.origin).href);
+            if (!abs) continue;
+            if (/logo|logotype|brand/i.test(src)) logoHints.push(abs);
+        }
+        const dedupedLogos = Array.from(new Set(logoHints)).slice(0, 5);
+
+        // Build strict, context-only prompts
+        const contextBlocks = pageTexts
+            .filter(pt => pt.text)
+            .map(pt => `URL: ${pt.url}\n---\n${pt.text}`)
+            .join('\n\n====\n\n')
+            .slice(0, 120000);
+
+        const systemPrompt = `אתה מנתח אתרי חברות בניה/נדל"ן. הסתמך אך ורק על הטקסט שסופק בקונטקסט. אם מידע חסר, השאר את השדה ריק. אין לנחש ואין להשתמש בידע חיצוני`;
+        const userPrompt = `קונטקסט האתר (טקסט גולמי שנשלף מהדפים):\n\n${contextBlocks}\n\nרמזי לוגו מאותו דומיין:\n${dedupedLogos.join('\n') || 'ללא'}\n\nהחזר רק JSON תקין עם המפתחות: {"companyName":"","about":"","safety":"","projects":[],"logoUrl":""}.\nכללים:\n- companyName להשאיר ריק.\n- about: כ-1000 מילים, התמקדות בבניה/נדל"ן, פרויקטים והשקעות בבטיחות – רק ממה שמופיע בקונטקסט. אם אין מספיק מידע, החזר חלקי בלבד.\n- safety: תקנים/נהלים/ISO – רק מהקונטקסט.\n- projects: רשימת פרויקטים בולטים – רק מהקונטקסט.\n- logoUrl: מאותו דומיין בלבד.\n- אין טקסט נוסף מעבר ל-JSON.`;
 
         console.log("📝 Sending request to OpenAI... (", openaiClientVersion, ")");
 
         let aiResponse;
         if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
-            // SDK v4 style
             const response = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt }
-                ],
-                temperature: 0.3,
+                messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userPrompt } ],
+                temperature: 0.2,
                 max_tokens: 4000
             });
             console.log("✅ Received response from OpenAI (v4)");
             aiResponse = response.choices?.[0]?.message?.content;
         } else if (openai && typeof openai.createChatCompletion === 'function') {
-            // SDK v3 style
             const response = await openai.createChatCompletion({
                 model: "gpt-4o-mini",
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt }
-                ],
-                temperature: 0.3,
+                messages: [ { role: "system", content: systemPrompt }, { role: "user", content: userPrompt } ],
+                temperature: 0.2,
                 max_tokens: 4000
             });
             console.log("✅ Received response from OpenAI (v3)");
@@ -117,14 +150,12 @@ async function analyzeCompanyWebsite(websiteUrl) {
             throw new Error("Unsupported OpenAI client; no chat completion method available");
         }
 
-        
         if (!aiResponse) {
             throw new Error("No content in AI response");
         }
 
         console.log("📄 Raw AI response:", aiResponse);
 
-        // Clean the response and parse JSON
         let cleanedResponse = aiResponse.trim();
         if (cleanedResponse.startsWith('```json')) {
             cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
@@ -132,11 +163,23 @@ async function analyzeCompanyWebsite(websiteUrl) {
             cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
         }
 
-        console.log("🧹 Cleaned response:", cleanedResponse);
+        console.log("🧹 Cleaned response:", cleanedResponse.slice(0, 500));
 
         const analysisResult = JSON.parse(cleanedResponse);
 
-        console.log("✅ Successfully parsed AI response:", analysisResult);
+        // Enforce same-domain logo
+        if (analysisResult && analysisResult.logoUrl) {
+            const safe = sameDomainOnly(analysisResult.logoUrl);
+            analysisResult.logoUrl = safe || (dedupedLogos[0] || null);
+        } else if (dedupedLogos.length > 0) {
+            analysisResult.logoUrl = dedupedLogos[0];
+        }
+
+        console.log("✅ Successfully parsed AI response (sanitized):", {
+            aboutLength: analysisResult?.about?.length || 0,
+            projectsCount: Array.isArray(analysisResult?.projects) ? analysisResult.projects.length : 0,
+            logo: analysisResult?.logoUrl || null
+        });
 
         return analysisResult;
 
