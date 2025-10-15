@@ -69,10 +69,10 @@ function AppWrapper() {
     const handleLanguageChange = (lng: string) => {
       const newLang = lng as Language;
       setLanguage(newLang);
-      
+
       const direction = getDirection(newLang);
       setTheme(createAppTheme(direction));
-      
+
       // Update document attributes
       document.documentElement.dir = direction;
       document.documentElement.lang = getHtmlLang(newLang);

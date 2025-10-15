@@ -49,10 +49,10 @@ export default function UserMenu({
         setLanguageMenuAnchor(null);
     };
 
-  const changeLanguage = async (lang: Language) => {
-    await i18n.changeLanguage(lang);
-    handleLanguageMenuClose();
-  };
+    const changeLanguage = async (lang: Language) => {
+        await i18n.changeLanguage(lang);
+        handleLanguageMenuClose();
+    };
 
     const currentLanguage = i18n.language as Language;
 

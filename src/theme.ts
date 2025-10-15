@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { Direction } from './locale';
+import { type Direction } from './locale';
 
 export const createAppTheme = (direction: Direction) => createTheme({
     direction,
