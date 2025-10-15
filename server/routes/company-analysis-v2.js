@@ -77,7 +77,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
                         { role: 'user', content: userPromptSearch }
                     ],
                     tools: [{ type: 'web_search' }],
-                    temperature: 0.2,
+                    temperature: 0.0,
                 });
 
                 // Attempt to unify content extraction from Responses API
@@ -92,7 +92,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
                         const base = new URL(/^https?:\/\//i.test(websiteUrl) ? websiteUrl : `https://${websiteUrl}`);
                         const safe = parsed?.logoUrl ? new URL(parsed.logoUrl, base.origin).href : null;
                         parsed.logoUrl = safe && new URL(safe).origin === base.origin ? safe : null;
-                    } catch (_) {}
+                    } catch (_) { }
                     console.log('✅ Using web_search-based analysis');
                     return parsed;
                 }
@@ -171,7 +171,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
             const response = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
                 messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
-                temperature: 0.2,
+                temperature: 0.0,
                 max_tokens: 4000
             });
             console.log("✅ Received response from OpenAI (v4)");
@@ -180,7 +180,7 @@ async function analyzeCompanyWebsite(websiteUrl) {
             const response = await openai.createChatCompletion({
                 model: "gpt-4o-mini",
                 messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
-                temperature: 0.2,
+                temperature: 0.0,
                 max_tokens: 4000
             });
             console.log("✅ Received response from OpenAI (v3)");
@@ -268,7 +268,7 @@ router.post("/analyze-company", async (req, res) => {
                     for (let i = 1; i <= n; i++) {
                         for (let j = 1; j <= m; j++) {
                             const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-                            dp[i][j] = Math.min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + cost);
+                            dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
                         }
                     }
                     return dp[n][m];
