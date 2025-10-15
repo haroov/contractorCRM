@@ -3,10 +3,10 @@ const https = require('https');
 class DistanceMatrixService {
   constructor() {
     // Try multiple environment variable names for Google Maps API key
-    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || 
-                  process.env.GOOGLE_MAPS_API_KEY || 
-                  process.env.GOOGLE_API_KEY ||
-                  'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80'; // Fallback key
+    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY ||
+      process.env.GOOGLE_MAPS_API_KEY ||
+      process.env.GOOGLE_API_KEY ||
+      'AIzaSyCdoJ0A9HCJFUuAiWpHblF5SVOT-zS4Z1M'; // New geoMatrix API key
     this.baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json';
   }
 
@@ -23,7 +23,7 @@ class DistanceMatrixService {
       console.log('🔍 Distance Matrix Service: Starting distance calculation...');
       console.log(`🔑 Distance Matrix Service: API Key available: ${this.apiKey ? 'YES' : 'NO'}`);
       console.log(`🔑 Distance Matrix Service: API Key preview: ${this.apiKey ? this.apiKey.substring(0, 10) + '...' : 'NONE'}`);
-      
+
       if (!this.apiKey) {
         console.warn('⚠️ Distance Matrix Service: No Google Maps API key found');
         return null;
@@ -31,31 +31,31 @@ class DistanceMatrixService {
 
       const origins = `${originLat},${originLng}`;
       const destinations = `${destLat},${destLng}`;
-      
+
       const url = `${this.baseUrl}?origins=${origins}&destinations=${destinations}&mode=driving&key=${this.apiKey}`;
-      
+
       console.log(`🚗 Distance Matrix Service: Calculating distance from (${originLat}, ${originLng}) to (${destLat}, ${destLng})`);
       console.log(`🌐 Distance Matrix Service: API URL: ${url.replace(this.apiKey, 'API_KEY_HIDDEN')}`);
-      
+
       const response = await this.makeRequest(url);
-      
+
       console.log(`📡 Distance Matrix Service: Raw API response:`, JSON.stringify(response, null, 2));
-      
+
       if (response.status === 'OK' && response.rows && response.rows.length > 0) {
         const element = response.rows[0].elements[0];
         console.log(`🔍 Distance Matrix Service: Element status: ${element.status}`);
-        
+
         if (element.status === 'OK') {
           const distanceKm = element.distance.value / 1000; // Convert meters to kilometers
           const durationMinutes = Math.ceil(element.duration.value / 60); // Convert seconds to minutes
-          
+
           const result = {
             distance: parseFloat(distanceKm.toFixed(3)),
             duration: durationMinutes,
             distanceText: element.distance.text,
             durationText: element.duration.text
           };
-          
+
           console.log(`✅ Distance Matrix Service: SUCCESS - Found route - ${result.distanceText} in ${result.durationText}`);
           console.log(`📊 Distance Matrix Service: Processed result:`, result);
           return result;
@@ -84,17 +84,17 @@ class DistanceMatrixService {
     return new Promise((resolve, reject) => {
       console.log(`🌐 Distance Matrix Service: Making HTTPS request to Google API...`);
       console.log(`📡 Distance Matrix Service: Request URL (key hidden): ${url.replace(this.apiKey, 'API_KEY_HIDDEN')}`);
-      
+
       https.get(url, (res) => {
         console.log(`📡 Distance Matrix Service: HTTP Status: ${res.statusCode}`);
         console.log(`📡 Distance Matrix Service: Response Headers:`, res.headers);
-        
+
         let data = '';
-        
+
         res.on('data', (chunk) => {
           data += chunk;
         });
-        
+
         res.on('end', () => {
           console.log(`📡 Distance Matrix Service: Raw response data:`, data);
           try {

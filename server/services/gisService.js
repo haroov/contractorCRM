@@ -246,9 +246,9 @@ class GISService {
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: FIRE STATION - Getting road distance from project (${y}, ${x}) to fire station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: FIRE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
-          
+
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
@@ -343,9 +343,9 @@ class GISService {
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: POLICE STATION - Getting road distance from project (${y}, ${x}) to police station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: POLICE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
-          
+
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;
@@ -586,9 +586,9 @@ class GISService {
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: FIRST AID STATION - Getting road distance from project (${y}, ${x}) to first aid station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: FIRST AID STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
-          
+
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
-          
+
           if (distanceData) {
             roadDistance = distanceData.distance;
             travelTime = distanceData.duration;

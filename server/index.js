@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -8,7 +11,6 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const { MongoClient, ObjectId } = require('mongodb');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
@@ -34,8 +36,6 @@ const { auditMiddleware, trackUserActivity } = require('./middleware/audit');
 const auditRoutes = require('./routes/audit');
 const { addAuditContext, logAuthEvent, createAuditAwareOperation } = require('./lib/auditHelper');
 console.log("✅ Audit system loaded");
-
-dotenv.config();
 
 // Helper function to transform flat insurance coverage fields to nested structure (for loading)
 function transformInsuranceCoverageFields(project) {
