@@ -157,3 +157,4 @@ VITE_API_BASE_URL=https://data.gov.il/api/3/action/datastore_search
 # Force deployment Mon Sep  8 15:49:24 IDT 2025
 # Force redeploy for node-fetch fix
 # Force redeploy Mon Sep 29 17:45:18 IDT 2025
+# Force Render deployment - Wed Oct 15 11:39:29 IDT 2025
