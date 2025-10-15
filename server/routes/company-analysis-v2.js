@@ -63,6 +63,44 @@ async function analyzeCompanyWebsite(websiteUrl) {
     }
 
     try {
+        // Try OpenAI web_search tool first (SDK v4 Responses API)
+        if (openai && openai.responses && typeof openai.responses.create === 'function') {
+            console.log('🌐 Trying OpenAI web_search tool via Responses API');
+            const systemPromptSearch = `אתה מנתח אתרי אינטרנט של חברות בניה/נדל"ן. בצע web_search וחפש אך ורק מידע מהדומיין הבא: ${websiteUrl}. אם המידע אינו מהדומיין הזה, אל תשתמש בו. החזר JSON בלבד.`;
+            const userPromptSearch = `נתח את האתר ${websiteUrl} עם דגש על עמודי אודות/פרויקטים/בטיחות. החזר JSON עם {companyName, about (~1000 מילים), safety, projects (מערך), logoUrl (מאותו דומיין בלבד)}.`;
+
+            try {
+                const resp = await openai.responses.create({
+                    model: 'gpt-4o-mini',
+                    input: [
+                        { role: 'system', content: systemPromptSearch },
+                        { role: 'user', content: userPromptSearch }
+                    ],
+                    tools: [{ type: 'web_search' }],
+                    temperature: 0.2,
+                });
+
+                // Attempt to unify content extraction from Responses API
+                const responseText = resp?.output_text || resp?.content?.[0]?.text || resp?.choices?.[0]?.message?.content;
+                if (responseText) {
+                    let cleaned = responseText.trim();
+                    if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                    if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                    const parsed = JSON.parse(cleaned);
+                    // Sanitize logo to same domain
+                    try {
+                        const base = new URL(/^https?:\/\//i.test(websiteUrl) ? websiteUrl : `https://${websiteUrl}`);
+                        const safe = parsed?.logoUrl ? new URL(parsed.logoUrl, base.origin).href : null;
+                        parsed.logoUrl = safe && new URL(safe).origin === base.origin ? safe : null;
+                    } catch (_) {}
+                    console.log('✅ Using web_search-based analysis');
+                    return parsed;
+                }
+            } catch (err) {
+                console.warn('⚠️ web_search via Responses API failed, falling back to on-site crawl:', err?.message || err);
+            }
+        }
+
         // Normalize URL and prep helpers
         const normalizeUrl = (url) => {
             if (!url) return '';
@@ -212,6 +250,42 @@ router.post("/analyze-company", async (req, res) => {
                 success: false,
                 error: "Website URL is required"
             });
+        }
+
+        // Block analysis when contractor name and detected site brand mismatch badly
+        try {
+            const dbCompanyName = (req.body?.dbCompanyName || '').toString();
+            const detectedDomainName = (new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`)).hostname;
+            if (dbCompanyName) {
+                const simplify = (s) => (s || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
+                const a = simplify(dbCompanyName);
+                const b = simplify(detectedDomainName.replace(/\.(co|com|org|net|il)\.?[a-z]*$/i, ''));
+                const levenshtein = (s1, s2) => {
+                    const n = s1.length, m = s2.length;
+                    const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+                    for (let i = 0; i <= n; i++) dp[i][0] = i;
+                    for (let j = 0; j <= m; j++) dp[0][j] = j;
+                    for (let i = 1; i <= n; i++) {
+                        for (let j = 1; j <= m; j++) {
+                            const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                            dp[i][j] = Math.min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + cost);
+                        }
+                    }
+                    return dp[n][m];
+                };
+                const maxLen = Math.max(a.length, b.length) || 1;
+                const sim = 1 - (levenshtein(a, b) / maxLen);
+                console.log('🔎 Pre-check name similarity (server):', { dbCompanyName, detectedDomainName, sim });
+                if (sim < 0.5) {
+                    return res.status(412).json({
+                        success: false,
+                        error: 'Company name and website domain appear to mismatch. Please verify the website URL.',
+                        similarity: sim
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Pre-check name similarity failed:', e?.message || e);
         }
 
         console.log("🌐 Analyzing company website:", website);

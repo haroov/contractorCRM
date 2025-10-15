@@ -294,7 +294,7 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
             console.log('📦 Services imported successfully');
 
             console.log('📞 Calling analyzeWebsite with:', websiteUrl);
-            const analysisResult = await analyzeWebsite(websiteUrl);
+            const analysisResult = await analyzeWebsite(websiteUrl, contractor?.name || localName || '');
             console.log('📊 Analysis result received:', analysisResult);
 
             const mappedData = mapCompanyAnalysisToContractor(analysisResult);

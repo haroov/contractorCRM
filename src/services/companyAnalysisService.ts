@@ -13,7 +13,7 @@ export interface CompanyAnalysisResult {
 /**
  * Analyze a company website by URL
  */
-export async function analyzeCompanyWebsite(url: string): Promise<CompanyAnalysisResult> {
+export async function analyzeCompanyWebsite(url: string, dbCompanyName?: string): Promise<CompanyAnalysisResult> {
     console.log('📞 companyAnalysisService: Sending request to /api/company-analysis/analyze-company with URL:', url);
     try {
         const response = await fetch('/api/company-analysis/analyze-company', {
@@ -21,7 +21,7 @@ export async function analyzeCompanyWebsite(url: string): Promise<CompanyAnalysi
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ website: url }),
+            body: JSON.stringify({ website: url, dbCompanyName }),
         });
 
         console.log('📡 companyAnalysisService: Received raw response status:', response.status);
