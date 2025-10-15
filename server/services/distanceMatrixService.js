@@ -3,10 +3,10 @@ const https = require('https');
 class DistanceMatrixService {
   constructor() {
     // Try multiple environment variable names for Google Maps API key
-    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || 
-                  process.env.GOOGLE_MAPS_API_KEY || 
-                  process.env.GOOGLE_API_KEY ||
-                  process.env.GEO_MATRIX_API_KEY; // New geoMatrix API key from environment
+    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY ||
+      process.env.GOOGLE_MAPS_API_KEY ||
+      process.env.GOOGLE_API_KEY ||
+      process.env.GEO_MATRIX_API_KEY; // New geoMatrix API key from environment
     this.baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json';
   }
 
@@ -22,7 +22,8 @@ class DistanceMatrixService {
     try {
       console.log('🔍 Distance Matrix Service: Starting distance calculation...');
       console.log(`🔑 Distance Matrix Service: API Key available: ${this.apiKey ? 'YES' : 'NO'}`);
-      console.log(`🔑 Distance Matrix Service: API Key preview: ${this.apiKey ? this.apiKey.substring(0, 10) + '...' : 'NONE'}`);
+      // Never print parts of secrets in logs
+      console.log('🔑 Distance Matrix Service: API Key preview: [HIDDEN]');
 
       if (!this.apiKey) {
         console.warn('⚠️ Distance Matrix Service: No Google Maps API key found');

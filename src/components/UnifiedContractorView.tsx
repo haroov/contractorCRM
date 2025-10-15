@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, Button, TextField, InputAdornment, Avatar, IconButton, Menu, MenuItem, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
-import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, AccountCircle as AccountCircleIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
+import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
+import UserMenu from './UserMenu';
+import { useTranslation } from 'react-i18next';
 import type { Contractor } from '../types/contractor';
 // import ContractorService from '../services/contractorService';
 import UserManagement from './UserManagement';
@@ -13,7 +15,7 @@ interface UnifiedContractorViewProps {
 }
 
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
-
+  const { t } = useTranslation();
   const { id } = useParams();
   const contractorTabsRef = useRef<any>(null);
   const [contractors, setContractors] = useState<Contractor[]>([]);
@@ -21,7 +23,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [contractorToDelete, setContractorToDelete] = useState<Contractor | null>(null);
-  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
   const [user, setUser] = useState<{ name: string, picture: string, role: string, email: string } | null>(null);
   const [isContactUser, setIsContactUser] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
@@ -654,17 +655,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     }
   };
 
-  const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setUserMenuAnchor(event.currentTarget);
-  };
-
-  const handleUserMenuClose = () => {
-    setUserMenuAnchor(null);
-  };
-
   const handleProfileClick = () => {
     setProfileDialogOpen(true);
-    handleUserMenuClose();
   };
 
   const handleUserManagementClick = () => {
@@ -674,7 +666,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     // Set flag to remember user management mode for refresh
     localStorage.setItem('userManagementMode', 'true');
     setUserManagementOpen(true);
-    handleUserMenuClose();
   };
 
   const handleLogout = () => {
@@ -690,7 +681,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
     } else {
       setViewMode('contractors');
     }
-    handleUserMenuClose();
   };
 
   const handleCloseContractorDetails = () => {
@@ -1031,23 +1021,20 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               <img src="/assets/logo.svg" alt="שוקו ביטוח" style={{ width: '100%', height: '100%' }} />
             </Box>
             <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#424242' }}>
-              ניהול סיכונים באתרי בניה
+              {t('app.subtitle')}
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {user?.picture ? (
-              <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
-            ) : (
-              <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
-                <AccountCircleIcon />
-              </Avatar>
-            )}
-            <Typography variant="body2">{user?.name || 'משתמש'}</Typography>
-            <IconButton onClick={handleUserMenuClick}>
-              <MoreVertIcon />
-            </IconButton>
-          </Box>
+          <UserMenu
+            user={user || { name: 'משתמש', role: 'user' }}
+            onProfileClick={handleProfileClick}
+            onUserManagementClick={currentUser?.role === 'admin' ? handleUserManagementClick : undefined}
+            onViewModeToggle={(currentUser?.role === 'admin' || currentUser?.role === 'user') ? handleViewModeToggle : undefined}
+            viewMode={viewMode}
+            onLogout={handleLogout}
+            showUserManagement={currentUser?.role === 'admin'}
+            showViewModeToggle={currentUser?.role === 'admin' || currentUser?.role === 'user'}
+          />
         </Box>
       </Paper>
 
@@ -1058,7 +1045,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
             <TextField
               size="small"
-              placeholder={viewMode === 'contractors' ? "חיפוש קבלנים, אנשי קשר, עיר, שם פרויקט..." : "חיפוש פרויקטים..."}
+              placeholder={viewMode === 'contractors' ? t('common.search') + " קבלנים, אנשי קשר, עיר, שם פרויקט..." : t('common.search') + " פרויקטים..."}
               value={searchTerm}
               onChange={handleSearchChange}
               InputProps={{
@@ -1702,35 +1689,6 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
         </Box>
       ) : null}
 
-      {/* User Menu */}
-      <Menu
-        anchorEl={userMenuAnchor}
-        open={Boolean(userMenuAnchor)}
-        onClose={handleUserMenuClose}
-      >
-        <MenuItem onClick={handleProfileClick}>
-          <AccountCircleIcon sx={{ mr: 1 }} />
-          פרופיל
-        </MenuItem>
-        {/* Only show User Management for admin users */}
-        {currentUser?.role === 'admin' && (
-          <MenuItem onClick={handleUserManagementClick}>
-            <AccountCircleIcon sx={{ mr: 1 }} />
-            ניהול משתמשים
-          </MenuItem>
-        )}
-        {/* Show view mode toggle for system users */}
-        {(currentUser?.role === 'admin' || currentUser?.role === 'user') && (
-          <MenuItem onClick={handleViewModeToggle}>
-            <AccountCircleIcon sx={{ mr: 1 }} />
-            {viewMode === 'contractors' ? 'פרוייקטים' : 'קבלנים'}
-          </MenuItem>
-        )}
-        <MenuItem onClick={handleLogout}>
-          <AccountCircleIcon sx={{ mr: 1 }} />
-          התנתקות
-        </MenuItem>
-      </Menu>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

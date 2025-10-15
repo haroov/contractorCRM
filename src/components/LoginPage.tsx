@@ -15,6 +15,7 @@ import {
 import { Google as GoogleIcon, Microsoft as MicrosoftIcon } from '@mui/icons-material';
 // Removed API imports - using simple localStorage-based auth
 import logo from '../assets/logo.svg';
+import { useTranslation } from 'react-i18next';
 
 interface User {
   id: string;
@@ -25,6 +26,7 @@ interface User {
 }
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
@@ -330,12 +332,12 @@ const LoginPage: React.FC = () => {
             }}
           />
           <Typography variant="h4" sx={{ color: 'primary.main' }}>
-            ניהול סיכונים באתרי בניה
+            {t('app.subtitle')}
           </Typography>
         </Box>
 
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-          התחברות למערכת
+          {t('login.title')}
         </Typography>
 
 

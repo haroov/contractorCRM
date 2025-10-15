@@ -1,0 +1,39 @@
+{
+    "app": {
+        "title": "Choco Insurance - Contractor Management System",
+        "subtitle": "Construction Site Risk Management"
+    },
+    "menu": {
+        "profile": "Profile",
+        "userManagement": "User Management",
+        "projects": "Projects",
+        "contractors": "Contractors",
+        "logout": "Logout",
+        "language": "Language",
+        "hebrew": "עברית",
+        "english": "English"
+    },
+    "login": {
+        "title": "System Login",
+        "email": "Email Address",
+        "password": "Password",
+        "login": "Login",
+        "contactLogin": "Login as Contact",
+        "googleLogin": "Login with Google",
+        "otpSent": "Verification code sent to email",
+        "enterOtp": "Enter verification code",
+        "verify": "Verify",
+        "resendOtp": "Resend code"
+    },
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "add": "Add",
+        "search": "Search",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success"
+    }
+}

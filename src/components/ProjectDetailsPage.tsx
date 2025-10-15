@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { analyzeReportByUrl, mapRiskAnalysisToProject } from '../services/riskAnalysisService';
 import gisService from '../services/gisService';
 import SafetyDashboard from './SafetyDashboard';
+import UserMenu from './UserMenu';
 import {
     Box,
     Typography,
@@ -2997,45 +2998,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                     </Box>
 
                     {/* Right side - User profile */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {currentUser?.picture ? (
-                            <Avatar src={currentUser.picture} alt={currentUser.name} sx={{ width: 32, height: 32 }} />
-                        ) : (
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
-                                <AccountCircleIcon />
-                            </Avatar>
-                        )}
-                        <Typography variant="body2">{currentUser?.name || 'משתמש'}</Typography>
-                        <IconButton onClick={handleUserMenuOpen}>
-                            <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleUserMenuClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                        >
-                            <MenuItemComponent onClick={handleUserMenuClose}>
-                                <ListItemIcon>
-                                    <PersonIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText>פרופיל</ListItemText>
-                            </MenuItemComponent>
-                            <MenuItemComponent onClick={handleLogout}>
-                                <ListItemIcon>
-                                    <LogoutIcon fontSize="small" />
-                                </ListItemIcon>
-                                <ListItemText>התנתק</ListItemText>
-                            </MenuItemComponent>
-                        </Menu>
-                    </Box>
+                    <UserMenu
+                        user={currentUser || { name: 'משתמש', role: 'user' }}
+                        onProfileClick={() => { }}
+                        onLogout={handleLogout}
+                        showUserManagement={false}
+                        showViewModeToggle={false}
+                    />
                 </Box>
             </Paper>
 
@@ -4758,7 +4727,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                             project={{
                                                                                 name: project?.projectName,
                                                                                 address: project?.engineeringQuestionnaire?.buildingPlan?.address,
-                                                                                plotNumber: project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.block && project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot 
+                                                                                plotNumber: project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.block && project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot
                                                                                     ? `${project.engineeringQuestionnaire.buildingPlan.plotDetails[0].block} / ${project.engineeringQuestionnaire.buildingPlan.plotDetails[0].plot}`
                                                                                     : project?.engineeringQuestionnaire?.buildingPlan?.plotDetails?.[0]?.plot || 'לא זמין'
                                                                             }}

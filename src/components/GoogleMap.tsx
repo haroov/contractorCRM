@@ -66,10 +66,14 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                     (window as any).process?.env?.GOOGLE_MAPS_API_KEY;
 
                 if (processEnvKey) {
-                    apiKey = processEnvKey;
-                } else {
-                    apiKey = 'AIzaSyBh6ONIwih2T-I_u9w11hkrbyusX_ujk80';
+                    apiKey = processEnvKey as any;
                 }
+            }
+
+            if (!apiKey) {
+                setError('Missing Google Maps API key');
+                reject(new Error('Missing Google Maps API key'));
+                return;
             }
 
             const script = document.createElement('script');
@@ -135,9 +139,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 });
 
                 // Add info window
+                const dir = document.documentElement.dir || 'rtl';
+                const textAlign = dir === 'rtl' ? 'right' : 'left';
                 const infoWindow = new window.google.maps.InfoWindow({
                     content: `
-            <div style="padding: 8px; text-align: center; direction: rtl;">
+            <div style="padding: 8px; text-align: ${textAlign}; direction: ${dir};">
               <strong>מיקום הפרויקט</strong><br>
               <small>נ״צ: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}</small>
             </div>

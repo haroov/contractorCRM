@@ -1,0 +1,21 @@
+# Copy to .env (or set in hosting env). Do NOT commit real values.
+
+# Frontend (Vite) public keys
+VITE_GOOGLE_MAPS_API_KEY=
+# Optional alternative names supported by code
+VITE_GOOGLE_MAP=
+REACT_APP_GOOGLE_MAPS_API_KEY=
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+
+# Backend keys
+GOOGLE_MAPS_API_KEY=
+GOOGLE_API_KEY=
+GEO_MATRIX_API_KEY=
+
+# Auth and app secrets (if used)
+SESSION_SECRET=
+JWT_SECRET=
+
+# Google Docs API (if used)
+GOOGLE_DOCS_API_KEY=
+

@@ -41,6 +41,7 @@ import {
 } from '@mui/icons-material';
 import trashIcon from '../assets/icon-trash.svg';
 import FileUpload from './FileUpload';
+import UserMenu from './UserMenu';
 
 interface Witness {
     fullName: string;
@@ -1590,19 +1591,16 @@ export default function ClaimFormPage({ currentUser }: ClaimFormPageProps) {
                     </Box>
 
                     {/* Right side - User profile */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {currentUser?.picture ? (
-                            <Avatar src={currentUser.picture} alt={currentUser.name} sx={{ width: 32, height: 32 }} />
-                        ) : (
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
-                                <AccountCircleIcon />
-                            </Avatar>
-                        )}
-                        <Typography variant="body2">{currentUser?.name || 'משתמש'}</Typography>
-                        <IconButton>
-                            <MoreVertIcon />
-                        </IconButton>
-                    </Box>
+                    <UserMenu
+                        user={currentUser || { name: 'משתמש', role: 'user' }}
+                        onProfileClick={() => { }}
+                        onLogout={() => {
+                            localStorage.clear();
+                            window.location.href = '/login';
+                        }}
+                        showUserManagement={false}
+                        showViewModeToggle={false}
+                    />
                 </Box>
             </Paper>
 

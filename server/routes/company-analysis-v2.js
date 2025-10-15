@@ -206,8 +206,8 @@ async function analyzeCompanyWebsite(websiteUrl) {
                 model: "gpt-4o-mini",
                 messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
                 temperature: 0.0,
-            max_tokens: 4000
-        });
+                max_tokens: 4000
+            });
             console.log("✅ Received response from OpenAI (v3)");
             aiResponse = response.data?.choices?.[0]?.message?.content || response.data?.choices?.[0]?.text;
         } else {

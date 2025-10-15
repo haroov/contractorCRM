@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import LoginPage from './components/LoginPage';
 import ContactLoginPage from './components/ContactLoginPage';
@@ -11,88 +10,6 @@ import UnifiedContractorView from './components/UnifiedContractorView';
 import ClaimFormPage from './components/ClaimFormPage';
 // Removed API imports - using simple localStorage-based auth
 
-const theme = createTheme({
-  direction: 'rtl',
-  palette: {
-    primary: {
-      main: '#6b47c1', // סגול שוקו
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-  typography: {
-    fontFamily: '"Assistant", "Arial", sans-serif',
-  },
-  components: {
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            '&.Mui-focused fieldset': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-          },
-        },
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          '&.Mui-focused fieldset': {
-            borderColor: '#6b47c1', // סגול שוקו
-          },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6b47c1', // סגול שוקו
-          },
-        },
-      },
-    },
-    MuiFormControl: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            '&.Mui-focused fieldset': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-          },
-        },
-      },
-    },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          '&.Mui-focused fieldset': {
-            borderColor: '#6b47c1', // סגול שוקו
-          },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#6b47c1', // סגול שוקו
-          },
-        },
-      },
-    },
-    MuiAutocomplete: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            '&.Mui-focused fieldset': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#6b47c1', // סגול שוקו
-            },
-          },
-        },
-      },
-    },
-  },
-});
 
 interface User {
   id: string;
@@ -159,7 +76,7 @@ function App() {
           // Check if this is actually a system user (userType: "system")
           if (contactUser.userType === 'system') {
             console.log('🔍 This is a system user, treating as system user');
-            
+
             // Check if user was in user management mode before refresh
             const wasInUserManagement = localStorage.getItem('userManagementMode');
             if (wasInUserManagement === 'true') {
@@ -167,7 +84,7 @@ function App() {
               localStorage.setItem('openUserManagement', 'true');
               localStorage.removeItem('userManagementMode');
             }
-            
+
             // For system users who came through contact login, use their data directly
             // since they already have valid session data
             const userState = {
@@ -220,7 +137,7 @@ function App() {
       // Remove sessionId from URL to clean it up
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
-      
+
       // Check if we should return to a saved location (for user management)
       const returnUrl = localStorage.getItem('userManagementReturnUrl');
       if (returnUrl && returnUrl !== window.location.href) {
@@ -357,7 +274,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <Router>
         <Box sx={{ minHeight: '100vh', bgcolor: 'grey.50' }}>
@@ -423,7 +340,7 @@ function App() {
           </Routes>
         </Box>
       </Router>
-    </ThemeProvider>
+    </>
   );
 }
 
