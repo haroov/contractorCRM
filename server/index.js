@@ -153,7 +153,8 @@ app.use(cors({
     'https://contractor-8apmuzoy1-chocoinsurance.vercel.app',
     'https://contractor-4uodve2gn-chocoinsurance.vercel.app',
     'https://dash.chocoinsurance.com',
-    'https://accounts.google.com'
+    'https://accounts.google.com',
+    /^https:\/\/contractor-.*-chocoinsurance\.vercel\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -476,7 +477,8 @@ app.options('/api/contractors/validate-status/:contractorId', cors({
     'https://contractor-8apmuzoy1-chocoinsurance.vercel.app',
     'https://contractor-4uodve2gn-chocoinsurance.vercel.app',
     'https://dash.chocoinsurance.com',
-    'https://accounts.google.com'
+    'https://accounts.google.com',
+    /^https:\/\/contractor-.*-chocoinsurance\.vercel\.app$/
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
