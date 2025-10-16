@@ -140,22 +140,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://contractor-crm-liav-geffens-projects.vercel.app',
-    'https://contractor-crm.vercel.app',
-    'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
-    'https://contractor-bywpief0c-chocoinsurance.vercel.app',
-    'https://contractor-a623cj3ce-chocoinsurance.vercel.app',
-    'https://contractor-ivjz7gbec-chocoinsurance.vercel.app',
-    'https://contractor-kzou6iqly-chocoinsurance.vercel.app',
-    'https://contractor-8apmuzoy1-chocoinsurance.vercel.app',
-    'https://contractor-4uodve2gn-chocoinsurance.vercel.app',
-    'https://dash.chocoinsurance.com',
-    'https://accounts.google.com',
-    /^https:\/\/contractor-.*-chocoinsurance\.vercel\.app$/
-  ],
+  origin: true, // Allow all origins temporarily for debugging
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID', 'X-Contact-User'],
@@ -464,22 +449,7 @@ app.get('/test-users', (req, res) => {
 
 // Handle OPTIONS request for validate-status endpoint
 app.options('/api/contractors/validate-status/:contractorId', cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://contractor-crm-liav-geffens-projects.vercel.app',
-    'https://contractor-crm.vercel.app',
-    'https://contractor-ox9okh9qd-choco-insurance.vercel.app',
-    'https://contractor-bywpief0c-chocoinsurance.vercel.app',
-    'https://contractor-a623cj3ce-chocoinsurance.vercel.app',
-    'https://contractor-ivjz7gbec-chocoinsurance.vercel.app',
-    'https://contractor-kzou6iqly-chocoinsurance.vercel.app',
-    'https://contractor-8apmuzoy1-chocoinsurance.vercel.app',
-    'https://contractor-4uodve2gn-chocoinsurance.vercel.app',
-    'https://dash.chocoinsurance.com',
-    'https://accounts.google.com',
-    /^https:\/\/contractor-.*-chocoinsurance\.vercel\.app$/
-  ],
+  origin: true, // Allow all origins temporarily for debugging
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Session-ID'],
