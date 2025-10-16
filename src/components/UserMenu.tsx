@@ -3,6 +3,7 @@ import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '
 import { AccountCircle as AccountCircleIcon, Language as LanguageIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { type Language, getDirection, getHtmlLang } from '../locale';
+import i18n from '../i18n';
 
 interface UserMenuProps {
     user: {
