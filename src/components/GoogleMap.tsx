@@ -86,6 +86,17 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
         });
     };
 
+    // Get text alignment based on document direction
+    const getTextAlignment = () => {
+        const dir = document.documentElement.dir || 'rtl';
+        return dir === 'rtl' ? 'right' : 'left';
+    };
+
+    // Get document direction
+    const getDocumentDirection = () => {
+        return document.documentElement.dir || 'rtl';
+    };
+
     useEffect(() => {
         const initializeMap = () => {
             if (!window.google || !mapRef.current) {
@@ -139,11 +150,9 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
                 });
 
                 // Add info window
-                const dir = document.documentElement.dir || 'rtl';
-                const textAlign = dir === 'rtl' ? 'right' : 'left';
                 const infoWindow = new window.google.maps.InfoWindow({
                     content: `
-            <div style="padding: 8px; text-align: ${textAlign}; direction: ${dir};">
+            <div style="padding: 8px; text-align: ${getTextAlignment()}; direction: ${getDocumentDirection()};">
               <strong>מיקום הפרויקט</strong><br>
               <small>נ״צ: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}</small>
             </div>

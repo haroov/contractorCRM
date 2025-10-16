@@ -119,7 +119,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     try {
                         const thumbnailFormData = new FormData();
                         thumbnailFormData.append('file', file);
-                        
+
                         const thumbnailResponse = await authenticatedFetch('/api/sheet-thumb', {
                             method: 'POST',
                             body: thumbnailFormData
@@ -175,24 +175,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     const handleDelete = async () => {
         if (!onDelete) return;
-        
+
         console.log('🗑️ FileUpload handleDelete called');
-        
+
         try {
             // Clear creation date when deleting file
             if (onCreationDateChange) {
                 console.log('🗑️ Clearing creation date on file deletion');
                 onCreationDateChange('');
             }
-            
+
             // Call onDelete callback first
             console.log('🗑️ Calling onDelete callback...');
             await onDelete();
             console.log('✅ onDelete callback completed successfully');
-            
+
             // Only hide from UI after successful deletion
             setOptimisticClear(true);
-            
+
             if (autoSave && onAutoSave) {
                 console.log('💾 Auto-saving after file deletion...');
                 await onAutoSave();
@@ -355,7 +355,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
                         disabled={disabled}
                         size="small"
                         InputLabelProps={{ shrink: true }}
-                        sx={{ minWidth: 200 }}
+                        sx={{
+                            minWidth: 200,
+                            '& .MuiInputBase-input': {
+                                textAlign: 'right',
+                                direction: 'rtl'
+                            },
+                            '& .MuiInputLabel-root': {
+                                textAlign: 'right'
+                            }
+                        }}
                     />
                     {/* AI Icon */}
                     {aiIcon && (

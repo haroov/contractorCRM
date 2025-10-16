@@ -140,11 +140,11 @@ const BuildingTable: React.FC<BuildingTableProps> = ({ numberOfBuildings, buildi
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם הבניין</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר יחידות דיור</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מעל הקרקע</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>מספר קומות מרתף</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שטח בניה (מ״ר)</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם הבניין</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מספר יחידות דיור</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מספר קומות מעל הקרקע</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>מספר קומות מרתף</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שטח בניה (מ״ר)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -2971,7 +2971,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                 zIndex: 1001,
                 flexShrink: 0
             }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', direction: 'rtl' }}>
                     {/* Left side - Logo and title */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
                         <Box
@@ -4369,7 +4369,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                         )}
 
                         {activeTab === 1 && (
-                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', direction: 'rtl' }}>
 
                                 {/* שאלון הנדסי */}
                                 <Box sx={{ mb: 4 }}>
@@ -4661,6 +4661,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
                                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
                                                                 disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'rtl'
+                                                                    },
+                                                                    '& .MuiInputLabel-root': {
+                                                                        textAlign: 'right'
+                                                                    }
+                                                                }}
                                                             />
 
                                                             <TextField
@@ -4670,6 +4679,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
                                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
                                                                 disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'rtl'
+                                                                    },
+                                                                    '& .MuiInputLabel-root': {
+                                                                        textAlign: 'right'
+                                                                    }
+                                                                }}
                                                             />
 
                                                             <TextField
@@ -4679,6 +4697,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
                                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
                                                                 disabled={mode === 'view' || !canEdit}
+                                                                sx={{
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'rtl'
+                                                                    },
+                                                                    '& .MuiInputLabel-root': {
+                                                                        textAlign: 'right'
+                                                                    }
+                                                                }}
                                                             />
                                                         </Box>
 
@@ -4762,9 +4789,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                 {/* Project Details Fields - 2 columns layout */}
                                                 <Box sx={{
                                                     display: 'grid',
-                                                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
-                                                    gap: { xs: 1, sm: 2 },
-                                                    direction: 'rtl'
+                                                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                                                    gap: { xs: 1, sm: 2 }
                                                 }}>
                                                     <Box sx={{
                                                         display: 'flex',
@@ -4774,13 +4800,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             תוכנית ממשלתית
                                                         </Typography>
@@ -4788,7 +4814,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -4852,13 +4878,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             בנייה / שיפוץ
                                                         </Typography>
@@ -4866,7 +4892,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -4922,13 +4948,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             הריסה מבנים / חלקי מבנים
                                                         </Typography>
@@ -4936,7 +4962,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -4992,13 +5018,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             הנדסה אזרחית / תשתיות
                                                         </Typography>
@@ -5006,7 +5032,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -5062,13 +5088,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             תמ״א 38/1 חיזוק ותוספת בנייה
                                                         </Typography>
@@ -5076,7 +5102,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -5132,13 +5158,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             תמ״א 38/2 פינוי בינוי
                                                         </Typography>
@@ -5146,7 +5172,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -5202,13 +5228,13 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
-                                                        justifyContent: 'space-between'
+                                                        justifyContent: 'space-between',
+                                                        direction: 'rtl'
                                                     }}>
                                                         <Typography variant="body2" sx={{
                                                             color: 'text.secondary',
                                                             fontSize: '1rem',
-                                                            marginRight: '10px'
+                                                            marginLeft: '10px'
                                                         }}>
                                                             שימור וחיזוק מבנים / מבנה בשימור
                                                         </Typography>
@@ -5216,7 +5242,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             display: 'flex',
                                                             gap: 0,
                                                             alignItems: 'center',
-                                                            justifyContent: 'flex-start'
+                                                            justifyContent: 'flex-end'
                                                         }}>
                                                             <Button
                                                                 variant="text"
@@ -5279,10 +5305,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 variant="outlined"
                                                                 sx={{
                                                                     '& .MuiInputLabel-root': {
-                                                                        color: 'text.secondary'
+                                                                        color: 'text.secondary',
+                                                                        textAlign: 'right'
                                                                     },
                                                                     '& .MuiInputLabel-root.Mui-focused': {
                                                                         color: 'primary.main'
+                                                                    },
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'rtl'
                                                                     }
                                                                 }}
                                                             />
@@ -5299,6 +5330,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         disabled={mode === 'view' || !canEdit}
                                                         multiline
                                                         rows={2}
+                                                        sx={{
+                                                            '& .MuiInputLabel-root': {
+                                                                textAlign: 'right'
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                textAlign: 'right',
+                                                                direction: 'rtl'
+                                                            }
+                                                        }}
                                                     />
                                                 )}
                                             </Box>
@@ -5361,7 +5401,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         backgroundColor: 'white',
                                                         minHeight: '56px',
                                                         padding: '0 14px',
-                                                        direction: 'rtl',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'space-between'
@@ -6057,10 +6096,15 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         variant="outlined"
                                                         sx={{
                                                             '& .MuiInputLabel-root': {
-                                                                color: 'text.secondary'
+                                                                color: 'text.secondary',
+                                                                textAlign: 'right'
                                                             },
                                                             '& .MuiInputLabel-root.Mui-focused': {
                                                                 color: 'primary.main'
+                                                            },
+                                                            '& .MuiInputBase-input': {
+                                                                textAlign: 'right',
+                                                                direction: 'rtl'
                                                             }
                                                         }}
                                                     />
@@ -7338,7 +7382,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
                                                                 }
@@ -7431,7 +7474,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
                                                                 }
@@ -7524,7 +7566,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
                                                                 }
@@ -7617,7 +7658,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             disabled={mode === 'view' || !canEdit}
                                                             size="small"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': {
                                                                     minHeight: '56px'
                                                                 }
@@ -8955,7 +8995,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -9007,7 +9046,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     disabled={mode === 'view' || !canEdit}
                                                     size="small"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -9383,8 +9421,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                             <Table size="small">
                                                 <TableHead>
                                                     <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם המבנה</TableCell>
-                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות בנייה (₪)</TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם המבנה</TableCell>
+                                                        <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עלות בנייה (₪)</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -9457,10 +9495,10 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', minWidth: '200px' }}>סוג השטח</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>גודל השטח (מ״ר)</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות בניה למ״ר (₪)</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות הבניה (₪)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', minWidth: '200px' }}>סוג השטח</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>גודל השטח (מ״ר)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עלות בניה למ״ר (₪)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עלות הבניה (₪)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
@@ -9619,8 +9657,8 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                         <Table size="small">
                                             <TableHead>
                                                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>שם השלב</TableCell>
-                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>עלות השלב (₪)</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>שם השלב</TableCell>
+                                                    <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>עלות השלב (₪)</TableCell>
                                                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>פעולות</TableCell>
                                                 </TableRow>
                                             </TableHead>
@@ -10878,7 +10916,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="number"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -10898,7 +10935,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     size="small"
                                                     type="text"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11020,7 +11056,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11045,7 +11080,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11161,7 +11195,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11186,7 +11219,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11302,7 +11334,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11327,7 +11358,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11443,7 +11473,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11468,7 +11497,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11585,7 +11613,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11610,7 +11637,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': {
                                                             minHeight: '56px'
                                                         },
@@ -11944,7 +11970,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                                 type="text"
                                                                                 inputMode="numeric"
                                                                                 sx={{
-                                                                                    direction: 'rtl',
                                                                                     '& .MuiOutlinedInput-root': { height: 40 }
                                                                                 }}
                                                                             />
@@ -12106,7 +12131,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12126,7 +12150,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12234,7 +12257,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12254,7 +12276,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12367,7 +12388,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     inputMode="numeric"
                                                     helperText="מוגבל ל-4,000,000 ₪ או 20% מגבול אחריות צד ג', הנמוך מביניהם"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12387,7 +12407,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12497,7 +12516,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12517,7 +12535,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     type="text"
                                                     inputMode="numeric"
                                                     sx={{
-                                                        direction: 'rtl',
                                                         '& .MuiInputBase-root': { minHeight: '56px' },
                                                         '& .MuiInputLabel-root': { top: '0px' }
                                                     }}
@@ -12618,7 +12635,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             size="small"
                                                             type="text"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': { minHeight: '56px' },
                                                                 '& .MuiInputLabel-root': { top: '0px' }
                                                             }}
@@ -12723,7 +12739,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             size="small"
                                                             type="text"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': { minHeight: '56px' },
                                                                 '& .MuiInputLabel-root': { top: '0px' }
                                                             }}
@@ -12823,7 +12838,6 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                             size="small"
                                                             type="text"
                                                             sx={{
-                                                                direction: 'rtl',
                                                                 '& .MuiInputBase-root': { minHeight: '56px' },
                                                                 '& .MuiInputLabel-root': { top: '0px' }
                                                             }}

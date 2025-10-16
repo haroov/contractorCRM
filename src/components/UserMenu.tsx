@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Avatar, Menu, MenuItem, ListItemIcon, ListItemText, Box, Typography } from '@mui/material';
 import { AccountCircle as AccountCircleIcon, Language as LanguageIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { type Language, getDirection, getHtmlLang } from '../locale';
@@ -56,26 +56,44 @@ export default function UserMenu({
     };
 
     const currentLanguage = i18nInstance.language as Language;
+    const isRtl = i18nInstance.dir() === 'rtl';
 
     return (
         <>
-            <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
+            <Box
+                onClick={handleUserMenuOpen}
                 aria-controls="user-menu"
                 aria-haspopup="true"
-                onClick={handleUserMenuOpen}
-                color="inherit"
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
             >
-                {user.picture ? (
-                    <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
+                {isRtl ? (
+                    <>
+                        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500 }}>
+                            {user.name}
+                        </Typography>
+                        {user.picture ? (
+                            <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
+                        ) : (
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
+                                <AccountCircleIcon />
+                            </Avatar>
+                        )}
+                    </>
                 ) : (
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
-                        <AccountCircleIcon />
-                    </Avatar>
+                    <>
+                        {user.picture ? (
+                            <Avatar src={user.picture} alt={user.name} sx={{ width: 32, height: 32 }} />
+                        ) : (
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: '#6b47c1' }}>
+                                <AccountCircleIcon />
+                            </Avatar>
+                        )}
+                        <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500 }}>
+                            {user.name}
+                        </Typography>
+                    </>
                 )}
-            </IconButton>
+            </Box>
 
             {/* User Menu */}
             <Menu
@@ -89,7 +107,7 @@ export default function UserMenu({
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>{t('menu.profile')}</ListItemText>
+                    <ListItemText>{t('common.profile')}</ListItemText>
                 </MenuItem>
 
                 {showUserManagement && onUserManagementClick && (
@@ -97,7 +115,7 @@ export default function UserMenu({
                         <ListItemIcon>
                             <AccountCircleIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText>{t('menu.userManagement')}</ListItemText>
+                        <ListItemText>{t('common.userManagement')}</ListItemText>
                     </MenuItem>
                 )}
 
@@ -107,7 +125,7 @@ export default function UserMenu({
                             <AccountCircleIcon fontSize="small" />
                         </ListItemIcon>
                         <ListItemText>
-                            {viewMode === 'contractors' ? t('menu.projects') : t('menu.contractors')}
+                            {viewMode === 'contractors' ? t('common.projects') : t('common.contractors')}
                         </ListItemText>
                     </MenuItem>
                 )}
@@ -116,14 +134,14 @@ export default function UserMenu({
                     <ListItemIcon>
                         <LanguageIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>{t('menu.language')}</ListItemText>
+                    <ListItemText>{t('common.language')}</ListItemText>
                 </MenuItem>
 
                 <MenuItem onClick={onLogout}>
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>{t('menu.logout')}</ListItemText>
+                    <ListItemText>{t('common.logout')}</ListItemText>
                 </MenuItem>
             </Menu>
 
@@ -140,12 +158,15 @@ export default function UserMenu({
                     vertical: 'top',
                     horizontal: 'left',
                 }}
+                MenuListProps={{
+                    onMouseLeave: handleLanguageMenuClose,
+                }}
             >
                 <MenuItem
                     onClick={() => changeLanguage('he')}
                     selected={currentLanguage === 'he'}
                 >
-                    <ListItemText>{t('menu.hebrew')}</ListItemText>
+                    <ListItemText>{t('common.hebrew')}</ListItemText>
                     {currentLanguage === 'he' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />
@@ -156,7 +177,7 @@ export default function UserMenu({
                     onClick={() => changeLanguage('en')}
                     selected={currentLanguage === 'en'}
                 >
-                    <ListItemText>{t('menu.english')}</ListItemText>
+                    <ListItemText>{t('common.english')}</ListItemText>
                     {currentLanguage === 'en' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />

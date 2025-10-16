@@ -84,6 +84,17 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
         });
     };
 
+    // Get text alignment based on document direction
+    const getTextAlignment = () => {
+        const dir = document.documentElement.dir || 'rtl';
+        return dir === 'rtl' ? 'right' : 'left';
+    };
+
+    // Get document direction
+    const getDocumentDirection = () => {
+        return document.documentElement.dir || 'rtl';
+    };
+
     // Create simple colored pins for different station types
     const createStationIcon = (type: 'fire' | 'police' | 'medical', color: string) => {
         return {
@@ -115,11 +126,9 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 animation: window.google.maps.Animation.DROP
             });
 
-            const dir = document.documentElement.dir || 'rtl';
-            const textAlign = dir === 'rtl' ? 'right' : 'left';
             const fireInfoWindow = new window.google.maps.InfoWindow({
                 content: `
-                    <div style="padding: 12px; text-align: ${textAlign}; direction: ${dir}; min-width: 200px;">
+                    <div style="padding: 12px; text-align: ${getTextAlignment()}; direction: ${getDocumentDirection()}; min-width: 200px;">
                         <h3 style="margin: 0 0 8px 0; color: #ff4444;">🔥 תחנת כיבוי אש</h3>
                         <p style="margin: 4px 0;"><strong>שם:</strong> ${fireStation.name}</p>
                         <p style="margin: 4px 0;"><strong>כתובת:</strong> ${fireStation.address}</p>
@@ -152,7 +161,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
 
             const policeInfoWindow = new window.google.maps.InfoWindow({
                 content: `
-                    <div style="padding: 12px; text-align: ${textAlign}; direction: ${dir}; min-width: 200px;">
+                    <div style="padding: 12px; text-align: ${getTextAlignment()}; direction: ${getDocumentDirection()}; min-width: 200px;">
                         <h3 style="margin: 0 0 8px 0; color: #2196f3;">🚔 תחנת משטרה</h3>
                         <p style="margin: 4px 0;"><strong>שם:</strong> ${policeStation.name}</p>
                         <p style="margin: 4px 0;"><strong>כתובת:</strong> ${policeStation.address}</p>
@@ -185,7 +194,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
 
             const mdaInfoWindow = new window.google.maps.InfoWindow({
                 content: `
-                    <div style="padding: 12px; text-align: ${textAlign}; direction: ${dir}; min-width: 200px;">
+                    <div style="padding: 12px; text-align: ${getTextAlignment()}; direction: ${getDocumentDirection()}; min-width: 200px;">
                         <h3 style="margin: 0 0 8px 0; color: #4caf50;">🏥 מד״א</h3>
                         <p style="margin: 4px 0;"><strong>שם:</strong> ${firstAidStation.name}</p>
                         <p style="margin: 4px 0;"><strong>כתובת:</strong> ${firstAidStation.address}</p>
@@ -262,7 +271,7 @@ const EmergencyStationsMap: React.FC<EmergencyStationsMapProps> = ({
                 // Add info window for project
                 const projectInfoWindow = new window.google.maps.InfoWindow({
                     content: `
-            <div style="padding: 12px; text-align: ${textAlign}; direction: ${dir}; min-width: 200px;">
+            <div style="padding: 12px; text-align: ${getTextAlignment()}; direction: ${getDocumentDirection()}; min-width: 200px;">
               <h3 style="margin: 0 0 8px 0; color: #7c3aed;">🏗️ מיקום הפרויקט</h3>
               <p style="margin: 4px 0;"><strong>שם הפרויקט:</strong> ${project?.name || 'לא זמין'}</p>
               <p style="margin: 4px 0;"><strong>כתובת:</strong> ${project?.address || 'לא זמין'}</p>

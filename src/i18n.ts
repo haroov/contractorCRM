@@ -8,16 +8,7 @@ const heTranslation = {
         "title": "שוקו ביטוח - מערכת ניהול קבלנים",
         "subtitle": "ניהול סיכונים באתרי בניה"
     },
-    "menu": {
-        "profile": "פרופיל",
-        "userManagement": "ניהול משתמשים",
-        "projects": "פרוייקטים",
-        "contractors": "קבלנים",
-        "logout": "התנתקות",
-        "language": "שפה",
-        "hebrew": "עברית",
-        "english": "English"
-    },
+    // moved menu items to common
     "login": {
         "title": "התחברות למערכת",
         "email": "כתובת אימייל",
@@ -31,11 +22,19 @@ const heTranslation = {
         "resendOtp": "שלח קוד מחדש"
     },
     "common": {
+        "profile": "פרופיל",
+        "userManagement": "ניהול משתמשים",
+        "projects": "פרויקטים",
+        "contractors": "קבלנים",
+        "logout": "התנתקות",
+        "language": "שפה",
+        "hebrew": "עברית",
+        "english": "English",
         "save": "שמור",
         "cancel": "ביטול",
-        "edit": "ערוך",
-        "delete": "מחק",
-        "add": "הוסף",
+        "edit": "עריכה",
+        "delete": "מחיקה",
+        "add": "הוספה",
         "search": "חיפוש",
         "loading": "טוען...",
         "error": "שגיאה",
@@ -48,16 +47,7 @@ const enTranslation = {
         "title": "Choco Insurance - Contractor Management System",
         "subtitle": "Construction Site Risk Management"
     },
-    "menu": {
-        "profile": "Profile",
-        "userManagement": "User Management",
-        "projects": "Projects",
-        "contractors": "Contractors",
-        "logout": "Logout",
-        "language": "Language",
-        "hebrew": "עברית",
-        "english": "English"
-    },
+    // moved menu items to common
     "login": {
         "title": "System Login",
         "email": "Email Address",
@@ -71,6 +61,14 @@ const enTranslation = {
         "resendOtp": "Resend code"
     },
     "common": {
+        "profile": "Profile",
+        "userManagement": "User Management",
+        "projects": "Projects",
+        "contractors": "Contractors",
+        "logout": "Logout",
+        "language": "Language",
+        "hebrew": "Hebrew",
+        "english": "English",
         "save": "Save",
         "cancel": "Cancel",
         "edit": "Edit",

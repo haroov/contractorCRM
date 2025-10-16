@@ -3398,11 +3398,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                 <Table>
                                     <TableHead>
                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>התחלה</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>עיר</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>ערך (₪)</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>סטטוס</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>התחלה</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>עיר</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>ערך (₪)</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>סטטוס</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -3415,13 +3415,13 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 }}
                                                 onClick={() => navigateToProject(project, 'edit')}
                                             >
-                                                <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>{project.projectName || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{formatDate(project.startDate)}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{project.city || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>
+                                                <TableCell sx={{ textAlign: 'left', fontWeight: 'bold' }}>{project.projectName || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>{formatDate(project.startDate)}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>{project.city || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>
                                                     {(project.valueNis || project.value) ? `₪${(project.valueNis || project.value).toLocaleString()}` : ''}
                                                 </TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>
+                                                <TableCell sx={{ textAlign: 'left' }}>
                                                     {project.status === 'active' || project.status === 'current' ? 'פעיל' :
                                                         project.status === 'future' ? 'עתידי' : 'הושלם'}
                                                 </TableCell>
@@ -3498,11 +3498,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                 <Table>
                                     <TableHead>
                                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
-                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'right', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>שם</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>תפקיד</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>טלפון</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>אימייל</TableCell>
+                                            <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'left', borderBottom: '1px solid #e0e0e0' }}>הרשאות</TableCell>
                                             {canEdit && (
                                                 <TableCell sx={{ color: '#666', fontWeight: 'bold', textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>פעולות</TableCell>
                                             )}
@@ -3518,11 +3518,11 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
                                                 }}
                                                 onClick={canEdit ? () => handleEditContact(contact) : undefined}
                                             >
-                                                <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>{contact.fullName || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.role || contact.position || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.mobile || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>{contact.email || contact.emailAddress || ''}</TableCell>
-                                                <TableCell sx={{ textAlign: 'right' }}>
+                                                <TableCell sx={{ textAlign: 'left', fontWeight: 'bold' }}>{contact.fullName || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>{contact.role || contact.position || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>{contact.mobile || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>{contact.email || contact.emailAddress || ''}</TableCell>
+                                                <TableCell sx={{ textAlign: 'left' }}>
                                                     {contact.permissions === 'contactAdmin' ? 'מנהל' : 'משתמש'}
                                                 </TableCell>
                                                 {canEdit && (
@@ -3813,3 +3813,4 @@ const ContractorTabsSimple = forwardRef<any, ContractorTabsSimpleProps>(({
 });
 
 export default ContractorTabsSimple;
+

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Paper, Typography, Button, TextField, InputAdornment, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Button, TextField, InputAdornment, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Tooltip, IconButton } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Archive as ArchiveIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, Close as CloseIcon, Engineering as EngineeringIcon } from '@mui/icons-material';
 import UserMenu from './UserMenu';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ interface UnifiedContractorViewProps {
 }
 
 export default function UnifiedContractorView({ currentUser }: UnifiedContractorViewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const contractorTabsRef = useRef<any>(null);
   const [contractors, setContractors] = useState<Contractor[]>([]);
@@ -1058,7 +1058,8 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
               sx={{
                 bgcolor: 'white',
                 borderRadius: 1,
-                minWidth: 800
+                minWidth: 800,
+                '& input': { textAlign: i18n.dir() === 'rtl' ? 'right' : 'left' }
               }}
             />
 
@@ -1469,7 +1470,7 @@ export default function UnifiedContractorView({ currentUser }: UnifiedContractor
                       </Box>
                     ) : (
                       <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
-                        <Table>
+                        <Table sx={{ direction: i18n.dir() }}>
                           <TableHead>
                             <TableRow>
                               <TableCell sx={{ textAlign: 'right', fontWeight: 'bold' }}>שם פרויקט</TableCell>
