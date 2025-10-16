@@ -3,7 +3,7 @@ import { Avatar, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '
 import { AccountCircle as AccountCircleIcon, Language as LanguageIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { type Language, getDirection, getHtmlLang } from '../locale';
-import i18n from '../i18n';
+import i18nInstance from '../i18n';
 
 interface UserMenuProps {
     user: {
@@ -30,7 +30,7 @@ export default function UserMenu({
     showUserManagement = false,
     showViewModeToggle = false
 }: UserMenuProps) {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
     const [languageMenuAnchor, setLanguageMenuAnchor] = useState<null | HTMLElement>(null);
 
@@ -51,11 +51,11 @@ export default function UserMenu({
     };
 
     const changeLanguage = async (lang: Language) => {
-        await i18n.changeLanguage(lang);
+        await i18nInstance.changeLanguage(lang);
         handleLanguageMenuClose();
     };
 
-    const currentLanguage = i18n.language as Language;
+    const currentLanguage = i18nInstance.language as Language;
 
     return (
         <>
