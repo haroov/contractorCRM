@@ -263,10 +263,10 @@ const PlotDetailsTable: React.FC<PlotDetailsTableProps> = ({ plotDetails, onPlot
                 <Table size="small" sx={{ minWidth: 400 }}>
                     <TableHead>
                         <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>גוש</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>חלקה</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>תת חלקה</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'right', fontSize: '0.875rem' }}>שטח (מ״ר)</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', fontSize: '0.875rem' }}>גוש</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', fontSize: '0.875rem' }}>חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', fontSize: '0.875rem' }}>תת חלקה</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', fontSize: '0.875rem' }}>שטח (מ״ר)</TableCell>
                             {!disabled && (
                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: 60, fontSize: '0.875rem' }}>פעולות</TableCell>
                             )}
@@ -4379,7 +4379,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {/* תת-סקשן: פרטי הפרויקט */}
                                         <Box sx={{ mb: 4, direction: 'rtl' }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'left' }}>
                                                 פרטי הפרויקט
                                             </Typography>
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
@@ -4389,7 +4389,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                     alignItems: 'flex-start',
                                                     gap: { xs: 0.5, sm: 1 },
                                                     direction: 'rtl',
-                                                    justifyContent: 'flex-start'
+                                                    justifyContent: 'flex-end'
                                                 }}>
                                                     {/* File Upload Icon */}
                                                     <FileUpload
@@ -4649,18 +4649,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                                 {/* תת-סקשן: מיקום וכתובת */}
                                                 <Box sx={{ mb: 4, direction: 'rtl' }}>
-                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
+                                                    <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'left' }}>
                                                         מיקום וכתובת
                                                     </Typography>
                                                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>
                                                         {/* Address and Coordinates Row */}
                                                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 3, direction: 'rtl' }}>
+                                                            {/* Order in DOM matches RTL visual: Address | Latitude | Longitude */}
                                                             <TextField
-                                                                fullWidth
-                                                                label="כתובת (טקסט חופשי)"
-                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
-                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
-                                                                disabled={mode === 'view' || !canEdit}
                                                                 sx={{
                                                                     '& .MuiInputBase-input': {
                                                                         textAlign: 'right',
@@ -4670,15 +4666,32 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         textAlign: 'right'
                                                                     }
                                                                 }}
+                                                                fullWidth
+                                                                label="כתובת (טקסט חופשי)"
+                                                                value={project?.engineeringQuestionnaire?.buildingPlan?.address || ''}
+                                                                onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.address', e.target.value)}
+                                                                disabled={mode === 'view' || !canEdit}
                                                             />
 
                                                             <TextField
+                                                                sx={{
+                                                                    '& .MuiInputBase-input': {
+                                                                        textAlign: 'right',
+                                                                        direction: 'rtl'
+                                                                    },
+                                                                    '& .MuiInputLabel-root': {
+                                                                        textAlign: 'right'
+                                                                    }
+                                                                }}
                                                                 fullWidth
                                                                 label="Latitude (Y)"
                                                                 type="number"
                                                                 value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.y || ''}
                                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.y', parseFloat(e.target.value) || 0)}
                                                                 disabled={mode === 'view' || !canEdit}
+                                                            />
+
+                                                            <TextField
                                                                 sx={{
                                                                     '& .MuiInputBase-input': {
                                                                         textAlign: 'right',
@@ -4688,24 +4701,12 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                         textAlign: 'right'
                                                                     }
                                                                 }}
-                                                            />
-
-                                                            <TextField
                                                                 fullWidth
                                                                 label="Longitude (X)"
                                                                 type="number"
                                                                 value={project?.engineeringQuestionnaire?.buildingPlan?.coordinates?.x || ''}
                                                                 onChange={(e) => handleNestedFieldChange('engineeringQuestionnaire.buildingPlan.coordinates.x', parseFloat(e.target.value) || 0)}
                                                                 disabled={mode === 'view' || !canEdit}
-                                                                sx={{
-                                                                    '& .MuiInputBase-input': {
-                                                                        textAlign: 'right',
-                                                                        direction: 'rtl'
-                                                                    },
-                                                                    '& .MuiInputLabel-root': {
-                                                                        textAlign: 'right'
-                                                                    }
-                                                                }}
                                                             />
                                                         </Box>
 
@@ -5306,14 +5307,14 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                                 sx={{
                                                                     '& .MuiInputLabel-root': {
                                                                         color: 'text.secondary',
-                                                                        textAlign: 'right'
+                                                                        textAlign: 'left'
                                                                     },
                                                                     '& .MuiInputLabel-root.Mui-focused': {
                                                                         color: 'primary.main'
                                                                     },
                                                                     '& .MuiInputBase-input': {
-                                                                        textAlign: 'right',
-                                                                        direction: 'rtl'
+                                                                        textAlign: 'left',
+                                                                        direction: 'ltr'
                                                                     }
                                                                 }}
                                                             />
@@ -5332,11 +5333,11 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
                                                         rows={2}
                                                         sx={{
                                                             '& .MuiInputLabel-root': {
-                                                                textAlign: 'right'
+                                                                textAlign: 'left'
                                                             },
                                                             '& .MuiInputBase-input': {
-                                                                textAlign: 'right',
-                                                                direction: 'rtl'
+                                                                textAlign: 'left',
+                                                                direction: 'ltr'
                                                             }
                                                         }}
                                                     />

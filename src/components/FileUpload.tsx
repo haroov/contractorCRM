@@ -241,7 +241,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     };
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', direction: 'rtl' }}>
             {/* File input (hidden) */}
             <input
                 ref={fileInputRef}
@@ -346,7 +346,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
             {/* Date field */}
             {showCreationDate && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexDirection: 'row-reverse' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <TextField
                         label="תאריך יצירת המסמך"
                         type="date"
