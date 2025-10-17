@@ -4,14 +4,24 @@ const { SafetyMonitorService } = require('../services/safetyMonitorService');
 const router = express.Router();
 
 // Initialize safety monitor service
-const safetyService = new SafetyMonitorService();
+let safetyService = null;
 
 // Initialize service on startup
-safetyService.initialize().catch(console.error);
+const initSafetyService = async () => {
+    if (!safetyService) {
+        safetyService = new SafetyMonitorService();
+        await safetyService.initialize();
+    }
+    return safetyService;
+};
+
+// Initialize on module load
+initSafetyService().catch(console.error);
 
 // GET /api/safety-reports - Get all reports with optional filters
 router.get('/', async (req, res) => {
     try {
+        const service = await initSafetyService();
         const { projectId, dateFrom, dateTo, limit = 50 } = req.query;
 
         const filters = {};
@@ -19,7 +29,7 @@ router.get('/', async (req, res) => {
         if (dateFrom) filters.dateFrom = dateFrom;
         if (dateTo) filters.dateTo = dateTo;
 
-        const reports = await safetyService.getAllReports(filters);
+        const reports = await service.getAllReports(filters);
 
         // Apply limit
         const limitedReports = limit ? reports.slice(0, parseInt(limit)) : reports;
@@ -41,8 +51,9 @@ router.get('/', async (req, res) => {
 // GET /api/safety-reports/:id - Get specific report
 router.get('/:id', async (req, res) => {
     try {
+        const service = await initSafetyService();
         const { id } = req.params;
-        const collection = safetyService.db.collection("safetyReports");
+        const collection = service.db.collection("safetyReports");
         const report = await collection.findOne({ _id: id });
 
         if (!report) {
@@ -68,8 +79,9 @@ router.get('/:id', async (req, res) => {
 // POST /api/safety-reports/fetch - Manual trigger for email fetch
 router.post('/fetch', async (req, res) => {
     try {
+        const service = await initSafetyService();
         console.log('🔄 Manual safety report fetch triggered');
-        const reportData = await safetyService.fetchAndProcessReports();
+        const reportData = await service.fetchAndProcessReports();
 
         res.json({
             success: true,
@@ -89,6 +101,7 @@ router.post('/fetch', async (req, res) => {
 // PATCH /api/safety-reports/:id/link - Manually link report to project
 router.patch('/:id/link', async (req, res) => {
     try {
+        const service = await initSafetyService();
         const { id } = req.params;
         const { projectId } = req.body;
 
@@ -99,7 +112,7 @@ router.patch('/:id/link', async (req, res) => {
             });
         }
 
-        const result = await safetyService.linkReportToProject(id, projectId);
+        const result = await service.linkReportToProject(id, projectId);
 
         if (result.matchedCount === 0) {
             return res.status(404).json({
@@ -124,8 +137,9 @@ router.patch('/:id/link', async (req, res) => {
 // GET /api/safety-reports/project/:projectId - Get all safety reports for a project
 router.get('/project/:projectId', async (req, res) => {
     try {
+        const service = await initSafetyService();
         const { projectId } = req.params;
-        const reports = await safetyService.getReportsForProject(projectId);
+        const reports = await service.getReportsForProject(projectId);
 
         res.json({
             success: true,
@@ -144,6 +158,7 @@ router.get('/project/:projectId', async (req, res) => {
 // GET /api/safety-reports/stats/summary - Get safety statistics summary
 router.get('/stats/summary', async (req, res) => {
     try {
+        const service = await initSafetyService();
         const { projectId, days = 30 } = req.query;
 
         let query = {};
@@ -156,7 +171,7 @@ router.get('/stats/summary', async (req, res) => {
         daysAgo.setDate(daysAgo.getDate() - parseInt(days));
         query.createdAt = { $gte: daysAgo };
 
-        const collection = safetyService.db.collection("safetyReports");
+        const collection = service.db.collection("safetyReports");
         const reports = await collection.find(query).sort({ date: -1 }).toArray();
 
         if (reports.length === 0) {
@@ -211,7 +226,8 @@ router.get('/stats/summary', async (req, res) => {
 // GET /api/safety-reports/unmatched - Get unmatched reports for manual linking
 router.get('/unmatched', async (req, res) => {
     try {
-        const collection = safetyService.db.collection("safetyReports");
+        const service = await initSafetyService();
+        const collection = service.db.collection("safetyReports");
         const unmatchedReports = await collection.find({
             projectId: null
         }).sort({ createdAt: -1 }).toArray();
