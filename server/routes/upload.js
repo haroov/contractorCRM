@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const { put, del } = require('@vercel/blob');
 const { MongoClient, ObjectId } = require('mongodb');
+const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // Configure multer for memory storage
@@ -13,11 +14,24 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     // Allow PDF, JPG, PNG files
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (allowedTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only PDF, JPG, and PNG files are allowed'), false);
+    const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png'];
+    
+    // Check MIME type
+    if (!allowedTypes.includes(file.mimetype)) {
+      return cb(new Error('Only PDF, JPG, and PNG files are allowed'), false);
     }
+    
+    // Check file extension
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      return cb(new Error('File extension not allowed'), false);
+    }
+    
+    // Additional security: Check file signature (magic bytes)
+    // This would require reading the first few bytes of the file
+    // For now, we rely on MIME type and extension validation
+    
+    cb(null, true);
   }
 });
 
@@ -36,7 +50,7 @@ async function initDB() {
 }
 
 // Upload certificate endpoint
-router.post('/certificate', upload.single('file'), async (req, res) => {
+router.post('/certificate', requireAuth, upload.single('file'), async (req, res) => {
   try {
     await initDB();
 
@@ -108,7 +122,7 @@ router.post('/certificate', upload.single('file'), async (req, res) => {
 });
 
 // Delete certificate endpoint
-router.delete('/certificate', async (req, res) => {
+router.delete('/certificate', requireAuth, async (req, res) => {
   try {
     await initDB();
 
@@ -181,7 +195,7 @@ router.delete('/certificate', async (req, res) => {
 });
 
 // Get certificate info endpoint
-router.get('/certificate/:contractorId/:certificateType', async (req, res) => {
+router.get('/certificate/:contractorId/:certificateType', requireAuth, async (req, res) => {
   try {
     await initDB();
 
@@ -226,7 +240,7 @@ router.get('/certificate/:contractorId/:certificateType', async (req, res) => {
 });
 
 // Delete file endpoint (general purpose)
-router.post('/delete-file', async (req, res) => {
+router.post('/delete-file', requireAuth, async (req, res) => {
   try {
     const { fileUrl } = req.body;
 
