@@ -29,17 +29,35 @@ class SafetyMonitorService {
     }
 
     async authorize() {
-        const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
-        const { client_secret, client_id, redirect_uris } = credentials.installed;
-        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        // Try to load from environment variables first (for production)
+        if (process.env.GMAIL_CLIENT_ID && process.env.GMAIL_CLIENT_SECRET) {
+            const oAuth2Client = new google.auth.OAuth2(
+                process.env.GMAIL_CLIENT_ID,
+                process.env.GMAIL_CLIENT_SECRET,
+                process.env.GMAIL_REDIRECT_URI || 'http://localhost'
+            );
 
-        if (fs.existsSync(TOKEN_PATH)) {
-            const token = JSON.parse(fs.readFileSync(TOKEN_PATH));
-            oAuth2Client.setCredentials(token);
-            return oAuth2Client;
+            if (process.env.GMAIL_TOKEN) {
+                const token = JSON.parse(process.env.GMAIL_TOKEN);
+                oAuth2Client.setCredentials(token);
+                return oAuth2Client;
+            }
         }
 
-        throw new Error('Token file not found. Run authentication flow first.');
+        // Fallback to file-based credentials (for local development)
+        if (fs.existsSync(CREDENTIALS_PATH)) {
+            const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
+            const { client_secret, client_id, redirect_uris } = credentials.installed;
+            const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+
+            if (fs.existsSync(TOKEN_PATH)) {
+                const token = JSON.parse(fs.readFileSync(TOKEN_PATH));
+                oAuth2Client.setCredentials(token);
+                return oAuth2Client;
+            }
+        }
+
+        throw new Error('Gmail credentials not found. Please set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, and GMAIL_TOKEN environment variables.');
     }
 
     async findTodayEmails(auth) {
@@ -142,7 +160,7 @@ class SafetyMonitorService {
         if (!siteMatch) siteMatch = text.match(/לאתר\s+([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/Site:\s*([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/Project:\s*([^|\n]+)/);
-        
+
         // Fallback: extract from subject if not found in PDF
         if (!siteMatch && subject) {
             const subjectSiteMatch = subject.match(/לאתר\s+([^|]+)/);
@@ -150,7 +168,7 @@ class SafetyMonitorService {
                 siteMatch = subjectSiteMatch;
             }
         }
-        
+
         // Additional fallback: extract from PDF title
         if (!siteMatch) {
             const titleMatch = text.match(/דו"ח מדד בטיחות\s+([^|]+)/);
@@ -313,12 +331,12 @@ class SafetyMonitorService {
                     try {
                         const pdfPath = await this.downloadPdfFromUrl(link, `safety_${siteName.replace(/\s+/g, '_')}.pdf`);
                         const data = await this.extractDataFromPdf(pdfPath, subject);
-                        
+
                         projectReports[siteName].safetyData = data;
                         projectReports[siteName].safetyReportUrl = link;
                         projectReports[siteName].date = data.date;
                         projectReports[siteName].score = data.score;
-                        
+
                         console.log(`✅ Extracted safety data for ${siteName}:`, data);
                     } catch (error) {
                         console.error(`❌ Error processing safety PDF for ${siteName}:`, error.message);
@@ -365,7 +383,7 @@ class SafetyMonitorService {
                 await this.saveToMongo(finalData);
                 console.log(`✅ Saved daily report: ${_id}`);
                 console.log('Report data:', finalData);
-                
+
                 savedReports.push(finalData);
             }
 
