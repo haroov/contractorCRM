@@ -223,6 +223,27 @@ router.get('/stats/summary', async (req, res) => {
     }
 });
 
+// GET /api/safety-reports/debug - Debug environment variables
+router.get('/debug', async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            env: {
+                GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID ? '✅ מוגדר' : '❌ לא מוגדר',
+                GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET ? '✅ מוגדר' : '❌ לא מוגדר',
+                GMAIL_REDIRECT_URI: process.env.GMAIL_REDIRECT_URI ? '✅ מוגדר' : '❌ לא מוגדר',
+                GMAIL_TOKEN: process.env.GMAIL_TOKEN ? '✅ מוגדר' : '❌ לא מוגדר',
+                MONGODB_URI: process.env.MONGODB_URI ? '✅ מוגדר' : '❌ לא מוגדר'
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // GET /api/safety-reports/unmatched - Get unmatched reports for manual linking
 router.get('/unmatched', async (req, res) => {
     try {
