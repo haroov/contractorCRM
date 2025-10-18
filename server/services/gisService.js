@@ -251,7 +251,7 @@ class GISService {
             const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: FIRE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: FIRE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
-            
+
             const fireStationData = {
               name: result.name || 'תחנת כיבוי אש',
               address: result.address || '',
@@ -347,7 +347,7 @@ class GISService {
             const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: POLICE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: POLICE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
-            
+
             const policeStationData = {
               name: result.name || 'תחנת משטרה',
               address: result.address || '',
@@ -589,7 +589,7 @@ class GISService {
             const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: FIRST AID STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: FIRST AID STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
-            
+
             const firstAidStationData = {
               name: result.name || 'תחנת מד״א',
               city: result.city || '',
