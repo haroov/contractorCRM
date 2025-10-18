@@ -239,10 +239,7 @@ class GISService {
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
 
-        let roadDistance = parseFloat(airDistanceKm);
-        let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-
-        // Try to get real road distance and travel time using Google Distance Matrix API
+        // Get real road distance and travel time using Google Distance Matrix API ONLY
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: FIRE STATION - Getting road distance from project (${y}, ${x}) to fire station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: FIRE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
@@ -250,35 +247,37 @@ class GISService {
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
 
           if (distanceData) {
-            roadDistance = distanceData.distance;
-            travelTime = distanceData.duration;
+            const roadDistance = distanceData.distance;
+            const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: FIRE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: FIRE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
+            
+            const fireStationData = {
+              name: result.name || 'תחנת כיבוי אש',
+              address: result.address || '',
+              phone: result.phone || '102',
+              stationType: result.stationType || '',
+              distance: roadDistance,
+              travelTime: travelTime,
+              distance_m: roadDistance * 1000,
+              coordinates: {
+                longitude: stationLng || null,
+                latitude: stationLat || null
+              }
+            };
+
+            console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
+            console.log(`📍 GIS Service: Fire station coordinates: ${JSON.stringify(fireStationData.coordinates)}`);
+            console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
+            return fireStationData;
           } else {
-            console.log(`⚠️ GIS Service: FIRE STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.error(`❌ GIS Service: FIRE STATION - Distance Matrix API failed, cannot calculate distance`);
+            return null;
           }
         } else {
-          console.log(`⚠️ GIS Service: FIRE STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
+          console.error(`❌ GIS Service: FIRE STATION - No station coordinates available, cannot calculate distance`);
+          return null;
         }
-
-        const fireStationData = {
-          name: result.name || 'תחנת כיבוי אש',
-          address: result.address || '',
-          phone: result.phone || '102',
-          stationType: result.stationType || '',
-          distance: roadDistance,
-          travelTime: travelTime,
-          distance_m: roadDistance * 1000,
-          coordinates: {
-            longitude: stationLng || null,
-            latitude: stationLat || null
-          }
-        };
-
-        console.log(`✅ GIS Service: Found nearest fire station ${fireStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
-        console.log(`📍 GIS Service: Fire station coordinates: ${JSON.stringify(fireStationData.coordinates)}`);
-        console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
-        return fireStationData;
       }
 
       console.log(`⚠️ GIS Service: No fire station found for coordinates (${x}, ${y})`);
@@ -336,10 +335,7 @@ class GISService {
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
 
-        let roadDistance = parseFloat(airDistanceKm);
-        let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-
-        // Try to get real road distance and travel time using Google Distance Matrix API
+        // Get real road distance and travel time using Google Distance Matrix API ONLY
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: POLICE STATION - Getting road distance from project (${y}, ${x}) to police station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: POLICE STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
@@ -347,34 +343,36 @@ class GISService {
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
 
           if (distanceData) {
-            roadDistance = distanceData.distance;
-            travelTime = distanceData.duration;
+            const roadDistance = distanceData.distance;
+            const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: POLICE STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: POLICE STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
+            
+            const policeStationData = {
+              name: result.name || 'תחנת משטרה',
+              address: result.address || '',
+              phone: result.phone || '100',
+              stationType: result.stationType || '',
+              distance: roadDistance,
+              travelTime: travelTime,
+              distance_m: roadDistance * 1000,
+              coordinates: {
+                longitude: stationLng || null,
+                latitude: stationLat || null
+              }
+            };
+
+            console.log(`✅ GIS Service: Found nearest police station ${policeStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
+            console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
+            return policeStationData;
           } else {
-            console.log(`⚠️ GIS Service: POLICE STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.error(`❌ GIS Service: POLICE STATION - Distance Matrix API failed, cannot calculate distance`);
+            return null;
           }
         } else {
-          console.log(`⚠️ GIS Service: POLICE STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
+          console.error(`❌ GIS Service: POLICE STATION - No station coordinates available, cannot calculate distance`);
+          return null;
         }
-
-        const policeStationData = {
-          name: result.name || 'תחנת משטרה',
-          address: result.address || '',
-          phone: result.phone || '100',
-          stationType: result.stationType || '',
-          distance: roadDistance,
-          travelTime: travelTime,
-          distance_m: roadDistance * 1000,
-          coordinates: {
-            longitude: stationLng || null,
-            latitude: stationLat || null
-          }
-        };
-
-        console.log(`✅ GIS Service: Found nearest police station ${policeStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
-        console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
-        return policeStationData;
       }
 
       console.log(`⚠️ GIS Service: No police station found for coordinates (${x}, ${y})`);
@@ -579,10 +577,7 @@ class GISService {
         const stationLng = result.geometry?.coordinates?.[0];
         const stationLat = result.geometry?.coordinates?.[1];
 
-        let roadDistance = parseFloat(airDistanceKm);
-        let travelTime = Math.ceil(parseFloat(airDistanceKm) * 1.2); // Fallback calculation
-
-        // Try to get real road distance and travel time using Google Distance Matrix API
+        // Get real road distance and travel time using Google Distance Matrix API ONLY
         if (stationLat && stationLng) {
           console.log(`🚗 GIS Service: FIRST AID STATION - Getting road distance from project (${y}, ${x}) to first aid station (${stationLat}, ${stationLng})`);
           console.log(`🔍 GIS Service: FIRST AID STATION - Air distance: ${airDistanceKm}km, Station coordinates: lat=${stationLat}, lng=${stationLng}`);
@@ -590,35 +585,37 @@ class GISService {
           const distanceData = await distanceMatrixService.calculateDistance(y, x, stationLat, stationLng);
 
           if (distanceData) {
-            roadDistance = distanceData.distance;
-            travelTime = distanceData.duration;
+            const roadDistance = distanceData.distance;
+            const travelTime = distanceData.duration;
             console.log(`✅ GIS Service: FIRST AID STATION - SUCCESS! Road distance: ${distanceData.distanceText}, Travel time: ${distanceData.durationText}`);
             console.log(`📊 GIS Service: FIRST AID STATION - Using road distance: ${roadDistance}km (was air: ${airDistanceKm}km)`);
+            
+            const firstAidStationData = {
+              name: result.name || 'תחנת מד״א',
+              city: result.city || '',
+              address: result.address || '',
+              phone: result.phone || '101',
+              stationType: result.stationType || 'תחנת מד״א',
+              distance: roadDistance,
+              travelTime: travelTime,
+              distance_m: roadDistance * 1000,
+              coordinates: {
+                longitude: stationLng || null,
+                latitude: stationLat || null
+              }
+            };
+
+            console.log(`✅ GIS Service: Found nearest first aid station ${firstAidStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
+            console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
+            return firstAidStationData;
           } else {
-            console.log(`⚠️ GIS Service: FIRST AID STATION - Distance Matrix API failed, using air distance: ${airDistanceKm}km`);
+            console.error(`❌ GIS Service: FIRST AID STATION - Distance Matrix API failed, cannot calculate distance`);
+            return null;
           }
         } else {
-          console.log(`⚠️ GIS Service: FIRST AID STATION - No station coordinates available, using air distance: ${airDistanceKm}km`);
+          console.error(`❌ GIS Service: FIRST AID STATION - No station coordinates available, cannot calculate distance`);
+          return null;
         }
-
-        const firstAidStationData = {
-          name: result.name || 'תחנת מד״א',
-          city: result.city || '',
-          address: result.address || '',
-          phone: result.phone || '101',
-          stationType: result.stationType || 'תחנת מד״א',
-          distance: roadDistance,
-          travelTime: travelTime,
-          distance_m: roadDistance * 1000,
-          coordinates: {
-            longitude: stationLng || null,
-            latitude: stationLat || null
-          }
-        };
-
-        console.log(`✅ GIS Service: Found nearest first aid station ${firstAidStationData.name} at distance ${roadDistance}km for coordinates (${x}, ${y})`);
-        console.log(`🚗 GIS Service: Using Google Distance Matrix API for accurate road distances`);
-        return firstAidStationData;
       }
 
       console.log(`⚠️ GIS Service: No first aid station found for coordinates (${x}, ${y})`);
