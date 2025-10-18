@@ -244,6 +244,22 @@ router.get('/debug', async (req, res) => {
     }
 });
 
+// GET /api/safety-reports/test - Test endpoint
+router.get('/test', async (req, res) => {
+    try {
+        res.json({
+            success: true,
+            message: 'Safety reports API is working',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 // GET /api/safety-reports/unmatched - Get unmatched reports for manual linking
 router.get('/unmatched', async (req, res) => {
     try {
