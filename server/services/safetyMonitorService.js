@@ -47,10 +47,11 @@ class SafetyMonitorService {
         const targetEmail = process.env.GMAIL_TARGET_EMAIL || 'ai@chocoinsurance.com';
         const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
 
+        // Search for emails from the last 7 days to catch any missed reports
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: `to:${targetEmail} from:${senderFilter} newer_than:1d`,
-            maxResults: 10,
+            q: `to:${targetEmail} from:${senderFilter} newer_than:7d`,
+            maxResults: 50,
         });
         return res.data.messages || [];
     }
@@ -120,21 +121,41 @@ class SafetyMonitorService {
         const text = data.text.replace(/\s+/g, ' ');
         console.log('📄 PDF Text:', text.slice(0, 400));
 
-        // Extract safety score
+        // Extract safety score - multiple patterns
         let scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
         if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד בטיחות/);
         if (!scoreMatch) scoreMatch = text.match(/מדד בטיחות:\s*(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/סה"כ\s*(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/Total\s*(\d{2,3})/);
 
-        // Extract date
+        // Extract date - multiple patterns
         let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
-        if (!dateMatch) dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
+        if (!dateMatch) dateMatch = text.match(/(\d{2}-\d{2}-\d{4})/);
+        if (!dateMatch) dateMatch = text.match(/(\d{4}-\d{2}-\d{2})/);
 
-        // Extract site name
-        let siteMatch = text.match(/אתר:\s*([^|]+)/);
-        if (!siteMatch) siteMatch = text.match(/לאתר\s+([^|]+)/);
+        // Extract site name - multiple patterns
+        let siteMatch = text.match(/אתר:\s*([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/לאתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/Site:\s*([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/Project:\s*([^|\n]+)/);
+        
+        // Fallback: extract from subject if not found in PDF
+        if (!siteMatch && subject) {
+            const subjectSiteMatch = subject.match(/לאתר\s+([^|]+)/);
+            if (subjectSiteMatch) {
+                siteMatch = subjectSiteMatch;
+            }
+        }
+
+        console.log('🔍 Extracted data:', {
+            score: scoreMatch ? scoreMatch[1] : 'Not found',
+            date: dateMatch ? dateMatch[1] : 'Not found',
+            site: siteMatch ? siteMatch[1].trim() : 'Not found'
+        });
 
         if (!scoreMatch || !dateMatch || !siteMatch) {
-            throw new Error('❌ Failed to extract report fields.');
+            throw new Error(`❌ Failed to extract report fields. Found: score=${!!scoreMatch}, date=${!!dateMatch}, site=${!!siteMatch}`);
         }
 
         return {
@@ -241,11 +262,8 @@ class SafetyMonitorService {
             const auth = await this.authorize();
             const messages = await this.findTodayEmails(auth);
 
-            let safetyData = {};
-            let safetyLink = null;
-            let findingsLink = null;
-            let siteName = '';
-            let contractorName = '';
+            // Group emails by project/site
+            const projectReports = {};
 
             for (const msg of messages) {
                 const message = await this.getMessage(auth, msg.id);
@@ -259,60 +277,89 @@ class SafetyMonitorService {
 
                 if (!link) continue;
 
+                // Extract site name from subject
+                const siteName = this.extractProjectName(subject);
+                const contractorName = this.extractContractorName(sender);
+
+                if (!siteName) continue;
+
+                // Initialize project report if not exists
+                if (!projectReports[siteName]) {
+                    projectReports[siteName] = {
+                        siteName,
+                        contractorName,
+                        date: null,
+                        score: null,
+                        safetyReportUrl: null,
+                        issuesReportUrl: null,
+                        safetyData: null
+                    };
+                }
+
+                // Process safety index report
                 if (subject.includes('מדד בטיחות')) {
                     console.log('📌 Found safety index email');
-                    const pdfPath = await this.downloadPdfFromUrl(link, 'safety.pdf');
-                    const data = await this.extractDataFromPdf(pdfPath, subject);
-                    safetyData = data;
-                    safetyLink = link;
-                    siteName = data.site;
-                    contractorName = this.extractContractorName(sender);
+                    try {
+                        const pdfPath = await this.downloadPdfFromUrl(link, `safety_${siteName.replace(/\s+/g, '_')}.pdf`);
+                        const data = await this.extractDataFromPdf(pdfPath, subject);
+                        
+                        projectReports[siteName].safetyData = data;
+                        projectReports[siteName].safetyReportUrl = link;
+                        projectReports[siteName].date = data.date;
+                        projectReports[siteName].score = data.score;
+                        
+                        console.log(`✅ Extracted safety data for ${siteName}:`, data);
+                    } catch (error) {
+                        console.error(`❌ Error processing safety PDF for ${siteName}:`, error.message);
+                    }
                 }
 
+                // Process issues/exceptions report
                 if (subject.includes('חריגים')) {
                     console.log('📌 Found findings email');
-                    findingsLink = link;
-                    if (!siteName) {
-                        const fallback = this.extractProjectName(subject);
-                        if (fallback) siteName = fallback;
-                    }
-                    if (!contractorName) {
-                        contractorName = this.extractContractorName(sender);
-                    }
+                    projectReports[siteName].issuesReportUrl = link;
                 }
             }
 
-            if (!safetyData.score || !safetyData.date || !siteName) {
-                throw new Error('🚫 חסר מידע קריטי ליצירת הדוח.');
+            // Save each project's daily report
+            const savedReports = [];
+            for (const [siteName, reportData] of Object.entries(projectReports)) {
+                if (!reportData.date || !reportData.score || !reportData.safetyReportUrl) {
+                    console.log(`⚠️ Skipping incomplete report for ${siteName}`);
+                    continue;
+                }
+
+                const _id = this.generateCustomId(reportData.date, siteName);
+
+                // Try to find matching project
+                const projectMatch = await this.findMatchingProject(siteName, reportData.contractorName);
+
+                const finalData = {
+                    _id,
+                    category: "Safety",
+                    operator: "Safeguard",
+                    date: reportData.date,
+                    reportUrl: reportData.safetyReportUrl,
+                    issuesUrl: reportData.issuesReportUrl,
+                    score: reportData.score,
+                    site: siteName,
+                    contractorName: reportData.contractorName,
+                    projectId: projectMatch ? new ObjectId(projectMatch.project._id) : null,
+                    projectName: projectMatch ? projectMatch.project.projectName : null,
+                    matchConfidence: projectMatch ? projectMatch.confidence : null,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+
+                await this.saveToMongo(finalData);
+                console.log(`✅ Saved daily report: ${_id}`);
+                console.log('Report data:', finalData);
+                
+                savedReports.push(finalData);
             }
 
-            const _id = this.generateCustomId(safetyData.date, siteName);
-
-            // Try to find matching project
-            const projectMatch = await this.findMatchingProject(siteName, contractorName);
-
-            const finalData = {
-                _id,
-                category: "Safety",
-                operator: "Safeguard",
-                date: safetyData.date,
-                reportUrl: safetyLink,
-                issuesUrl: findingsLink,
-                score: safetyData.score,
-                site: siteName,
-                contractorName: contractorName,
-                projectId: projectMatch ? new ObjectId(projectMatch.project._id) : null,
-                projectName: projectMatch ? projectMatch.project.projectName : null,
-                matchConfidence: projectMatch ? projectMatch.confidence : null,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            };
-
-            await this.saveToMongo(finalData);
-            console.log(`✅ Saved daily report: ${_id}`);
-            console.log('Report data:', finalData);
-
-            return finalData;
+            console.log(`🎉 Processed ${savedReports.length} daily safety reports`);
+            return savedReports;
         } catch (error) {
             console.error('❌ Error in fetchAndProcessReports:', error);
             throw error;
