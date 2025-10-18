@@ -44,13 +44,12 @@ class SafetyMonitorService {
 
     async findTodayEmails(auth) {
         const gmail = google.gmail({ version: 'v1', auth });
-        const targetEmail = process.env.GMAIL_TARGET_EMAIL || 'ai@chocoinsurance.com';
         const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
 
-        // Search for emails from the last 7 days to catch any missed reports
+        // Search for emails from Safeguard in the last 7 days
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: `to:${targetEmail} from:${senderFilter} newer_than:7d`,
+            q: `from:${senderFilter} newer_than:7d`,
             maxResults: 50,
         });
         return res.data.messages || [];
@@ -123,11 +122,15 @@ class SafetyMonitorService {
 
         // Extract safety score - multiple patterns
         let scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%/);
         if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד בטיחות/);
         if (!scoreMatch) scoreMatch = text.match(/מדד בטיחות:\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/סה"כ\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/Total\s*(\d{2,3})/);
+        // Look for the actual score in the summary section
+        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%\s*(\d{1,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*100%\s*(\d{1,3})/);
 
         // Extract date - multiple patterns
         let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
@@ -145,6 +148,14 @@ class SafetyMonitorService {
             const subjectSiteMatch = subject.match(/לאתר\s+([^|]+)/);
             if (subjectSiteMatch) {
                 siteMatch = subjectSiteMatch;
+            }
+        }
+        
+        // Additional fallback: extract from PDF title
+        if (!siteMatch) {
+            const titleMatch = text.match(/דו"ח מדד בטיחות\s+([^|]+)/);
+            if (titleMatch) {
+                siteMatch = titleMatch;
             }
         }
 
