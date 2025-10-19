@@ -68,12 +68,14 @@ class SafetyMonitorService {
         // Fetch the last 5 days to include weekends/timezone drifts
         // Require attachments and look for relevant Hebrew subjects
         const subjectFilter = '(subject:("מדד בטיחות" OR "חריגים יומי" OR "חריגי עובדים" OR "חריגי ציוד"))';
+        const labelFilter = process.env.GMAIL_LABEL ? `label:${process.env.GMAIL_LABEL}` : null;
         const baseQuery = [
             `from:${senderFilter}`,
             'has:attachment',
-            'newer_than:5d',
-            subjectFilter
-        ].join(' ');
+            'newer_than:7d',
+            subjectFilter,
+            labelFilter
+        ].filter(Boolean).join(' ');
 
         // Primary search
         let q = baseQuery;
@@ -89,9 +91,10 @@ class SafetyMonitorService {
         if (messages.length === 0) {
             const fallbackQuery = [
                 'has:attachment',
-                'newer_than:5d',
-                subjectFilter
-            ].join(' ');
+                'newer_than:7d',
+                subjectFilter,
+                labelFilter
+            ].filter(Boolean).join(' ');
             const res2 = await gmail.users.messages.list({ userId: 'me', q: fallbackQuery, maxResults: 100 });
             messages = res2.data.messages || [];
         }
@@ -192,26 +195,19 @@ class SafetyMonitorService {
         const text = data.text.replace(/\s+/g, ' ');
         console.log('📄 PDF Text:', text.slice(0, 400));
 
-        // Extract safety score - prefer number adjacent to the header label
-        let scoreMatch = text.match(/מדד\s*בטיחות[^\d]{0,10}(\d{2,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%/);
-        if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד בטיחות/);
-        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/סה"כ\s*(\d{2,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/Total\s*(\d{2,3})/);
-        // Look for the actual score in the summary section
-        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%\s*(\d{1,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*100%\s*(\d{1,3})/);
-        // Try to find score in different formats
-        if (!scoreMatch) scoreMatch = text.match(/ציון בטיחות\s*(\d{2,3})/);
-        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*מתוך\s*100/);
-        if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מתוך\s*100/);
+        // Extract safety score - prioritize legacy precise patterns
+        let scoreMatch = text.match(/ציון\s*סופי\d{1,3}%?(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד\s*בטיחות[:|]/);
+        // Fallbacks
+        if (!scoreMatch) scoreMatch = text.match(/מדד\s*בטיחות[^\d]{0,10}(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון\s*סופי\s*(\d{1,3})%?/);
         if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*%/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*מתוך\s*100/);
 
-        // Extract date - prefer header date (near the report title), otherwise choose the latest date in the doc
-        let dateMatch = text.match(/דו"?ח\s*מדד\s*בטיחות[^\d]{0,10}(\d{2}\/\d{2}\/\d{4})/);
-        if (!dateMatch) dateMatch = text.match(/(?:בתאריך|תאריך)[:\s]*?(\d{2}\/\d{2}\/\d{4})/);
+        // Extract date - use tighter Hebrew header patterns
+        let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})\s*דו["׳']?ח/);
+        if (!dateMatch) dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})\s*תאריך[:|]/);
+        if (!dateMatch) dateMatch = text.match(/דו"?ח\s*מדד\s*בטיחות[^\d]{0,15}(\d{2}\/\d{2}\/\d{4})/);
         if (!dateMatch) {
             const allDates = [...text.matchAll(/(\d{2}\/\d{2}\/\d{4})/g)].map(m => m[1]);
             if (allDates.length) {
@@ -226,17 +222,13 @@ class SafetyMonitorService {
         if (!dateMatch) dateMatch = text.match(/(\d{2}-\d{2}-\d{4})/);
         if (!dateMatch) dateMatch = text.match(/(\d{4}-\d{2}-\d{2})/);
 
-        // Extract site name - multiple patterns
-        let siteMatch = text.match(/אתר:\s*([^|\n]+)/);
+        // Extract site name - prioritize precise patterns
+        let siteMatch = text.match(/דו["׳']?ח\s*מדד\s*בטיחות\s+(.*?)אתר[:|]/);
+        if (!siteMatch) siteMatch = text.match(/אתר[:|]\s*\|?\s*(.*?)\s*(?=מדד|$)/);
+        if (!siteMatch) siteMatch = text.match(/דוח\s*מדד\s*בטיחות\s*לאתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/דוח\s*בטיחות\s*לאתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/אתר:\s*([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/לאתר\s+([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/Site:\s*([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/Project:\s*([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/דוח מדד בטיחות לאתר\s+([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/דוח בטיחות לאתר\s+([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/דוח חריגים יומי לאתר\s+([^|\n]+)/);
-        // Try to find site name in different formats
-        if (!siteMatch) siteMatch = text.match(/אתר\s+([^|\n]+)/);
-        if (!siteMatch) siteMatch = text.match(/לאתר\s*([^|\n]+)/);
 
         // Fallback: extract from subject if not found in PDF
         if (!siteMatch && subject) {
