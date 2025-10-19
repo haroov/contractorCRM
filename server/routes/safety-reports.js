@@ -265,7 +265,7 @@ router.post('/force-fetch', async (req, res) => {
     try {
         const service = await initSafetyService();
         const result = await service.fetchAndProcessReports();
-        
+
         res.json({
             success: true,
             message: 'Force fetch completed',
@@ -299,6 +299,27 @@ router.post('/historical-fetch', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to fetch historical reports',
+            details: error.message
+        });
+    }
+});
+
+// DELETE /api/safety-reports/clear-all - Clear all documents from safetyReports collection
+router.delete('/clear-all', async (req, res) => {
+    try {
+        const service = await initSafetyService();
+        const result = await service.clearAllReports();
+        
+        res.json({
+            success: true,
+            message: `Cleared ${result.deletedCount} documents from safetyReports collection.`,
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        console.error('Error clearing safetyReports collection:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to clear safetyReports collection',
             details: error.message
         });
     }

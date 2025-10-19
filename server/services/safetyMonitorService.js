@@ -67,7 +67,7 @@ class SafetyMonitorService {
         // Get today's date in YYYY/MM/DD format
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0].replace(/-/g, '/');
-        
+
         // Search for emails from Safeguard from today
         const res = await gmail.users.messages.list({
             userId: 'me',
@@ -335,7 +335,7 @@ class SafetyMonitorService {
                 q: `from:${senderFilter} newer_than:30d`,
                 maxResults: 100,
             });
-            
+
             const messages = res.data.messages || [];
             console.log(`📬 Found ${messages.length} historical emails`);
 
@@ -409,7 +409,7 @@ class SafetyMonitorService {
 
                 // Try to find matching project
                 const match = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
-                
+
                 const finalData = {
                     _id,
                     category: "Safety",
@@ -438,6 +438,18 @@ class SafetyMonitorService {
             return savedReports;
         } catch (error) {
             console.error('❌ Error in fetchAllHistoricalReports:', error);
+            throw error;
+        }
+    }
+
+    async clearAllReports() {
+        try {
+            const collection = this.db.collection('safetyReports');
+            const result = await collection.deleteMany({});
+            console.log(`🗑️ Cleared ${result.deletedCount} documents from safetyReports collection.`);
+            return result;
+        } catch (error) {
+            console.error('Error in clearAllReports:', error);
             throw error;
         }
     }
