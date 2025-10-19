@@ -170,8 +170,8 @@ class SafetyMonitorService {
         const text = data.text.replace(/\s+/g, ' ');
         console.log('📄 PDF Text:', text.slice(0, 400));
 
-        // Extract safety score - multiple patterns
-        let scoreMatch = text.match(/מדד בטיחות:\s*(\d{2,3})/);
+        // Extract safety score - prefer number adjacent to the header label
+        let scoreMatch = text.match(/מדד\s*בטיחות[^\d]{0,10}(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%/);
         if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד בטיחות/);
@@ -187,8 +187,20 @@ class SafetyMonitorService {
         if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מתוך\s*100/);
         if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*%/);
 
-        // Extract date - multiple patterns
-        let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
+        // Extract date - prefer header date (near the report title), otherwise choose the latest date in the doc
+        let dateMatch = text.match(/דו"?ח\s*מדד\s*בטיחות[^\d]{0,10}(\d{2}\/\d{2}\/\d{4})/);
+        if (!dateMatch) dateMatch = text.match(/(?:בתאריך|תאריך)[:\s]*?(\d{2}\/\d{2}\/\d{4})/);
+        if (!dateMatch) {
+            const allDates = [...text.matchAll(/(\d{2}\/\d{2}\/\d{4})/g)].map(m => m[1]);
+            if (allDates.length) {
+                const toVal = d => {
+                    const [dd, mm, yyyy] = d.split('/').map(Number);
+                    return new Date(yyyy, mm - 1, dd).getTime();
+                };
+                const latest = allDates.sort((a, b) => toVal(b) - toVal(a))[0];
+                dateMatch = [latest, latest];
+            }
+        }
         if (!dateMatch) dateMatch = text.match(/(\d{2}-\d{2}-\d{4})/);
         if (!dateMatch) dateMatch = text.match(/(\d{4}-\d{2}-\d{2})/);
 
