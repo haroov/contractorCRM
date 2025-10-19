@@ -309,7 +309,7 @@ router.delete('/clear-all', async (req, res) => {
     try {
         const service = await initSafetyService();
         const result = await service.clearAllReports();
-        
+
         res.json({
             success: true,
             message: `Cleared ${result.deletedCount} documents from safetyReports collection.`,
@@ -330,7 +330,7 @@ router.get('/debug-email-search', async (req, res) => {
     try {
         const service = await initSafetyService();
         const result = await service.debugEmailSearch();
-        
+
         res.json({
             success: true,
             message: 'Email search debug completed',
@@ -366,6 +366,18 @@ router.get('/unmatched', async (req, res) => {
             success: false,
             error: 'Failed to fetch unmatched reports'
         });
+    }
+});
+
+// POST /api/safety-reports/link-unmatched - Auto-link unmatched reports to projects
+router.post('/link-unmatched', async (req, res) => {
+    try {
+        const service = await initSafetyService();
+        const result = await service.linkUnmatchedReports();
+        res.json({ success: true, message: 'Linking completed', result });
+    } catch (error) {
+        console.error('Error linking unmatched reports:', error);
+        res.status(500).json({ success: false, error: 'Failed to link unmatched reports', details: error.message });
     }
 });
 

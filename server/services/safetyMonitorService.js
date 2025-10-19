@@ -277,28 +277,59 @@ class SafetyMonitorService {
         try {
             const projects = await this.db.collection('projects').find({}).toArray();
 
+            const normalize = (s = '') => s
+                .toString()
+                .toLowerCase()
+                .replace(/["'׳””“]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            const normSite = normalize(projectName)
+                .replace(/^"|"$/g, '')
+                .replace(/^site\s*/i, '');
+
+            // 1) Exact match first
+            let exact = projects.find(p => normalize(p.projectName) === normSite);
+            if (exact) return { project: exact, confidence: 1 };
+
+            // 2) Startswith / contains heuristics
+            exact = projects.find(p => normSite.startsWith(normalize(p.projectName)) || normalize(p.projectName).startsWith(normSite));
+            if (exact) return { project: exact, confidence: 0.95 };
+
+            // 3) Fuzzy similarity
             let bestMatch = null;
             let bestScore = 0;
-
             for (const project of projects) {
-                // Calculate similarity score
-                const projectNameScore = this.calculateSimilarity(projectName, project.projectName || '');
-                const contractorScore = this.calculateSimilarity(contractorName, project.contractorName || '');
-
-                // Weighted score: 70% project name, 30% contractor name
-                const totalScore = (projectNameScore * 0.7) + (contractorScore * 0.3);
-
-                if (totalScore > bestScore && totalScore > 0.8) {
-                    bestScore = totalScore;
+                const projectNameScore = this.calculateSimilarity(normSite, normalize(project.projectName || ''));
+                if (projectNameScore > bestScore) {
+                    bestScore = projectNameScore;
                     bestMatch = project;
                 }
             }
 
-            return bestMatch ? { project: bestMatch, confidence: bestScore } : null;
+            return bestMatch && bestScore > 0.8 ? { project: bestMatch, confidence: bestScore } : null;
         } catch (error) {
             console.error('Error finding matching project:', error);
             return null;
         }
+    }
+
+    async linkUnmatchedReports() {
+        const collection = this.db.collection('safetyReports');
+        const unmatched = await collection.find({ projectId: null }).toArray();
+
+        let linked = 0;
+        for (const rep of unmatched) {
+            const match = await this.findMatchingProject(rep.site, rep.contractorName || '');
+            if (match) {
+                await collection.updateOne(
+                    { _id: rep._id },
+                    { $set: { projectId: new ObjectId(match.project._id), projectName: match.project.projectName, matchConfidence: match.confidence, updatedAt: new Date() } }
+                );
+                linked++;
+            }
+        }
+        return { attempted: unmatched.length, linked };
     }
 
     calculateSimilarity(str1, str2) {
