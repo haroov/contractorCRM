@@ -828,8 +828,9 @@ class SafetyMonitorService {
 
                 const _id = this.generateCustomId(reportData.date, reportData.siteName);
 
-                // Try to find matching project
+                // Try to find matching project and contractor
                 const projectMatch = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
+                const contractorMatch = await this.findMatchingContractor(reportData.contractorName);
 
                 const finalData = {
                     _id,
@@ -838,10 +839,11 @@ class SafetyMonitorService {
                     date: reportData.date,
                     score: reportData.score,
                     site: reportData.siteName,
-                    contractorName: reportData.contractorName,
+                    contractorName: contractorMatch ? contractorMatch.contractor.name : reportData.contractorName,
                     projectId: projectMatch ? new ObjectId(projectMatch.project._id) : null,
                     projectName: projectMatch ? projectMatch.project.projectName : null,
                     matchConfidence: projectMatch ? projectMatch.confidence : null,
+                    contractorId: contractorMatch ? contractorMatch.contractor._id : null,
                     reports: reportData.reports,
                     createdAt: new Date(),
                     updatedAt: new Date()
