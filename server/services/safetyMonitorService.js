@@ -64,10 +64,14 @@ class SafetyMonitorService {
         const gmail = google.gmail({ version: 'v1', auth });
         const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
 
-        // Search for emails from Safeguard in the last 7 days
+        // Get today's date in YYYY/MM/DD format
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0].replace(/-/g, '/');
+        
+        // Search for emails from Safeguard from today
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: `from:${senderFilter} newer_than:7d`,
+            q: `from:${senderFilter} after:${todayStr}`,
             maxResults: 50,
         });
         return res.data.messages || [];
@@ -131,7 +135,7 @@ class SafetyMonitorService {
             // Try pattern: "דוח בטיחות לאתר אכזיב מגרש 3001"
             projectMatch = subject.match(/דוח בטיחות לאתר\s+(.+?)(?:\s|$)/);
         }
-        
+
         return projectMatch ? projectMatch[1].trim() : '';
     }
 
@@ -315,6 +319,127 @@ class SafetyMonitorService {
         // Use MongoDB ObjectId instead of custom string
         const { ObjectId } = require('mongodb');
         return new ObjectId();
+    }
+
+    async fetchAllHistoricalReports() {
+        try {
+            console.log('🔍 Starting historical safety report fetch...');
+
+            const auth = await this.authorize();
+            const gmail = google.gmail({ version: 'v1', auth });
+            const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
+
+            // Search for all emails from Safeguard in the last 30 days
+            const res = await gmail.users.messages.list({
+                userId: 'me',
+                q: `from:${senderFilter} newer_than:30d`,
+                maxResults: 100,
+            });
+            
+            const messages = res.data.messages || [];
+            console.log(`📬 Found ${messages.length} historical emails`);
+
+            // Group emails by project/site
+            const projectReports = {};
+
+            for (const msg of messages) {
+                const message = await this.getMessage(auth, msg.id);
+                const subject = this.getSubject(message);
+                const sender = this.getSender(message);
+                const link = this.extractPdfLink(message);
+
+                console.log(`📬 Subject: ${subject}`);
+                console.log(`👤 Sender: ${sender}`);
+                console.log(`🔗 Link: ${link}`);
+
+                if (!link) continue;
+
+                const siteName = this.extractProjectName(subject);
+                const contractorName = this.extractContractorName(sender);
+
+                if (!siteName) continue;
+
+                // Initialize project report if not exists
+                if (!projectReports[siteName]) {
+                    projectReports[siteName] = {
+                        siteName,
+                        contractorName,
+                        date: null,
+                        score: null,
+                        safetyReportUrl: null,
+                        issuesReportUrl: null,
+                        safetyData: null
+                    };
+                }
+
+                // Process safety report
+                if (subject.includes('מדד בטיחות')) {
+                    console.log('📊 Found safety report email');
+                    try {
+                        const pdfPath = await this.downloadPdfFromUrl(link, `safety_${msg.id}.pdf`);
+                        const data = await this.extractDataFromPdf(pdfPath, subject);
+
+                        projectReports[siteName].safetyData = data;
+                        projectReports[siteName].safetyReportUrl = link;
+                        projectReports[siteName].date = data.date;
+                        projectReports[siteName].score = data.score;
+
+                        console.log(`✅ Extracted safety data for ${siteName}:`, data);
+                    } catch (error) {
+                        console.error(`❌ Error processing safety PDF for ${siteName}:`, error.message);
+                    }
+                }
+
+                // Process issues/exceptions report
+                if (subject.includes('חריגים')) {
+                    console.log('📌 Found findings email');
+                    projectReports[siteName].issuesReportUrl = link;
+                }
+            }
+
+            // Save each project's daily report
+            const savedReports = [];
+            for (const [siteName, reportData] of Object.entries(projectReports)) {
+                if (!reportData.date || !reportData.score || !reportData.safetyReportUrl) {
+                    console.log(`⚠️ Skipping incomplete report for ${siteName}`);
+                    continue;
+                }
+
+                const _id = this.generateCustomId(reportData.date, siteName);
+
+                // Try to find matching project
+                const match = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
+                
+                const finalData = {
+                    _id,
+                    category: "Safety",
+                    operator: "Safeguard",
+                    date: reportData.date,
+                    reportUrl: reportData.safetyReportUrl,
+                    issuesUrl: reportData.issuesReportUrl,
+                    score: reportData.score,
+                    site: reportData.siteName,
+                    contractorName: reportData.contractorName,
+                    projectId: match ? match.project._id : null,
+                    projectName: match ? match.project.projectName : null,
+                    matchConfidence: match ? match.confidence : null,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+
+                await this.saveToMongo(finalData);
+                console.log(`✅ Saved historical report: ${_id}`);
+                console.log('Report data:', finalData);
+
+                savedReports.push(finalData);
+            }
+
+            console.log(`🎉 Processed ${savedReports.length} historical safety reports`);
+            return savedReports;
+        } catch (error) {
+            console.error('❌ Error in fetchAllHistoricalReports:', error);
+            throw error;
+        }
     }
 
     async fetchAndProcessReports() {
