@@ -454,6 +454,71 @@ class SafetyMonitorService {
         }
     }
 
+    async debugEmailSearch() {
+        try {
+            console.log('🔍 Starting email search debug...');
+
+            const auth = await this.authorize();
+            const gmail = google.gmail({ version: 'v1', auth });
+            const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
+
+            // Get today's date in YYYY/MM/DD format
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0].replace(/-/g, '/');
+            
+            console.log(`📅 Today's date: ${todayStr}`);
+            console.log(`📧 Searching for emails from: ${senderFilter}`);
+
+            // Search for emails from Safeguard from today
+            const res = await gmail.users.messages.list({
+                userId: 'me',
+                q: `from:${senderFilter} after:${todayStr}`,
+                maxResults: 50,
+            });
+            
+            const messages = res.data.messages || [];
+            console.log(`📬 Found ${messages.length} emails from today`);
+
+            // Also search for emails from the last 7 days
+            const res7d = await gmail.users.messages.list({
+                userId: 'me',
+                q: `from:${senderFilter} newer_than:7d`,
+                maxResults: 50,
+            });
+            
+            const messages7d = res7d.data.messages || [];
+            console.log(`📬 Found ${messages7d.length} emails from last 7 days`);
+
+            // Get details of first few emails
+            const emailDetails = [];
+            for (let i = 0; i < Math.min(5, messages7d.length); i++) {
+                const message = await this.getMessage(auth, messages7d[i].id);
+                const subject = this.getSubject(message);
+                const sender = this.getSender(message);
+                const date = this.getMessageDate(message);
+                
+                emailDetails.push({
+                    id: messages7d[i].id,
+                    subject,
+                    sender,
+                    date,
+                    isToday: messages7d[i].id === messages[0]?.id
+                });
+            }
+
+            return {
+                todayDate: todayStr,
+                senderFilter,
+                todayEmails: messages.length,
+                last7DaysEmails: messages7d.length,
+                emailDetails
+            };
+        } catch (error) {
+            console.error('Error in debugEmailSearch:', error);
+            throw error;
+        }
+    }
+
     async fetchAndProcessReports() {
         try {
             console.log('🔍 Starting safety report fetch...');

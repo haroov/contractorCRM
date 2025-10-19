@@ -287,7 +287,7 @@ router.post('/historical-fetch', async (req, res) => {
     try {
         const service = await initSafetyService();
         const result = await service.fetchAllHistoricalReports();
-        
+
         res.json({
             success: true,
             message: 'Historical fetch completed',
@@ -320,6 +320,27 @@ router.delete('/clear-all', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Failed to clear safetyReports collection',
+            details: error.message
+        });
+    }
+});
+
+// GET /api/safety-reports/debug-email-search - Debug email search functionality
+router.get('/debug-email-search', async (req, res) => {
+    try {
+        const service = await initSafetyService();
+        const result = await service.debugEmailSearch();
+        
+        res.json({
+            success: true,
+            message: 'Email search debug completed',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error in debug email search:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to debug email search',
             details: error.message
         });
     }
