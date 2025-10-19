@@ -131,30 +131,17 @@ class SafetyMonitorService {
     }
 
     extractProjectName(subject) {
-        // Extract project name from subject like "דוח מדד בטיחות לאתר אכזיב מגרש 3001"
-        // Try multiple patterns to catch different formats
-        let projectMatch = subject.match(/דוח מדד בטיחות לאתר\s+(.+?)(?:\s|$)/);
-        if (!projectMatch) {
-            // Try pattern: "דוח חריגים יומי לאתר אכזיב מגרש 3001"
-            projectMatch = subject.match(/דוח חריגים יומי לאתר\s+(.+?)(?:\s|$)/);
-        }
-        if (!projectMatch) {
-            // Try pattern: "לאתר אכזיב מגרש 3001"
-            projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
-        }
-        if (!projectMatch) {
-            // Try alternative pattern: "דוח מדד בטיחות - אכזיב מגרש 3001"
-            projectMatch = subject.match(/דוח מדד בטיחות\s*[-–]\s*(.+?)(?:\s|$)/);
-        }
-        if (!projectMatch) {
-            // Try pattern: "אכזיב מגרש 3001 - דוח מדד בטיחות"
-            projectMatch = subject.match(/^(.+?)\s*[-–]\s*דוח מדד בטיחות/);
-        }
-        if (!projectMatch) {
-            // Try pattern: "דוח בטיחות לאתר אכזיב מגרש 3001"
-            projectMatch = subject.match(/דוח בטיחות לאתר\s+(.+?)(?:\s|$)/);
+        // Primary rule: take everything after the word "לאתר"
+        const idx = subject.indexOf('לאתר');
+        if (idx !== -1) {
+            const after = subject.slice(idx + 'לאתר'.length).trim();
+            return after.replace(/[\s\-–|:]+$/g, '').trim();
         }
 
+        // Fallbacks for alternative formats
+        let projectMatch = subject.match(/דוח (?:מדד בטיחות|חריגים יומי|חריגי עובדים|חריגי ציוד)\s*[-–]\s*(.+)$/);
+        if (!projectMatch) projectMatch = subject.match(/^(.+?)\s*[-–]\s*דוח (?:מדד בטיחות|חריגים יומי|חריגי עובדים|חריגי ציוד)/);
+        if (!projectMatch) projectMatch = subject.match(/דוח בטיחות לאתר\s+(.+)$/);
         return projectMatch ? projectMatch[1].trim() : '';
     }
 
