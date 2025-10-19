@@ -3640,21 +3640,27 @@ connectDB().then(() => {
   safetyService.initialize().then(() => {
     console.log('✅ Safety Monitor Service initialized');
 
-    // Schedule daily safety report fetch at 7:00 AM Israel time
-    const cronSchedule = process.env.SAFETY_CRON_SCHEDULE || '0 7 * * *';
-    cron.schedule(cronSchedule, async () => {
-      try {
-        console.log('🕐 Running scheduled safety report fetch...');
-        await safetyService.fetchAndProcessReports();
-        console.log('✅ Scheduled safety report fetch completed');
-      } catch (error) {
-        console.error('❌ Error in scheduled safety report fetch:', error);
-      }
-    }, {
-      timezone: "Asia/Jerusalem"
-    });
+    // Schedule daily safety report fetches at 07:00 and 11:00 Israel time
+    const morningSchedule = process.env.SAFETY_CRON_SCHEDULE_MORNING || '0 7 * * *';
+    const lateMorningSchedule = process.env.SAFETY_CRON_SCHEDULE_LATE || '0 11 * * *';
+    const weeklySchedule = process.env.SAFETY_CRON_SCHEDULE_WEEKLY || '0 10 * * 0'; // Sundays 10:00
 
-    console.log(`⏰ Safety monitoring cron job scheduled: ${cronSchedule} (Israel time)`);
+    const runScheduledFetch = async (label) => {
+      try {
+        console.log(`🕐 Running scheduled safety report fetch [${label}]...`);
+        await safetyService.fetchAndProcessReports();
+        console.log(`✅ Scheduled safety report fetch [${label}] completed`);
+      } catch (error) {
+        console.error(`❌ Error in scheduled safety report fetch [${label}]:`, error);
+      }
+    };
+
+    cron.schedule(morningSchedule, () => runScheduledFetch('07:00'), { timezone: 'Asia/Jerusalem' });
+    cron.schedule(lateMorningSchedule, () => runScheduledFetch('11:00'), { timezone: 'Asia/Jerusalem' });
+    // Weekly job (emails with "חריגי עובדים" / "חריגי ציוד" are handled by the same fetcher)
+    cron.schedule(weeklySchedule, () => runScheduledFetch('Sun 10:00'), { timezone: 'Asia/Jerusalem' });
+
+    console.log(`⏰ Safety monitoring cron jobs scheduled: ${morningSchedule}, ${lateMorningSchedule}, weekly ${weeklySchedule} (Israel time)`);
   }).catch(error => {
     console.error('❌ Failed to initialize Safety Monitor Service:', error);
   });
