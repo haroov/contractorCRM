@@ -112,6 +112,14 @@ class SafetyMonitorService {
         // Try multiple patterns to catch different formats
         let projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
         if (!projectMatch) {
+            // Try pattern: "דוח מדד בטיחות לאתר אכזיב מגרש 3001"
+            projectMatch = subject.match(/דוח מדד בטיחות לאתר\s+(.+?)(?:\s|$)/);
+        }
+        if (!projectMatch) {
+            // Try pattern: "דוח חריגים יומי לאתר אכזיב מגרש 3001"
+            projectMatch = subject.match(/דוח חריגים יומי לאתר\s+(.+?)(?:\s|$)/);
+        }
+        if (!projectMatch) {
             // Try alternative pattern: "דוח מדד בטיחות - אכזיב מגרש 3001"
             projectMatch = subject.match(/דוח מדד בטיחות\s*[-–]\s*(.+?)(?:\s|$)/);
         }
@@ -163,6 +171,11 @@ class SafetyMonitorService {
         // Look for the actual score in the summary section
         if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%\s*(\d{1,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*100%\s*(\d{1,3})/);
+        // Try to find score in different formats
+        if (!scoreMatch) scoreMatch = text.match(/ציון בטיחות\s*(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*מתוך\s*100/);
+        if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מתוך\s*100/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})\s*%/);
 
         // Extract date - multiple patterns
         let dateMatch = text.match(/(\d{2}\/\d{2}\/\d{4})/);
@@ -176,6 +189,7 @@ class SafetyMonitorService {
         if (!siteMatch) siteMatch = text.match(/Project:\s*([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/דוח מדד בטיחות לאתר\s+([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/דוח בטיחות לאתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/דוח חריגים יומי לאתר\s+([^|\n]+)/);
 
         // Fallback: extract from subject if not found in PDF
         if (!siteMatch && subject) {
