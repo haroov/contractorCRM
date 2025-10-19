@@ -62,24 +62,41 @@ class SafetyMonitorService {
 
     async findTodayEmails(auth) {
         const gmail = google.gmail({ version: 'v1', auth });
-        const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
+        // Accept either exact sender or whole domain
+        const senderFilter = process.env.GMAIL_SENDER_FILTER || '@safeguardapps.com';
 
-        // Fetch the last 3 days to be resilient to timezone and send-time differences
-        // Also require attachments and look for relevant Hebrew subjects.
-        const queryParts = [
+        // Fetch the last 5 days to include weekends/timezone drifts
+        // Require attachments and look for relevant Hebrew subjects
+        const subjectFilter = '(subject:("מדד בטיחות" OR "חריגים יומי" OR "חריגי עובדים" OR "חריגי ציוד"))';
+        const baseQuery = [
             `from:${senderFilter}`,
             'has:attachment',
-            'newer_than:3d',
-            '(subject:("מדד בטיחות" OR "חריגים יומי" OR "חריגי עובדים" OR "חריגי ציוד"))'
-        ];
-        const q = queryParts.join(' ');
+            'newer_than:5d',
+            subjectFilter
+        ].join(' ');
+
+        // Primary search
+        let q = baseQuery;
 
         const res = await gmail.users.messages.list({
             userId: 'me',
             q,
             maxResults: 100,
         });
-        return res.data.messages || [];
+        let messages = res.data.messages || [];
+
+        // Fallback search if nothing found (broaden sender, keep subjects)
+        if (messages.length === 0) {
+            const fallbackQuery = [
+                'has:attachment',
+                'newer_than:5d',
+                subjectFilter
+            ].join(' ');
+            const res2 = await gmail.users.messages.list({ userId: 'me', q: fallbackQuery, maxResults: 100 });
+            messages = res2.data.messages || [];
+        }
+
+        return messages;
     }
 
     async getMessage(auth, messageId) {
@@ -135,7 +152,12 @@ class SafetyMonitorService {
         const idx = subject.indexOf('לאתר');
         if (idx !== -1) {
             const after = subject.slice(idx + 'לאתר'.length).trim();
-            return after.replace(/[\s\-–|:]+$/g, '').trim();
+            const cleaned = after
+                .replace(/^[:\s\-–|]+/, '')
+                .replace(/[\s\-–|:]+$/g, '')
+                .replace(/^"|"$/g, '')
+                .trim();
+            return cleaned;
         }
 
         // Fallbacks for alternative formats
@@ -549,14 +571,15 @@ class SafetyMonitorService {
             const auth = await this.authorize();
             const messages = await this.findTodayEmails(auth);
 
-            // Group emails by project/site
-            const projectReports = {};
+            // Group emails by site + date
+            const projectReports = {}; // key: `${site}::${date}`
 
             for (const msg of messages) {
                 const message = await this.getMessage(auth, msg.id);
                 const subject = this.getSubject(message);
                 const sender = this.getSender(message);
                 const link = this.extractPdfLink(message);
+                const messageDate = this.getMessageDate(message); // dd/mm/yyyy
 
                 console.log(`📬 Subject: ${subject}`);
                 console.log(`👤 Sender: ${sender}`);
@@ -570,19 +593,6 @@ class SafetyMonitorService {
 
                 if (!siteName) continue;
 
-                // Initialize project report if not exists
-                if (!projectReports[siteName]) {
-                    projectReports[siteName] = {
-                        siteName,
-                        contractorName,
-                        date: null,
-                        score: null,
-                        safetyReportUrl: null,
-                        issuesReportUrl: null,
-                        safetyData: null
-                    };
-                }
-
                 // Process safety index report
                 if (subject.includes('מדד בטיחות')) {
                     console.log('📌 Found safety index email');
@@ -590,15 +600,23 @@ class SafetyMonitorService {
                         const pdfPath = await this.downloadPdfFromUrl(link, `safety_${siteName.replace(/\s+/g, '_')}.pdf`);
                         const data = await this.extractDataFromPdf(pdfPath, subject);
 
-                        // Use date from PDF if available
                         const pdfDate = data.date || messageDate;
-                        const key2 = `${siteName}::${pdfDate}`;
-                        if (!projectReports[key2]) projectReports[key2] = JSON.parse(JSON.stringify(projectReports[key]));
-
-                        projectReports[key2].safetyData = data;
-                        projectReports[key2].reports.daily.safetyIndex = { url: link, score: data.score };
-                        projectReports[key2].date = pdfDate;
-                        projectReports[key2].score = data.score;
+                        const key = `${siteName}::${pdfDate}`;
+                        if (!projectReports[key]) {
+                            projectReports[key] = {
+                                siteName,
+                                contractorName,
+                                date: pdfDate,
+                                score: data.score,
+                                reports: {
+                                    daily: { safetyIndex: null, findings: null },
+                                    weekly: { equipment: null, workers: null }
+                                }
+                            };
+                        }
+                        projectReports[key].reports.daily.safetyIndex = { url: link, score: data.score };
+                        projectReports[key].date = pdfDate;
+                        projectReports[key].score = data.score;
 
                         console.log(`✅ Extracted safety data for ${siteName} (${pdfDate}):`, data);
                     } catch (error) {
@@ -609,18 +627,57 @@ class SafetyMonitorService {
                 // Process daily findings report
                 if (subject.includes('חריגים יומי')) {
                     console.log('📌 Found daily findings email');
+                    const key = `${siteName}::${messageDate}`;
+                    if (!projectReports[key]) {
+                        projectReports[key] = {
+                            siteName,
+                            contractorName,
+                            date: messageDate,
+                            score: null,
+                            reports: {
+                                daily: { safetyIndex: null, findings: null },
+                                weekly: { equipment: null, workers: null }
+                            }
+                        };
+                    }
                     projectReports[key].reports.daily.findings = { url: link };
                 }
 
                 // Weekly: equipment exceptions
                 if (subject.includes('חריגי ציוד')) {
                     console.log('📌 Found weekly equipment exceptions email');
+                    const key = `${siteName}::${messageDate}`;
+                    if (!projectReports[key]) {
+                        projectReports[key] = {
+                            siteName,
+                            contractorName,
+                            date: messageDate,
+                            score: null,
+                            reports: {
+                                daily: { safetyIndex: null, findings: null },
+                                weekly: { equipment: null, workers: null }
+                            }
+                        };
+                    }
                     projectReports[key].reports.weekly.equipment = { url: link };
                 }
 
                 // Weekly: workers exceptions
                 if (subject.includes('חריגי עובדים')) {
                     console.log('📌 Found weekly workers exceptions email');
+                    const key = `${siteName}::${messageDate}`;
+                    if (!projectReports[key]) {
+                        projectReports[key] = {
+                            siteName,
+                            contractorName,
+                            date: messageDate,
+                            score: null,
+                            reports: {
+                                daily: { safetyIndex: null, findings: null },
+                                weekly: { equipment: null, workers: null }
+                            }
+                        };
+                    }
                     projectReports[key].reports.weekly.workers = { url: link };
                 }
             }
@@ -628,7 +685,7 @@ class SafetyMonitorService {
             // Save each project's daily report
             const savedReports = [];
             for (const [key, reportData] of Object.entries(projectReports)) {
-                if (!reportData.date || !reportData.reports.daily.safetyIndex) {
+                if (!reportData.date || !reportData.reports || !reportData.reports.daily.safetyIndex) {
                     console.log(`⚠️ Skipping incomplete report for ${key}`);
                     continue;
                 }
