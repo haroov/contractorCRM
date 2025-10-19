@@ -22,6 +22,16 @@ class SafetyMonitorService {
             await this.client.connect();
             this.db = this.client.db('contractor-crm');
             console.log('✅ Safety Monitor Service: Connected to MongoDB');
+
+            // Ensure idempotency: one document per operator+date+site
+            try {
+                await this.db.collection('safetyReports').createIndex(
+                    { operator: 1, date: 1, site: 1 },
+                    { unique: true, name: 'uniq_operator_date_site' }
+                );
+            } catch (e) {
+                console.warn('⚠️ safetyReports index creation skipped or already exists:', e.message);
+            }
         } catch (error) {
             console.error('❌ Safety Monitor Service: Connection error:', error);
             throw error;
@@ -334,12 +344,28 @@ class SafetyMonitorService {
         try {
             const collection = this.db.collection("safetyReports");
 
-            const filter = { _id: reportData._id };
-            const update = { $set: reportData };
-            const options = { upsert: true };
+            // Idempotent upsert on operator+date+site
+            const filter = {
+                operator: reportData.operator,
+                date: reportData.date,
+                site: reportData.site
+            };
+            const update = {
+                $set: {
+                    category: reportData.category,
+                    score: reportData.score,
+                    contractorName: reportData.contractorName,
+                    projectId: reportData.projectId || null,
+                    projectName: reportData.projectName || null,
+                    matchConfidence: reportData.matchConfidence || null,
+                    reports: reportData.reports,
+                    updatedAt: new Date()
+                },
+                $setOnInsert: { createdAt: new Date() }
+            };
 
-            const result = await collection.updateOne(filter, update, options);
-            console.log("📦 MongoDB saved/updated:", reportData._id);
+            const result = await collection.updateOne(filter, update, { upsert: true });
+            console.log("📦 MongoDB upserted:", `${reportData.operator} ${reportData.date} ${reportData.site}`);
             return result;
         } catch (error) {
             console.error('Error saving to MongoDB:', error);
@@ -480,13 +506,10 @@ class SafetyMonitorService {
                     continue;
                 }
 
-                const _id = this.generateCustomId(reportData.date, reportData.siteName);
-
                 // Try to find matching project
                 const match = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
 
                 const finalData = {
-                    _id,
                     category: "Safety",
                     operator: "Safeguard",
                     date: reportData.date,
@@ -502,7 +525,7 @@ class SafetyMonitorService {
                 };
 
                 await this.saveToMongo(finalData);
-                console.log(`✅ Saved historical report: ${_id}`);
+                console.log(`✅ Saved historical report for ${reportData.siteName} ${reportData.date}`);
                 console.log('Report data:', finalData);
 
                 savedReports.push(finalData);
