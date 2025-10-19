@@ -110,14 +110,14 @@ class SafetyMonitorService {
     extractProjectName(subject) {
         // Extract project name from subject like "דוח מדד בטיחות לאתר אכזיב מגרש 3001"
         // Try multiple patterns to catch different formats
-        let projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
-        if (!projectMatch) {
-            // Try pattern: "דוח מדד בטיחות לאתר אכזיב מגרש 3001"
-            projectMatch = subject.match(/דוח מדד בטיחות לאתר\s+(.+?)(?:\s|$)/);
-        }
+        let projectMatch = subject.match(/דוח מדד בטיחות לאתר\s+(.+?)(?:\s|$)/);
         if (!projectMatch) {
             // Try pattern: "דוח חריגים יומי לאתר אכזיב מגרש 3001"
             projectMatch = subject.match(/דוח חריגים יומי לאתר\s+(.+?)(?:\s|$)/);
+        }
+        if (!projectMatch) {
+            // Try pattern: "לאתר אכזיב מגרש 3001"
+            projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
         }
         if (!projectMatch) {
             // Try alternative pattern: "דוח מדד בטיחות - אכזיב מגרש 3001"
@@ -161,10 +161,10 @@ class SafetyMonitorService {
         console.log('📄 PDF Text:', text.slice(0, 400));
 
         // Extract safety score - multiple patterns
-        let scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
+        let scoreMatch = text.match(/מדד בטיחות:\s*(\d{2,3})/);
+        if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון סופי\s*(\d{1,3})%/);
         if (!scoreMatch) scoreMatch = text.match(/(\d{2,3})\s*מדד בטיחות/);
-        if (!scoreMatch) scoreMatch = text.match(/מדד בטיחות:\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/ציון\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/סה"כ\s*(\d{2,3})/);
         if (!scoreMatch) scoreMatch = text.match(/Total\s*(\d{2,3})/);
@@ -190,6 +190,9 @@ class SafetyMonitorService {
         if (!siteMatch) siteMatch = text.match(/דוח מדד בטיחות לאתר\s+([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/דוח בטיחות לאתר\s+([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/דוח חריגים יומי לאתר\s+([^|\n]+)/);
+        // Try to find site name in different formats
+        if (!siteMatch) siteMatch = text.match(/אתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/לאתר\s*([^|\n]+)/);
 
         // Fallback: extract from subject if not found in PDF
         if (!siteMatch && subject) {
