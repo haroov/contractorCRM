@@ -359,20 +359,30 @@ class SafetyMonitorService {
 
             const auth = await this.authorize();
             const gmail = google.gmail({ version: 'v1', auth });
-            const senderFilter = process.env.GMAIL_SENDER_FILTER || 'support@safeguardapps.com';
+            const senderFilter = process.env.GMAIL_SENDER_FILTER || '@safeguardapps.com';
+            const subjectFilter = '(subject:("מדד בטיחות" OR "חריגים יומי" OR "חריגי עובדים" OR "חריגי ציוד"))';
+            const labelFilter = process.env.GMAIL_LABEL ? `label:${process.env.GMAIL_LABEL}` : null;
 
-            // Search for all emails from Safeguard in the last 30 days
+            // Search for all relevant emails from Safeguard in the last 30 days
+            const q = [
+                `from:${senderFilter}`,
+                'has:attachment',
+                'newer_than:30d',
+                subjectFilter,
+                labelFilter
+            ].filter(Boolean).join(' ');
+
             const res = await gmail.users.messages.list({
                 userId: 'me',
-                q: `from:${senderFilter} newer_than:30d`,
-                maxResults: 100,
+                q,
+                maxResults: 200,
             });
 
             const messages = res.data.messages || [];
             console.log(`📬 Found ${messages.length} historical emails`);
 
             // Group emails by site + date
-            const projectReports = {};
+            const projectReports = {}; // key: `${site}::${date}`
 
             for (const msg of messages) {
                 const message = await this.getMessage(auth, msg.id);
@@ -416,10 +426,26 @@ class SafetyMonitorService {
                         const pdfPath = await this.downloadPdfFromUrl(link, `safety_${msg.id}.pdf`);
                         const data = await this.extractDataFromPdf(pdfPath, subject);
 
-                        projectReports[siteName].safetyData = data;
-                        projectReports[siteName].safetyReportUrl = link;
-                        projectReports[siteName].date = data.date;
-                        projectReports[siteName].score = data.score;
+                        const pdfDate = data.date || messageDate;
+                        const keyPdf = `${siteName}::${pdfDate}`;
+                        if (!projectReports[keyPdf]) {
+                            projectReports[keyPdf] = {
+                                siteName,
+                                contractorName,
+                                date: pdfDate,
+                                score: data.score,
+                                reports: {
+                                    daily: { safetyIndex: null, findings: null },
+                                    weekly: { equipment: null, workers: null }
+                                },
+                                safetyData: null
+                            };
+                        }
+
+                        projectReports[keyPdf].safetyData = data;
+                        projectReports[keyPdf].reports.daily.safetyIndex = { url: link, score: data.score };
+                        projectReports[keyPdf].date = pdfDate;
+                        projectReports[keyPdf].score = data.score;
 
                         console.log(`✅ Extracted safety data for ${siteName}:`, data);
                     } catch (error) {
@@ -427,22 +453,34 @@ class SafetyMonitorService {
                     }
                 }
 
-                // Process issues/exceptions report
-                if (subject.includes('חריגים')) {
-                    console.log('📌 Found findings email');
-                    projectReports[siteName].issuesReportUrl = link;
+                // Process daily findings report
+                if (subject.includes('חריגים יומי')) {
+                    console.log('📌 Found daily findings email');
+                    projectReports[key].reports.daily.findings = { url: link };
+                }
+
+                // Weekly: equipment exceptions
+                if (subject.includes('חריגי ציוד')) {
+                    console.log('📌 Found weekly equipment exceptions email');
+                    projectReports[key].reports.weekly.equipment = { url: link };
+                }
+
+                // Weekly: workers exceptions
+                if (subject.includes('חריגי עובדים')) {
+                    console.log('📌 Found weekly workers exceptions email');
+                    projectReports[key].reports.weekly.workers = { url: link };
                 }
             }
 
             // Save each project's daily report
             const savedReports = [];
-            for (const [siteName, reportData] of Object.entries(projectReports)) {
-                if (!reportData.date || !reportData.score || !reportData.safetyReportUrl) {
-                    console.log(`⚠️ Skipping incomplete report for ${siteName}`);
+            for (const [key2, reportData] of Object.entries(projectReports)) {
+                if (!reportData.date || !reportData.reports.daily.safetyIndex) {
+                    console.log(`⚠️ Skipping incomplete report for ${key2}`);
                     continue;
                 }
 
-                const _id = this.generateCustomId(reportData.date, siteName);
+                const _id = this.generateCustomId(reportData.date, reportData.siteName);
 
                 // Try to find matching project
                 const match = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
@@ -452,8 +490,6 @@ class SafetyMonitorService {
                     category: "Safety",
                     operator: "Safeguard",
                     date: reportData.date,
-                    reportUrl: reportData.safetyReportUrl,
-                    issuesUrl: reportData.issuesReportUrl,
                     score: reportData.score,
                     site: reportData.siteName,
                     contractorName: reportData.contractorName,
@@ -461,7 +497,8 @@ class SafetyMonitorService {
                     projectName: match ? match.project.projectName : null,
                     matchConfidence: match ? match.confidence : null,
                     createdAt: new Date(),
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    reports: reportData.reports
                 };
 
                 await this.saveToMongo(finalData);
