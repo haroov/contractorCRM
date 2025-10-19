@@ -157,7 +157,13 @@ class SafetyMonitorService {
     extractContractorName(sender) {
         // Extract name from "Name <email@domain.com>" format
         const nameMatch = sender.match(/^([^<]+)<.*$/);
-        return nameMatch ? nameMatch[1].trim() : '';
+        const raw = (nameMatch ? nameMatch[1] : sender) || '';
+        // Remove various quote characters and trim
+        const cleaned = raw
+            .replace(/["'`״”“׳]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        return cleaned;
     }
 
     extractProjectName(subject) {
@@ -310,6 +316,51 @@ class SafetyMonitorService {
             return bestMatch && bestScore > 0.8 ? { project: bestMatch, confidence: bestScore } : null;
         } catch (error) {
             console.error('Error finding matching project:', error);
+            return null;
+        }
+    }
+
+    normalizeContractorName(name = '') {
+        return name
+            .toString()
+            .toLowerCase()
+            .replace(/["'`״”“׳]/g, '') // quotes
+            .replace(/בע\s*"?\s*מ/g, 'בעמ') // various בע"מ forms
+            .replace(/בעמ/g, '') // drop LTD suffix
+            .replace(/[\.]/g, '') // dots like צ.מ.ח → צמח
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    async findMatchingContractor(contractorName) {
+        try {
+            const contractors = await this.db.collection('contractors').find({}).toArray();
+            const normTarget = this.normalizeContractorName(contractorName);
+
+            // 1) exact normalized match
+            let exact = contractors.find(c => this.normalizeContractorName(c.name) === normTarget);
+            if (exact) return { contractor: exact, confidence: 1 };
+
+            // 2) startsWith / contains
+            exact = contractors.find(c => {
+                const n = this.normalizeContractorName(c.name);
+                return normTarget.startsWith(n) || n.startsWith(normTarget) || n.includes(normTarget) || normTarget.includes(n);
+            });
+            if (exact) return { contractor: exact, confidence: 0.95 };
+
+            // 3) fuzzy
+            let best = null;
+            let bestScore = 0;
+            for (const c of contractors) {
+                const score = this.calculateSimilarity(normTarget, this.normalizeContractorName(c.name));
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = c;
+                }
+            }
+            return best && bestScore > 0.8 ? { contractor: best, confidence: bestScore } : null;
+        } catch (e) {
+            console.error('Error finding matching contractor:', e);
             return null;
         }
     }
@@ -539,6 +590,7 @@ class SafetyMonitorService {
 
                 // Try to find matching project
                 const match = await this.findMatchingProject(reportData.siteName, reportData.contractorName);
+                const contractorMatch = await this.findMatchingContractor(reportData.contractorName);
 
                 const finalData = {
                     category: "Safety",
@@ -546,10 +598,11 @@ class SafetyMonitorService {
                     date: reportData.date,
                     score: reportData.score,
                     site: reportData.siteName,
-                    contractorName: reportData.contractorName,
+                    contractorName: contractorMatch ? contractorMatch.contractor.name : reportData.contractorName,
                     projectId: match ? match.project._id : null,
                     projectName: match ? match.project.projectName : null,
                     matchConfidence: match ? match.confidence : null,
+                    contractorId: contractorMatch ? contractorMatch.contractor._id : null,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                     reports: reportData.reports
