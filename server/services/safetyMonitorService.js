@@ -166,6 +166,25 @@ class SafetyMonitorService {
         return cleaned;
     }
 
+    // Convert dd/mm/yyyy (string) to a UTC Date (00:00:00)
+    parseReportDate(dateLike) {
+        if (dateLike instanceof Date) return dateLike;
+        if (typeof dateLike === 'string') {
+            const m = dateLike.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (m) {
+                const dd = parseInt(m[1], 10);
+                const mm = parseInt(m[2], 10) - 1;
+                const yyyy = parseInt(m[3], 10);
+                // Store as UTC midnight to be stable across timezones
+                return new Date(Date.UTC(yyyy, mm, dd, 0, 0, 0));
+            }
+            // Fallback: try Date.parse
+            const parsed = new Date(dateLike);
+            if (!isNaN(parsed.getTime())) return parsed;
+        }
+        return null;
+    }
+
     extractProjectName(subject) {
         // Primary rule: take everything after the word "לאתר"
         const idx = subject.indexOf('לאתר');
@@ -426,11 +445,16 @@ class SafetyMonitorService {
         try {
             const collection = this.db.collection("safetyReports");
 
-            // Idempotent upsert on operator+date+site
+            const normalizedDate = this.parseReportDate(reportData.date) || reportData.date;
+
+            // Idempotent upsert on operator+date+site; support both string and Date until all normalized
             const filter = {
                 operator: reportData.operator,
-                date: reportData.date,
-                site: reportData.site
+                site: reportData.site,
+                $or: [
+                    { date: normalizedDate },
+                    { date: reportData.date }
+                ]
             };
             const update = {
                 $set: {
@@ -441,7 +465,9 @@ class SafetyMonitorService {
                     projectName: reportData.projectName || null,
                     matchConfidence: reportData.matchConfidence || null,
                     reports: reportData.reports,
-                    updatedAt: new Date()
+                    date: normalizedDate,
+                    updatedAt: new Date(),
+                    contractorId: reportData.contractorId || null
                 },
                 $setOnInsert: { createdAt: new Date() }
             };
