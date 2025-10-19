@@ -109,7 +109,21 @@ class SafetyMonitorService {
 
     extractProjectName(subject) {
         // Extract project name from subject like "דוח מדד בטיחות לאתר אכזיב מגרש 3001"
-        const projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
+        // Try multiple patterns to catch different formats
+        let projectMatch = subject.match(/לאתר\s+(.+?)(?:\s|$)/);
+        if (!projectMatch) {
+            // Try alternative pattern: "דוח מדד בטיחות - אכזיב מגרש 3001"
+            projectMatch = subject.match(/דוח מדד בטיחות\s*[-–]\s*(.+?)(?:\s|$)/);
+        }
+        if (!projectMatch) {
+            // Try pattern: "אכזיב מגרש 3001 - דוח מדד בטיחות"
+            projectMatch = subject.match(/^(.+?)\s*[-–]\s*דוח מדד בטיחות/);
+        }
+        if (!projectMatch) {
+            // Try pattern: "דוח בטיחות לאתר אכזיב מגרש 3001"
+            projectMatch = subject.match(/דוח בטיחות לאתר\s+(.+?)(?:\s|$)/);
+        }
+        
         return projectMatch ? projectMatch[1].trim() : '';
     }
 
@@ -160,12 +174,14 @@ class SafetyMonitorService {
         if (!siteMatch) siteMatch = text.match(/לאתר\s+([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/Site:\s*([^|\n]+)/);
         if (!siteMatch) siteMatch = text.match(/Project:\s*([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/דוח מדד בטיחות לאתר\s+([^|\n]+)/);
+        if (!siteMatch) siteMatch = text.match(/דוח בטיחות לאתר\s+([^|\n]+)/);
 
         // Fallback: extract from subject if not found in PDF
         if (!siteMatch && subject) {
-            const subjectSiteMatch = subject.match(/לאתר\s+([^|]+)/);
-            if (subjectSiteMatch) {
-                siteMatch = subjectSiteMatch;
+            const projectName = this.extractProjectName(subject);
+            if (projectName) {
+                siteMatch = [null, projectName];
             }
         }
 
@@ -279,9 +295,9 @@ class SafetyMonitorService {
     }
 
     generateCustomId(date, site) {
-        const d = date.split('/').reverse().join('_'); // DD/MM/YYYY → YYYY_MM_DD
-        const s = site.replace(/\s+/g, '_');
-        return `Safety_${d}_Site_${s}`;
+        // Use MongoDB ObjectId instead of custom string
+        const { ObjectId } = require('mongodb');
+        return new ObjectId();
     }
 
     async fetchAndProcessReports() {

@@ -260,6 +260,28 @@ router.get('/test', async (req, res) => {
     }
 });
 
+// GET /api/safety-reports/force-fetch - Force fetch new emails (for testing)
+router.post('/force-fetch', async (req, res) => {
+    try {
+        const service = await initSafetyService();
+        const result = await service.fetchAndProcessReports();
+        
+        res.json({
+            success: true,
+            message: 'Force fetch completed',
+            reportsProcessed: result.length,
+            data: result
+        });
+    } catch (error) {
+        console.error('Error in force fetch:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to force fetch reports',
+            details: error.message
+        });
+    }
+});
+
 // GET /api/safety-reports/unmatched - Get unmatched reports for manual linking
 router.get('/unmatched', async (req, res) => {
     try {
