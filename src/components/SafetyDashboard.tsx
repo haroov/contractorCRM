@@ -89,6 +89,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const [selectedReport, setSelectedReport] = useState<SafetyReport | null>(null);
     const [selectedProjectId, setSelectedProjectId] = useState('');
+    const [selectedPoint, setSelectedPoint] = useState<any>(null);
 
     useEffect(() => {
         fetchSafetyData();
@@ -374,7 +375,15 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         </Typography>
                         <Box sx={{ width: '100%', height: 280 }}>
                             <ResponsiveContainer>
-                                <LineChart data={prepareChartData()} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                                <LineChart
+                                    data={prepareChartData()}
+                                    margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+                                    onMouseMove={(state: any) => {
+                                        const p = state?.activePayload?.[0]?.payload;
+                                        setSelectedPoint(p || null);
+                                    }}
+                                    onMouseLeave={() => setSelectedPoint(null)}
+                                >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
@@ -385,6 +394,16 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                 </LineChart>
                             </ResponsiveContainer>
                         </Box>
+                        {selectedPoint && (selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
+                            <Box sx={{ mt: 1.5, display: 'flex', gap: 2 }}>
+                                {selectedPoint.issuesUrl && (
+                                    <a href={selectedPoint.issuesUrl} target="_blank" rel="noreferrer">Issues</a>
+                                )}
+                                {selectedPoint.reportUrl && (
+                                    <a href={selectedPoint.reportUrl} target="_blank" rel="noreferrer">Report</a>
+                                )}
+                            </Box>
+                        )}
                     </CardContent>
                 </Card>
             )}
