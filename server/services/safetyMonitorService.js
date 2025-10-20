@@ -928,6 +928,48 @@ class SafetyMonitorService {
         }
     }
 
+    async normalizeExistingReports() {
+        try {
+            const collection = this.db.collection('safetyReports');
+            const cursor = collection.find({});
+            let total = 0;
+            let updated = 0;
+
+            while (await cursor.hasNext()) {
+                const doc = await cursor.next();
+                total++;
+                const set = {};
+
+                // Normalize date field to Date
+                if (typeof doc.date === 'string') {
+                    const d = this.parseReportDate(doc.date);
+                    if (d) set.date = d;
+                }
+
+                // Link contractor by best fuzzy match
+                const currentName = doc.contractorName || '';
+                if (!doc.contractorId || !currentName) {
+                    const match = await this.findMatchingContractor(currentName);
+                    if (match) {
+                        set.contractorId = match.contractor._id;
+                        set.contractorName = match.contractor.name;
+                    }
+                }
+
+                if (Object.keys(set).length > 0) {
+                    set.updatedAt = new Date();
+                    await collection.updateOne({ _id: doc._id }, { $set: set });
+                    updated++;
+                }
+            }
+
+            return { total, updated };
+        } catch (error) {
+            console.error('Error normalizing existing reports:', error);
+            throw error;
+        }
+    }
+
     async linkReportToProject(reportId, projectId) {
         try {
             const collection = this.db.collection("safetyReports");

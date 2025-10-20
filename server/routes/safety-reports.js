@@ -381,4 +381,16 @@ router.post('/link-unmatched', async (req, res) => {
     }
 });
 
+// POST /api/safety-reports/normalize - Convert date to Date type and link contractorId
+router.post('/normalize', async (req, res) => {
+    try {
+        const service = await initSafetyService();
+        const result = await service.normalizeExistingReports();
+        res.json({ success: true, message: 'Normalization completed', result });
+    } catch (error) {
+        console.error('Error normalizing safety reports:', error);
+        res.status(500).json({ success: false, error: 'Failed to normalize reports', details: error.message });
+    }
+});
+
 module.exports = router;
