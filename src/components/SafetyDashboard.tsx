@@ -239,9 +239,11 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             .slice()
             .sort((a, b) => new Date(a.date as any).getTime() - new Date(b.date as any).getTime())
             .map((report, index, arr) => ({
-                date: formatDate(report.date as any),
+                dateLabel: formatDate(report.date as any),
                 score: report.score,
-                avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10
+                avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10,
+                reportUrl: getReportUrl(report),
+                issuesUrl: getIssuesUrl(report)
             }));
     };
 
@@ -374,9 +376,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                             <ResponsiveContainer>
                                 <LineChart data={prepareChartData()} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                                    <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                                    <RechartsTooltip />
+                                    <RechartsTooltip content={<CustomTooltip />} />
                                     <Legend />
                                     <Line type="monotone" dataKey="score" name="ציון" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
                                     <Line type="monotone" dataKey="avg30" name="ממוצע נע" stroke="#10B981" strokeWidth={2} dot={false} />
@@ -513,6 +515,34 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             </Dialog>
         </Box>
     );
+};
+
+// Custom tooltip to show date, score and links
+const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+        const point = payload[0]?.payload || {};
+        const reportUrl = point.reportUrl as string | undefined;
+        const issuesUrl = point.issuesUrl as string | undefined;
+        return (
+            <Box sx={{ p: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>{point.dateLabel}</Typography>
+                <Typography variant="body2" color="primary">{point.score} : ציון</Typography>
+                <Typography variant="body2" color="success.main">{point.avg30} : ממוצע נע</Typography>
+                <Box sx={{ mt: 0.5, display: 'flex', gap: 1 }}>
+                    {reportUrl && (
+                        <a href={reportUrl} target="_blank" rel="noreferrer">Report</a>
+                    )}
+                    {issuesUrl && (
+                        <>
+                            <Typography component="span" sx={{ color: '#999' }}>|</Typography>
+                            <a href={issuesUrl} target="_blank" rel="noreferrer">Issues</a>
+                        </>
+                    )}
+                </Box>
+            </Box>
+        );
+    }
+    return null;
 };
 
 export default SafetyDashboard;
