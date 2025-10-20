@@ -36,7 +36,7 @@ import {
     CheckCircle,
     Error
 } from '@mui/icons-material';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 // import { format, parseISO, subDays } from 'date-fns';
 // import { he } from 'date-fns/locale';
@@ -373,7 +373,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         <Typography variant="h6" gutterBottom>
                             מגמת ציון בטיחות
                         </Typography>
-                        <Box sx={{ width: '100%', height: 280 }}>
+                        <Box sx={{ width: '100%', height: 280, position: 'relative' }}>
                             <ResponsiveContainer>
                                 <LineChart
                                     data={prepareChartData()}
@@ -387,23 +387,32 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                                    <RechartsTooltip content={<CustomTooltip />} />
                                     <Legend />
                                     <Line type="monotone" dataKey="score" name="ציון" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
                                     <Line type="monotone" dataKey="avg30" name="ממוצע נע" stroke="#10B981" strokeWidth={2} dot={false} />
                                 </LineChart>
                             </ResponsiveContainer>
+                            {selectedPoint && (
+                                <Box sx={{ position: 'absolute', top: 16, right: 16, bgcolor: 'rgba(255,255,255,0.98)', border: '1px solid #e0e0e0', borderRadius: 1, p: 1.5, minWidth: 160, boxShadow: 1 }}>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>{selectedPoint.dateLabel}</Typography>
+                                    <Typography variant="body2" color="primary">{selectedPoint.score} : ציון</Typography>
+                                    <Typography variant="body2" color="success.main">{selectedPoint.avg30} : ממוצע נע</Typography>
+                                    {(selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
+                                        <Box sx={{ mt: 0.5, display: 'flex', gap: 1 }}>
+                                            {selectedPoint.issuesUrl && (
+                                                <a href={selectedPoint.issuesUrl} target="_blank" rel="noreferrer">Issues</a>
+                                            )}
+                                            {selectedPoint.reportUrl && (
+                                                <>
+                                                    <Typography component="span" sx={{ color: '#999' }}>|</Typography>
+                                                    <a href={selectedPoint.reportUrl} target="_blank" rel="noreferrer">Report</a>
+                                                </>
+                                            )}
+                                        </Box>
+                                    )}
+                                </Box>
+                            )}
                         </Box>
-                        {selectedPoint && (selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
-                            <Box sx={{ mt: 1.5, display: 'flex', gap: 2 }}>
-                                {selectedPoint.issuesUrl && (
-                                    <a href={selectedPoint.issuesUrl} target="_blank" rel="noreferrer">Issues</a>
-                                )}
-                                {selectedPoint.reportUrl && (
-                                    <a href={selectedPoint.reportUrl} target="_blank" rel="noreferrer">Report</a>
-                                )}
-                            </Box>
-                        )}
                     </CardContent>
                 </Card>
             )}
@@ -534,34 +543,6 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             </Dialog>
         </Box>
     );
-};
-
-// Custom tooltip to show date, score and links
-const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-        const point = payload[0]?.payload || {};
-        const reportUrl = point.reportUrl as string | undefined;
-        const issuesUrl = point.issuesUrl as string | undefined;
-        return (
-            <Box sx={{ p: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>{point.dateLabel}</Typography>
-                <Typography variant="body2" color="primary">{point.score} : ציון</Typography>
-                <Typography variant="body2" color="success.main">{point.avg30} : ממוצע נע</Typography>
-                <Box sx={{ mt: 0.5, display: 'flex', gap: 1 }}>
-                    {reportUrl && (
-                        <a href={reportUrl} target="_blank" rel="noreferrer">Report</a>
-                    )}
-                    {issuesUrl && (
-                        <>
-                            <Typography component="span" sx={{ color: '#999' }}>|</Typography>
-                            <a href={issuesUrl} target="_blank" rel="noreferrer">Issues</a>
-                        </>
-                    )}
-                </Box>
-            </Box>
-        );
-    }
-    return null;
 };
 
 export default SafetyDashboard;
