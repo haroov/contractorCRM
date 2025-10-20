@@ -26,3 +26,4 @@ console.log('5. לחץ Save ו-Redeploy');
 console.log('');
 
 console.log('💡 טיפ: העתק את הערכים למעלה והדבק אותם ב-Vercel!');
+

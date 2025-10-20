@@ -1,8 +1,9 @@
 const fs = require('fs');
 const { google } = require('googleapis');
 
-// Load credentials from file
+// Gmail API credentials - loaded from file
 const credentials = JSON.parse(fs.readFileSync('./server/credentials.json'));
+
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 function generateAuthUrl() {
@@ -17,7 +18,7 @@ function generateAuthUrl() {
         scope: SCOPES,
     });
 
-    console.log('🔑 יצירת כתובת הרשאה Gmail');
+    console.log('🔑 יצירת טוקן Gmail');
     console.log('=====================================');
     console.log('📋 פתח את הכתובת הזו בדפדפן:');
     console.log('');
@@ -28,9 +29,8 @@ function generateAuthUrl() {
     console.log('2. בחר את החשבון ai@chocoinsurance.com');
     console.log('3. אשר את ההרשאות');
     console.log('4. העתק את הקוד מהדפדפן');
-    console.log('5. הפעל: node scripts/create-gmail-token.js [הקוד]');
+    console.log('5. הפעל: node scripts/create-token-from-code.js [הקוד]');
     console.log('');
 }
 
 generateAuthUrl();
-

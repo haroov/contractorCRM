@@ -161,3 +161,4 @@ VITE_API_BASE_URL=https://data.gov.il/api/3/action/datastore_search
 # Force Render deployment - Environment variables update - Wed Oct 15 12:10:32 IDT 2025
 # Force Render deployment - API key update - Wed Oct 15 12:28:17 IDT 2025
 # Force Render deployment - API key fix - Sat Oct 18 18:01:35 IDT 2025
+# Force Render deployment - Emergency services fix - Mon Oct 20 19:42:55 CEST 2025
