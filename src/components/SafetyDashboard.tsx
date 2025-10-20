@@ -36,22 +36,35 @@ import {
     CheckCircle,
     Error
 } from '@mui/icons-material';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend } from 'recharts';
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 // import { format, parseISO, subDays } from 'date-fns';
 // import { he } from 'date-fns/locale';
 
 interface SafetyReport {
     _id: string;
-    date: string;
+    date: string | Date;
     score: number;
     site: string;
-    reportUrl: string;
-    issuesUrl?: string;
     contractorName: string;
     projectId?: string;
     projectName?: string;
     matchConfidence?: number;
     createdAt: string;
+    // Nested links coming from backend
+    reports?: {
+        daily?: {
+            safetyIndex?: { url?: string; score?: number };
+            findings?: { url?: string };
+        };
+        weekly?: {
+            equipment?: { url?: string };
+            workers?: { url?: string };
+        };
+    };
+    // Legacy flat fields (if exist)
+    reportUrl?: string;
+    issuesUrl?: string;
 }
 
 interface SafetyStats {
@@ -102,12 +115,18 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 setReports(reportsData.data);
             }
 
-            // Fetch unmatched reports for manual linking
-            const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
-            const unmatchedData = await unmatchedResponse.json();
-
-            if (unmatchedData.success) {
-                setUnmatchedReports(unmatchedData.data);
+            // Fetch unmatched reports for manual linking (best-effort; ignore if endpoint missing)
+            try {
+                const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
+                if (unmatchedResponse.ok) {
+                    const unmatchedData = await unmatchedResponse.json();
+                    if (unmatchedData.success) {
+                        setUnmatchedReports(unmatchedData.data);
+                    }
+                }
+            } catch (e) {
+                // Silently ignore unmatched fetch failures
+                console.warn('Unmatched reports fetch skipped:', e);
             }
 
         } catch (err) {
@@ -205,24 +224,33 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
         }
     };
 
-    const formatDate = (dateString: string) => {
+    const formatDate = (dateInput: string | Date) => {
         try {
             // Simple date formatting without date-fns for now
-            const date = new Date(dateString);
+            const date = new Date(dateInput as any);
             return date.toLocaleDateString('he-IL');
         } catch {
-            return dateString;
+            return (dateInput as any) as string;
         }
     };
 
     const prepareChartData = () => {
         return reports
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .map((report, index) => ({
-                date: formatDate(report.date),
+            .slice()
+            .sort((a, b) => new Date(a.date as any).getTime() - new Date(b.date as any).getTime())
+            .map((report, index, arr) => ({
+                date: formatDate(report.date as any),
                 score: report.score,
-                cumulative: reports.slice(0, index + 1).reduce((sum, r) => sum + r.score, 0) / (index + 1)
+                avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10
             }));
+    };
+
+    const getReportUrl = (report: SafetyReport): string | undefined => {
+        return report.reportUrl || report.reports?.daily?.safetyIndex?.url;
+    };
+
+    const getIssuesUrl = (report: SafetyReport): string | undefined => {
+        return report.issuesUrl || report.reports?.daily?.findings?.url || report.reports?.weekly?.equipment?.url || report.reports?.weekly?.workers?.url;
     };
 
     if (loading && !stats) {
@@ -336,18 +364,27 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 </Box>
             )}
 
-            {/* Charts - Temporarily disabled until recharts is installed */}
             {reports.length > 0 && (
-                <Box sx={{ mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        גרפי בטיחות (יוצגו לאחר התקנת recharts)
-                    </Typography>
-                    <Box sx={{ p: 2, border: '1px dashed #ccc', borderRadius: 1, textAlign: 'center' }}>
-                        <Typography color="textSecondary">
-                            גרפים יוצגו כאן לאחר התקנת חבילת recharts
+                <Card sx={{ mb: 3 }}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                            מגמת ציון בטיחות
                         </Typography>
-                    </Box>
-                </Box>
+                        <Box sx={{ width: '100%', height: 280 }}>
+                            <ResponsiveContainer>
+                                <LineChart data={prepareChartData()} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                                    <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+                                    <RechartsTooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="score" name="ציון" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
+                                    <Line type="monotone" dataKey="avg30" name="ממוצע נע" stroke="#10B981" strokeWidth={2} dot={false} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </Box>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Recent Reports */}
@@ -375,19 +412,23 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             size="small"
                                             sx={{ mr: 1 }}
                                         />
-                                        <Tooltip title="פתח דוח בטיחות">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => window.open(report.reportUrl, '_blank')}
-                                            >
-                                                <OpenInNew />
-                                            </IconButton>
-                                        </Tooltip>
-                                        {report.issuesUrl && (
+                                        {getReportUrl(report) && (
+                                            <Tooltip title="פתח דוח בטיחות">
+                                                <IconButton
+                                                    size="small"
+                                                    component="a"
+                                                    href={getReportUrl(report)}
+                                                >
+                                                    <OpenInNew />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {getIssuesUrl(report) && (
                                             <Tooltip title="פתח דוח חריגים">
                                                 <IconButton
                                                     size="small"
-                                                    onClick={() => window.open(report.issuesUrl, '_blank')}
+                                                    component="a"
+                                                    href={getIssuesUrl(report)}
                                                 >
                                                     <Warning />
                                                 </IconButton>
