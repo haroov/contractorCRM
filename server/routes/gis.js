@@ -257,6 +257,10 @@ router.get('/distance-matrix-test', async (req, res) => {
     }
 
     const keyPresent = Boolean(distanceMatrixService.apiKey);
+    const keySource = distanceMatrixService.keySource || 'UNKNOWN';
+    const keyMasked = distanceMatrixService.apiKey ? `${distanceMatrixService.apiKey.slice(0,6)}...${distanceMatrixService.apiKey.slice(-4)}` : null;
+    const crypto = require('crypto');
+    const keyHash = distanceMatrixService.apiKey ? crypto.createHash('sha256').update(distanceMatrixService.apiKey).digest('hex').slice(0,16) : null;
     const result = await distanceMatrixService.calculateDistance(oLat, oLng, dLat, dLng);
 
     // Build same URL and attempt to return raw Google response for diagnostics
@@ -273,6 +277,9 @@ router.get('/distance-matrix-test', async (req, res) => {
     res.json({
       success: Boolean(result),
       keyPresent,
+      keySource,
+      keyMasked,
+      keyHash,
       input: { originLat: oLat, originLng: oLng, destLat: dLat, destLng: dLng },
       result,
       raw

@@ -2,11 +2,24 @@ const https = require('https');
 
 class DistanceMatrixService {
   constructor() {
-    // Try multiple environment variable names for Google Maps API key
-    this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY ||
-      process.env.GOOGLE_MAPS_API_KEY ||
-      process.env.GOOGLE_API_KEY ||
-      process.env.GEO_MATRIX_API_KEY; // New geoMatrix API key from environment
+    // Prefer server-side dedicated key first; then fallbacks
+    if (process.env.GEO_MATRIX_API_KEY) {
+      this.apiKey = process.env.GEO_MATRIX_API_KEY;
+      this.keySource = 'GEO_MATRIX_API_KEY';
+    } else if (process.env.GOOGLE_MAPS_API_KEY) {
+      this.apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      this.keySource = 'GOOGLE_MAPS_API_KEY';
+    } else if (process.env.GOOGLE_API_KEY) {
+      this.apiKey = process.env.GOOGLE_API_KEY;
+      this.keySource = 'GOOGLE_API_KEY';
+    } else if (process.env.VITE_GOOGLE_MAPS_API_KEY) {
+      // Last resort: frontend key (likely referrer-restricted) — not ideal for server
+      this.apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY;
+      this.keySource = 'VITE_GOOGLE_MAPS_API_KEY';
+    } else {
+      this.apiKey = undefined;
+      this.keySource = 'NONE';
+    }
     this.baseUrl = 'https://maps.googleapis.com/maps/api/distancematrix/json';
   }
 
@@ -21,7 +34,7 @@ class DistanceMatrixService {
   async calculateDistance(originLat, originLng, destLat, destLng) {
     try {
       console.log('🔍 Distance Matrix Service: Starting distance calculation...');
-      console.log(`🔑 Distance Matrix Service: API Key available: ${this.apiKey ? 'YES' : 'NO'}`);
+      console.log(`🔑 Distance Matrix Service: API Key available: ${this.apiKey ? 'YES' : 'NO'} (source: ${this.keySource})`);
       // Never print parts of secrets in logs
       console.log('🔑 Distance Matrix Service: API Key preview: [HIDDEN]');
 
