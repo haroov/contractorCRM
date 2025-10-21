@@ -1,5 +1,6 @@
 const express = require('express');
 const gisService = require('../services/gisService');
+const distanceMatrixService = require('../services/distanceMatrixService');
 const router = express.Router();
 
 /**
@@ -225,6 +226,48 @@ router.get('/health', async (req, res) => {
       error: 'GIS service is not healthy',
       details: error.message
     });
+  }
+});
+
+/**
+ * Distance Matrix debug endpoint
+ * GET /api/gis/distance-matrix-test?originLat=33.04187&originLng=35.102275&destLat=33.0085&destLng=35.0981
+ */
+router.get('/distance-matrix-test', async (req, res) => {
+  try {
+    const { originLat, originLng, destLat, destLng } = req.query;
+
+    if ([originLat, originLng, destLat, destLng].some(v => v === undefined)) {
+      return res.status(400).json({
+        success: false,
+        error: 'originLat, originLng, destLat, destLng are required as query parameters'
+      });
+    }
+
+    const oLat = parseFloat(originLat);
+    const oLng = parseFloat(originLng);
+    const dLat = parseFloat(destLat);
+    const dLng = parseFloat(destLng);
+
+    if ([oLat, oLng, dLat, dLng].some(v => Number.isNaN(v))) {
+      return res.status(400).json({
+        success: false,
+        error: 'All coordinates must be valid numbers'
+      });
+    }
+
+    const keyPresent = Boolean(distanceMatrixService.apiKey);
+    const result = await distanceMatrixService.calculateDistance(oLat, oLng, dLat, dLng);
+
+    res.json({
+      success: Boolean(result),
+      keyPresent,
+      input: { originLat: oLat, originLng: oLng, destLat: dLat, destLng: dLng },
+      result
+    });
+  } catch (error) {
+    console.error('❌ GIS API: Distance matrix test failed:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
