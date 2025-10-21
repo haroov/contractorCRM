@@ -259,11 +259,23 @@ router.get('/distance-matrix-test', async (req, res) => {
     const keyPresent = Boolean(distanceMatrixService.apiKey);
     const result = await distanceMatrixService.calculateDistance(oLat, oLng, dLat, dLng);
 
+    // Build same URL and attempt to return raw Google response for diagnostics
+    const origins = `${oLat},${oLng}`;
+    const destinations = `${dLat},${dLng}`;
+    const url = `${distanceMatrixService.baseUrl}?origins=${origins}&destinations=${destinations}&mode=driving&key=${distanceMatrixService.apiKey}`;
+    let raw = null;
+    try {
+      raw = await distanceMatrixService.makeRequest(url);
+    } catch (e) {
+      raw = { error: e.message };
+    }
+
     res.json({
       success: Boolean(result),
       keyPresent,
       input: { originLat: oLat, originLng: oLng, destLat: dLat, destLng: dLng },
-      result
+      result,
+      raw
     });
   } catch (error) {
     console.error('❌ GIS API: Distance matrix test failed:', error);
