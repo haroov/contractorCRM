@@ -276,16 +276,38 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             setSelectedPoint(data.payload);
             setTooltipVisible(true);
             
-            // Calculate position for sticky tooltip
+            // Calculate position relative to the clicked point
             const chartContainer = event.currentTarget.closest('.chart-container');
             if (chartContainer) {
                 const rect = chartContainer.getBoundingClientRect();
-                const isRightSide = event.clientX > rect.left + rect.width / 2;
-                const isTopSide = event.clientY < rect.top + rect.height / 2;
+                const containerRect = chartContainer.getBoundingClientRect();
+                
+                // Get click position relative to the chart container
+                const clickX = event.clientX - containerRect.left;
+                const clickY = event.clientY - containerRect.top;
+                
+                // Tooltip dimensions (approximate)
+                const tooltipWidth = 160;
+                const tooltipHeight = 80;
+                
+                // Position tooltip next to the click point, with some offset
+                let tooltipX = clickX + 10; // 10px offset to the right of click
+                let tooltipY = clickY - tooltipHeight / 2; // Center vertically on click point
+                
+                // Adjust if tooltip would go outside container bounds
+                if (tooltipX + tooltipWidth > rect.width) {
+                    tooltipX = clickX - tooltipWidth - 10; // Show to the left instead
+                }
+                if (tooltipY < 0) {
+                    tooltipY = 10; // Stick to top
+                }
+                if (tooltipY + tooltipHeight > rect.height) {
+                    tooltipY = rect.height - tooltipHeight - 10; // Stick to bottom
+                }
                 
                 setTooltipPosition({
-                    x: isRightSide ? 16 : rect.width - 176, // 16px from edge, 176px is tooltip width
-                    y: isTopSide ? 16 : rect.height - 80 // 16px from edge, 80px is tooltip height
+                    x: tooltipX,
+                    y: tooltipY
                 });
             }
         }
@@ -416,7 +438,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         <Typography variant="h6" gutterBottom>
                             מגמת ציון בטיחות
                         </Typography>
-                        <Box 
+                        <Box
                             className="chart-container"
                             sx={{ width: '100%', height: 280, position: 'relative' }}
                             onClick={handleChartContainerClick}
@@ -436,25 +458,25 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                 </LineChart>
                             </ResponsiveContainer>
                             {tooltipVisible && selectedPoint && tooltipPosition && (
-                                <Box 
+                                <Box
                                     className="tooltip-content"
-                                    sx={{ 
-                                        position: 'absolute', 
-                                        top: tooltipPosition.y, 
-                                        left: tooltipPosition.x, 
-                                        bgcolor: 'rgba(255,255,255,0.98)', 
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 1, 
-                                        p: 1.5, 
-                                        minWidth: 160, 
+                                    sx={{
+                                        position: 'absolute',
+                                        top: tooltipPosition.y,
+                                        left: tooltipPosition.x,
+                                        bgcolor: 'rgba(255,255,255,0.98)',
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 1,
+                                        p: 1.5,
+                                        minWidth: 160,
                                         boxShadow: 2,
                                         zIndex: 1000
                                     }}
                                 >
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
                                         <Typography variant="body2" sx={{ fontWeight: 600 }}>{selectedPoint.dateLabel}</Typography>
-                                        <IconButton 
-                                            size="small" 
+                                        <IconButton
+                                            size="small"
                                             onClick={() => {
                                                 setTooltipVisible(false);
                                                 setSelectedPoint(null);
