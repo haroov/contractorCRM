@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Avatar, Menu, MenuItem, ListItemIcon, ListItemText, Box, Typography } from '@mui/material';
 import { AccountCircle as AccountCircleIcon, Language as LanguageIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { type Language, getDirection, getHtmlLang } from '../locale';
+import { type Language, normalizeLanguage } from '../locale';
 import i18nInstance from '../i18n';
 
 interface UserMenuProps {
@@ -55,7 +55,7 @@ export default function UserMenu({
         handleLanguageMenuClose();
     };
 
-    const currentLanguage = i18nInstance.language as Language;
+    const currentLanguage = normalizeLanguage(i18nInstance.language);
     const isRtl = i18nInstance.dir() === 'rtl';
 
     return (
@@ -163,22 +163,22 @@ export default function UserMenu({
                 }}
             >
                 <MenuItem
-                    onClick={() => changeLanguage('he')}
-                    selected={currentLanguage === 'he'}
+                    onClick={() => changeLanguage('en')}
+                    selected={currentLanguage === 'en'}
                 >
-                    <ListItemText>{t('common.hebrew')}</ListItemText>
-                    {currentLanguage === 'he' && (
+                    <ListItemText>{t('common.english')}</ListItemText>
+                    {currentLanguage === 'en' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />
                         </ListItemIcon>
                     )}
                 </MenuItem>
                 <MenuItem
-                    onClick={() => changeLanguage('en')}
-                    selected={currentLanguage === 'en'}
+                    onClick={() => changeLanguage('he')}
+                    selected={currentLanguage === 'he'}
                 >
-                    <ListItemText>{t('common.english')}</ListItemText>
-                    {currentLanguage === 'en' && (
+                    <ListItemText>{t('common.hebrew')}</ListItemText>
+                    {currentLanguage === 'he' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />
                         </ListItemIcon>

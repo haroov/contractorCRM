@@ -5,7 +5,7 @@ import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { createAppTheme } from './theme';
-import { getDirection, getHtmlLang, type Language } from './locale';
+import { getDirection, getHtmlLang, normalizeLanguage, type Language } from './locale';
 import './index.css'
 import App from './App.tsx'
 import ErrorBoundary from './ErrorBoundary.tsx'
@@ -53,7 +53,8 @@ function AppWrapper() {
 
   useEffect(() => {
     // Get initial language from localStorage or default to Hebrew
-    const savedLang = localStorage.getItem('i18nextLng') as Language || 'he';
+    const savedRaw = localStorage.getItem('i18nextLng') as string | null;
+    const savedLang = normalizeLanguage(savedRaw || 'he');
     setLanguage(savedLang);
 
     const direction = getDirection(savedLang);
@@ -67,7 +68,7 @@ function AppWrapper() {
   // Listen for language changes from i18next
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
-      const newLang = lng as Language;
+      const newLang = normalizeLanguage(lng);
       setLanguage(newLang);
 
       const direction = getDirection(newLang);

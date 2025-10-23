@@ -1,6 +1,5 @@
 const express = require('express');
 const gisService = require('../services/gisService');
-const distanceMatrixService = require('../services/distanceMatrixService');
 const router = express.Router();
 
 /**
@@ -229,66 +228,7 @@ router.get('/health', async (req, res) => {
   }
 });
 
-/**
- * Distance Matrix debug endpoint
- * GET /api/gis/distance-matrix-test?originLat=33.04187&originLng=35.102275&destLat=33.0085&destLng=35.0981
- */
-router.get('/distance-matrix-test', async (req, res) => {
-  try {
-    const { originLat, originLng, destLat, destLng } = req.query;
-
-    if ([originLat, originLng, destLat, destLng].some(v => v === undefined)) {
-      return res.status(400).json({
-        success: false,
-        error: 'originLat, originLng, destLat, destLng are required as query parameters'
-      });
-    }
-
-    const oLat = parseFloat(originLat);
-    const oLng = parseFloat(originLng);
-    const dLat = parseFloat(destLat);
-    const dLng = parseFloat(destLng);
-
-    if ([oLat, oLng, dLat, dLng].some(v => Number.isNaN(v))) {
-      return res.status(400).json({
-        success: false,
-        error: 'All coordinates must be valid numbers'
-      });
-    }
-
-    const keyPresent = Boolean(distanceMatrixService.apiKey);
-    const keySource = distanceMatrixService.keySource || 'UNKNOWN';
-    const keyMasked = distanceMatrixService.apiKey ? `${distanceMatrixService.apiKey.slice(0,6)}...${distanceMatrixService.apiKey.slice(-4)}` : null;
-    const crypto = require('crypto');
-    const keyHash = distanceMatrixService.apiKey ? crypto.createHash('sha256').update(distanceMatrixService.apiKey).digest('hex').slice(0,16) : null;
-    const result = await distanceMatrixService.calculateDistance(oLat, oLng, dLat, dLng);
-
-    // Build same URL and attempt to return raw Google response for diagnostics
-    const origins = `${oLat},${oLng}`;
-    const destinations = `${dLat},${dLng}`;
-    const url = `${distanceMatrixService.baseUrl}?origins=${origins}&destinations=${destinations}&mode=driving&key=${distanceMatrixService.apiKey}`;
-    let raw = null;
-    try {
-      raw = await distanceMatrixService.makeRequest(url);
-    } catch (e) {
-      raw = { error: e.message };
-    }
-
-    res.json({
-      success: Boolean(result),
-      keyPresent,
-      keySource,
-      keyMasked,
-      keyHash,
-      input: { originLat: oLat, originLng: oLng, destLat: dLat, destLng: dLng },
-      result,
-      raw
-    });
-  } catch (error) {
-    console.error('❌ GIS API: Distance matrix test failed:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+// Distance Matrix debug endpoint removed after verification
 
 // Get nearest fire station for coordinates - Updated
 router.get('/fire-station', async (req, res) => {
