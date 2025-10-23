@@ -101,6 +101,38 @@ async function analyzeCompanyWebsite(websiteUrl) {
             }
         }
 
+        // Try OpenAI chat completions with web_search tool (fallback method)
+        if (openai && openai.chat && openai.chat.completions && typeof openai.chat.completions.create === 'function') {
+            console.log('🌐 Trying OpenAI chat completions with web_search tool');
+            const systemPromptSearch = `אתה מנתח אתרי אינטרנט של חברות בניה/נדל"ן. השתמש ב-web_search כדי לחפש מידע עדכני מהאתר. החזר JSON בלבד.`;
+            const userPromptSearch = `נתח את האתר ${websiteUrl} עם דגש על עמודי אודות/פרויקטים/בטיחות. החזר JSON עם {companyName, about (~1000 מילים), safety, projects (מערך), logoUrl}.`;
+
+            try {
+                const response = await openai.chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: systemPromptSearch },
+                        { role: 'user', content: userPromptSearch }
+                    ],
+                    tools: [{ type: 'web_search' }],
+                    temperature: 0.0,
+                    max_tokens: 4000
+                });
+
+                const responseText = response.choices?.[0]?.message?.content;
+                if (responseText) {
+                    let cleaned = responseText.trim();
+                    if (cleaned.startsWith('```json')) cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                    if (cleaned.startsWith('```')) cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                    const parsed = JSON.parse(cleaned);
+                    console.log('✅ Using web_search-based analysis via chat completions');
+                    return parsed;
+                }
+            } catch (err) {
+                console.warn('⚠️ web_search via chat completions failed, falling back to on-site crawl:', err?.message || err);
+            }
+        }
+
         // Normalize URL and prep helpers
         const normalizeUrl = (url) => {
             if (!url) return '';
@@ -277,41 +309,9 @@ router.post("/analyze-company", async (req, res) => {
             });
         }
 
-        // Block analysis when contractor name and detected site brand mismatch badly
-        try {
-            const dbCompanyName = (req.body?.dbCompanyName || '').toString();
-            const detectedDomainName = (new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`)).hostname;
-            if (dbCompanyName) {
-                const simplify = (s) => (s || '').toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, ' ').trim();
-                const a = simplify(dbCompanyName);
-                const b = simplify(detectedDomainName.replace(/\.(co|com|org|net|il)\.?[a-z]*$/i, ''));
-                const levenshtein = (s1, s2) => {
-                    const n = s1.length, m = s2.length;
-                    const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
-                    for (let i = 0; i <= n; i++) dp[i][0] = i;
-                    for (let j = 0; j <= m; j++) dp[0][j] = j;
-                    for (let i = 1; i <= n; i++) {
-                        for (let j = 1; j <= m; j++) {
-                            const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
-                            dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
-                        }
-                    }
-                    return dp[n][m];
-                };
-                const maxLen = Math.max(a.length, b.length) || 1;
-                const sim = 1 - (levenshtein(a, b) / maxLen);
-                console.log('🔎 Pre-check name similarity (server):', { dbCompanyName, detectedDomainName, sim });
-                if (sim < 0.5) {
-                    return res.status(412).json({
-                        success: false,
-                        error: 'Company name and website domain appear to mismatch. Please verify the website URL.',
-                        similarity: sim
-                    });
-                }
-            }
-        } catch (e) {
-            console.warn('⚠️ Pre-check name similarity failed:', e?.message || e);
-        }
+        // Skip domain mismatch check for Hebrew company names as they don't match domain names
+        // This check was causing issues with legitimate Hebrew company names
+        console.log('🔎 Skipping domain mismatch check for Hebrew company names');
 
         console.log("🌐 Analyzing company website:", website);
         console.log("🔑 OpenAI API Key available:", !!process.env.OPENAI_API_KEY);

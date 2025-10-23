@@ -4379,7 +4379,7 @@ export default function ProjectDetailsPage({ currentUser }: ProjectDetailsPagePr
 
                                         {/* תת-סקשן: פרטי הפרויקט */}
                                         <Box sx={{ mb: 4, direction: 'rtl' }}>
-                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'left' }}>
+                                            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mb: 2, color: 'text.secondary', textAlign: 'right' }}>
                                                 פרטי הפרויקט
                                             </Typography>
                                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, direction: 'rtl' }}>

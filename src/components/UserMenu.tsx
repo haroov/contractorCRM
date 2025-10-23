@@ -166,7 +166,7 @@ export default function UserMenu({
                     onClick={() => changeLanguage('en')}
                     selected={currentLanguage === 'en'}
                 >
-                    <ListItemText>{t('common.english')}</ListItemText>
+                    <ListItemText>English</ListItemText>
                     {currentLanguage === 'en' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />
@@ -177,7 +177,7 @@ export default function UserMenu({
                     onClick={() => changeLanguage('he')}
                     selected={currentLanguage === 'he'}
                 >
-                    <ListItemText>{t('common.hebrew')}</ListItemText>
+                    <ListItemText>עברית</ListItemText>
                     {currentLanguage === 'he' && (
                         <ListItemIcon>
                             <CheckIcon fontSize="small" />
