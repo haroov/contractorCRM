@@ -52,6 +52,17 @@ interface SafetyReport {
     projectName?: string;
     matchConfidence?: number;
     createdAt: string;
+    // Nested links coming from backend
+    reports?: {
+        daily?: {
+            safetyIndex?: { url?: string; score?: number };
+            findings?: { url?: string };
+        };
+        weekly?: {
+            equipment?: { url?: string };
+            workers?: { url?: string };
+        };
+    };
 }
 
 interface SafetyStats {
@@ -245,7 +256,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 score: report.score,
                 avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10,
                 reportUrl: report.reportUrl,
-                issuesUrl: report.issuesUrl
+                issuesUrl: report.issuesUrl,
+                workersUrl: report.reports?.weekly?.workers?.url,
+                equipmentUrl: report.reports?.weekly?.equipment?.url
             }));
     };
 
@@ -383,43 +396,43 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                 if (selectedPoint) {
                                     console.log('Showing tooltip for selected point:', selectedPoint);
                                     setTooltipVisible(true);
-                                    
+
                                     // Calculate position relative to the clicked point
                                     const chartContainer = e.currentTarget;
                                     const rect = chartContainer.getBoundingClientRect();
-                                    
+
                                     // Get click position relative to the chart container
                                     const clickX = e.clientX - rect.left;
                                     const clickY = e.clientY - rect.top;
-                                    
+
                                     // Tooltip dimensions
                                     const tooltipWidth = 180;
                                     const tooltipHeight = 100;
-                                    
+
                                     // Calculate tangent positioning
                                     let tooltipX = clickX;
                                     let tooltipY = clickY;
-                                    
+
                                     // Determine which side to show tooltip based on click position
                                     const isRightSide = clickX > rect.width / 2;
                                     const isTopSide = clickY < rect.height / 2;
-                                    
+
                                     if (isRightSide) {
                                         tooltipX = clickX - tooltipWidth - 10; // Show to the left
                                     } else {
                                         tooltipX = clickX + 10; // Show to the right
                                     }
-                                    
+
                                     if (isTopSide) {
                                         tooltipY = clickY + 10; // Show below
                                     } else {
                                         tooltipY = clickY - tooltipHeight - 10; // Show above
                                     }
-                                    
+
                                     // Ensure tooltip stays within bounds
                                     tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
                                     tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
-                                    
+
                                     console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
                                     setTooltipPosition({
                                         x: tooltipX,
@@ -471,18 +484,18 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
 
                             {/* Custom Tooltip */}
                             {tooltipVisible && selectedPoint && tooltipPosition && (
-                                <Box
+                                <Box 
                                     className="tooltip-content"
-                                    sx={{
-                                        position: 'absolute',
-                                        top: tooltipPosition.y,
-                                        left: tooltipPosition.x,
-                                        bgcolor: 'rgba(0,0,0,0.9)',
-                                        color: 'white',
-                                        border: '1px solid #8B5CF6',
-                                        borderRadius: 2,
-                                        p: 2,
-                                        minWidth: 180,
+                                    sx={{ 
+                                        position: 'absolute', 
+                                        top: tooltipPosition.y, 
+                                        left: tooltipPosition.x, 
+                                        bgcolor: 'white', 
+                                        color: '#333',
+                                        border: '1px solid #e0e0e0', 
+                                        borderRadius: 2, 
+                                        p: 2, 
+                                        minWidth: 200, 
                                         boxShadow: 3,
                                         zIndex: 1000,
                                         '&::before': {
@@ -495,59 +508,108 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             height: 0,
                                             borderTop: '8px solid transparent',
                                             borderBottom: '8px solid transparent',
-                                            borderRight: tooltipPosition.x > 200 ? '8px solid #8B5CF6' : 'none',
-                                            borderLeft: tooltipPosition.x <= 200 ? '8px solid #8B5CF6' : 'none'
+                                            borderRight: tooltipPosition.x > 200 ? '8px solid #e0e0e0' : 'none',
+                                            borderLeft: tooltipPosition.x <= 200 ? '8px solid #e0e0e0' : 'none'
                                         }
                                     }}
                                 >
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
+                                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
                                             {selectedPoint.dateLabel}
                                         </Typography>
-                                        <IconButton
-                                            size="small"
+                                        <IconButton 
+                                            size="small" 
                                             onClick={() => {
                                                 setTooltipVisible(false);
                                                 setSelectedPoint(null);
                                             }}
-                                            sx={{ p: 0.25, ml: 1, color: 'white' }}
+                                            sx={{ p: 0.25, ml: 1, color: '#666' }}
                                         >
                                             <Typography sx={{ fontSize: '14px', fontWeight: 'bold' }}>×</Typography>
                                         </IconButton>
                                     </Box>
-                                    <Typography variant="body2" sx={{ color: '#8B5CF6', fontWeight: 600 }}>
+                                    <Typography variant="body2" sx={{ color: '#8B5CF6', fontWeight: 600, mb: 0.5 }}>
                                         {selectedPoint.score} : ציון
                                     </Typography>
-                                    <Typography variant="body2" sx={{ color: '#10B981' }}>
+                                    <Typography variant="body2" sx={{ color: '#10B981', mb: 1 }}>
                                         {selectedPoint.avg30} : ממוצע נע
                                     </Typography>
-                                    {(selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
-                                        <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                            {selectedPoint.issuesUrl && (
-                                                <a
-                                                    href={selectedPoint.issuesUrl}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
-                                                >
-                                                    Issues
-                                                </a>
-                                            )}
-                                            {selectedPoint.reportUrl && (
-                                                <>
-                                                    <Typography component="span" sx={{ color: '#666', fontSize: '12px' }}>|</Typography>
-                                                    <a
-                                                        href={selectedPoint.reportUrl}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
-                                                    >
-                                                        Report
-                                                    </a>
-                                                </>
-                                            )}
-                                        </Box>
-                                    )}
+                                    
+                                    {/* Report Links */}
+                                    <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                        {selectedPoint.reportUrl && (
+                                            <a 
+                                                href={selectedPoint.reportUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                style={{ 
+                                                    color: '#8B5CF6', 
+                                                    textDecoration: 'none', 
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                📊 דוח מדד בטיחות
+                                            </a>
+                                        )}
+                                        {selectedPoint.issuesUrl && (
+                                            <a 
+                                                href={selectedPoint.issuesUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                style={{ 
+                                                    color: '#f59e0b', 
+                                                    textDecoration: 'none', 
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                ⚠️ דוח חריגים יומי
+                                            </a>
+                                        )}
+                                        {selectedPoint.workersUrl && (
+                                            <a 
+                                                href={selectedPoint.workersUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                style={{ 
+                                                    color: '#10b981', 
+                                                    textDecoration: 'none', 
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                👷 כשירות עובדים (שבועי)
+                                            </a>
+                                        )}
+                                        {selectedPoint.equipmentUrl && (
+                                            <a 
+                                                href={selectedPoint.equipmentUrl} 
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                style={{ 
+                                                    color: '#3b82f6', 
+                                                    textDecoration: 'none', 
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                🔧 כשירות ציוד (שבועי)
+                                            </a>
+                                        )}
+                                    </Box>
                                 </Box>
                             )}
                         </Box>
@@ -580,19 +642,21 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             size="small"
                                             sx={{ mr: 1 }}
                                         />
-                                        <Tooltip title="פתח דוח בטיחות">
-                                            <IconButton
-                                                size="small"
-                                                onClick={() => window.open(report.reportUrl, '_blank')}
-                                            >
-                                                <OpenInNew />
-                                            </IconButton>
-                                        </Tooltip>
-                                        {report.issuesUrl && (
+                                        {(report.reportUrl || report.reports?.daily?.safetyIndex?.url) && (
+                                            <Tooltip title="פתח דוח בטיחות">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => window.open(report.reportUrl || report.reports?.daily?.safetyIndex?.url, '_blank')}
+                                                >
+                                                    <OpenInNew />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {(report.issuesUrl || report.reports?.daily?.findings?.url) && (
                                             <Tooltip title="פתח דוח חריגים">
                                                 <IconButton
                                                     size="small"
-                                                    onClick={() => window.open(report.issuesUrl, '_blank')}
+                                                    onClick={() => window.open(report.issuesUrl || report.reports?.daily?.findings?.url, '_blank')}
                                                 >
                                                     <Warning />
                                                 </IconButton>
