@@ -251,15 +251,24 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
     const prepareChartData = () => {
         return reports
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-            .map((report, index, arr) => ({
-                dateLabel: formatDate(report.date),
-                score: report.score,
-                avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10,
-                reportUrl: report.reportUrl,
-                issuesUrl: report.issuesUrl,
-                workersUrl: report.reports?.weekly?.workers?.url,
-                equipmentUrl: report.reports?.weekly?.equipment?.url
-            }));
+            .map((report, index, arr) => {
+                console.log('Preparing chart data for report:', {
+                    date: report.date,
+                    reportUrl: report.reportUrl,
+                    issuesUrl: report.issuesUrl,
+                    reports: report.reports
+                });
+                
+                return {
+                    dateLabel: formatDate(report.date),
+                    score: report.score,
+                    avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10,
+                    reportUrl: report.reportUrl || report.reports?.daily?.safetyIndex?.url,
+                    issuesUrl: report.issuesUrl || report.reports?.daily?.findings?.url,
+                    workersUrl: report.reports?.weekly?.workers?.url,
+                    equipmentUrl: report.reports?.weekly?.equipment?.url
+                };
+            });
     };
 
 
@@ -395,44 +404,41 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                 console.log('Chart container clicked:', e);
                                 if (selectedPoint) {
                                     console.log('Showing tooltip for selected point:', selectedPoint);
+                                    console.log('Selected point URLs:', {
+                                        reportUrl: selectedPoint.reportUrl,
+                                        issuesUrl: selectedPoint.issuesUrl,
+                                        workersUrl: selectedPoint.workersUrl,
+                                        equipmentUrl: selectedPoint.equipmentUrl
+                                    });
                                     setTooltipVisible(true);
-
-                                    // Calculate position relative to the clicked point
+                                    
+                                    // Calculate position relative to the chart container
                                     const chartContainer = e.currentTarget;
                                     const rect = chartContainer.getBoundingClientRect();
-
-                                    // Get click position relative to the chart container
-                                    const clickX = e.clientX - rect.left;
-                                    const clickY = e.clientY - rect.top;
-
+                                    
                                     // Tooltip dimensions
-                                    const tooltipWidth = 180;
-                                    const tooltipHeight = 100;
-
-                                    // Calculate tangent positioning
-                                    let tooltipX = clickX;
-                                    let tooltipY = clickY;
-
-                                    // Determine which side to show tooltip based on click position
-                                    const isRightSide = clickX > rect.width / 2;
-                                    const isTopSide = clickY < rect.height / 2;
-
+                                    const tooltipWidth = 200;
+                                    const tooltipHeight = 120;
+                                    
+                                    // Position tooltip in corner based on chart area
+                                    // Use fixed corner positioning instead of click position
+                                    const isRightSide = true; // Always show on right side for consistency
+                                    const isTopSide = true; // Always show on top for consistency
+                                    
+                                    let tooltipX, tooltipY;
+                                    
                                     if (isRightSide) {
-                                        tooltipX = clickX - tooltipWidth - 10; // Show to the left
+                                        tooltipX = rect.width - tooltipWidth - 20; // 20px from right edge
                                     } else {
-                                        tooltipX = clickX + 10; // Show to the right
+                                        tooltipX = 20; // 20px from left edge
                                     }
-
+                                    
                                     if (isTopSide) {
-                                        tooltipY = clickY + 10; // Show below
+                                        tooltipY = 20; // 20px from top edge
                                     } else {
-                                        tooltipY = clickY - tooltipHeight - 10; // Show above
+                                        tooltipY = rect.height - tooltipHeight - 20; // 20px from bottom edge
                                     }
-
-                                    // Ensure tooltip stays within bounds
-                                    tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
-                                    tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
-
+                                    
                                     console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
                                     setTooltipPosition({
                                         x: tooltipX,
@@ -451,6 +457,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
                                     onMouseMove={(state: any) => {
                                         if (state && state.activePayload && state.activePayload.length > 0) {
+                                            console.log('Mouse moved over data point:', state.activePayload[0].payload);
                                             setSelectedPoint(state.activePayload[0].payload);
                                         }
                                     }}
@@ -484,18 +491,18 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
 
                             {/* Custom Tooltip */}
                             {tooltipVisible && selectedPoint && tooltipPosition && (
-                                <Box 
+                                <Box
                                     className="tooltip-content"
-                                    sx={{ 
-                                        position: 'absolute', 
-                                        top: tooltipPosition.y, 
-                                        left: tooltipPosition.x, 
-                                        bgcolor: 'white', 
+                                    sx={{
+                                        position: 'absolute',
+                                        top: tooltipPosition.y,
+                                        left: tooltipPosition.x,
+                                        bgcolor: 'white',
                                         color: '#333',
-                                        border: '1px solid #e0e0e0', 
-                                        borderRadius: 2, 
-                                        p: 2, 
-                                        minWidth: 200, 
+                                        border: '1px solid #e0e0e0',
+                                        borderRadius: 2,
+                                        p: 2,
+                                        minWidth: 200,
                                         boxShadow: 3,
                                         zIndex: 1000,
                                         '&::before': {
@@ -517,8 +524,8 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
                                             {selectedPoint.dateLabel}
                                         </Typography>
-                                        <IconButton 
-                                            size="small" 
+                                        <IconButton
+                                            size="small"
                                             onClick={() => {
                                                 setTooltipVisible(false);
                                                 setSelectedPoint(null);
@@ -534,7 +541,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     <Typography variant="body2" sx={{ color: '#10B981', mb: 1 }}>
                                         {selectedPoint.avg30} : ממוצע נע
                                     </Typography>
-                                    
+
                                     {/* Report Links */}
                                     <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                                         {selectedPoint.reportUrl && (
@@ -608,6 +615,11 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             >
                                                 🔧 כשירות ציוד (שבועי)
                                             </a>
+                                        )}
+                                        {!selectedPoint.reportUrl && !selectedPoint.issuesUrl && !selectedPoint.workersUrl && !selectedPoint.equipmentUrl && (
+                                            <Typography variant="body2" sx={{ color: '#999', fontSize: '11px', fontStyle: 'italic' }}>
+                                                אין קישורים זמינים
+                                            </Typography>
                                         )}
                                     </Box>
                                 </Box>
