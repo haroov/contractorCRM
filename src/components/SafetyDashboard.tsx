@@ -90,6 +90,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
     const [selectedPoint, setSelectedPoint] = useState<any>(null);
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
+    const [activeCoords, setActiveCoords] = useState<{ x: number; y: number } | null>(null);
 
     useEffect(() => {
         fetchSafetyData();
@@ -101,6 +102,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             if (event.key === 'Escape' && tooltipVisible) {
                 setTooltipVisible(false);
                 setSelectedPoint(null);
+                setActiveCoords(null);
             }
         };
 
@@ -258,7 +260,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                     issuesUrl: report.issuesUrl,
                     reports: report.reports
                 });
-                
+
                 return {
                     dateLabel: formatDate(report.date),
                     score: report.score,
@@ -277,6 +279,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
         if (tooltipVisible && !event.target.closest('.tooltip-content')) {
             setTooltipVisible(false);
             setSelectedPoint(null);
+            setActiveCoords(null);
         }
     };
 
@@ -402,8 +405,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                             sx={{ width: '100%', height: 300, position: 'relative' }}
                             onClick={(e) => {
                                 console.log('Chart container clicked:', e);
-                                if (selectedPoint) {
+                                if (selectedPoint && activeCoords) {
                                     console.log('Showing tooltip for selected point:', selectedPoint);
+                                    console.log('Using active coordinates:', activeCoords);
                                     console.log('Selected point URLs:', {
                                         reportUrl: selectedPoint.reportUrl,
                                         issuesUrl: selectedPoint.issuesUrl,
@@ -420,24 +424,32 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     const tooltipWidth = 200;
                                     const tooltipHeight = 120;
                                     
-                                    // Position tooltip in corner based on chart area
-                                    // Use fixed corner positioning instead of click position
-                                    const isRightSide = true; // Always show on right side for consistency
-                                    const isTopSide = true; // Always show on top for consistency
+                                    // Use the actual data point coordinates
+                                    let tooltipX = activeCoords.x;
+                                    let tooltipY = activeCoords.y;
                                     
-                                    let tooltipX, tooltipY;
+                                    // Add offset to position tooltip next to the point
+                                    const offset = 15;
+                                    
+                                    // Determine which side to show tooltip based on point position
+                                    const isRightSide = activeCoords.x > rect.width / 2;
+                                    const isTopSide = activeCoords.y < rect.height / 2;
                                     
                                     if (isRightSide) {
-                                        tooltipX = rect.width - tooltipWidth - 20; // 20px from right edge
+                                        tooltipX = activeCoords.x - tooltipWidth - offset; // Show to the left
                                     } else {
-                                        tooltipX = 20; // 20px from left edge
+                                        tooltipX = activeCoords.x + offset; // Show to the right
                                     }
                                     
                                     if (isTopSide) {
-                                        tooltipY = 20; // 20px from top edge
+                                        tooltipY = activeCoords.y + offset; // Show below
                                     } else {
-                                        tooltipY = rect.height - tooltipHeight - 20; // 20px from bottom edge
+                                        tooltipY = activeCoords.y - tooltipHeight - offset; // Show above
                                     }
+                                    
+                                    // Ensure tooltip stays within bounds
+                                    tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
+                                    tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
                                     
                                     console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
                                     setTooltipPosition({
@@ -445,7 +457,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         y: tooltipY
                                     });
                                 } else {
-                                    console.log('No selected point, closing tooltip');
+                                    console.log('No selected point or coordinates, closing tooltip');
                                     setTooltipVisible(false);
                                 }
                                 handleChartContainerClick(e);
@@ -459,10 +471,23 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         if (state && state.activePayload && state.activePayload.length > 0) {
                                             console.log('Mouse moved over data point:', state.activePayload[0].payload);
                                             setSelectedPoint(state.activePayload[0].payload);
+                                            
+                                            // Capture the pixel coordinates of the data point
+                                            if (state.activeCoordinate) {
+                                                setActiveCoords({
+                                                    x: state.activeCoordinate.x,
+                                                    y: state.activeCoordinate.y
+                                                });
+                                                console.log('Active coordinates:', state.activeCoordinate);
+                                            }
                                         }
                                     }}
                                     onMouseLeave={() => {
-                                        // Don't clear on mouse leave for click-to-show behavior
+                                        // Only clear coordinates if tooltip is not visible
+                                        if (!tooltipVisible) {
+                                            setSelectedPoint(null);
+                                            setActiveCoords(null);
+                                        }
                                     }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
@@ -545,13 +570,13 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     {/* Report Links */}
                                     <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                                         {selectedPoint.reportUrl && (
-                                            <a 
-                                                href={selectedPoint.reportUrl} 
-                                                target="_blank" 
+                                            <a
+                                                href={selectedPoint.reportUrl}
+                                                target="_blank"
                                                 rel="noreferrer"
-                                                style={{ 
-                                                    color: '#8B5CF6', 
-                                                    textDecoration: 'none', 
+                                                style={{
+                                                    color: '#8B5CF6',
+                                                    textDecoration: 'none',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                     display: 'flex',
@@ -563,13 +588,13 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             </a>
                                         )}
                                         {selectedPoint.issuesUrl && (
-                                            <a 
-                                                href={selectedPoint.issuesUrl} 
-                                                target="_blank" 
+                                            <a
+                                                href={selectedPoint.issuesUrl}
+                                                target="_blank"
                                                 rel="noreferrer"
-                                                style={{ 
-                                                    color: '#f59e0b', 
-                                                    textDecoration: 'none', 
+                                                style={{
+                                                    color: '#f59e0b',
+                                                    textDecoration: 'none',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                     display: 'flex',
@@ -581,13 +606,13 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             </a>
                                         )}
                                         {selectedPoint.workersUrl && (
-                                            <a 
-                                                href={selectedPoint.workersUrl} 
-                                                target="_blank" 
+                                            <a
+                                                href={selectedPoint.workersUrl}
+                                                target="_blank"
                                                 rel="noreferrer"
-                                                style={{ 
-                                                    color: '#10b981', 
-                                                    textDecoration: 'none', 
+                                                style={{
+                                                    color: '#10b981',
+                                                    textDecoration: 'none',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                     display: 'flex',
@@ -599,13 +624,13 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             </a>
                                         )}
                                         {selectedPoint.equipmentUrl && (
-                                            <a 
-                                                href={selectedPoint.equipmentUrl} 
-                                                target="_blank" 
+                                            <a
+                                                href={selectedPoint.equipmentUrl}
+                                                target="_blank"
                                                 rel="noreferrer"
-                                                style={{ 
-                                                    color: '#3b82f6', 
-                                                    textDecoration: 'none', 
+                                                style={{
+                                                    color: '#3b82f6',
+                                                    textDecoration: 'none',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                     display: 'flex',
