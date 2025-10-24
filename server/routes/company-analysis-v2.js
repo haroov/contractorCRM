@@ -146,16 +146,70 @@ async function analyzeCompanyWebsite(websiteUrl) {
 
         // Fetch key pages from the site
         const fetch = require('node-fetch');
+
+        // Heuristics to detect cookie/JS walls
+        const looksLikeCookieOrJsWall = (html = '', status = 200) => {
+            if (!html) return true;
+            const text = html.toLowerCase();
+            if (status >= 400 && status !== 404) return true;
+            return (
+                /enable (the )?cookies|cookie settings|we (use|are using) cookies|cookie consent/i.test(text) ||
+                /please enable javascript|javascript (is )?required|your browser.*javascript/i.test(text) ||
+                /cloudflare|attention required!/i.test(text) ||
+                /consent.*required/i.test(text) ||
+                text.length < 800 // very short body
+            );
+        };
+
+        // Fallback: fetch readable text via r.jina.ai proxy
+        const fetchViaTextProxy = async (absUrl) => {
+            try {
+                const proxied = 'https://r.jina.ai/http://' + absUrl.replace(/^https?:\/\//i, '');
+                const res = await fetch(proxied, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 ContractorCRM/1.0',
+                        'Accept': 'text/plain,*/*;q=0.1',
+                        'Accept-Language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'
+                    },
+                    timeout: 15000
+                });
+                if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
+                const text = await res.text();
+                return text || '';
+            } catch (e) {
+                console.warn('⚠️ Text proxy failed for', absUrl, e.message);
+                return '';
+            }
+        };
+
         const fetchPage = async (path) => {
             const target = new URL(path, baseUrl.origin).href;
             try {
-                const res = await fetch(target, { headers: { 'User-Agent': 'Mozilla/5.0 (ContractorCRM/1.0)' }, timeout: 15000 });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const res = await fetch(target, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 ContractorCRM/1.0',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                        'Accept-Language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache',
+                        'Referer': baseUrl.origin + '/',
+                        'Upgrade-Insecure-Requests': '1'
+                    },
+                    redirect: 'follow',
+                    timeout: 20000
+                });
+                const status = res.status;
                 const html = await res.text();
+                if (!res.ok || looksLikeCookieOrJsWall(html, status)) {
+                    console.warn('⚠️ Detected cookie/JS wall, retrying via text proxy:', target, status);
+                    const text = await fetchViaTextProxy(target);
+                    if (text) return { url: target, html: `<div>${text}</div>` };
+                }
                 return { url: target, html };
             } catch (e) {
                 console.warn('⚠️ Failed to fetch page', target, e.message);
-                return { url: target, html: '' };
+                const text = await fetchViaTextProxy(target);
+                return { url: target, html: text ? `<div>${text}</div>` : '' };
             }
         };
 
@@ -238,8 +292,8 @@ async function analyzeCompanyWebsite(websiteUrl) {
                 model: "gpt-4o-mini",
                 messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }],
                 temperature: 0.0,
-            max_tokens: 4000
-        });
+                max_tokens: 4000
+            });
             console.log("✅ Received response from OpenAI (v3)");
             aiResponse = response.data?.choices?.[0]?.message?.content || response.data?.choices?.[0]?.text;
         } else {
