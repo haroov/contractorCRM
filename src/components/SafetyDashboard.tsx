@@ -249,61 +249,6 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             }));
     };
 
-    const handleDataPointClick = (event: any, data: any) => {
-        console.log('Chart clicked:', { event, data });
-        
-        if (data && data.payload) {
-            console.log('Setting tooltip for:', data.payload);
-            setSelectedPoint(data.payload);
-            setTooltipVisible(true);
-            
-            // Calculate position relative to the clicked point
-            const chartContainer = event.currentTarget.closest('.chart-container');
-            if (chartContainer) {
-                const rect = chartContainer.getBoundingClientRect();
-                
-                // Get click position relative to the chart container
-                const clickX = event.clientX - rect.left;
-                const clickY = event.clientY - rect.top;
-                
-                // Tooltip dimensions
-                const tooltipWidth = 180;
-                const tooltipHeight = 100;
-                
-                // Calculate tangent positioning
-                let tooltipX = clickX;
-                let tooltipY = clickY;
-                
-                // Determine which side to show tooltip based on click position
-                const isRightSide = clickX > rect.width / 2;
-                const isTopSide = clickY < rect.height / 2;
-                
-                if (isRightSide) {
-                    tooltipX = clickX - tooltipWidth - 10; // Show to the left
-                } else {
-                    tooltipX = clickX + 10; // Show to the right
-                }
-                
-                if (isTopSide) {
-                    tooltipY = clickY + 10; // Show below
-                } else {
-                    tooltipY = clickY - tooltipHeight - 10; // Show above
-                }
-                
-                // Ensure tooltip stays within bounds
-                tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
-                tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
-                
-                console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
-                setTooltipPosition({
-                    x: tooltipX,
-                    y: tooltipY
-                });
-            }
-        } else {
-            console.log('No payload data found');
-        }
-    };
 
     const handleChartContainerClick = (event: any) => {
         // Close tooltip when clicking outside the tooltip itself
@@ -430,11 +375,60 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         <Typography variant="h6" gutterBottom>
                             מגמת ציון בטיחות
                         </Typography>
-                        <Box 
+                        <Box
                             className="chart-container"
                             sx={{ width: '100%', height: 300, position: 'relative' }}
                             onClick={(e) => {
                                 console.log('Chart container clicked:', e);
+                                if (selectedPoint) {
+                                    console.log('Showing tooltip for selected point:', selectedPoint);
+                                    setTooltipVisible(true);
+                                    
+                                    // Calculate position relative to the clicked point
+                                    const chartContainer = e.currentTarget;
+                                    const rect = chartContainer.getBoundingClientRect();
+                                    
+                                    // Get click position relative to the chart container
+                                    const clickX = e.clientX - rect.left;
+                                    const clickY = e.clientY - rect.top;
+                                    
+                                    // Tooltip dimensions
+                                    const tooltipWidth = 180;
+                                    const tooltipHeight = 100;
+                                    
+                                    // Calculate tangent positioning
+                                    let tooltipX = clickX;
+                                    let tooltipY = clickY;
+                                    
+                                    // Determine which side to show tooltip based on click position
+                                    const isRightSide = clickX > rect.width / 2;
+                                    const isTopSide = clickY < rect.height / 2;
+                                    
+                                    if (isRightSide) {
+                                        tooltipX = clickX - tooltipWidth - 10; // Show to the left
+                                    } else {
+                                        tooltipX = clickX + 10; // Show to the right
+                                    }
+                                    
+                                    if (isTopSide) {
+                                        tooltipY = clickY + 10; // Show below
+                                    } else {
+                                        tooltipY = clickY - tooltipHeight - 10; // Show above
+                                    }
+                                    
+                                    // Ensure tooltip stays within bounds
+                                    tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
+                                    tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
+                                    
+                                    console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
+                                    setTooltipPosition({
+                                        x: tooltipX,
+                                        y: tooltipY
+                                    });
+                                } else {
+                                    console.log('No selected point, closing tooltip');
+                                    setTooltipVisible(false);
+                                }
                                 handleChartContainerClick(e);
                             }}
                         >
@@ -442,7 +436,14 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                 <LineChart
                                     data={prepareChartData()}
                                     margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-                                    onClick={handleDataPointClick}
+                                    onMouseMove={(state: any) => {
+                                        if (state && state.activePayload && state.activePayload.length > 0) {
+                                            setSelectedPoint(state.activePayload[0].payload);
+                                        }
+                                    }}
+                                    onMouseLeave={() => {
+                                        // Don't clear on mouse leave for click-to-show behavior
+                                    }}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
