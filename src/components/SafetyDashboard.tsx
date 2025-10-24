@@ -118,12 +118,18 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 setReports(reportsData.data);
             }
 
-            // Fetch unmatched reports for manual linking
-            const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
-            const unmatchedData = await unmatchedResponse.json();
-
-            if (unmatchedData.success) {
-                setUnmatchedReports(unmatchedData.data);
+            // Fetch unmatched reports for manual linking (best-effort; ignore if endpoint missing)
+            try {
+                const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
+                if (unmatchedResponse.ok) {
+                    const unmatchedData = await unmatchedResponse.json();
+                    if (unmatchedData.success) {
+                        setUnmatchedReports(unmatchedData.data);
+                    }
+                }
+            } catch (e) {
+                // Silently ignore unmatched fetch failures
+                console.warn('Unmatched reports fetch skipped:', e);
             }
 
         } catch (err) {
@@ -244,7 +250,10 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
     };
 
     const handleDataPointClick = (event: any, data: any) => {
+        console.log('Chart clicked:', { event, data });
+        
         if (data && data.payload) {
+            console.log('Setting tooltip for:', data.payload);
             setSelectedPoint(data.payload);
             setTooltipVisible(true);
             
@@ -285,11 +294,14 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
                 tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
                 
+                console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
                 setTooltipPosition({
                     x: tooltipX,
                     y: tooltipY
                 });
             }
+        } else {
+            console.log('No payload data found');
         }
     };
 
@@ -421,52 +433,55 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         <Box 
                             className="chart-container"
                             sx={{ width: '100%', height: 300, position: 'relative' }}
-                            onClick={handleChartContainerClick}
+                            onClick={(e) => {
+                                console.log('Chart container clicked:', e);
+                                handleChartContainerClick(e);
+                            }}
                         >
                             <ResponsiveContainer>
                                 <LineChart
                                     data={prepareChartData()}
                                     margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+                                    onClick={handleDataPointClick}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="score" 
-                                        name="ציון" 
-                                        stroke="#8B5CF6" 
-                                        strokeWidth={3} 
-                                        dot={{ r: 6, fill: '#8B5CF6', strokeWidth: 2, stroke: '#fff' }}
-                                        activeDot={{ r: 8, fill: '#8B5CF6', strokeWidth: 3, stroke: '#fff' }}
-                                        onClick={handleDataPointClick}
+                                    <Line
+                                        type="monotone"
+                                        dataKey="score"
+                                        name="ציון"
+                                        stroke="#8B5CF6"
+                                        strokeWidth={3}
+                                        dot={{ r: 6, fill: '#8B5CF6', strokeWidth: 2, stroke: '#fff', cursor: 'pointer' }}
+                                        activeDot={{ r: 8, fill: '#8B5CF6', strokeWidth: 3, stroke: '#fff', cursor: 'pointer' }}
                                     />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="avg30" 
-                                        name="ממוצע נע" 
-                                        stroke="#10B981" 
-                                        strokeWidth={2} 
+                                    <Line
+                                        type="monotone"
+                                        dataKey="avg30"
+                                        name="ממוצע נע"
+                                        stroke="#10B981"
+                                        strokeWidth={2}
                                         dot={false}
                                         strokeDasharray="5 5"
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
-                            
+
                             {/* Custom Tooltip */}
                             {tooltipVisible && selectedPoint && tooltipPosition && (
-                                <Box 
+                                <Box
                                     className="tooltip-content"
-                                    sx={{ 
-                                        position: 'absolute', 
-                                        top: tooltipPosition.y, 
-                                        left: tooltipPosition.x, 
-                                        bgcolor: 'rgba(0,0,0,0.9)', 
+                                    sx={{
+                                        position: 'absolute',
+                                        top: tooltipPosition.y,
+                                        left: tooltipPosition.x,
+                                        bgcolor: 'rgba(0,0,0,0.9)',
                                         color: 'white',
-                                        border: '1px solid #8B5CF6', 
-                                        borderRadius: 2, 
-                                        p: 2, 
-                                        minWidth: 180, 
+                                        border: '1px solid #8B5CF6',
+                                        borderRadius: 2,
+                                        p: 2,
+                                        minWidth: 180,
                                         boxShadow: 3,
                                         zIndex: 1000,
                                         '&::before': {
@@ -488,8 +503,8 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
                                             {selectedPoint.dateLabel}
                                         </Typography>
-                                        <IconButton 
-                                            size="small" 
+                                        <IconButton
+                                            size="small"
                                             onClick={() => {
                                                 setTooltipVisible(false);
                                                 setSelectedPoint(null);
@@ -508,9 +523,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     {(selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
                                         <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                                             {selectedPoint.issuesUrl && (
-                                                <a 
-                                                    href={selectedPoint.issuesUrl} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={selectedPoint.issuesUrl}
+                                                    target="_blank"
                                                     rel="noreferrer"
                                                     style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
                                                 >
@@ -520,9 +535,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             {selectedPoint.reportUrl && (
                                                 <>
                                                     <Typography component="span" sx={{ color: '#666', fontSize: '12px' }}>|</Typography>
-                                                    <a 
-                                                        href={selectedPoint.reportUrl} 
-                                                        target="_blank" 
+                                                    <a
+                                                        href={selectedPoint.reportUrl}
+                                                        target="_blank"
                                                         rel="noreferrer"
                                                         style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
                                                     >
