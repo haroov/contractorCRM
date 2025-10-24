@@ -36,35 +36,22 @@ import {
     CheckCircle,
     Error
 } from '@mui/icons-material';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 // import { format, parseISO, subDays } from 'date-fns';
 // import { he } from 'date-fns/locale';
 
 interface SafetyReport {
     _id: string;
-    date: string | Date;
+    date: string;
     score: number;
     site: string;
+    reportUrl: string;
+    issuesUrl?: string;
     contractorName: string;
     projectId?: string;
     projectName?: string;
     matchConfidence?: number;
     createdAt: string;
-    // Nested links coming from backend
-    reports?: {
-        daily?: {
-            safetyIndex?: { url?: string; score?: number };
-            findings?: { url?: string };
-        };
-        weekly?: {
-            equipment?: { url?: string };
-            workers?: { url?: string };
-        };
-    };
-    // Legacy flat fields (if exist)
-    reportUrl?: string;
-    issuesUrl?: string;
 }
 
 interface SafetyStats {
@@ -131,18 +118,12 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                 setReports(reportsData.data);
             }
 
-            // Fetch unmatched reports for manual linking (best-effort; ignore if endpoint missing)
-            try {
-                const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
-                if (unmatchedResponse.ok) {
-                    const unmatchedData = await unmatchedResponse.json();
-                    if (unmatchedData.success) {
-                        setUnmatchedReports(unmatchedData.data);
-                    }
-                }
-            } catch (e) {
-                // Silently ignore unmatched fetch failures
-                console.warn('Unmatched reports fetch skipped:', e);
+            // Fetch unmatched reports for manual linking
+            const unmatchedResponse = await fetch('/api/safety-reports/unmatched');
+            const unmatchedData = await unmatchedResponse.json();
+
+            if (unmatchedData.success) {
+                setUnmatchedReports(unmatchedData.data);
             }
 
         } catch (err) {
@@ -240,38 +221,29 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
         }
     };
 
-    const formatDate = (dateInput: string | Date) => {
+    const formatDate = (dateString: string) => {
         try {
             // Simple date formatting without date-fns for now
-            const date = new Date(dateInput as any);
+            const date = new Date(dateString);
             return date.toLocaleDateString('he-IL');
         } catch {
-            return (dateInput as any) as string;
+            return dateString;
         }
     };
 
     const prepareChartData = () => {
         return reports
-            .slice()
-            .sort((a, b) => new Date(a.date as any).getTime() - new Date(b.date as any).getTime())
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map((report, index, arr) => ({
-                dateLabel: formatDate(report.date as any),
+                dateLabel: formatDate(report.date),
                 score: report.score,
                 avg30: Math.round((arr.slice(Math.max(0, index - 29), index + 1).reduce((s, r) => s + r.score, 0) / (Math.min(index + 1, 30))) * 10) / 10,
-                reportUrl: getReportUrl(report),
-                issuesUrl: getIssuesUrl(report)
+                reportUrl: report.reportUrl,
+                issuesUrl: report.issuesUrl
             }));
     };
 
-    const getReportUrl = (report: SafetyReport): string | undefined => {
-        return report.reportUrl || report.reports?.daily?.safetyIndex?.url;
-    };
-
-    const getIssuesUrl = (report: SafetyReport): string | undefined => {
-        return report.issuesUrl || report.reports?.daily?.findings?.url || report.reports?.weekly?.equipment?.url || report.reports?.weekly?.workers?.url;
-    };
-
-    const handleChartClick = (event: any, data: any) => {
+    const handleDataPointClick = (event: any, data: any) => {
         if (data && data.payload) {
             setSelectedPoint(data.payload);
             setTooltipVisible(true);
@@ -280,30 +252,38 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
             const chartContainer = event.currentTarget.closest('.chart-container');
             if (chartContainer) {
                 const rect = chartContainer.getBoundingClientRect();
-                const containerRect = chartContainer.getBoundingClientRect();
                 
                 // Get click position relative to the chart container
-                const clickX = event.clientX - containerRect.left;
-                const clickY = event.clientY - containerRect.top;
+                const clickX = event.clientX - rect.left;
+                const clickY = event.clientY - rect.top;
                 
-                // Tooltip dimensions (approximate)
-                const tooltipWidth = 160;
-                const tooltipHeight = 80;
+                // Tooltip dimensions
+                const tooltipWidth = 180;
+                const tooltipHeight = 100;
                 
-                // Position tooltip next to the click point, with some offset
-                let tooltipX = clickX + 10; // 10px offset to the right of click
-                let tooltipY = clickY - tooltipHeight / 2; // Center vertically on click point
+                // Calculate tangent positioning
+                let tooltipX = clickX;
+                let tooltipY = clickY;
                 
-                // Adjust if tooltip would go outside container bounds
-                if (tooltipX + tooltipWidth > rect.width) {
-                    tooltipX = clickX - tooltipWidth - 10; // Show to the left instead
+                // Determine which side to show tooltip based on click position
+                const isRightSide = clickX > rect.width / 2;
+                const isTopSide = clickY < rect.height / 2;
+                
+                if (isRightSide) {
+                    tooltipX = clickX - tooltipWidth - 10; // Show to the left
+                } else {
+                    tooltipX = clickX + 10; // Show to the right
                 }
-                if (tooltipY < 0) {
-                    tooltipY = 10; // Stick to top
+                
+                if (isTopSide) {
+                    tooltipY = clickY + 10; // Show below
+                } else {
+                    tooltipY = clickY - tooltipHeight - 10; // Show above
                 }
-                if (tooltipY + tooltipHeight > rect.height) {
-                    tooltipY = rect.height - tooltipHeight - 10; // Stick to bottom
-                }
+                
+                // Ensure tooltip stays within bounds
+                tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
+                tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
                 
                 setTooltipPosition({
                     x: tooltipX,
@@ -438,65 +418,116 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                         <Typography variant="h6" gutterBottom>
                             מגמת ציון בטיחות
                         </Typography>
-                        <Box
+                        <Box 
                             className="chart-container"
-                            sx={{ width: '100%', height: 280, position: 'relative' }}
+                            sx={{ width: '100%', height: 300, position: 'relative' }}
                             onClick={handleChartContainerClick}
                         >
                             <ResponsiveContainer>
                                 <LineChart
                                     data={prepareChartData()}
                                     margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-                                    onClick={handleChartClick}
                                 >
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="dateLabel" tick={{ fontSize: 12 }} />
                                     <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="score" name="ציון" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} />
-                                    <Line type="monotone" dataKey="avg30" name="ממוצע נע" stroke="#10B981" strokeWidth={2} dot={false} />
+                                    <Line 
+                                        type="monotone" 
+                                        dataKey="score" 
+                                        name="ציון" 
+                                        stroke="#8B5CF6" 
+                                        strokeWidth={3} 
+                                        dot={{ r: 6, fill: '#8B5CF6', strokeWidth: 2, stroke: '#fff' }}
+                                        activeDot={{ r: 8, fill: '#8B5CF6', strokeWidth: 3, stroke: '#fff' }}
+                                        onClick={handleDataPointClick}
+                                    />
+                                    <Line 
+                                        type="monotone" 
+                                        dataKey="avg30" 
+                                        name="ממוצע נע" 
+                                        stroke="#10B981" 
+                                        strokeWidth={2} 
+                                        dot={false}
+                                        strokeDasharray="5 5"
+                                    />
                                 </LineChart>
                             </ResponsiveContainer>
+                            
+                            {/* Custom Tooltip */}
                             {tooltipVisible && selectedPoint && tooltipPosition && (
-                                <Box
+                                <Box 
                                     className="tooltip-content"
-                                    sx={{
-                                        position: 'absolute',
-                                        top: tooltipPosition.y,
-                                        left: tooltipPosition.x,
-                                        bgcolor: 'rgba(255,255,255,0.98)',
-                                        border: '1px solid #e0e0e0',
-                                        borderRadius: 1,
-                                        p: 1.5,
-                                        minWidth: 160,
-                                        boxShadow: 2,
-                                        zIndex: 1000
+                                    sx={{ 
+                                        position: 'absolute', 
+                                        top: tooltipPosition.y, 
+                                        left: tooltipPosition.x, 
+                                        bgcolor: 'rgba(0,0,0,0.9)', 
+                                        color: 'white',
+                                        border: '1px solid #8B5CF6', 
+                                        borderRadius: 2, 
+                                        p: 2, 
+                                        minWidth: 180, 
+                                        boxShadow: 3,
+                                        zIndex: 1000,
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: tooltipPosition.x > 200 ? '-8px' : '100%',
+                                            transform: 'translateY(-50%)',
+                                            width: 0,
+                                            height: 0,
+                                            borderTop: '8px solid transparent',
+                                            borderBottom: '8px solid transparent',
+                                            borderRight: tooltipPosition.x > 200 ? '8px solid #8B5CF6' : 'none',
+                                            borderLeft: tooltipPosition.x <= 200 ? '8px solid #8B5CF6' : 'none'
+                                        }
                                     }}
                                 >
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{selectedPoint.dateLabel}</Typography>
-                                        <IconButton
-                                            size="small"
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
+                                            {selectedPoint.dateLabel}
+                                        </Typography>
+                                        <IconButton 
+                                            size="small" 
                                             onClick={() => {
                                                 setTooltipVisible(false);
                                                 setSelectedPoint(null);
                                             }}
-                                            sx={{ p: 0.25, ml: 1 }}
+                                            sx={{ p: 0.25, ml: 1, color: 'white' }}
                                         >
-                                            <Typography sx={{ fontSize: '12px', fontWeight: 'bold' }}>×</Typography>
+                                            <Typography sx={{ fontSize: '14px', fontWeight: 'bold' }}>×</Typography>
                                         </IconButton>
                                     </Box>
-                                    <Typography variant="body2" color="primary">{selectedPoint.score} : ציון</Typography>
-                                    <Typography variant="body2" color="success.main">{selectedPoint.avg30} : ממוצע נע</Typography>
+                                    <Typography variant="body2" sx={{ color: '#8B5CF6', fontWeight: 600 }}>
+                                        {selectedPoint.score} : ציון
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#10B981' }}>
+                                        {selectedPoint.avg30} : ממוצע נע
+                                    </Typography>
                                     {(selectedPoint.reportUrl || selectedPoint.issuesUrl) && (
-                                        <Box sx={{ mt: 0.5, display: 'flex', gap: 1 }}>
+                                        <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                                             {selectedPoint.issuesUrl && (
-                                                <a href={selectedPoint.issuesUrl} target="_blank" rel="noreferrer">Issues</a>
+                                                <a 
+                                                    href={selectedPoint.issuesUrl} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
+                                                >
+                                                    Issues
+                                                </a>
                                             )}
                                             {selectedPoint.reportUrl && (
                                                 <>
-                                                    <Typography component="span" sx={{ color: '#999' }}>|</Typography>
-                                                    <a href={selectedPoint.reportUrl} target="_blank" rel="noreferrer">Report</a>
+                                                    <Typography component="span" sx={{ color: '#666', fontSize: '12px' }}>|</Typography>
+                                                    <a 
+                                                        href={selectedPoint.reportUrl} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        style={{ color: '#10B981', textDecoration: 'none', fontSize: '12px' }}
+                                                    >
+                                                        Report
+                                                    </a>
                                                 </>
                                             )}
                                         </Box>
@@ -533,23 +564,19 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                             size="small"
                                             sx={{ mr: 1 }}
                                         />
-                                        {getReportUrl(report) && (
-                                            <Tooltip title="פתח דוח בטיחות">
-                                                <IconButton
-                                                    size="small"
-                                                    component="a"
-                                                    href={getReportUrl(report)}
-                                                >
-                                                    <OpenInNew />
-                                                </IconButton>
-                                            </Tooltip>
-                                        )}
-                                        {getIssuesUrl(report) && (
+                                        <Tooltip title="פתח דוח בטיחות">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => window.open(report.reportUrl, '_blank')}
+                                            >
+                                                <OpenInNew />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {report.issuesUrl && (
                                             <Tooltip title="פתח דוח חריגים">
                                                 <IconButton
                                                     size="small"
-                                                    component="a"
-                                                    href={getIssuesUrl(report)}
+                                                    onClick={() => window.open(report.issuesUrl, '_blank')}
                                                 >
                                                     <Warning />
                                                 </IconButton>
