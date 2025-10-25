@@ -23,11 +23,15 @@ const requireAuth = (req, res, next) => {
   
   // Check if session ID is provided in headers or query params
   const sessionId = req.headers['x-session-id'] || req.query.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided, allowing access:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
+  if (sessionId && sessionId.length > 10) {
+    // TODO: Implement proper session validation against database
+    // For now, only allow if it looks like a valid session ID format
+    if (/^[a-zA-Z0-9_-]{20,}$/.test(sessionId)) {
+      console.log('✅ Valid session ID format provided, allowing access:', sessionId);
+      // Store session ID in request for later use
+      req.sessionId = sessionId;
+      return next();
+    }
   }
   
   console.log('❌ User is not authenticated and no valid session ID provided');
@@ -58,11 +62,15 @@ const requireAdmin = (req, res, next) => {
   
   // Check if session ID is provided in headers or query params
   const sessionId = req.headers['x-session-id'] || req.query.sessionId || req.sessionId;
-  if (sessionId && sessionId.length > 5) {
-    console.log('✅ Session ID provided for admin access, allowing:', sessionId);
-    // Store session ID in request for later use
-    req.sessionId = sessionId;
-    return next();
+  if (sessionId && sessionId.length > 10) {
+    // TODO: Implement proper session validation against database
+    // For now, only allow if it looks like a valid session ID format
+    if (/^[a-zA-Z0-9_-]{20,}$/.test(sessionId)) {
+      console.log('✅ Valid session ID format provided for admin access, allowing:', sessionId);
+      // Store session ID in request for later use
+      req.sessionId = sessionId;
+      return next();
+    }
   }
   
   console.log('❌ Admin access denied - no valid session or session ID');
