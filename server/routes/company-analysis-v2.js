@@ -217,6 +217,30 @@ async function analyzeCompanyWebsite(websiteUrl) {
             }
         };
 
+        // Try to fetch sitemap and discover more relevant URLs (About/Projects)
+        const fetchSitemapUrls = async () => {
+            const sitemapCandidates = ['/sitemap.xml', '/sitemap_index.xml', '/wp-sitemap.xml'];
+            const discovered = [];
+            for (const sm of sitemapCandidates) {
+                try {
+                    const abs = new URL(sm, baseUrl.origin).href;
+                    const res = await fetch(abs, { headers: { 'User-Agent': 'Mozilla/5.0 ContractorCRM/1.0' }, timeout: 15000 });
+                    if (!res.ok) continue;
+                    const xml = await res.text();
+                    const locMatches = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/gi)).map(m => m[1]).filter(Boolean);
+                    for (const u of locMatches) {
+                        try {
+                            const same = new URL(u);
+                            if (same.origin === baseUrl.origin) discovered.push(same.href);
+                        } catch (_) { }
+                    }
+                } catch (_) { }
+            }
+            // Keep only pages likely to be relevant
+            const relevant = discovered.filter(u => /about|אודות|company|projects|פרויקטים|safety|בטיחות|quality|איכות/i.test(u));
+            return Array.from(new Set(relevant)).slice(0, 15);
+        };
+
         const candidatePaths = [
             '/',
             // About variants
@@ -230,7 +254,15 @@ async function analyzeCompanyWebsite(websiteUrl) {
             '/safety', '/quality', '/iso', '/standards', '/בטיחות', '/איכות', '/תקן'
         ];
         const uniquePaths = Array.from(new Set(candidatePaths));
-        const pages = await Promise.all(uniquePaths.map(fetchPage));
+        let pages = await Promise.all(uniquePaths.map(fetchPage));
+
+        // Also try sitemap-discovered pages
+        try {
+            const discovered = await fetchSitemapUrls();
+            for (const u of discovered) {
+                try { pages.push(await fetchPage(u)); } catch (_) { }
+            }
+        } catch (_) { }
 
         // Discover and prioritize nav links (About/Projects/Safety)
         try {
@@ -313,10 +345,24 @@ async function analyzeCompanyWebsite(websiteUrl) {
         }
         const dedupedLogos = Array.from(new Set(logoHints)).slice(0, 5);
 
+        // Extract <title> and meta description from each page and prepend to its block
+        const extractTitleDesc = (html) => {
+            try {
+                const $ = cheerio.load(html || '');
+                const title = ($('title').first().text() || '').trim();
+                const desc = ($('meta[name="description"]').attr('content') || '').trim();
+                return { title, desc };
+            } catch (_) { return { title: '', desc: '' }; }
+        };
+
         // Build strict, context-only prompts
         const contextBlocks = pageTexts
             .filter(pt => pt.text)
-            .map(pt => `URL: ${pt.url}\n---\n${pt.text}`)
+            .map(pt => {
+                const meta = extractTitleDesc(pages.find(p => p.url === pt.url)?.html || '');
+                const header = [meta.title, meta.desc].filter(Boolean).join(' • ');
+                return `URL: ${pt.url}\n${header ? `TITLE: ${header}\n` : ''}---\n${pt.text}`;
+            })
             .join('\n\n====\n\n')
             .slice(0, 120000);
 
