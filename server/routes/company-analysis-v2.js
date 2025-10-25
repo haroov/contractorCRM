@@ -147,18 +147,22 @@ async function analyzeCompanyWebsite(websiteUrl) {
         // Fetch key pages from the site
         const fetch = require('node-fetch');
 
-        // Heuristics to detect cookie/JS walls
+        // Heuristics to detect cookie/JS walls (Hebrew + common CMP providers)
         const looksLikeCookieOrJsWall = (html = '', status = 200) => {
             if (!html) return true;
             const text = html.toLowerCase();
             if (status >= 400 && status !== 404) return true;
-            return (
-                /enable (the )?cookies|cookie settings|we (use|are using) cookies|cookie consent/i.test(text) ||
-                /please enable javascript|javascript (is )?required|your browser.*javascript/i.test(text) ||
-                /cloudflare|attention required!/i.test(text) ||
-                /consent.*required/i.test(text) ||
-                text.length < 800 // very short body
+            const enCookieWall = (
+                /enable (the )?cookies|cookie settings|we (use|are using) cookies|cookie consent|accept all cookies|manage cookies/i.test(text)
             );
+            const heCookieWall = (
+                /קובצי\s*cookie|קבצי\s*cookie|קוקיז|עוגיות|אישור\s*קוקיז|אשר\s*קוקיז|מדיניות\s*הפרטיות|המשך\s*השימוש\s*באתר.*מסכים|הגדרות\s*cookie|יש לאפשר\s*cookie/i.test(text)
+            );
+            const jsRequired = /please enable javascript|javascript (is )?required|your browser.*javascript|נדרש\s*javascript|יש לאפשר\s*javascript/i.test(text);
+            const cmpVendors = /onetrust|cookiebot|quantcast|trustarc|iubenda|consentmanager|didomi/i.test(text);
+            const antiBot = /cloudflare|attention required!/i.test(text);
+            const tooShort = text.replace(/<[^>]+>/g, '').length < 800;
+            return enCookieWall || heCookieWall || jsRequired || cmpVendors || antiBot || tooShort;
         };
 
         // Fallback: fetch readable text via r.jina.ai proxy
@@ -213,7 +217,18 @@ async function analyzeCompanyWebsite(websiteUrl) {
             }
         };
 
-        const candidatePaths = ['/', '/about', '/en/about', '/he/about', '/אודות', '/company', '/projects', '/projects/', '/בטיחות', '/safety'];
+        const candidatePaths = [
+            '/',
+            // About variants
+            '/about', '/about-us', '/company', '/company-profile', '/who-we-are',
+            '/en/about', '/he/about', '/he/company', '/en/company',
+            '/אודות', '/אודות-חברה', '/עלינו', '/פרופיל-חברה',
+            // Projects variants
+            '/projects', '/projects/', '/project', '/our-projects', '/portfolio', '/works',
+            '/פרויקטים', '/הפרויקטים-שלנו', '/פרויקט',
+            // Safety/quality variants
+            '/safety', '/quality', '/iso', '/standards', '/בטיחות', '/איכות', '/תקן'
+        ];
         const uniquePaths = Array.from(new Set(candidatePaths));
         const pages = await Promise.all(uniquePaths.map(fetchPage));
 
@@ -245,12 +260,45 @@ async function analyzeCompanyWebsite(websiteUrl) {
             .replace(/\s+/g, ' ')
             .trim();
 
-        const pageTexts = pages
+        // If content seems sparse, try to re-fetch via proxy to enrich
+        const ensureMinTextViaProxy = async (list) => {
+            const enriched = [];
+            for (const p of list) {
+                const textLen = stripTags(p.html).length;
+                if (textLen < 600) {
+                    const proxiedText = await fetchViaTextProxy(p.url);
+                    if (proxiedText && proxiedText.length > textLen) {
+                        enriched.push({ url: p.url, html: `<div>${proxiedText}</div>` });
+                        continue;
+                    }
+                }
+                enriched.push(p);
+            }
+            return enriched;
+        };
+
+        let pageTexts = (await ensureMinTextViaProxy(pages))
             .map(p => ({ url: p.url, text: stripTags(p.html).slice(0, 40000) }))
             .sort((a, b) => {
                 const score = (u) => (/about|אודות/i.test(u) ? 100 : /projects|פרויקטים/i.test(u) ? 50 : /safety|בטיחות/i.test(u) ? 30 : 0);
                 return score(b.url) - score(a.url);
             });
+
+        // If after enrichment the combined context is still too short, force proxy fetch for homepage and about
+        const combinedLen = pageTexts.reduce((sum, pt) => sum + (pt.text?.length || 0), 0);
+        if (combinedLen < 1500) {
+            const forcePaths = ['/', '/about', '/אודות'];
+            for (const fp of forcePaths) {
+                const abs = new URL(fp, baseUrl.origin).href;
+                const proxied = await fetchViaTextProxy(abs);
+                if (proxied) {
+                    pageTexts.unshift({ url: abs, text: stripTags(`<div>${proxied}</div>`).slice(0, 40000) });
+                }
+            }
+            // Deduplicate by URL
+            const seen = new Set();
+            pageTexts = pageTexts.filter(pt => (seen.has(pt.url) ? false : (seen.add(pt.url), true)));
+        }
 
         // Extract logo candidates from homepage
         const homeHtml = pages.find(p => p.url === new URL('/', baseUrl.origin).href)?.html || pages[0]?.html || '';
