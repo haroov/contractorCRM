@@ -252,6 +252,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
 
     const prepareChartData = () => {
         return reports
+            .filter(report => report.score > 0) // Filter out zero scores (no work or system not working)
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map((report, index, arr) => {
                 console.log('Preparing chart data for report:', {
@@ -415,42 +416,42 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         equipmentUrl: selectedPoint.equipmentUrl
                                     });
                                     setTooltipVisible(true);
-                                    
+
                                     // Calculate position relative to the chart container
                                     const chartContainer = e.currentTarget;
                                     const rect = chartContainer.getBoundingClientRect();
-                                    
+
                                     // Tooltip dimensions
                                     const tooltipWidth = 200;
                                     const tooltipHeight = 120;
-                                    
+
                                     // Use the actual data point coordinates
                                     let tooltipX = activeCoords.x;
                                     let tooltipY = activeCoords.y;
-                                    
+
                                     // Add offset to position tooltip next to the point
                                     const offset = 15;
-                                    
+
                                     // Determine which side to show tooltip based on point position
                                     const isRightSide = activeCoords.x > rect.width / 2;
                                     const isTopSide = activeCoords.y < rect.height / 2;
                                     
                                     if (isRightSide) {
-                                        tooltipX = activeCoords.x - tooltipWidth - offset; // Show to the left
-                                    } else {
                                         tooltipX = activeCoords.x + offset; // Show to the right
+                                    } else {
+                                        tooltipX = activeCoords.x - tooltipWidth - offset; // Show to the left
                                     }
                                     
                                     if (isTopSide) {
-                                        tooltipY = activeCoords.y + offset; // Show below
-                                    } else {
                                         tooltipY = activeCoords.y - tooltipHeight - offset; // Show above
+                                    } else {
+                                        tooltipY = activeCoords.y + offset; // Show below
                                     }
-                                    
+
                                     // Ensure tooltip stays within bounds
                                     tooltipX = Math.max(10, Math.min(tooltipX, rect.width - tooltipWidth - 10));
                                     tooltipY = Math.max(10, Math.min(tooltipY, rect.height - tooltipHeight - 10));
-                                    
+
                                     console.log('Tooltip position:', { x: tooltipX, y: tooltipY });
                                     setTooltipPosition({
                                         x: tooltipX,
@@ -471,7 +472,7 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                         if (state && state.activePayload && state.activePayload.length > 0) {
                                             console.log('Mouse moved over data point:', state.activePayload[0].payload);
                                             setSelectedPoint(state.activePayload[0].payload);
-                                            
+
                                             // Capture the pixel coordinates of the data point
                                             if (state.activeCoordinate) {
                                                 setActiveCoords({
