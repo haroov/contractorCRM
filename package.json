@@ -26,8 +26,7 @@
     "docker:compose:logs": "docker-compose logs -f",
     "docker:compose:restart": "docker-compose restart",
     "thumb": "node src/cli/pdf-thumb.ts",
-    "test:headless": "node scripts/test-headless-fetch.js",
-    "postinstall": "npx playwright install --with-deps chromium"
+    "test:headless": "node scripts/test-headless-fetch.js"
   },
   "dependencies": {
     "@date-io/dayjs": "^3.2.0",
