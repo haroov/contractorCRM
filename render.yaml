@@ -3,7 +3,7 @@ services:
     name: contractorCRM
     runtime: node
     nodeVersion: "20.19.0"
-    buildCommand: npm install
+    buildCommand: npm ci && npx playwright install --with-deps chromium
     startCommand: node server/index.js
     envVars:
       - key: MONGODB_URI

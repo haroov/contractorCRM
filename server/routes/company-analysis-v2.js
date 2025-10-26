@@ -206,12 +206,31 @@ async function analyzeCompanyWebsite(websiteUrl) {
                 const html = await res.text();
                 if (!res.ok || looksLikeCookieOrJsWall(html, status)) {
                     console.warn('⚠️ Detected cookie/JS wall, retrying via text proxy:', target, status);
+                    // Try headless first (if enabled)
+                    if (process.env.ENABLE_HEADLESS_FETCH !== 'false') {
+                        try {
+                            const { fetchWithHeadless } = require('../services/headlessFetcher');
+                            const h = await fetchWithHeadless(target);
+                            if (stripTags(h.html).length > stripTags(html).length) {
+                                return { url: target, html: h.html };
+                            }
+                        } catch (e) { console.warn('⚠️ Headless fetch failed:', e?.message || e); }
+                    }
+                    // Fallback to text proxy
                     const text = await fetchViaTextProxy(target);
                     if (text) return { url: target, html: `<div>${text}</div>` };
                 }
                 return { url: target, html };
             } catch (e) {
                 console.warn('⚠️ Failed to fetch page', target, e.message);
+                // Try headless as well on thrown errors
+                if (process.env.ENABLE_HEADLESS_FETCH !== 'false') {
+                    try {
+                        const { fetchWithHeadless } = require('../services/headlessFetcher');
+                        const h = await fetchWithHeadless(target);
+                        if (stripTags(h.html).length > 0) return { url: target, html: h.html };
+                    } catch (_) {}
+                }
                 const text = await fetchViaTextProxy(target);
                 return { url: target, html: text ? `<div>${text}</div>` : '' };
             }

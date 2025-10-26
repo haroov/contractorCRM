@@ -25,7 +25,9 @@
     "docker:compose:down": "docker-compose down",
     "docker:compose:logs": "docker-compose logs -f",
     "docker:compose:restart": "docker-compose restart",
-    "thumb": "node src/cli/pdf-thumb.ts"
+    "thumb": "node src/cli/pdf-thumb.ts",
+    "test:headless": "node scripts/test-headless-fetch.js",
+    "postinstall": "npx playwright install --with-deps chromium"
   },
   "dependencies": {
     "@date-io/dayjs": "^3.2.0",
@@ -74,6 +76,7 @@
     "node-cron": "^3.0.3",
     "node-fetch": "^2.7.0",
     "openai": "^3.3.0",
+    "playwright": "^1.48.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdf-parse": "^1.1.1",
