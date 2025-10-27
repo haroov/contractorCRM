@@ -252,7 +252,6 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
 
     const prepareChartData = () => {
         return reports
-            .filter(report => report.score > 0) // Filter out zero scores (no work or system not working)
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map((report, index, arr) => {
                 console.log('Preparing chart data for report:', {
@@ -269,7 +268,9 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                     reportUrl: report.reportUrl || report.reports?.daily?.safetyIndex?.url,
                     issuesUrl: report.issuesUrl || report.reports?.daily?.findings?.url,
                     workersUrl: report.reports?.weekly?.workers?.url,
-                    equipmentUrl: report.reports?.weekly?.equipment?.url
+                    equipmentUrl: report.reports?.weekly?.equipment?.url,
+                    // Add zero score reason for tooltip
+                    zeroScoreReason: report.score === 0 ? 'אי עמידה בתנאי סף' : null
                 };
             });
     };
@@ -435,13 +436,13 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     // Determine which side to show tooltip based on point position
                                     const isRightSide = activeCoords.x > rect.width / 2;
                                     const isTopSide = activeCoords.y < rect.height / 2;
-                                    
+
                                     if (isRightSide) {
                                         tooltipX = activeCoords.x + offset; // Show to the right
                                     } else {
                                         tooltipX = activeCoords.x - tooltipWidth - offset; // Show to the left
                                     }
-                                    
+
                                     if (isTopSide) {
                                         tooltipY = activeCoords.y - tooltipHeight - offset; // Show above
                                     } else {
@@ -564,6 +565,11 @@ const SafetyDashboard: React.FC<SafetyDashboardProps> = ({ projectId, projectNam
                                     <Typography variant="body2" sx={{ color: '#8B5CF6', fontWeight: 600, mb: 0.5 }}>
                                         {selectedPoint.score} : ציון
                                     </Typography>
+                                    {selectedPoint.zeroScoreReason && (
+                                        <Typography variant="body2" sx={{ color: '#ef4444', fontWeight: 600, mb: 0.5, fontSize: '11px' }}>
+                                            ⚠️ {selectedPoint.zeroScoreReason}
+                                        </Typography>
+                                    )}
                                     <Typography variant="body2" sx={{ color: '#10B981', mb: 1 }}>
                                         {selectedPoint.avg30} : ממוצע נע
                                     </Typography>
